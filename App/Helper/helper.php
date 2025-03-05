@@ -101,7 +101,7 @@ class Helper
     public static function moneySelect($name = 'moneys', $selected = '1')
     {
         $select = '<select id="' . $name . '" name="' . $name . '" class="form-control" data-select2-selector="money" style="width:100%">';
-        
+
         foreach (self::MONEY_UNIT as $key => $value) {
             $selectedAttr = $selected == $key ? 'selected' : '';
             $select .= "<option value='$key' $selectedAttr>$value</option>";
@@ -175,7 +175,7 @@ class Helper
 
     public static function incExpTypeSelect($name = 'incexp_type', $selected = '1')
     {
-        $select = '<select id="' . $name . '" name="' . $name . '" class="select2 form-control" style="width:100%">';
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select" >';
         foreach (self::INC_EXP as $key => $value) {
             $selectedAttr = $selected == $key ? 'selected' : '';
             $select .= "<option value='$key' $selectedAttr>$value</option>";
@@ -184,13 +184,13 @@ class Helper
         return $select;
     }
 
+
     //dd fonksiyonu
     public static function dd($data)
     {
         echo '<pre>';
         print_r($data);
         echo '</pre>';
-
     }
 
     //gelen kelimelerin sadece ilk harflerini döndürür
@@ -242,7 +242,7 @@ class Helper
         $color = "";
 
         switch ($type) {
-            case 1://Gelir
+            case 1: //Gelir
             case 6: //Hakediş
                 $icon = "ti-arrow-up-dashed";
                 $color = "color-green";
@@ -283,7 +283,4 @@ class Helper
 
         return "<i class='ti $icon icon $color me-1'></i>";
     }
-
-
-
 }
