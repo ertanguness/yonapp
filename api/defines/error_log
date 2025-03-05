@@ -1,0 +1,24 @@
+[01-Nov-2024 08:34:47 Europe/Istanbul] PHP Warning:  Undefined variable $lastInsertId in /home/mbeyazil/puantor.com.tr/api/defines/job-groups.php on line 31
+[01-Nov-2024 08:34:49 Europe/Istanbul] PHP Warning:  Undefined variable $lastInsertId in /home/mbeyazil/puantor.com.tr/api/defines/job-groups.php on line 31
+[08-Nov-2024 16:57:43 Europe/Istanbul] PHP Warning:  openssl_decrypt(): Setting of IV length for AEAD mode failed in /home/mbeyazil/puantor.com.tr/App/Helper/security.php on line 73
+[08-Nov-2024 16:59:15 Europe/Istanbul] PHP Warning:  openssl_decrypt(): Setting of IV length for AEAD mode failed in /home/mbeyazil/puantor.com.tr/App/Helper/security.php on line 73
+[08-Nov-2024 17:08:39 Europe/Istanbul] PHP Fatal error:  Uncaught Exception: Kayıt bulunamadı.fn87EN9idS3gBec2%2BLxxUCcBrkxbrzBaqMNqkEI%3D in /home/mbeyazil/puantor.com.tr/Model/BaseModel.php:88
+Stack trace:
+#0 /home/mbeyazil/puantor.com.tr/Model/BaseModel.php(59): Model->update()
+#1 /home/mbeyazil/puantor.com.tr/api/defines/job-groups.php(19): Model->saveWithAttr()
+#2 {main}
+  thrown in /home/mbeyazil/puantor.com.tr/Model/BaseModel.php on line 88
+[08-Nov-2024 17:08:43 Europe/Istanbul] PHP Fatal error:  Uncaught Exception: Kayıt bulunamadı.fn87EN9idS3gBec2%2BLxxUCcBrkxbrzBaqMNqkEI%3D in /home/mbeyazil/puantor.com.tr/Model/BaseModel.php:88
+Stack trace:
+#0 /home/mbeyazil/puantor.com.tr/Model/BaseModel.php(59): Model->update()
+#1 /home/mbeyazil/puantor.com.tr/api/defines/job-groups.php(19): Model->saveWithAttr()
+#2 {main}
+  thrown in /home/mbeyazil/puantor.com.tr/Model/BaseModel.php on line 88
+[08-Nov-2024 17:08:44 Europe/Istanbul] PHP Fatal error:  Uncaught Exception: Kayıt bulunamadı.fn87EN9idS3gBec2%2BLxxUCcBrkxbrzBaqMNqkEI%3D in /home/mbeyazil/puantor.com.tr/Model/BaseModel.php:88
+Stack trace:
+#0 /home/mbeyazil/puantor.com.tr/Model/BaseModel.php(59): Model->update()
+#1 /home/mbeyazil/puantor.com.tr/api/defines/job-groups.php(19): Model->saveWithAttr()
+#2 {main}
+  thrown in /home/mbeyazil/puantor.com.tr/Model/BaseModel.php on line 88
+[08-Nov-2024 19:42:24 Europe/Istanbul] PHP Warning:  Undefined array key "firm_id" in /home/mbeyazil/puantor.com.tr/Model/JobGroupsModel.php on line 12
+[08-Nov-2024 19:42:24 Europe/Istanbul] PHP Warning:  openssl_decrypt(): Setting of IV length for AEAD mode failed in /home/mbeyazil/puantor.com.tr/App/Helper/security.php on line 73
