@@ -80,29 +80,31 @@ $menu_name = $menus->getMenusByLink($active_page);
     <!--! ================================================================ !-->
     <main class="nxl-container">
         <div class="nxl-content">
-
+            <?php //include './partials/page-header.php' ?>
+<!-- 
             <div class="main-content">
-                <div class="row">
+                <div class="row"> -->
                     <?php
                     $page = isset($_GET["p"]) ? $_GET["p"] : "home";
-                        // echo "user token" . $user->session_token;
-                        // echo "session token : ".$_SESSION['csrf_token'];
+                    // echo "user token" . $user->session_token;
+                    // echo "session token : ".$_SESSION['csrf_token'];
                     ; ?>
 
                     <?php
-                    
+
                     if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
 
                         include "pages/{$page}.php";
                     } else if (!file_exists("pages/{$page}.php")) {
 
                         include "pages/404.php";
-                    } else (
-                        include "pages/home.php"
-                    );
+                    } else
+                        (
+                            include "pages/home.php"
+                        );
                     ?>
-                </div>
-            </div>
+                <!-- </div>
+            </div> -->
             <!-- [ Main Content ] end -->
         </div>
         <!--<< Footer Section Start >>-->
@@ -117,7 +119,7 @@ $menu_name = $menus->getMenusByLink($active_page);
     <?php include './partials/theme-customizer.php' ?>
     <!--<< All JS Plugins >>-->
     <?php include './partials/homepage-script.php'; ?>
-  
+
 </body>
 
 </html>

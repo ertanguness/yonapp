@@ -15,9 +15,10 @@ $Auths = new Auths();
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">
         <div class="m-header">
-            <a href="index.php" class="b-brand">
+            <a href="index" class="b-brand">
                 <!-- ========   change your logo hear   ============ -->
-                <img src="assets/images/yonapp-logo.svg" alt="" class="logo logo-lg" style="width: 80%; height: auto;" />
+                <img src="assets/images/yonapp-logo.svg" alt="" class="logo logo-lg"
+                    style="width: 80%; height: auto;" />
                 <img src="assets/images/yonapp-logo-sm.svg" alt="" class="logo logo-sm" />
             </a>
         </div>
@@ -80,7 +81,7 @@ $Auths = new Auths();
                                 $show = '';
                             }
                         }
-                    ?>
+                        ?>
 
                         <!-- Menü oluşturulur -->
                         <li class="nxl-item <?php echo $active . " " . $show; ?>">
@@ -105,17 +106,20 @@ $Auths = new Auths();
                                                 continue;
                                             }
                                         }
-
+                                        $active = $sub_menu->page_link == $active_page ? "active" : '';
                                         $active_link = $active_page == $sub_menu->page_link ? 'active-link' : '';
                                         // Menu altında göstermek istemiyorsak veritabanındaki isMenu alanı 0 yapılır
                                         if ($sub_menu->isMenu > 0) { ?>
-                                            <li class="nxl-item"><a href="index.php?p=<?php echo $sub_menu->page_link; ?>" class="nxl-link <?php echo $active_link; ?>"><?php echo $sub_menu->page_name; ?></a></li>
-                                    <?php }
+                                            <li class="nxl-item <?php echo $active ?>"><a
+                                                    href="index?p=<?php echo $sub_menu->page_link; ?>"
+                                                    class="nxl-link <?php echo $active_link; ?>"><?php echo $sub_menu->page_name; ?></a>
+                                            </li>
+                                        <?php }
                                     } ?>
                                 </ul>
                             <?php } else { ?>
                                 <!-- Eğer alt menü yoksa, ana menüye doğrudan link ekle -->
-                                <a href="index.php?p=<?php echo $menu->page_link; ?>" class="nxl-link <?php echo $active; ?>">
+                                <a href="index?p=<?php echo $menu->page_link; ?>" class="nxl-link <?php echo $active; ?>">
                                     <span class="nxl-micon"><i class="<?php echo $menu->icon; ?>"></i></span>
                                     <span class="nxl-mtext"><?php echo $menu->page_name; ?></span>
                                 </a>
