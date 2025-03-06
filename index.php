@@ -90,6 +90,7 @@ $menu_name = $menus->getMenusByLink($active_page);
                     ; ?>
 
                     <?php
+                    
                     if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
 
                         include "pages/{$page}.php";
