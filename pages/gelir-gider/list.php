@@ -105,7 +105,7 @@
         </div>
     </div>
 </div>
-<div id="collapseOne" class="accordion-collapse page-header-collapse collapse" style="">
+<div id="collapseOne" class="accordion-collapse page-header-collapse collapse">
     <div class="accordion-body pb-2">
         <div class="row">
             <div class="col-xxl-3 col-md-6">

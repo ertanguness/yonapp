@@ -2,7 +2,7 @@
 $type = isset($type) ? $type : 'info';
 ?>
 
-<div class="alert alert-<?php echo $type; ?> bg-white alert-dismissible mt-3" role="alert">
+<div class="alert alert-<?php echo $type; ?> bg-white alert-dismissible mt-0" role="alert">
     <div class="d-flex">
         <div>
             <i class="feather feather-alert-octagon fs-1"></i>
