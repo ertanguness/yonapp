@@ -15,13 +15,17 @@ $user_id = $_SESSION['user']->id;
 
 ?>
 <div class="container-xl">
+    <?php
+    $title = "Gelir/Gider Türü Listesi!";
+    $text = "Gelir/Gider türü ekleme, düzenleme, silme işlemlerinizi buradan yapabilirsiniz.";
+    require_once 'pages/components/alert.php'
+    ?>
     <div class="row row-deck row-cards">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                 <h5 class="fw-bold mb-0 me-4">
                         <span class="d-block mb-2">Gelir/Gider Türü Listesi</span>
-                        <span class="fs-12 fw-normal text-muted text-truncate-1-line">Gelir/Gider türü ekleme, düzenleme, silme işlemlerini yapabilirsiniz.</span>
                     </h5>
                     <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                         <div class="col-auto ms-auto d-flex align-items-center ">

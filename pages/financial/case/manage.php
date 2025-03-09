@@ -26,6 +26,7 @@ $pageTitle = $id > 0 ? "Kasa Güncelle" : "Yeni Kasa";
 
 ?>
 <div class="container-xl">
+    
     <div class="row row-deck row-cards">
         <div class="col-12">
             <div class="card">

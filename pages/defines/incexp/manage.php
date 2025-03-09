@@ -8,10 +8,19 @@ $defineObj = new DefinesModel();
 $id = $_GET['id'] ?? 0;
 $incexp = $defineObj->find($id);
 
-$pageTitle = $id > 0 ? 'Gelir-Gider Türü Güncelleme' : 'Yeni Gelir-Gider Türü';
+$pageTitle = $id > 0 ? 'Gelir-Gider Türü Güncelleme' : 'Yeni Gelir-Gider Türü Tanımlama';
 
 ?>
 <div class="container-xl">
+<?php
+    $title = $pageTitle;
+    if ($pageTitle === 'Yeni Gelir-Gider Türü Tanımlama') {
+        $text = "Yeni Gelir/gider türü tanımlayabilirsiniz.";
+    } else {
+        $text = "Seçtiğiniz Gelir/gider türünü güncelleyebilirsiniz.";
+    }
+    require_once 'pages/components/alert.php'
+    ?>
     <div class="row row-deck row-cards">
         <div class="col-12">
             <div class="card">
