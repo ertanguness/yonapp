@@ -27,6 +27,8 @@ $financialHelper = new Financial();
 
 
 ?>
+<div class="main-content">
+<div class="row">
 <div class="container-xl">
 
     <!-- Alert component'i dahil et -->
@@ -155,6 +157,8 @@ $financialHelper = new Financial();
             </div>
         </div>
     </div>
+</div>
+</div>
 </div>
 
 <!-- //modali dahil et -->

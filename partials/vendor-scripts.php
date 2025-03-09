@@ -36,7 +36,7 @@ if (
     $page == 'defines/job-groups/list' || $page == 'defines/job-groups/manage' ||
     $page == 'defines/project-status/list'
 ) {
-    echo '<script src="./dist/libs/datatable/datatables.min.js"></script>';
+    // echo '<script src="./dist/libs/datatable/datatables.min.js"></script>';
 }
 
 
@@ -199,17 +199,17 @@ if ($page == 'home') {
 }
 ?>
 
-<script src="./dist/js/flatpickr.min.js"></script>
-<script src="./dist/js/flatpickr.tr.min.js"></script>
+<script src="./assets/js/flatpickr.min.js"></script>
+<script src="./assets/js/flatpickr.tr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
 <script src="https://npmcdn.com/flatpickr/dist/l10n/tr.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-<script src="./dist/libs/select2/js/select2.min.js?1724846371"></script>
+<script src="./assets/js/select2/js/select2.min.js"></script>
 <!-- Tabler Core -->
-<script src="./dist/js/tabler.min.js?1692870487"></script>
+<!-- <script src="./dist/js/tabler.min.js?1692870487"></script> -->
 <!-- <script src="./dist/js/demo.min.js?1692870487"></script> -->
 <script src="./src/jquery.inputmask.js"></script>
 

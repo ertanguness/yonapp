@@ -425,44 +425,44 @@ function checkId(id, item) {
 }
 
 // Sayfanın herhangi bir yerine tıklandığında fab menüyü kapat
-document.addEventListener("click", function (event) {
-  if (event.target.closest(".fab-menu") === null) {
-    const fabOptions = document.getElementById("fab-options");
-    const mainIcon = document.getElementById("main-icon");
-    const closeIcon = document.getElementById("close-icon");
+// document.addEventListener("click", function (event) {
+//   if (event.target.closest(".fab-menu") === null) {
+//     const fabOptions = document.getElementById("fab-options");
+//     const mainIcon = document.getElementById("main-icon");
+//     const closeIcon = document.getElementById("close-icon");
 
-    if (fabOptions.style.display === "block") {
-      fabOptions.classList.remove("show");
-      setTimeout(() => {
-        fabOptions.style.display = "none";
-      }, 300);
-      mainIcon.style.opacity = 1;
-      closeIcon.style.opacity = 0;
-    }
-  }
-});
+//     if (fabOptions.style.display === "block") {
+//       fabOptions.classList.remove("show");
+//       setTimeout(() => {
+//         fabOptions.style.display = "none";
+//       }, 300);
+//       mainIcon.style.opacity = 1;
+//       closeIcon.style.opacity = 0;
+//     }
+//   }
+// });
 
-function toggleFabMenu() {
-  const fabOptions = document.getElementById("fab-options");
-  const mainIcon = document.getElementById("main-icon");
-  const closeIcon = document.getElementById("close-icon");
+// function toggleFabMenu() {
+//   const fabOptions = document.getElementById("fab-options");
+//   const mainIcon = document.getElementById("main-icon");
+//   const closeIcon = document.getElementById("close-icon");
 
-  if (fabOptions.style.display === "none" || fabOptions.style.display === "") {
-    fabOptions.style.display = "block";
-    setTimeout(() => {
-      fabOptions.classList.add("show");
-    }, 10);
-    mainIcon.style.opacity = 0;
-    closeIcon.style.opacity = 1;
-  } else {
-    fabOptions.classList.remove("show");
-    setTimeout(() => {
-      fabOptions.style.display = "none";
-    }, 300);
-    mainIcon.style.opacity = 1;
-    closeIcon.style.opacity = 0;
-  }
-}
+//   if (fabOptions.style.display === "none" || fabOptions.style.display === "") {
+//     fabOptions.style.display = "block";
+//     setTimeout(() => {
+//       fabOptions.classList.add("show");
+//     }, 10);
+//     mainIcon.style.opacity = 0;
+//     closeIcon.style.opacity = 1;
+//   } else {
+//     fabOptions.classList.remove("show");
+//     setTimeout(() => {
+//       fabOptions.style.display = "none";
+//     }, 300);
+//     mainIcon.style.opacity = 1;
+//     closeIcon.style.opacity = 0;
+//   }
+// }
 
 function goWhatsApp() {
   const phoneNumber = "905079432723";

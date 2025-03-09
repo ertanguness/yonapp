@@ -11,7 +11,7 @@
         </footer>
         <!-- [ Footer ] end -->
 
-        <script>
+        <!-- <script>
             function adjustFooter() {
                 var footerContent = document.getElementById('footer-content');
                 var menu = document.getElementById('menu'); // Menü elementinin id'si 'menu' olduğunu varsayıyoruz
@@ -25,4 +25,4 @@
             // Sayfa yüklendiğinde ve pencere boyutu değiştiğinde ayarlama yap
             window.onload = adjustFooter;
             window.onresize = adjustFooter;
-        </script>
+        </script> -->

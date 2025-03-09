@@ -10,7 +10,7 @@ use App\Helper\Helper;
 use App\Helper\Security;
 class CaseTransactions extends Model
 {
-    protected $table = "case_transactions";
+    protected $table = "gelir_gider";
     protected $sql_table = "sql_case_transactions";
     protected $caseObj;
 

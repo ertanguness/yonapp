@@ -1,16 +1,12 @@
 <?php
 require_once 'App/Helper/helper.php';
-require_once "App/Helper/person.php";
-require_once "App/Helper/company.php";
 
 
-$personHelper = new PersonHelper();
-$CompanyHelper = new CompanyHelper();
 
 use App\Helper\Helper;
 
 ?>
-<div class="modal modal-blur fade" id="general-modal" tabindex="-1" style="display: none;" aria-hidden="true">
+<div class="modal fade" id="general-modal" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -53,21 +49,21 @@ use App\Helper\Helper;
                                 <div class="tab-pane active show" id="tabs-home-7" role="tabpanel">
                                     <div class="mb-3 w-100">
                                         <label class="form-label">Proje Seçiniz(Zorunlu Değil)</label>
-                                        <?php echo $projectHelper->getProjectSelect("gm_project_id") ?>
+                                        <?php //echo //$projectHelper->getProjectSelect("gm_project_id") ?>
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="tabs-profile-7" role="tabpanel">
                                     <div class="mb-3 w-100">
                                         <label class="form-label">Personel Adı</label>
                                         <!-- Tüm Personeli getir -->
-                                        <?php echo $personHelper->getPersonSelect(name: "gm_person_name") ?>
+                                        <?php //echo //$personHelper->getPersonSelect(name: "gm_person_name") ?>
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="tabs-activity-7" role="tabpanel">
                                     <div class="mb-3 w-100">
                                         <label class="form-label">Firma Adı</label>
                                         <!-- tc: to company -->
-                                        <?php echo $CompanyHelper->getCompanySelect(name: "gm_company") ?>
+                                        <?php //echo //$CompanyHelper->getCompanySelect(name: "gm_company") ?>
                                     </div>
                                 </div>
                             </div>
@@ -109,7 +105,7 @@ use App\Helper\Helper;
 
                             <div class="mb-3 w-100">
                                 <label class="form-label">Kasa<font style="color:red">(*)</font></label>
-                                <?php echo $financial->getCasesSelectByUser("gm_case_id", $case_id) ?>
+                                <?php //echo $financial->getCasesSelectByUser("gm_case_id", $case_id) ?>
                             </div>
 
 
@@ -126,7 +122,7 @@ use App\Helper\Helper;
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label class="form-label">Tutar</label>
-                                        <?php echo Helper::moneySelect("gm_amount_money", ''); ?>
+                                        <?php //echo Helper::moneySelect("gm_amount_money", ''); ?>
                                     </div>
                                 </div>
 
@@ -138,13 +134,13 @@ use App\Helper\Helper;
 
                                     <label class="form-label">İşlem Tarihi</label>
                                     <input type="text" name="transaction_date" class="form-control flatpickr"
-                                        value="<?php echo date('Y-m-d'); ?>">
+                                        value="<?php //echo date('Y-m-d'); ?>">
 
                                 </div>
                                 <div class="col-md-6">
 
                                     <label class="form-label">Gelir/Gider Türü</label>
-                                    <?php echo $financial->getIncExpTypeSelect("gm_incexp_type"); ?>
+                                    <?php //echo $financial->getIncExpTypeSelect("gm_incexp_type"); ?>
                                 </div>
 
                             </div>

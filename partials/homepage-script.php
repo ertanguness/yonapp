@@ -12,7 +12,7 @@
     <!--! BEGIN: Apps Init  !-->
     <script src="assets/js/common-init.min.js"></script>
     <script src="assets/js/dashboard-init.min.js"></script>
-	<script src="assets/js/analytics-init.min.js"></script>	
+	<!-- <script src="assets/js/analytics-init.min.js"></script>	 -->
     <!--! BEGIN: Theme Customizer  !-->
     <script src="assets/js/theme-customizer-init.min.js"></script>
     <!--! END: Theme Customizer !-->

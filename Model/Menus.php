@@ -1,6 +1,6 @@
 <?php 
-require_once "BaseModel.php";
 
+require_once "BaseModel.php";
 class Menus extends Model
 {
     public function __construct()

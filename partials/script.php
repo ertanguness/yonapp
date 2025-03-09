@@ -50,7 +50,7 @@
 	
 	<script src="assets/js/apps-email-init.min.js"></script>
 	
-	<script src="assets/js/analytics-init.min.js"></script>	
+	<!-- <script src="assets/js/analytics-init.min.js"></script>	 -->
 	
 	<script src="assets/js/apps-storage-init.min.js"></script>
 	
