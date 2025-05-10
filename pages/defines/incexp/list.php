@@ -20,7 +20,7 @@ $user_id = $_SESSION['user']->id;
             <h5 class="m-b-10">Tanımlamalar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Gelir Gider İşlemleri</li>
         </ul>
     </div>
@@ -65,8 +65,7 @@ $user_id = $_SESSION['user']->id;
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover" id="customerList">
-                                    <!--id="customerList" burasını sayfaya göre değiştireceğiz asset/js/ klasöründe ayarlarını yapacağız-->
+                                <table class="table table-hover datatables" id="incexpList">
                                     <thead>
                                         <tr class="text-center">
                                             <th>Sıra</th>

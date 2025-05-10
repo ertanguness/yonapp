@@ -17,7 +17,7 @@ $pageTitle = $id > 0 ? 'Gelir-Gider Türü Güncelleme' : 'Yeni Gelir-Gider Tür
             <h5 class="m-b-10">Tanımlamalar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Gelir Gider İşlemleri</li>
         </ul>
     </div>
@@ -30,10 +30,6 @@ $pageTitle = $id > 0 ? 'Gelir-Gider Türü Güncelleme' : 'Yeni Gelir-Gider Tür
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <?php
-                require_once 'pages/components/search.php';
-                require_once 'pages/components/download.php'
-                ?>
 
                 <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="defines/incexp/list">
                     <i class="feather-arrow-left me-2"></i>
@@ -96,7 +92,7 @@ $pageTitle = $id > 0 ? 'Gelir-Gider Türü Güncelleme' : 'Yeni Gelir-Gider Tür
                                             <label for="incexp_type" class="fw-semibold">Tipi: </label>
                                         </div>
                                         <div class="col-lg-4">
-                                            <div class="input-group">
+                                            <div class="input-group flex-nowrap w-100">
                                                 <div class="input-group-text"><i class="feather-dollar-sign"></i></div>
                                                 <?php echo Helper::incExpTypeSelect("incexp_type", $incexp->type_id ?? 1) ?>
                                             </div>

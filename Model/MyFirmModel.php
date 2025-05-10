@@ -28,16 +28,19 @@ class MyFirmModel extends Model
             return $sql->fetchAll(PDO::FETCH_OBJ);
         }else{
             $sql = $this->db->prepare("SELECT u.id,
-                                                mf.id,
-                                                u.parent_id,
-                                                u.user_type,
-                                                u.user_roles,
-                                                mf.firm_name,
-                                                u.email,mf.phone,mf.description,
-                                                mf.created_at
-                                        FROM $this->table mf
-                                        LEFT JOIN users u ON u.firm_id = mf.id
-                                        WHERE u.email = :email");
+                                    mf.id,
+                                    u.parent_id,
+                                    u.user_type,
+                                    u.user_roles,
+                                    mf.firm_name,
+                                    mf.is_active,  
+                                    u.email,
+                                    mf.phone,
+                                    mf.description,
+                                    mf.created_at
+                            FROM $this->table mf
+                            LEFT JOIN users u ON u.firm_id = mf.id
+                            WHERE u.email = :email");
             $sql->execute(['email' => $_SESSION["user"]->email]);
             return $sql->fetchAll(PDO::FETCH_OBJ);
         }
@@ -57,5 +60,9 @@ class MyFirmModel extends Model
         $sql->execute(['email' => $email]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
-  
+    public function updateFirmStatus($firm_id, $status) {
+        $stmt = $this->db->prepare("UPDATE myfirms SET is_active = :status WHERE id = :firm_id");
+        return $stmt->execute([':status' => $status, ':firm_id' => $firm_id]);
+    }
+    
 }

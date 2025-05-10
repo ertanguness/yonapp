@@ -196,6 +196,7 @@ if ($page == 'home') {
     echo '<script src="./dist/libs/jsvectormap/dist/maps/world-merc.js" defer></script>';
     echo '<script src="./src/charts.js" defer></script>';
     echo '<script src="./src/home/missions.js"></script>';
+
 }
 ?>
 

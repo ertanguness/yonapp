@@ -175,7 +175,7 @@ class Helper
 
     public static function incExpTypeSelect($name = 'incexp_type', $selected = '1')
     {
-        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select" >';
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
         foreach (self::INC_EXP as $key => $value) {
             $selectedAttr = $selected == $key ? 'selected' : '';
             $select .= "<option value='$key' $selectedAttr>$value</option>";

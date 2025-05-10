@@ -51,8 +51,7 @@ class CompanyHelper extends Db
     public function myCompanySelect($name = 'companies', $id = null, $disabled = null)
     {
         $results = $this->MyFirmModel->getMyFirmByUserId();
-        $select = '<select name="' . $name . '" class="form-select select2" id="' . $name . '" style="min-width:200px;width:100%" ' . $disabled . '>';
-        $select .= '<option value="">Firma Seçiniz</option>';
+        $select = '<select name="' . $name . '" class="form-select select2 w-100" id="' . $name . '" style="min-width:200px;width:100%" ' . $disabled . '>';
         foreach ($results as $row) {  // $results üzerinde döngü
             $selected = $id == $row->id ? ' selected' : '';  // Eğer id varsa seçili yap
             $select .= '<option value="' . Security::encrypt($row->id) . '"' . $selected . '>' . $row->firm_name . '</option>';  // $row->title yerine $row->name kullanıldı

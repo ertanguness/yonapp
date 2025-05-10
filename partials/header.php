@@ -57,9 +57,30 @@
                 <!--! [End] nxl-navigation-toggle !-->
             </div>
             <!--! [End] Header Left !-->
+            <div class="header-center d-flex mx-auto text-center">
+                <div class="d-flex align-items-center">
+                    <div class="col-6 d-flex align-items-center justify-content-center">
+                        <label for="incexp_type" class="fw-semibold text-center text-dark mb-0" style="font-size:medium; line-height: 1.5; height: 38px; display: flex; align-items: center;">
+                            İşlem Yaptığınız Site: &nbsp;&nbsp;&nbsp;
+                        </label>
+                    </div>
+                    <div class="col-6 d-flex justify-content-center align-items-center">
+                        <div class="input-group flex-nowrap w-100">
+                            <div class="input-group-text"><i class="feather-globe"></i></div>
+                            <?php
+                            // Sayfa adını kontrol et
+                            if (basename($_SERVER['PHP_SELF']) != 'company-list.php') {
+                                echo $company->myCompanySelect("myFirm", $firm_id);
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!--! [Start] Header Right !-->
             <div class="header-right ms-auto">
                 <div class="d-flex align-items-center">
+
                     <div class="dropdown nxl-h-item nxl-header-search">
                         <a href="javascript:void(0);" class="nxl-head-link me-0" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <i class="feather-search"></i>

@@ -1,5 +1,4 @@
 <?php
-
 require_once '../Database/require.php';
 require_once '../App/Helper/cities.php';
 

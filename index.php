@@ -11,7 +11,7 @@ ob_start();
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
     if (!isset($_GET["p"])) {
-        $returnUrl = urlencode("/index.php?p=home");
+        $returnUrl = urlencode("/index.php?p=home/list");
     }
     header("Location: sign-in.php?returnUrl={$returnUrl}");
     exit();
@@ -69,6 +69,55 @@ $menu_name = $menus->getMenusByLink($active_page);
 <?php $title = 'YonApp - Apartman / Site Yönetim Sistemi' ?>
 <?php include './partials/head.php' ?>
 
+<!-- Datatables başlangıç istediğimiz tablonun classına datatables yazmak yeterli aktif olması için -->
+<script src="./assets/js/jquery.3.7.1.min.js"></script>
+
+<script>
+    function initializeDataTables() {
+        $(".datatables").each(function() {
+            if (!$.fn.DataTable.isDataTable(this)) {
+                $(this).DataTable({
+                    language: {
+                        url: "assets/js/tr.json" // Türkçe dil dosyasının yolu
+                    },
+                    columnDefs: [
+                        { targets: "_all", className: "text-center" }, // Tüm sütun başlıklarını ve içeriklerini ortala
+                        { targets: "_all", render: function(data, type, row) {
+                            return `<div style="display: flex; justify-content: center; align-items: center;">${data}</div>`;
+                        }} // Sembol içeren hücreleri de ortala
+                    ]
+                });
+            }
+        });
+    }
+
+    // Sayfa yüklendiğinde çalıştır
+    $(document).ready(function() {
+        initializeDataTables();
+    });
+
+    // Yeni DOM elemanları eklendiğinde DataTables başlat
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if ($(node).find(".datatables").length) {
+                    initializeDataTables();
+                }
+            });
+        });
+    });
+
+    // Tüm sayfa (body veya belirli bir alan) gözlemleniyor
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+</script>
+
+
+
+<!-- datatables bitiş -->
+
 <body>
     <!-- Left sidebar -->
     <?php include './partials/left-sidebar.php' ?>
@@ -80,30 +129,30 @@ $menu_name = $menus->getMenusByLink($active_page);
     <!--! ================================================================ !-->
     <main class="nxl-container">
         <div class="nxl-content">
-            <?php //include './partials/page-header.php' ?>
-<!-- 
+            <?php //include './partials/page-header.php' 
+            ?>
+            <!-- 
             <div class="main-content">
                 <div class="row"> -->
-                    <?php
-                    $page = isset($_GET["p"]) ? $_GET["p"] : "home";
-                    // echo "user token" . $user->session_token;
-                    // echo "session token : ".$_SESSION['csrf_token'];
-                    ; ?>
+            <?php
+            $page = isset($_GET["p"]) ? $_GET["p"] : "home/list";
+                // echo "user token" . $user->session_token;
+                // echo "session token : ".$_SESSION['csrf_token'];
+            ; ?>
 
-                    <?php
+            <?php
 
-                    if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
+            if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
 
-                        include "pages/{$page}.php";
-                    } else if (!file_exists("pages/{$page}.php")) {
+                include "pages/{$page}.php";
+            } else if (!file_exists("pages/{$page}.php")) {
 
-                        include "pages/404.php";
-                    } else
-                        (
-                            include "pages/home.php"
-                        );
-                    ?>
-                <!-- </div>
+                include "pages/404.php";
+            } else (
+                    include "pages/home/list.php"
+                );
+            ?>
+            <!-- </div>
             </div> -->
             <!-- [ Main Content ] end -->
         </div>
@@ -119,6 +168,7 @@ $menu_name = $menus->getMenusByLink($active_page);
     <?php include './partials/theme-customizer.php' ?>
     <!--<< All JS Plugins >>-->
     <?php include './partials/homepage-script.php'; ?>
+
 
 </body>
 

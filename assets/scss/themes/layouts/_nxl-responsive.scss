@@ -152,8 +152,10 @@
 			}
 		}
 	}
+	
 	.nxl-container {
 		.nxl-content {
+			
 			.page-header {
 				padding: 0 20px;
 				/* 
@@ -163,11 +165,12 @@
 				*/
 			}
 			.main-content {
+				
 				padding: 20px 20px 5px;
 				.content-area {
 					.content-area-header,
 					.content-area-body {
-						padding: 20px 20px;
+						padding: 0px 0px;
 					}
 				}
 			}
@@ -271,6 +274,7 @@
 						visibility: hidden;
 						transition: all 0.3s ease;
 						transform: translateX(100%);
+						
 						&.page-header-right-open {
 							opacity: 1;
 							visibility: visible;

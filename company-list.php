@@ -1,310 +1,277 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("Expires: 0");
+ob_start();
 
-$user_id = $_SESSION['user']->id;
-$email = $_SESSION['user']->email;
-
-
-// require_once "Model/Company.php";
-require_once "Model/MyFirmModel.php";
-// $companyObj = new Company();
-$myFirmObj = new MyFirmModel();
-
-// $myCompanies = $companyObj->getMyCompanies($user_id);
-//$myFirms = $myFirmObj->getAuthorizedMyFirmsByEmail($email);
-
-$myFirms = $myFirmObj->getMyFirmByUserId();
-if(count($myFirms) == 1){
-    $_SESSION['firm_id'] = $myFirms[0]->id;
-    header('Location: /index.php?p=home');
+if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
+    $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
+    if (!isset($_GET["p"])) {
+        $returnUrl = urlencode("/index.php?p=home/list");
+    }
+    header("Location: sign-in.php?returnUrl={$returnUrl}");
     exit();
 }
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$user = $_SESSION['user'];
+$user_id = $user->id;
+$email = $user->email;
+
+require_once "Model/MyFirmModel.php";
+$myFirmObj = new MyFirmModel();
+$myFirms = $myFirmObj->getMyFirmByUserId(); // Firma kontrolü
+
+if (count($myFirms) == 1) {
+    $_SESSION['firm_id'] = $myFirms[0]->id;
+    header('Location: /index.php?p=home/list');
+    exit();
+}
+
+// Seçim sonrası yönlendirme
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['firm_id'])) {
+    $_SESSION['firm_id'] = $_POST['firm_id'];
+    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : '/index.php?p=home/list';
+    header("Location: $redirectUri");
+    exit();
+}
 ?>
 <!doctype html>
 <html lang="tr">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Apartman/Site Listesi | YonApp - Apartman/Site Takip Sistemi
-    </title>
-    <!-- CSS files -->
-    <link href="./dist/css/tabler.min.css?1692870487" rel="stylesheet" />
-    <link href="./dist/css/demo.min.css?1692870487" rel="stylesheet" />
-    <link href="./dist/css/style.css?1692870487" rel="stylesheet" />
-  <link rel="icon" href="./static/favicon.ico" type="image/x-icon" />
+    <meta charset="UTF-8">
+    <title>YonApp - Apartman/Site Yönetim Sistemi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css" />
 
     <style>
-        @import url('https://rsms.me/inter/inter.css');
-
-        :root {
-            --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
-        }
-
         body {
-            font-feature-settings: "cv03", "cv04", "cv11";
+            background: #f8f9fa;
         }
 
-        .list-item {
+        .firm-card {
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .list-item:hover {
-            background-color: rgba(var(--tblr-secondary-rgb), .08);
+        .firm-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .firm-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .inactive {
+            display: none;
+        }
+
+        /* Ortak Switch Stil */
+        .form-check-input {
+            transform: scale(1.5);
+            /* Switch boyutunu büyüt */
+        }
+
+        .form-check-label {
+            font-size: 1.2rem;
+            /* Label font boyutunu büyüt */
+        }
+
+        /* Pasifleri Göster Switch */
+        #showInactiveSwitch {
+            margin-right: 10px;
+            /* Label ile arasını açmak için */
+        }
+
+        /* Firma durum switch */
+        .form-check.firm-status-switch {
+            margin-right: 10px;
+            /* Label ile arasını açmak için */
+        }
+
+        .logout-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            background-color: #dc3545;
+            /* Kırmızı arkaplan */
+            border-radius: 50%;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .logout-icon img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .logout-icon:hover {
+            background-color: #bb2d3b;
+            /* Hover rengi */
+            transform: scale(1.1);
         }
     </style>
+
 </head>
 
 <body>
-
-    <?php
-    if ($_POST && isset($_POST['firm_id'])) {
-        $firm_id = $_POST['firm_id'];
-        $_SESSION['firm_id'] = $firm_id;
-
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h3 class="text-muted">Hoş Geldiniz, <strong><?= htmlspecialchars($user->full_name ?? $user->email) ?></strong></h3>
+            <p class="text-muted"><?= count($myFirms) ?> adet kayıtlı siteniz bulundu. İlerlemek için lütfen birini seçiniz.</p>
 
 
-        // returnUrl parametresini kontrol edin ve varsayılan değeri ayarlayın
-        $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : '/index.php?p=home';
-        header('Location: ' . $redirectUri);
-        exit();
 
-    }
-
-    ?>
-    <script src="./dist/js/demo-theme.min.js?1692870487"></script>
-    <div class="page">
-        <!-- Navbar -->
-
-        <?php include_once "inc/topbar.php" ?>
-
-        <div class="page-wrapper">
-            <!-- Page header -->
-            <div class="page-header d-print-none">
-                <div class="container-xl">
-                    <div class="row g-2 align-items-center">
-
-                        <div class="col text-center">
-                            <h1 class="text-muted">
-                                Firma Seçiniz
-                            </h1>
+            <div class="row justify-content-center mb-2">
+                <div class="col-md-8">
+                    <div class="p-2 d-flex flex-row align-items-center justify-content-between">
+                        <!-- Pasifleri Göster Switch (sol) -->
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="showInactiveSwitch">
+                            <label class="form-check-label ms-2" for="showInactiveSwitch">Pasif Siteleri Göster</label>
                         </div>
-                        <!-- Page title actions -->
-
+                        <!-- Çıkış Butonu (sağ) -->
+                        <a href="logout.php" title="Çıkış Yap" class="logout-icon">
+                            <img src="../assets/images/icons/logout.png" alt="Çıkış">
+                        </a>
                     </div>
                 </div>
             </div>
-            <style>
-                .img-fluid {
-                    max-width: 400px;
-                    height: auto;
-                }
-            </style>
-            <!-- Page body -->
-            <div class="page-body">
-                <div class="container-xl">
-                    <div class="row g-4">
-                        <div class="col-md-3">
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <div class="subheader">Last checked at</div>
-                                    <div class="h3 m-0">27 seconds ago</div>
-                                </div>
-                            </div>
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <div class="subheader">Last checked at</div>
-                                    <div class="h3 m-0">27 seconds ago</div>
-                                </div>
-                            </div>
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <div class="subheader">Last checked at</div>
-                                    <div class="h3 m-0">27 seconds ago</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row row-cards">
-                                <div class="space-y ">
 
-                                    <?php
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <?php foreach ($myFirms as $myfirm): ?>
+                        <form method="POST" class="mb-3 firm-select-form">
+                            <input type="hidden" name="firm_id" value="<?= $myfirm->id ?>">
+                            <div class="card firm-card shadow-sm p-3 list-item bg-white <?= $myfirm->is_active == 0 ? 'inactive' : '' ?>">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <img src="../assets/images/logo/google-wallet.png" alt="Firma Logo" class="firm-logo me-3">
+                                        <div>
+                                            <h5 class="mb-0"><?= htmlspecialchars($myfirm->firm_name) ?></h5>
+                                            <?php if (!empty($myfirm->description)): ?>
+                                                <small class="text-muted"><?= htmlspecialchars($myfirm->description) ?></small>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <!-- Aktif/Pasif Switch -->
 
-                                    foreach ($myFirms as $myfirm) { 
-                                        
-                                        
-                                        ?>
-                                        <form action="#" method="post">
-
-
-                                            <div class="card list-item" data-id="<?php echo $myfirm->id ?>">
-                                                <div class="row g-0">
-                                                    <div class="col-auto">
-                                                        <div class="card-body">
-                                                            <div class="avatar avatar-md"
-                                                                style="background-image: url(./static/jobs/job-1.jpg)">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col">
-                                                        <div class="card-body ps-0">
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <input type="text" class="d-none" name="firm_id"
-                                                                        value="<?php echo $myfirm->id ?>">
-                                                                    <h3 class="mb-0">
-                                                                        <a><?php echo $myfirm->firm_name; ?></a>
-                                                                    </h3>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md">
-                                                                    <div
-                                                                        class="mt-3 list-inline list-inline-dots mb-0 text-secondary d-sm-block d-none">
-                                                                        <div class="list-inline-item">
-                                                                            <!-- Download SVG icon from http://tabler-icons.io/i/building-community -->
-                                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                width="24" height="24" viewBox="0 0 24 24"
-                                                                                fill="none" stroke="currentColor"
-                                                                                stroke-width="2" stroke-linecap="round"
-                                                                                stroke-linejoin="round"
-                                                                                class="icon icon-inline">
-                                                                                <path stroke="none" d="M0 0h24v24H0z"
-                                                                                    fill="none"></path>
-                                                                                <path
-                                                                                    d="M8 9l5 5v7h-5v-4m0 4h-5v-7l5 -5m1 1v-6a1 1 0 0 1 1 -1h10a1 1 0 0 1 1 1v17h-8">
-                                                                                </path>
-                                                                                <path d="M13 7l0 .01"></path>
-                                                                                <path d="M17 7l0 .01"></path>
-                                                                                <path d="M17 11l0 .01"></path>
-                                                                                <path d="M17 15l0 .01"></path>
-                                                                            </svg>
-                                                                        </div>
-                                                                        <div class="list-inline-item">
-                                                                            <!-- Download SVG icon from http://tabler-icons.io/i/license -->
-                                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                width="24" height="24" viewBox="0 0 24 24"
-                                                                                fill="none" stroke="currentColor"
-                                                                                stroke-width="2" stroke-linecap="round"
-                                                                                stroke-linejoin="round"
-                                                                                class="icon icon-inline">
-                                                                                <path stroke="none" d="M0 0h24v24H0z"
-                                                                                    fill="none"></path>
-                                                                                <path
-                                                                                    d="M15 21h-9a3 3 0 0 1 -3 -3v-1h10v2a2 2 0 0 0 4 0v-14a2 2 0 1 1 2 2h-2m2 -4h-11a3 3 0 0 0 -3 3v11">
-                                                                                </path>
-                                                                                <path d="M9 7l4 0"></path>
-                                                                                <path d="M9 11l4 0"></path>
-                                                                            </svg>
-                                                                            <!-- <?php //echo $myCompany->description; ?> -->
-                                                                        </div>
-
-                                                                    </div>
-
-                                                                </div>
-                                                                <div class="col-md-auto">
-                                                                    <div class="mt-3 badges">
-                                                                        <a href="#"
-                                                                            class="badge badge-outline border-success text-secondary fw-normal badge-pill">
-                                                                            Aktif
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    <?php } ?>
-                                    <div class="row justify-content-center">
-
-                                        <img src="static/illustrations/loading.avif" alt="Your Image Description"
-                                            class="img-fluid text-center">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input firm-status-switch" type="checkbox" data-firm-id="<?= $myfirm->id ?>" id="firmStatusSwitch<?= $myfirm->id ?>" <?= $myfirm->is_active ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="firmStatusSwitch<?= $myfirm->id ?>">Aktif</label>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-3 col-lg-3">
-                            <div class="card">
-                                <div class="ribbon bg-red">NEW</div>
-                                <div class="card-body">
-                                    <h3 class="card-title">Card with text ribbon</h3>
-                                    <p class="text-secondary">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                                        Architecto at consectetur culpa ducimus eum fuga fugiat, ipsa iusto, modi
-                                        nostrum recusandae reiciendis saepe.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
+                        </form>
+                    <?php endforeach; ?>
                 </div>
             </div>
-        </div>
-    </div>
-    <footer class="footer footer-transparent d-print-none">
-        <div class="container-xl">
-            <div class="row text-center align-items-center flex-row-reverse">
-                <div class="col-lg-auto ms-lg-auto">
-                    <ul class="list-inline list-inline-dots mb-0">
-                        <li class="list-inline-item"><a href="https://tabler.io/docs" target="_blank"
-                                class="link-secondary" rel="noopener">Documentation</a></li>
-                        <li class="list-inline-item"><a href="./license.html" class="link-secondary">License</a></li>
-                        <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank"
-                                class="link-secondary" rel="noopener">Source code</a></li>
-                        <li class="list-inline-item">
-                            <a href="https://github.com/sponsors/codecalm" target="_blank" class="link-secondary"
-                                rel="noopener">
-                                <!-- Download SVG icon from http://tabler-icons.io/i/heart -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon text-pink icon-filled icon-inline"
-                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path
-                                        d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
-                                </svg>
-                                Sponsor
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-                    <ul class="list-inline list-inline-dots mb-0">
-                        <li class="list-inline-item">
-                            Copyright &copy; 2023
-                            <a href="." class="link-secondary">Tabler</a>.
-                            All rights reserved.
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="./changelog.html" class="link-secondary" rel="noopener">
-                                v1.0.0-beta20
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+
+            <!-- Bilgi Kutusu -->
+            <div class="alert alert-info text-start mx-auto col-md-8" style="max-width: none;">
+                <ul class="mb-0 ps-3">
+                    <li>İlerlemek için kayıtlı sitelerinizden birini seçmeniz gerekmektedir.</li>
+                    <li>Her bir kartın sağ üst köşesindeki <strong>Pasif anahtarı</strong> ile ilgili sitenizin durumunu değiştirebilirsiniz.</li>
+                    <li>Varsayılan olarak sadece <strong>aktif siteler</strong> gösterilir. Pasif siteleri görmek için <strong>Pasifleri Göster</strong> anahtarını açabilirsiniz.</li>
+                    <li> Bir site kartına tıklayarak ilgili siteyi seçebilir ve sisteme giriş yapabilirsiniz.</li>
+                </ul>
             </div>
         </div>
-    </footer>
+
     </div>
-    </div>
-    <!-- Libs JS -->
-    <!-- Tabler Core -->
-    <script src="./dist/js/tabler.min.js?1692870487" defer></script>
-    <script src="./dist/js/demo.min.js?1692870487" defer></script>
-    <script src="./dist/js/jquery.3.7.1.min.js"></script>
+
+    <!-- JS -->
+    <script src="./assets/js/jquery.3.7.1.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('.list-item').each(function () {
-                $(this).click(function () {
-                    $(this).closest("form").submit();
+        $(document).ready(function() {
+            // Firma kartına tıklayınca form submit (var olan kodun)
+            $('.list-item').click(function() {
+                $(this).closest('form').submit();
+            });
+
+            // Switch tıklandığında kartın click'ine gitmesini engelle
+            $('.firm-status-switch').click(function(event) {
+                event.stopPropagation();
+            });
+
+            // Firma durumunu değiştiren switch
+            $('.firm-status-switch').change(function() {
+                var firmId = $(this).data('firm-id');
+                var isActive = $(this).is(':checked') ? 1 : 0;
+                var $card = $(this).closest('.firm-card');
+
+                $.ajax({
+                    url: 'update_firm_status.php',
+                    type: 'POST',
+                    data: {
+                        firm_id: firmId,
+                        is_active: isActive
+                    },
+                    success: function(response) {
+                        console.log('Durum güncellendi: ', response);
+
+                        // Eğer 'pasifleri göster' kapalı ve firma pasif olduysa → kartı gizle
+                        if (!$('#showInactiveSwitch').is(':checked') && isActive == 0) {
+                            $card.fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    },
+                    error: function() {
+                        alert('Durum güncellenirken hata oluştu!');
+                        // AJAX hatası olursa switch geri çevir
+                        $(this).prop('checked', !isActive);
+                    }
                 });
             });
+
+            // Pasifleri göster switch kontrolü
+            $('#showInactiveSwitch').change(function() {
+                var showInactive = $(this).is(':checked');
+
+                $('.firm-card').each(function() {
+                    var isActive = $(this).find('.firm-status-switch').is(':checked');
+                    if (!showInactive && !isActive) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
+                    }
+                });
+            });
+
+            // Sayfa yüklenirken default olarak pasifleri gizle
+            if (!$('#showInactiveSwitch').is(':checked')) {
+                $('.firm-card').each(function() {
+                    var isActive = $(this).find('.firm-status-switch').is(':checked');
+                    if (!isActive) {
+                        $(this).hide();
+                    }
+                });
+            }
         });
     </script>
 </body>
+<script>
+    if (window.history && window.history.pushState) {
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.location.href = 'sign-in.php'; // Geri basarsa buraya yönlendir
+        };
+    }
+</script>
 
 </html>

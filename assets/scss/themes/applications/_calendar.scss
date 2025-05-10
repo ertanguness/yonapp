@@ -1,16 +1,19 @@
 /*
 <--!----------------------------------------------------------------!-->
-<--! Calendar !-->
+<--! calendar !-->
 <--!----------------------------------------------------------------!-->
 */
-.nxl-container {
+.nxl-container-mode {
 	&.apps-calendar {
+	
+		
 		.nxl-content {
 			.main-content {
 				#tui-calendar-init {
 					.tui-full-calendar-popup-delete,
 					.tui-full-calendar-popup-edit,
 					.tui-full-calendar-confirm {
+						
 						display: flex;
 						padding: 12px 16px;
 						font-size: $font-10;
@@ -151,3 +154,4 @@
 		}
 	}
 }
+

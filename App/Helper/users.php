@@ -95,7 +95,7 @@ class UserHelper extends Db
 
         // Benzersiz bir ID oluşturmak için uniqid() kullanılıyor.
         $selectId = $name . "_" . uniqid();
-        $select = '<select name="' . $name . '" class="form-select select2" id="' . $selectId . '" style="width:100%">';
+        $select = '<select name="' . $name . '" class="form-select select2 w-100" id="' . $selectId . '" >';
         $select .= '<option value="">Rol Seçiniz</option>';
         foreach ($results as $row) { // $results üzerinde döngü
             // Kullanıcıdan gelen $selectedId ile karşılaştırma yapılıyor.
