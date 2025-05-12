@@ -39,6 +39,7 @@ class ComposerStaticInitdf457f6088e865ee4c2005a5b0dcf4a9
             'Mpdf\\PsrLogAwareTrait\\' => 22,
             'Mpdf\\PsrHttpMessageShim\\' => 24,
             'Mpdf\\' => 5,
+            'Model\\' => 6,
             'Matrix\\' => 7,
             'Masterminds\\' => 12,
         ),
@@ -110,6 +111,10 @@ class ComposerStaticInitdf457f6088e865ee4c2005a5b0dcf4a9
         'Mpdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
+        ),
+        'Model\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/Model',
         ),
         'Matrix\\' => 
         array (

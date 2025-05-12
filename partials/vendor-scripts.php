@@ -1,6 +1,6 @@
-<script src="./assets/js/jquery.3.7.1.min.js"></script>
+<!-- <script src="./assets/js/jquery.3.7.1.min.js"></script> -->
 
-<!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script> -->
+<!-- jquery validate -->
 
 
 <?php
@@ -39,16 +39,7 @@ if (
     // echo '<script src="./dist/libs/datatable/datatables.min.js"></script>';
 }
 
-
-
-
-//Summernote eklenecek sayfalar 
-if ($page == "missions/manage" || $page == "feedback/list" 
-|| $page== "supports/tickets" || $page == "supports/ticket-view") {
-    echo '<script src="./dist/libs/summernote/summernote-lite.min.js?1692870487"></script>';
-}
-
-
+//*************USERS********************************* */
 // Kullanıcı ekleme ve düzenleme sayfası
 if ($page == 'users/list' || $page == 'users/manage') {
     echo '<script src="./src/users/users.js"></script>';
@@ -63,124 +54,19 @@ if ($page == 'users/roles/list' || $page == 'users/roles/manage') {
 if ($page == 'users/auths/auths') {
     echo '<script src="./src/users/auths.js"></script>';
 }
+//*************USERS********************************* */
 
-// Ürün ekleme ve düzenleme sayfası
-if ($page == 'products/list' || $page == 'products/manage') {
-    echo '<script src="./src/product.js"></script>';
+//*************DUES******************************** */
+// Dues Tanımlama sayfası
+if ($page == 'dues/dues-defines/manage') {
+    echo '<script src="/pages/dues/dues-defines/dues.js"></script>';
 }
-
-// Servis Konusu ekleme ve düzenleme sayfası
-if ($page == 'defines/service-head/list' || $page == 'defines/service-head/manage') {
-    echo '<script src="./src/defines/service-head.js"></script>';
-}
-// Personel Liste, ekleme ve düzenleme sayfası
-if ($page == 'persons/list' || $page == 'persons/manage') {
-    echo '<script src="./src/persons/persons.js"></script>';
-}
-// Personel diğer bilgileri ekleme ve düzenleme sayfası
-if ($page == 'persons/manage') {
-    echo '<script src="./src/persons/payment.js"></script>';
-    echo '<script src="./src/persons/wages.js"></script>';
-    echo '<script src="./src/persons/income.js"></script>';
-    echo '<script src="./src/persons/wage-cut.js"></script>';
-}
-
-// Servis Konusu ekleme ve düzenleme sayfası
-if ($page == 'sites/list' || $page == 'sites/manage') {
-    echo '<script src="./src/companies/mycompanies.js"></script>';
-}
-
-if ($page == 'companies/list' || $page == 'companies/manage') {
-    echo '<script src="./src/companies/companies.js"></script>';
-}
-
-// Kasa (kasa ekleme ve düzenleme sayfası)
-if ($page == 'financial/case/list' || $page == 'financial/case/manage') {
-    echo '<script src="./src/financial/case.js"></script>';
-}
-// Kasa İşlemleri(kasa ekleme ve düzenleme sayfası)
-if ($page == 'financial/transactions/list') {
-    echo '<script src="./src/financial/transactions.js"></script>';
-}
-// Proje Ekleme,güncelleme ve listeleme sayfası
-if ($page == 'projects/list' || $page == 'projects/manage' || $page == 'projects/add-person') {
-    echo '<script src="./src/project/projects.js"></script>';
-    echo '<script src="./src/project/progress-payment.js"></script>';
-    echo '<script src="./src/project/payment.js"></script>';
-    echo '<script src="./src/project/expense.js"></script>';
-    echo '<script src="./src/project/deduction.js"></script>';
-}
-// Puantaj Ekleme,güncelleme ve listeleme sayfası
-if ($page == 'puantaj/list') {
-    echo '<script src="./src/puantaj/puantaj.js"></script>';
-}
-// Bordro sayfası
-if ($page == 'payroll/list') {
-    echo '<script src="./src/bordro/bordro.js"></script>';
-    echo '<script src="./src/bordro/payment.js"></script>';
-    echo '<script src="./src/bordro/wage_cut.js"></script>';
-    echo '<script src="./src/bordro/income.js"></script>';
-    
-}
-// Gelir Gider Türü Tanımlama
-if ($page == 'defines/incexp/list' || $page == 'defines/incexp/manage') {
-    echo '<script src="./src/defines/incexp.js"></script>';
-}
+//*************DUES******************************** */
 
 
-// Misyon Ekleme,güncelleme ve listeleme sayfası
-if ($page == 'missions/list' || $page == 'missions/manage') {
-    echo '<script src="./src/missions/missions.js"></script>';
-}
-
-// Misyon İşlem Ekleme,güncelleme ve listeleme sayfası
-if ($page == 'missions/process/manage') {
-    echo '<script src="./src/missions/process.js"></script>';
-}
-
-if ($page == 'missions/headers/manage' || $page == "home") {
-    echo '<script src="./dist/js/jquery-ui.js"></script>';
-}
-
-
-if ($page == 'missions/headers/manage') {
-    echo '<script src="./src/missions/headers.js"></script>';
-}
-
-if ($page == 'payroll/xls/payment-load-from-xls') {
-    echo '<script src="./src/bordro/payment-load.js"></script>';
-}
-//personlleri excel dosyasından yükleme
-if ($page == 'persons/xls/person-load') {
-    echo '<script src="./src/persons/persons-load.js"></script>';
-}
-
-if ($page == 'defines/job-groups/list' || $page == 'defines/job-groups/manage') {
-    echo '<script src="./src/defines/job-groups.js"></script>';
-}
-
-if($page == 'settings/manage'){
-    echo '<script src="./src/settings/settings.js"></script>';
-    echo '<script src="./src/settings/packages.js"></script>';
-}
-
-if($page == 'feedback/list'){
-    echo '<script src="./src/feedback.js"></script>';
-}
-
-if($page == 'supports/tickets' || $page == 'supports/ticket-view'){
-    echo '<script src="./src/supports/tickets.js"></script>';
-}
-
-//Proje durumları
-if($page == 'defines/project-status/list' || $page == 'defines/project-status/manage'){
-    echo '<script src="./src/defines/project-status.js"></script>';
-}
 
 
 ?>
-
-
 
 
 
@@ -190,21 +76,21 @@ if($page == 'defines/project-status/list' || $page == 'defines/project-status/ma
 
 
 if ($page == 'home') {
-    //echo '<script src="./dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>';
-    echo '<script src="./dist/libs/jsvectormap/dist/js/jsvectormap.min.js" defer></script>';
-    echo '<script src="./dist/libs/jsvectormap/dist/maps/world.js" defer></script>';
-    echo '<script src="./dist/libs/jsvectormap/dist/maps/world-merc.js" defer></script>';
-    echo '<script src="./src/charts.js" defer></script>';
-    echo '<script src="./src/home/missions.js"></script>';
+    // //echo '<script src="./dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>';
+    // echo '<script src="./dist/libs/jsvectormap/dist/js/jsvectormap.min.js" defer></script>';
+    // echo '<script src="./dist/libs/jsvectormap/dist/maps/world.js" defer></script>';
+    // echo '<script src="./dist/libs/jsvectormap/dist/maps/world-merc.js" defer></script>';
+    // echo '<script src="./src/charts.js" defer></script>';
+
 
 }
 ?>
+<!-- <script src="./assets/js/jquery.validate.min.js"></script> -->
 
 <script src="./assets/js/flatpickr.min.js"></script>
 <script src="./assets/js/flatpickr.tr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
-<script src="https://npmcdn.com/flatpickr/dist/l10n/tr.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>

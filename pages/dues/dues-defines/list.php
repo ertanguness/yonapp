@@ -1,4 +1,16 @@
 
+<?php 
+
+use Model\DueModel;
+use App\Helper\Security;
+use Random\Engine\Secure;
+
+$Dues = new DueModel();    
+
+$dues = $Dues->getDues();
+
+?>
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -46,7 +58,39 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
+                                           <?php foreach ($dues as $key => $due) :
+                                                $enc_id = Security::encrypt($due->id);
+                                                //$page = Security::encrypt("dues/dues-defines/manage");
+                                            ?>
+                                                <tr>
+                                                    <td class="text-center"><?php echo $key + 1; ?></td>
+                                                    <td><?php echo $due->block_id; ?></td>
+                                                    <td><?php echo $due->amount; ?> ₺</td>
+                                                    <td><?php echo date('d.m.Y', strtotime($due->start_date)); ?></td>
+                                                    <td><?php echo $due->due_days; ?> Ay</td>
+                                                    <td>
+                                                        <?php if ($due->status == 1) : ?>
+                                                            <span class="badge bg-success">Aktif</span>
+                                                        <?php else : ?>
+                                                            <span class="badge bg-danger">Pasif</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td>
+                                                    <div class="hstack gap-2 ">
+                                                        <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                            <i class="feather-eye"></i>
+                                                        </a>
+                                                        <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                            <i class="feather-edit"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0);" class="avatar-text avatar-md">
+                                                            <i class="feather-trash-2"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                    
+                                                </tr>
+                                            <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>

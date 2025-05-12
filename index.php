@@ -27,7 +27,7 @@ require_once "Model/UserModel.php";
 require_once 'Model/Auths.php';
 require_once 'App/Helper/security.php';
 require_once "configs/functions.php";
-
+require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Helper\Security;
 
@@ -108,10 +108,10 @@ $menu_name = $menus->getMenusByLink($active_page);
     });
 
     // Tüm sayfa (body veya belirli bir alan) gözlemleniyor
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    // observer.observe(document.body, {
+    //     childList: true,
+    //     subtree: true
+    // });
 </script>
 
 

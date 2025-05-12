@@ -59,7 +59,7 @@ $myfirms = $MyFirmModel->getMyFirmByUserId();
     require_once 'pages/components/alert.php'
     ?>
     <div class="row">
-        <div class="container-xl">
+        <div class="container-xl"> 
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
