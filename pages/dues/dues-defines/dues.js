@@ -7,10 +7,6 @@ $(document).on("click", "#save_dues", function () {
   formData.append("action", "save_dues");
   formData.append("id", $("#dues_id").val());
 
-  // for (var pair of formData.entries()) {
-  //     console.log(pair[0] + ', ' + pair[1]);
-
-  // }
 
   var validator = $("#duesForm").validate({
     rules: {
@@ -64,8 +60,6 @@ $(document).on("click", ".delete-dues", function () {
       html: `${dueName} <br> adlı aidat tanımını silmek istediğinize emin misiniz?`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
       confirmButtonText: "Evet",
       cancelButtonText: "Hayır",
     })

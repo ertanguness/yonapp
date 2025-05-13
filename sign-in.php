@@ -57,9 +57,9 @@ include './partials/head.php'
         <div class="auth-cover-sidebar-inner">
 
             <div class="auth-cover-card-wrapper">
-                <div class="auth-cover-card p-sm-5 ">
-                    <div class="wd-50 mb-5 sm-wd-50 mx-lg-4">
-                        <img src="assets/images/yonapp-logo.svg" style="max-width: 650%; height: auto;">
+                <div class="auth-cover-card p-sm-5">
+                    <div class="text-center mb-5">
+                        <img src="assets/images/logo/logo-rounded.svg"  style="max-width: 50%; height: auto;">
                     </div>
                     <?php
 

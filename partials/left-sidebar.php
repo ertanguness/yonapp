@@ -14,11 +14,11 @@ $Auths = new Auths();
 <!--! ================================================================ !-->
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">
-        <div class="m-header">
-            <a href="index.php" class="b-brand">
+        <div class="m-header p-3">
+            <a href="index.php" class="b-brand text-center p-5">
                 <!-- ========   change your logo hear   ============ -->
-                <img src="assets/images/yonapp-logo.svg" alt="" class="logo logo-lg"
-                    style="width: 80%; height: auto;" />
+                <img src="assets/images/logo/logo.svg" alt="" class="logo logo-lg text-center"
+                    style="width: 60%; height: auto;" />
                 <img src="assets/images/yonapp-logo-sm.svg" alt="" class="logo logo-sm" />
             </a>
         </div>
