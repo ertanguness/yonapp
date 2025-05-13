@@ -51,10 +51,15 @@ class ComposerStaticInitdf457f6088e865ee4c2005a5b0dcf4a9
         array (
             'Dompdf\\' => 7,
             'DeepCopy\\' => 9,
+            'Database\\' => 9,
         ),
         'C' => 
         array (
             'Complex\\' => 8,
+        ),
+        'A' => 
+        array (
+            'App\\' => 4,
         ),
     );
 
@@ -136,9 +141,17 @@ class ComposerStaticInitdf457f6088e865ee4c2005a5b0dcf4a9
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
         ),
+        'Database\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/Database',
+        ),
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
+        'App\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/App',
         ),
     );
 

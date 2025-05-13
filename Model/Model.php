@@ -3,9 +3,6 @@
 
 namespace Model;
 
-
-//Bütün Modellerin temel sınıfı olacak şekilde düzenle
-
 use Database\Db;
 use App\Helper\Security;
 use PDO;

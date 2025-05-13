@@ -1,10 +1,11 @@
 <?php
 
 
-require_once "BaseModel.php";
-require_once ROOT ."/App/Helper/helper.php";
+namespace Model;
 
-use App\Helper\Helper;
+use Model\Model;
+use PDO;
+
 
 class Auths extends Model
 {

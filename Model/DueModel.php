@@ -4,6 +4,7 @@ namespace Model;
 
 //Model klasoru altında bulunan BaseModel sınıfını dahil ediyoruz
 use Model\Model;
+use PDO;
 
 //DuesModel sınıfı BaseModel sınıfından miras alır
 class DueModel extends Model
@@ -22,6 +23,6 @@ protected $table = "dues";
     {
         $sql = $this->db->prepare("SELECT * FROM dues");
         $sql->execute();
-        return $sql->fetchAll(\PDO::FETCH_OBJ);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-require_once "BaseModel.php";
+use Model\Model;
+use PDO;
 
-use Database\Db;
 
 class Reports extends Model
 {

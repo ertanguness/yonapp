@@ -1,5 +1,6 @@
 <?php 
-require_once "BaseModel.php";
+use Model\Model;
+use PDO;
 
 class UsersPackageModel extends Model{
     protected $table = "mbeyazil_panel.users_packages";

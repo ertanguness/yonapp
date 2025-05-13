@@ -9,7 +9,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Model\\": "Model/"
+            "Model\\": "Model/",
+             "Database\\": "Database/",
+             "App\\": "App/"
+
+
         }
     }
 }

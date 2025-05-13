@@ -41,6 +41,7 @@
     <!--! END: Vendors CSS-->
     <!--! BEGIN: Custom CSS-->
     <link rel="stylesheet" type="text/css" href="assets/css/theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/vendors/css/style.css" />
     <!--! END: Custom CSS-->
     <!--! HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries !-->
     <!--! WARNING: Respond.js doesn"t work if you view the page via file: !-->
@@ -49,4 +50,6 @@
 			<script src="https:oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
     <?php echo (isset($css) ? $css   : '')?>
+
+    <script src="./assets/js/jquery.3.7.1.min.js"></script>
 </head>

@@ -1,5 +1,9 @@
 <?php
-require_once "BaseModel.php";
+namespace Model;
+
+
+use Model\Model;
+use PDO;
 
 class MyFirmModel extends Model
 {

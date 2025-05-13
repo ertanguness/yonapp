@@ -45,11 +45,12 @@ $dues = $Dues->getDues();
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover datatables" id="aidatTable">
+                                <table class="table table-hover datatables" id="duesTable">
                                     <thead>
                                         <tr>
                                             <th style="width:7%">#</th>
                                             <th>Blok</th>
+                                            <th>Aidat Adı</th>
                                             <th>Aidat Tutarı</th>
                                             <th>Başlangıç Tarihi</th>
                                             <th>Ödeme Süresi</th>
@@ -65,6 +66,7 @@ $dues = $Dues->getDues();
                                                 <tr>
                                                     <td class="text-center"><?php echo $key + 1; ?></td>
                                                     <td><?php echo $due->block_id; ?></td>
+                                                    <td><?php echo $due->due_name; ?></td>
                                                     <td><?php echo $due->amount; ?> ₺</td>
                                                     <td><?php echo date('d.m.Y', strtotime($due->start_date)); ?></td>
                                                     <td><?php echo $due->due_days; ?> Ay</td>
@@ -83,7 +85,7 @@ $dues = $Dues->getDues();
                                                         <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md">
+                                                        <a href="javascript:void(0);" data-name="<?php echo $due->due_name ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-dues" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $due->due_name; ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>

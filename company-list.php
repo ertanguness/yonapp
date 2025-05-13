@@ -8,13 +8,17 @@ header("Pragma: no-cache");
 header("Expires: 0");
 ob_start();
 
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
     if (!isset($_GET["p"])) {
-        $returnUrl = urlencode("/index.php?p=home/list");
+        $returnUrl = urlencode("/index?p=home/list");
     }
-    header("Location: sign-in.php?returnUrl={$returnUrl}");
-    exit();
+    header("Location: sign-in?returnUrl={$returnUrl}");
+   exit();
 }
 
 if (empty($_SESSION['csrf_token'])) {
@@ -24,20 +28,25 @@ $user = $_SESSION['user'];
 $user_id = $user->id;
 $email = $user->email;
 
-require_once "Model/MyFirmModel.php";
+
+
+
+
+use Model\MyFirmModel;
+
 $myFirmObj = new MyFirmModel();
 $myFirms = $myFirmObj->getMyFirmByUserId(); // Firma kontrolü
 
 if (count($myFirms) == 1) {
     $_SESSION['firm_id'] = $myFirms[0]->id;
-    header('Location: /index.php?p=home/list');
+    header('Location: /index?p=home/list');
     exit();
 }
 
 // Seçim sonrası yönlendirme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['firm_id'])) {
     $_SESSION['firm_id'] = $_POST['firm_id'];
-    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : '/index.php?p=home/list';
+    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : '/index?p=home/list';
     header("Location: $redirectUri");
     exit();
 }

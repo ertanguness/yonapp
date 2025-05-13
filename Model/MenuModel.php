@@ -1,7 +1,10 @@
 <?php 
+namespace Model;
 
-require_once "BaseModel.php";
-class Menus extends Model
+
+use Model\Model;
+use PDO;
+class MenuModel extends Model
 {
     public function __construct()
     {

@@ -1,5 +1,6 @@
 <?php 
-require_once "BaseModel.php";
+use Model\Model;
+use PDO;
 
 class SupportsMessagesModel extends Model{
     protected $table = 'mbeyazil_panel.supports_message';

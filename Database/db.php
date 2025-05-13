@@ -1,13 +1,8 @@
 <?php
 
-
-
 namespace Database;
 
-
-
 use PDO;
-
 
 
 class Db {

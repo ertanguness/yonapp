@@ -1,14 +1,22 @@
 <?php
 ob_start();
 
-
-define("ROOT", $_SERVER["DOCUMENT_ROOT"]);
+// define("ROOT", $_SERVER["DOCUMENT_ROOT"]);
 require_once 'configs/require.php';
-require_once 'Model/UserModel.php';
-require_once 'App/Helper/security.php';
-require_once 'Model/SettingsModel.php';
-require_once 'App/Helper/date.php';
-require_once 'Model/LoginLogsModel.php';
+// require_once 'Model/UserModel.php';
+// require_once 'App/Helper/security.php';
+// require_once 'Model/SettingsModel.php';
+// require_once 'App/Helper/date.php';
+// require_once 'Model/LoginLogsModel.php';
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+
+
+use Model\UserModel;
+use Model\SettingsModel;
+use Model\LoginLogsModel;
+
 
 $Settings = new SettingsModel();
 $User = new UserModel();

@@ -424,45 +424,6 @@ function checkId(id, item) {
   return true;
 }
 
-// Sayfanın herhangi bir yerine tıklandığında fab menüyü kapat
-// document.addEventListener("click", function (event) {
-//   if (event.target.closest(".fab-menu") === null) {
-//     const fabOptions = document.getElementById("fab-options");
-//     const mainIcon = document.getElementById("main-icon");
-//     const closeIcon = document.getElementById("close-icon");
-
-//     if (fabOptions.style.display === "block") {
-//       fabOptions.classList.remove("show");
-//       setTimeout(() => {
-//         fabOptions.style.display = "none";
-//       }, 300);
-//       mainIcon.style.opacity = 1;
-//       closeIcon.style.opacity = 0;
-//     }
-//   }
-// });
-
-// function toggleFabMenu() {
-//   const fabOptions = document.getElementById("fab-options");
-//   const mainIcon = document.getElementById("main-icon");
-//   const closeIcon = document.getElementById("close-icon");
-
-//   if (fabOptions.style.display === "none" || fabOptions.style.display === "") {
-//     fabOptions.style.display = "block";
-//     setTimeout(() => {
-//       fabOptions.classList.add("show");
-//     }, 10);
-//     mainIcon.style.opacity = 0;
-//     closeIcon.style.opacity = 1;
-//   } else {
-//     fabOptions.classList.remove("show");
-//     setTimeout(() => {
-//       fabOptions.style.display = "none";
-//     }, 300);
-//     mainIcon.style.opacity = 1;
-//     closeIcon.style.opacity = 0;
-//   }
-// }
 
 function goWhatsApp() {
   const phoneNumber = "905079432723";
@@ -511,6 +472,30 @@ if ($(".money").length > 0) {
   //   $(this).val(value);
   // });
 }
+
+$.validator.setDefaults({
+  errorPlacement: function (error, element) {
+      // Hata mesajını input grubunun altına ekle
+      error.addClass('text-danger'); // Hata mesajına stil ekleyin
+      if (element.closest('.input-group').length) {
+          element.closest('.input-group').after(error); // Input grubunun altına ekle
+      } else {
+          element.after(error); // Diğer durumlarda input'un altına ekle
+      }
+  },
+  highlight: function (element) {
+      // Hatalı input alanına kırmızı border ekle
+      $(element).addClass('is-invalid');
+       // Input'un en yakın input-group kapsayıcısına is-invalid sınıfını ekle
+    $(element).closest('.input-group').addClass('is-invalid');
+  },
+  unhighlight: function (element) {
+      // Hatalı input alanından kırmızı border'ı kaldır
+      $(element).removeClass('is-invalid');
+      // Input'un en yakın input-group kapsayıcısından is-invalid sınıfını kaldır
+    $(element).closest('.input-group').removeClass('is-invalid');
+  }
+});
 
 //Jquery validate ile yapılan doğrulamalarda para birimi formatı için
 function addCustomValidationMethods() {

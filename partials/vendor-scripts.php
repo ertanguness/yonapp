@@ -1,8 +1,3 @@
-<!-- <script src="./assets/js/jquery.3.7.1.min.js"></script> -->
-
-<!-- jquery validate -->
-
-
 <?php
 
 
@@ -58,17 +53,15 @@ if ($page == 'users/auths/auths') {
 
 //*************DUES******************************** */
 // Dues Tanımlama sayfası
-if ($page == 'dues/dues-defines/manage') {
-    echo '<script src="/pages/dues/dues-defines/dues.js"></script>';
-}
+if (
+    $page == 'dues/dues-defines/manage' ||
+    $page == 'dues/dues-defines/list'
+) { ?>
+    <script src="/pages/dues/dues-defines/dues.js"></script>
+
+<?php }
 //*************DUES******************************** */
-
-
-
-
 ?>
-
-
 
 
 
@@ -85,19 +78,15 @@ if ($page == 'home') {
 
 }
 ?>
-<!-- <script src="./assets/js/jquery.validate.min.js"></script> -->
 
 <script src="./assets/js/flatpickr.min.js"></script>
 <script src="./assets/js/flatpickr.tr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script src="./assets/js/select2/js/select2.min.js"></script>
-<!-- Tabler Core -->
-<!-- <script src="./dist/js/tabler.min.js?1692870487"></script> -->
-<!-- <script src="./dist/js/demo.min.js?1692870487"></script> -->
+<script src="./assets/js/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script src="./src/jquery.inputmask.js"></script>
 
 

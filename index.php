@@ -21,17 +21,20 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-require_once "Database/db.php";
-require_once "Model/menus.php";
-require_once "Model/UserModel.php";
-require_once 'Model/Auths.php';
-require_once 'App/Helper/security.php';
-require_once "configs/functions.php";
+// require_once "Database/db.php";
+// require_once "Model/menus.php";
+// require_once "Model/UserModel.php";
+// require_once 'Model/Auths.php';
+// require_once 'App/Helper/security.php';
+// require_once "configs/functions.php";
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Helper\Security;
+use Model\UserModel;
+use Model\MenuModel;
+use Model\Auths;
 
-$menus = new Menus();
+$menus = new MenuModel();
 $User = new UserModel();
 $perm = new Auths();
 $user = $User->find($_SESSION['user']->id) ?? null;
@@ -67,10 +70,10 @@ $menu_name = $menus->getMenusByLink($active_page);
 <html lang="zxx">
 
 <?php $title = 'YonApp - Apartman / Site Yönetim Sistemi' ?>
-<?php include './partials/head.php' ?>
+<?php include_once './partials/head.php' ?>
 
 <!-- Datatables başlangıç istediğimiz tablonun classına datatables yazmak yeterli aktif olması için -->
-<script src="./assets/js/jquery.3.7.1.min.js"></script>
+
 
 <script>
     function initializeDataTables() {
@@ -157,17 +160,18 @@ $menu_name = $menus->getMenusByLink($active_page);
             <!-- [ Main Content ] end -->
         </div>
         <!--<< Footer Section Start >>-->
-        <?php include './partials/footer.php' ?>
-        <?php include "./partials/vendor-scripts.php" ?>
+        <?php include_once './partials/footer.php' ?>
 
     </main>
     <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
     <!--<< Footer Section Start >>-->
-    <?php include './partials/theme-customizer.php' ?>
+    <?php include_once './partials/theme-customizer.php' ?>
     <!--<< All JS Plugins >>-->
-    <?php include './partials/homepage-script.php'; ?>
+    <?php include_once './partials/homepage-script.php'; ?>
+
+    <?php include_once "./partials/vendor-scripts.php" ?>
 
 
 </body>

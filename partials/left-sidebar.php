@@ -1,11 +1,11 @@
 <?php
 
 //Model sayfaya dahil edilir
-require_once "Model/Menus.php";
-require_once "Model/Auths.php";
+use Model\MenuModel;
+use Model\Auths;
 
 //Modelden yeni bir nesne oluşturulur
-$menus = new Menus();
+$menus = new MenuModel();
 $Auths = new Auths();
 
 ?>

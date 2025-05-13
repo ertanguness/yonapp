@@ -1,6 +1,7 @@
 <?php
 
-require_once "BaseModel.php";
+use Model\Model;
+use PDO;
 
 class UserModel extends Model
 {

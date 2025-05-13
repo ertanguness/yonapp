@@ -1,56 +1,96 @@
-$(document).on('click', '#save_dues', function() {
-    var form = $('#duesForm');
-    var formData = new FormData(form[0]);
+let url = "/pages/dues/dues-defines/api.php";
 
-    //console.log("validate:" + typeof $.fn.validate);
-    // formData.append('action', 'save_dues');
-    // formData.append('dues_id', $('#dues_id').val());
+$(document).on("click", "#save_dues", function () {
+  var form = $("#duesForm");
+  var formData = new FormData(form[0]);
 
-    // for (var pair of formData.entries()) {
-    //     console.log(pair[0] + ', ' + pair[1]);
-    // }
-    $("#duesForm").validate({
-        submitHandler: function(form) {
-          // do other things for a valid form
-          form.submit();
-        }
+  formData.append("action", "save_dues");
+  formData.append("id", $("#dues_id").val());
+
+  // for (var pair of formData.entries()) {
+  //     console.log(pair[0] + ', ' + pair[1]);
+
+  // }
+
+  var validator = $("#duesForm").validate({
+    rules: {
+      due_days: {
+        required: true,
+      },
+      amount: {
+        required: true,
+        number: true,
+      },
+    },
+    messages: {
+      due_days: {
+        required: "Please enter the dues name",
+      },
+      amount: {
+        required: "Please enter the dues amount",
+        number: "Please enter a valid number",
+      },
+    },
+  });
+  if (!validator.form()) {
+    return;
+  }
+
+  fetch(url, {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      var title = data.status == "success" ? "Başarılı" : "Hata";
+      swal.fire({
+        title: title,
+        text: data.message,
+        icon: data.status,
+        confirmButtonText: "Tamam",
       });
+    });
+});
 
-    // form.validate({
-    //     rules: {
-    //         due_days: {
-    //             required: true
-    //         },
-    //         amount: {
-    //             required: true,
-    //             number: true
-    //         }
-    //     },
-    //     messages: {
-    //         due_days: {
-    //             required: "Please enter the dues name"
-    //         },
-    //         amount: {
-    //             required: "Please enter the dues amount",
-    //             number: "Please enter a valid number"
-    //         }
-    //     },
-    //     submitHandler: function() {
-    //         $.ajax({
-    //             url: form.attr('action'),
-    //             type: form.attr('method'),
-    //             data: formData,
-    //             processData: false,
-    //             contentType: false,
-    //             success: function(response) {
-    //                 alert('Dues saved successfully!');
-    //             },
-    //             error: function() {
-    //                 alert('An error occurred while saving dues.');
-    //             }
-    //         });
-    //     }
-    // });
+$(document).on("click", ".delete-dues", function () {
+  let id = $(this).data("id");
+  let dueName = $(this).data("name");
+  let buttonElement = $(this); // Store reference to the clicked button
+  swal
+    .fire({
+      title: "Emin misiniz?",
+      html: `${dueName} <br> adlı aidat tanımını silmek istediğinize emin misiniz?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Evet",
+      cancelButtonText: "Hayır",
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        var formData = new FormData();
+        formData.append("action", "delete_dues");
+        formData.append("id", id);
 
-    
+        fetch(url, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status == "success") {
+              let table = $("#duesTable").DataTable();
+              table.row(buttonElement.closest("tr")).remove().draw(false);
+              swal.fire(
+                "Silindi",
+                `${dueName} adlı aidat tanımı başarıyla silindi.`,
+                "success"
+              );
+            }
+          });
+      }
+    });
 });

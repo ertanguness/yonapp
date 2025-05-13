@@ -65,8 +65,22 @@ $due = $Dues->find($id  ?? null);
         <div class="container-xl">
             <div class="card">
                 <div class="card-body aidat-info">
-                    <form action="" id="duesForm" method="POST">
-                        <input type="hidden" name="aidat_id" value="<?php echo $aidatData->id ?? ''; ?>">
+                    <form id="duesForm" method="POST">
+                        <input type="hidden" name="dues_id" value="<?php echo $due->id ?? ''; ?>">
+                        <div class="row mb-4 align-items-center">
+                            <div class="col-lg-2">
+                                <label for="block" class="fw-semibold">Blok:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group flex-nowrap w-100">
+                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
+                                    <input type="text" class="form-control" name="due_name" id="due_name"
+                                        placeholder="Aidat/Borç adı Giriniz" value="<?php echo $due->due_name ?? ''; ?>"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
@@ -76,9 +90,15 @@ $due = $Dues->find($id  ?? null);
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
                                     <select class="form-control select2 w-100" name="block" id="block" required>
-                                        <option value="genel" <?php echo (isset($aidatData) && $aidatData->block == "genel") ? "selected" : ""; ?>>Tüm Site</option>
-                                        <option value="A Blok" <?php echo (isset($aidatData) && $aidatData->block == "A Blok") ? "selected" : ""; ?>>A Blok</option>
-                                        <option value="B Blok" <?php echo (isset($aidatData) && $aidatData->block == "B Blok") ? "selected" : ""; ?>>B Blok</option>
+                                        <option value="genel"
+                                            <?php echo (isset($aidatData) && $aidatData->block == "genel") ? "selected" : ""; ?>>
+                                            Tüm Site</option>
+                                        <option value="A Blok"
+                                            <?php echo (isset($aidatData) && $aidatData->block == "A Blok") ? "selected" : ""; ?>>
+                                            A Blok</option>
+                                        <option value="B Blok"
+                                            <?php echo (isset($aidatData) && $aidatData->block == "B Blok") ? "selected" : ""; ?>>
+                                            B Blok</option>
                                     </select>
                                 </div>
                             </div>
@@ -90,8 +110,8 @@ $due = $Dues->find($id  ?? null);
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-money-bill"></i></div>
                                     <input type="number" class="form-control" name="amount" id="amount"
-                                        placeholder="Aidat Tutarı Giriniz"
-                                        value="<?php echo $due->amount ?? ''; ?>" required step="0.01">
+                                        placeholder="Aidat Tutarı Giriniz" value="<?php echo $due->amount ?? ''; ?>"
+                                        required step="0.01">
                                 </div>
                             </div>
                         </div>
@@ -129,8 +149,12 @@ $due = $Dues->find($id  ?? null);
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-toggle-on"></i></div>
                                     <select class="form-control select2 w-100" name="status" id="status" required>
-                                        <option value="Aktif" <?php echo (isset($aidatData) && $aidatData->status == "Aktif") ? "selected" : ""; ?>>Aktif</option>
-                                        <option value="Pasif" <?php echo (isset($aidatData) && $aidatData->status == "Pasif") ? "selected" : ""; ?>>Pasif</option>
+                                        <option value="Aktif"
+                                            <?php echo (isset($aidatData) && $aidatData->status == "Aktif") ? "selected" : ""; ?>>
+                                            Aktif</option>
+                                        <option value="Pasif"
+                                            <?php echo (isset($aidatData) && $aidatData->status == "Pasif") ? "selected" : ""; ?>>
+                                            Pasif</option>
                                     </select>
                                 </div>
                             </div>
@@ -141,9 +165,8 @@ $due = $Dues->find($id  ?? null);
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-percentage"></i></div>
                                     <input type="number" class="form-control" name="penalty_rate" id="penalty_rate"
-                                        placeholder="Ceza Oranı Giriniz"
-                                        value="<?php echo $due->penalty_rate ?? ''; ?>" required step="0.01"
-                                        min="0">
+                                        placeholder="Ceza Oranı Giriniz" value="<?php echo $due->penalty_rate ?? ''; ?>"
+                                        required step="0.01" min="0">
                                 </div>
                             </div>
                         </div>
@@ -153,11 +176,12 @@ $due = $Dues->find($id  ?? null);
                             </div>
                             <div class="col-lg-10">
                                 <textarea class="form-control" name="description" id="description"
-                                    placeholder="Açıklama Giriniz" rows="3"><?php echo $due->description ?? ''; ?></textarea>
+                                    placeholder="Açıklama Giriniz"
+                                    rows="3"><?php echo $due->description ?? ''; ?></textarea>
                             </div>
                         </div>
 
-         
+
 
                     </form>
                 </div>
@@ -166,3 +190,9 @@ $due = $Dues->find($id  ?? null);
     </div>
 
 </div>
+
+<!-- Toastr CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
