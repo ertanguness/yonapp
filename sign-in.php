@@ -59,7 +59,7 @@ include './partials/head.php'
             <div class="auth-cover-card-wrapper">
                 <div class="auth-cover-card p-sm-5">
                     <div class="text-center mb-5">
-                        <img src="assets/images/logo/logo-rounded.svg"  style="max-width: 50%; height: auto;">
+                        <img src="assets/images/logo/logo.svg"  style="max-width: 50%; height: auto;">
                     </div>
                     <?php
 

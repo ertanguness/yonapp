@@ -3,7 +3,7 @@ if ($(".datatable").length > 0) {
     autoWidth: false,
     order: false,
     language: {
-      url: "src/tr.json"
+      url: "src/tr.json",
     },
     //dom: "Bfrtip",
     buttons: [
@@ -11,15 +11,15 @@ if ($(".datatable").length > 0) {
         extend: "excelHtml5",
         className: "d-none", // Butonu gizliyoruz
         exportOptions: {
-          columns: ":visible:not(.no-export)" // .no-export sınıfına sahip sütunları dışa aktarma
-        }
-      }
+          columns: ":visible:not(.no-export)", // .no-export sınıfına sahip sütunları dışa aktarma
+        },
+      },
     ],
     layout: {
       bottomStart: "pageLength",
       bottom2Start: "info",
       topStart: null,
-      topEnd: null
+      topEnd: null,
     },
     initComplete: function (settings, json) {
       var api = this.api();
@@ -61,7 +61,7 @@ if ($(".datatable").length > 0) {
           $("#" + tableId + " .search-input-row").append("<th></th>");
         }
       });
-    }
+    },
   });
   //Tüm tablolar için excel dışa aktarım butonu
   $("#export_excel").on("click", function () {
@@ -82,19 +82,19 @@ if ($(".datatable").length > 0) {
       bottomStart: "pageLength",
       bottom2Start: "info",
       topStart: null,
-      topEnd: "search"
+      topEnd: "search",
     },
     language: {
-      url: "src/tr.json"
+      url: "src/tr.json",
     },
     buttons: [
       {
         extend: "excelHtml5",
         className: "d-none", // Butonu gizliyoruz
         exportOptions: {
-          columns: ":visible:not(.no-export)" // .no-export sınıfına sahip sütunları dışa aktarma
-        }
-      }
+          columns: ":visible:not(.no-export)", // .no-export sınıfına sahip sütunları dışa aktarma
+        },
+      },
     ],
 
     initComplete: function (settings, json) {
@@ -130,7 +130,7 @@ if ($(".datatable").length > 0) {
           });
         }
       });
-    }
+    },
   });
 
   $("#export_excel_puantaj").on("click", function () {
@@ -174,15 +174,15 @@ $(document).ready(function () {
         "Arial",
         "Arial Black",
         "Comic Sans MS",
-        "Courier New"
+        "Courier New",
       ],
       addDefaultFonts: "inter",
       callbacks: {
         onInit: function () {
           $(".summernote").summernote("height", summernoteHeight);
           $(".summernote").summernote("fontName", "inter");
-        }
-      }
+        },
+      },
     });
   }
 });
@@ -190,7 +190,7 @@ $(document).ready(function () {
 if ($(".flatpickr").length > 0) {
   $(".flatpickr").flatpickr({
     dateFormat: "d.m.Y",
-    locale: "tr" // locale for this instance only
+    locale: "tr", // locale for this instance only
   });
 }
 
@@ -206,7 +206,7 @@ $(document).on("click", ".route-link", function () {
 });
 if ($(".select2").length > 0) {
   $(".select2.islem").select2({
-    tags: true
+    tags: true,
   });
 }
 
@@ -242,7 +242,7 @@ function deleteRecord(
   AlertConfirm(confirmMessage).then((result) => {
     fetch(url, {
       method: "POST",
-      body: formData
+      body: formData,
     })
       //Gelen yanıtı json'a çevir
       .then((response) => response.json())
@@ -261,7 +261,7 @@ function deleteRecord(
         Swal.fire({
           title: title,
           html: data.message,
-          icon: icon
+          icon: icon,
         }).then((result) => {
           if (result.isConfirmed) {
             if (data.status == "success") tableRow.remove().draw(false);
@@ -305,7 +305,7 @@ async function deleteRecordByReturn(
     try {
       const response = await fetch(url, {
         method: "POST",
-        body: formData
+        body: formData,
       });
       const data = await response.json();
 
@@ -321,7 +321,7 @@ async function deleteRecordByReturn(
       await Swal.fire({
         title: title,
         text: data.message,
-        icon: icon
+        icon: icon,
       });
 
       if (data.status == "success") {
@@ -345,7 +345,7 @@ function AlertConfirm(confirmMessage = "Emin misiniz?") {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Evet, Sil!"
+      confirmButtonText: "Evet, Sil!",
     }).then((result) => {
       if (result.isConfirmed) {
         resolve(true); // Kullanıcı onayladı, işlemi devam ettir
@@ -387,7 +387,7 @@ function getTowns(cityId, targetElement) {
 
   fetch("/api/il-ilce.php", {
     method: "POST",
-    body: formData
+    body: formData,
   })
     .then((response) => response.json())
     .then((data) => {
@@ -405,7 +405,7 @@ function checkPersonId(id) {
     swal.fire({
       title: "Hata",
       icon: "warning",
-      text: "Öncelikle personeli kaydetmeniz gerekir!"
+      text: "Öncelikle personeli kaydetmeniz gerekir!",
     });
     return false;
   }
@@ -417,13 +417,12 @@ function checkId(id, item) {
     swal.fire({
       title: "Hata",
       icon: "warning",
-      text: "Öncelikle " + item + " kaydetmeniz gerekir!"
+      text: "Öncelikle " + item + " kaydetmeniz gerekir!",
     });
     return false;
   }
   return true;
 }
-
 
 function goWhatsApp() {
   const phoneNumber = "905079432723";
@@ -452,7 +451,7 @@ if ($(".money").length > 0) {
     digits: 2,
     autoGroup: true,
     rightAlign: false,
-    removeMaskOnSubmit: true
+    removeMaskOnSubmit: true,
   });
 
   $(document).on("focus", ".money", function () {
@@ -462,9 +461,26 @@ if ($(".money").length > 0) {
       digits: 2,
       autoGroup: true,
       rightAlign: false,
-      removeMaskOnSubmit: true
+      removeMaskOnSubmit: true,
     });
   });
+
+  //.flatpickr sınıfına sahip alanlarda tarih formatına izin verir
+  $(document).on("focus", ".flatpickr", function () {
+    $(this).inputmask("datetime", {
+      alias: "datetime",
+      inputFormat: "dd.mm.yyyy",
+      placeholder: "gg.aa.yyyy",
+      showMaskOnHover: false,
+      showMaskOnFocus: true,
+      length: 10,
+      regex: "[0-9.]", // sadece rakam ve nokta karakterine izin verir
+    });
+  });
+  $(document).ready(function(){
+    $(".flatpickr").inputmask("99.99.9999",{placeholder:"gg.aa.yyyy", clearMaskOnLostFocus: true }); //default
+  });
+ 
   //Para birimi olan alanlarda virgülü noktaya çevir
   // $('.money').on('keyup', function () {
   //   var value = $(this).val();
@@ -475,26 +491,26 @@ if ($(".money").length > 0) {
 
 $.validator.setDefaults({
   errorPlacement: function (error, element) {
-      // Hata mesajını input grubunun altına ekle
-      error.addClass('text-danger'); // Hata mesajına stil ekleyin
-      if (element.closest('.input-group').length) {
-          element.closest('.input-group').after(error); // Input grubunun altına ekle
-      } else {
-          element.after(error); // Diğer durumlarda input'un altına ekle
-      }
+    // Hata mesajını input grubunun altına ekle
+    error.addClass("text-danger"); // Hata mesajına stil ekleyin
+    if (element.closest(".input-group").length) {
+      element.closest(".input-group").after(error); // Input grubunun altına ekle
+    } else {
+      element.after(error); // Diğer durumlarda input'un altına ekle
+    }
   },
   highlight: function (element) {
-      // Hatalı input alanına kırmızı border ekle
-      $(element).addClass('is-invalid');
-       // Input'un en yakın input-group kapsayıcısına is-invalid sınıfını ekle
-    $(element).closest('.input-group').addClass('is-invalid');
+    // Hatalı input alanına kırmızı border ekle
+    $(element).addClass("is-invalid");
+    // Input'un en yakın input-group kapsayıcısına is-invalid sınıfını ekle
+    $(element).closest(".input-group").addClass("is-invalid");
   },
   unhighlight: function (element) {
-      // Hatalı input alanından kırmızı border'ı kaldır
-      $(element).removeClass('is-invalid');
-      // Input'un en yakın input-group kapsayıcısından is-invalid sınıfını kaldır
-    $(element).closest('.input-group').removeClass('is-invalid');
-  }
+    // Hatalı input alanından kırmızı border'ı kaldır
+    $(element).removeClass("is-invalid");
+    // Input'un en yakın input-group kapsayıcısından is-invalid sınıfını kaldır
+    $(element).closest(".input-group").removeClass("is-invalid");
+  },
 });
 
 //Jquery validate ile yapılan doğrulamalarda para birimi formatı için
@@ -502,7 +518,10 @@ function addCustomValidationMethods() {
   $.validator.addMethod(
     "validNumber",
     function (value, element) {
-      return this.optional(element) || (/^[0-9.,]+$/.test(value) && parseFloat(value.replace(",", ".")) > 0);
+      return (
+        this.optional(element) ||
+        (/^[0-9.,]+$/.test(value) && parseFloat(value.replace(",", ".")) > 0)
+      );
     },
     "Lütfen geçerli bir sayı girin ve 0'dan büyük bir değer girin"
   );

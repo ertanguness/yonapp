@@ -8,7 +8,7 @@ use Model\DueModel;
 $Due = new DueModel();
 
 if($_POST["action"] == "save_dues"){
-    $id = Security::decrypt($_POST["id"]);
+    $id = Security::decrypt($_POST["id"]) ;
 
     $data = [
         "id" => $id,

@@ -5,7 +5,8 @@ use App\Helper\Security;
 
 $Dues = new DueModel();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : null;
+$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+
 $due = $Dues->find($id  ?? null);
 
 ?>
@@ -66,7 +67,7 @@ $due = $Dues->find($id  ?? null);
             <div class="card">
                 <div class="card-body aidat-info">
                     <form id="duesForm" method="POST">
-                        <input type="hidden" name="dues_id" value="<?php echo $due->id ?? ''; ?>">
+                        <input type="hidden" name="dues_id" id="dues_id" value="<?php echo $id ; ?>">
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
                                 <label for="block" class="fw-semibold">Blok:</label>
@@ -123,7 +124,7 @@ $due = $Dues->find($id  ?? null);
                             <div class="col-lg-4">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                                    <input type="date" class="form-control" name="start_date" id="start_date" required
+                                    <input type="text" class="form-control flatpickr" name="start_date" id="start_date" required
                                         value="<?php echo $due->start_date ?? ''; ?>">
                                 </div>
                             </div>
@@ -191,8 +192,3 @@ $due = $Dues->find($id  ?? null);
 
 </div>
 
-<!-- Toastr CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
-
-<!-- Toastr JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>

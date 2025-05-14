@@ -63,6 +63,9 @@ public static function encrypt($data)
 
 public static function decrypt($data)
 {
+    if (empty($data) || $data === '0') {
+        return 0; // Eğer veri boşsa veya '0' ise 0 döndür
+    }
     $method = "AES-256-GCM";
     $key = hash('sha256', 'mysecretkey', true);
     $data = rawurldecode($data); // URL kodlamasını çöz
