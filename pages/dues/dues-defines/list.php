@@ -3,7 +3,7 @@
 
 use Model\DueModel;
 use App\Helper\Security;
-use Random\Engine\Secure;
+use App\Helper\Helper;
 
 $Dues = new DueModel();    
 
@@ -53,7 +53,7 @@ $dues = $Dues->getDues();
                                             <th>Aidat Adı</th>
                                             <th>Aidat Tutarı</th>
                                             <th>Başlangıç Tarihi</th>
-                                            <th>Ödeme Süresi</th>
+                                            <th>Period</th>
                                             <th>Durum</th>
                                             <th style="width:7%">İşlem</th>
                                         </tr>
@@ -65,17 +65,13 @@ $dues = $Dues->getDues();
                                             ?>
                                                 <tr>
                                                     <td class="text-center"><?php echo $key + 1; ?></td>
-                                                    <td><?php echo $due->block_id; ?></td>
+                                                    <td><?php echo $due->block_id == 0 ? 'TÜM SİTE' : '' ; ?></td>
                                                     <td><?php echo $due->due_name; ?></td>
                                                     <td><?php echo $due->amount; ?> ₺</td>
                                                     <td><?php echo date('d.m.Y', strtotime($due->start_date)); ?></td>
-                                                    <td><?php echo $due->due_days; ?> Ay</td>
+                                                    <td><?php echo $due->period; ?> </td>
                                                     <td>
-                                                        <?php if ($due->status == 1) : ?>
-                                                            <span class="badge bg-success">Aktif</span>
-                                                        <?php else : ?>
-                                                            <span class="badge bg-danger">Pasif</span>
-                                                        <?php endif; ?>
+                                                        <?php echo Helper::getState($due->state)?>
                                                     </td>
                                                     <td>
                                                     <div class="hstack gap-2 ">

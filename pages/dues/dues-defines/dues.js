@@ -7,7 +7,7 @@ $(document).on("click", "#save_dues", function () {
   formData.append("action", "save_dues");
   formData.append("id", $("#dues_id").val());
 
-
+  addCustomValidationMethods(); //validNumber methodu için
   var validator = $("#duesForm").validate({
     rules: {
       due_days: {
@@ -15,7 +15,8 @@ $(document).on("click", "#save_dues", function () {
       },
       amount: {
         required: true,
-        number: true,
+        validNumber : true,
+        
       },
     },
     messages: {
@@ -24,7 +25,7 @@ $(document).on("click", "#save_dues", function () {
       },
       amount: {
         required: "Please enter the dues amount",
-        number: "Please enter a valid number",
+        validNumber: "Please enter a valid number",
       },
     },
   });

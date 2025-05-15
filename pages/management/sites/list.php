@@ -1,9 +1,10 @@
 <?php
 $user_id = $_SESSION['user']->id;
-require_once "Model/MyFirmModel.php";
-require_once "App/Helper/security.php";
+// require_once "Model/MyFirmModel.php";
+// require_once "App/Helper/security.php";
 
 use App\Helper\Security;
+use Model\MyFirmModel;
 
 
 $perm->checkAuthorize("my_companies_page");
