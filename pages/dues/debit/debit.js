@@ -91,6 +91,12 @@ $(document).on("change", "#due_title", function () {
   getDueInfo();
 });
 
+//Aidat adı değiştiğinde, aidatın güncel verilerini getir
+$(document).on("change", "#block_id", function () {
+  getPeoplesByBlock($(this).val());
+});
+
+//Borç bilgilerini getir
 function getDueInfo() {
   //dues tablosundan verileri getir
   let duesId = $("#due_title").val();
@@ -123,10 +129,10 @@ function getDueInfo() {
     });
 }
 
+//Site değiştiğinde blokları getir
 function getBlocksBySite(siteId) {
   var formData = new FormData();
   formData.append("action", "get_blocks");
- 
 
   fetch(url, {
     method: "POST",
@@ -138,11 +144,45 @@ function getBlocksBySite(siteId) {
     .then((data) => {
       if (data.status == "success") {
         $("#block_id").empty();
+        //Block Seçiniz seçeneği ekle
+        $("#block_id").append(
+          $("<option></option>").val(0).text("Blok Seçiniz")
+        );
         $.each(data.data, function (index, block) {
           $("#block_id").append(
             $("<option></option>").val(block.id).text(block.block_name)
           );
         });
       }
+    });
+}
+
+//Blok Seçildiğinde kişileri getir
+function getPeoplesByBlock(blockId) {
+  var formData = new FormData();
+  formData.append("action", "get_peoples_by_block");
+  formData.append("block_id", blockId);
+
+  fetch(url, {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      if (data.status == "success") {
+        //console.log(data.data);
+        $("#target_person").empty();
+        //Kişi Seçiniz seçeneği ekle
+        $("#target_person").append(
+          $("<option disabled></option>").val(0).text("Kişileri Seçiniz")
+        );
+        $.each(data.data, function (index, people) {
+          $("#target_person").append(
+            $("<option></option>").val(people.id).text(people.fullname)
+          );
+        });
+       }
     });
 }

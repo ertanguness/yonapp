@@ -22,4 +22,12 @@ class PeoplesModel extends Model
         $sql->execute();
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+
+    //Bloğun kişilerini getir
+    public function getPeopleByBlock($block_id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE block_id = ?");
+        $sql->execute([$block_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
 }
