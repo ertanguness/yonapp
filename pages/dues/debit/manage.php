@@ -57,11 +57,12 @@ $DebitHelper = new Debit();
         <div class="container-xl">
             <div class="card">
                 <div class="card-header">
-                    <h5>Borçlandırma Biglieri  </h5>
+                    <h5>Borçlandırma Biglieri</h5>
                 </div>
                 <div class="card-body">
                     <form id="debitForm" action="" method="POST">
-                        <input type="text" class="form-control d-none" name="debit_id" id="debit_id" value="<?php echo $_GET["id"] ?? 0 ?>">
+                        <input type="text" class="form-control d-none" name="debit_id" id="debit_id"
+                            value="<?php echo $_GET["id"] ?? 0 ?>">
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
                                 <label for="title" class="fw-semibold">Borç Başlığı:</label>
@@ -81,8 +82,8 @@ $DebitHelper = new Debit();
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-money-bill"></i></div>
                                     <input type="text" class="form-control money" name="amount" id="amount"
-                                    value="<?php echo $debit->amount ?? ''; ?>"
-                                        placeholder="Tutar giriniz" required>
+                                        value="<?php echo $debit->amount ?? ''; ?>" placeholder="Tutar giriniz"
+                                        required>
                                 </div>
                             </div>
                         </div>
@@ -95,7 +96,8 @@ $DebitHelper = new Debit();
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
                                     <input type="text" class="form-control flatpickr" name="end_date" id="end_date"
-                                    value="<?php echo Date::dmY($debit->end_date ?? ''); ?>" autocomplete="off" required>
+                                        value="<?php echo Date::dmY($debit->end_date ?? ''); ?>" autocomplete="off"
+                                        required>
                                 </div>
                             </div>
 
@@ -118,7 +120,7 @@ $DebitHelper = new Debit();
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-users"></i></div>
-                                   <?php echo Helper::targetTypeSelect('target_type', $debit->target_type ?? "all"); ?>
+                                    <?php echo Helper::targetTypeSelect('target_type', $debit->target_type ?? "all"); ?>
                                 </div>
                             </div>
                             <div class="col-lg-2">
@@ -144,8 +146,8 @@ $DebitHelper = new Debit();
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-user-friends"></i></div>
-                                   <select name="target_person" id="target_person" disabled class="form-control select2"></select>
-
+                                    <select name="target_person" id="target_person" data-placeholder="Yours Placeholder"
+                                        multiple disabled class="form-control select2"></select>
                                 </div>
                             </div>
                             <div class="col-lg-2">
@@ -214,8 +216,8 @@ $(document).ready(function() {
         } else if (type === 'block') {
             getBlocksBySite();
             $blockSelect.prop('disabled', false);
-          
-            $targetPerson.find('option').hide(); // şimdilik tümü gizlenir
+            $targetPerson.prop('disabled', false).val(null).trigger('change');
+            //$targetPerson.find('option').hide(); // şimdilik tümü gizlenir
         } else {
             $targetPerson.prop('disabled', true).val(null).trigger('change');
             $blockSelect.prop('disabled', true).val(null).trigger('change');

@@ -11,10 +11,12 @@ use App\Helper\Helper;
 use Model\DebitModel;
 use Model\DueModel;
 use Model\BlockModel;
+use Model\PeoplesModel;
 
 $Debit = new DebitModel();
 $Due = new DueModel();
 $Block = new BlockModel();
+$Peoples = new PeoplesModel();
 
 
 if($_POST["action"] == "save_debit"){
@@ -75,6 +77,26 @@ if($_POST["action"] == "get_blocks"){
     //$id = Security::decrypt($_POST["id"]) ;
 
     $data = $Block->getBlocksBySite();
+   
+    //id'yi şifreli hale getiriyoruz
+    foreach ($data as $key => $value) {
+        $data[$key]->id = Security::encrypt($value->id);
+    }
+
+    $res = [
+        "status" => "success",
+        "data" => $data
+    ];
+
+    echo json_encode($res);
+  
+}
+
+//Bloğun kişilerini getir
+if($_POST["action"] == "get_peoples_by_block"){
+    $id = Security::decrypt($_POST["block_id"]) ;
+
+    $data = $Peoples->getPeopleByBlock($id);
    
     //id'yi şifreli hale getiriyoruz
     foreach ($data as $key => $value) {

@@ -1,5 +1,8 @@
 <?php
 
+
+
+namespace Model;
 use Model\Model;
 use PDO;
 
