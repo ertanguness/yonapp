@@ -1,5 +1,5 @@
 <?php
-require_once "App/Helper/cities.php";
+use App\Helper\Cities;
 $cities = new Cities();
 
 use Model\SitesModel;

@@ -112,7 +112,13 @@ div:where(.swal2-icon-content) {
 .select2-selection__choice__remove {
   padding:0px 6px !important;
 }
+.modal{
+  z-index: 1056;
+}
 
+.modal-backdrop{
+  z-index: 1055;
+}
 .se .strong {
   font-weight: 700;
 }
