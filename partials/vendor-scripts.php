@@ -54,12 +54,18 @@ if ($page == 'users/auths/auths') {
 //*************DUES******************************** */
 // Dues Tanımlama sayfası
 if (
-    $page == 'dues/dues-defines/manage' ||
-    $page == 'dues/dues-defines/list'
-) { ?>
-    <script src="/pages/dues/dues-defines/dues.js"></script>
+    $page == 'dues/dues-defines/manage' ||   $page == 'dues/dues-defines/list') {
+        echo '<script src="/pages/dues/dues-defines/dues.js"></script>';
+    }
 
-<?php }
+//*************DUES******************************** */
+//*************SİTES******************************** */
+// Site Tanımlama sayfası
+if (
+    $page == 'management/sites/manage' ||   $page == 'management/sites/list') {
+        echo '<script src="/pages/management/sites/sites.js"></script>';
+    }
+
 //*************DUES******************************** */
 ?>
 

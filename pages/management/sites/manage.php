@@ -1,29 +1,15 @@
 <?php
-require_once "Model/Company.php";
 require_once "App/Helper/cities.php";
-use App\Helper\Security;
-
-$companyObj = new Company();
-
-// $perm->checkAuthorize("company_add_update");
 $cities = new Cities();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET["id"]) : 0;
-$new_id = $id == 0 ? 0 : $_GET['id'];
-$company = $companyObj->find($id);
+use Model\SitesModel;
+use App\Helper\Security;
+$Sites = new SitesModel();
 
-$pageTitle = $id > 0 ? "Firma Güncelle" : "Yeni Firma";
+$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$company = $Sites->find($id  ?? null);
 
-//Eğer url'den id yazılmışsa veya id boş ise projeler sayfasına gider
-if ($id == null && isset($_GET['id'])) {
-    header("Location: /index.php?p=management/sites/list");
-    exit;
-}
-
-$pageTitle = $id > 0 ? "Site Güncelle" : "Yeni Site Ekle";
-$myfirm = $companyObj->findMyFirm($id);
 ?>
-
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -48,7 +34,7 @@ $myfirm = $companyObj->findMyFirm($id);
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>
-                <button type="button" class="btn btn-primary" id="saveMySites">
+                <button type="button" class="btn btn-primary" id="save_sites">
                     <i class="feather-save  me-2"></i>
                     Kaydet
                 </button>
@@ -63,6 +49,7 @@ $myfirm = $companyObj->findMyFirm($id);
 </div>
 <div class="main-content">
     <?php
+    /*
     $title = $pageTitle;
     if ($pageTitle === 'Yeni Site Ekle') {
         $text = "Yeni site tanımlayabilirsiniz.Site Bilgileri alanını doldurduktan sonra Blok Bilgileri ve Daire Bilgileri alanlarına İleri botonu ile geçebilirsiniz.";
@@ -70,27 +57,19 @@ $myfirm = $companyObj->findMyFirm($id);
         $text = "Seçtiğiniz Siteye ait bilgileri güncelleyebilirsiniz.";
     }
     require_once 'pages/components/alert.php'
+    */
     ?>
     <div class="row">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <form action='' id='sitesForm'>
+                    <form id="sitesForm" method="POST">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body">
                                     <div class="row mb-4 align-items-center">
-                                        <!--********** HIDDEN ROW************** -->
-                                        <div class='row d-none'>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='id' class='form-control'
-                                                    value="<?php echo $incexp->id ?? 0 ?>">
-                                            </div>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='action' value='saveSitesType' class='form-control'>
-                                            </div>
-                                        </div>
-                                        <!--********** HIDDEN ROW************** -->
+                                    <input type="hidden" name="sites_id" id="sites_id" value="<?php echo $id ; ?>">
+
                                         <div class="card-header p-0">
                                             <!-- Nav tabs -->
                                             <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
@@ -119,12 +98,12 @@ $myfirm = $companyObj->findMyFirm($id);
                                             </div>
                                             <div class="tab-pane fade" id="blokbilgileriTab" role="tabpanel">
                                                 <?php
-                                                require_once 'pages/management/blocks/content/BlocksNumberPage.php';
+                                             //   require_once 'pages/management/blocks/content/BlocksNumberPage.php';
                                                 ?>
                                             </div>
                                             <div class="tab-pane fade" id="dairebilgileriTab" role="tabpanel">
                                                 <?php
-                                                require_once 'pages/management/apartment/content/ApartmentInformation.php';
+                                             //   require_once 'pages/management/apartment/content/ApartmentInformation.php';
                                                 ?>
                                             </div>
                                         </div>
@@ -138,6 +117,7 @@ $myfirm = $companyObj->findMyFirm($id);
     </div>
 </div>
 <!-- Kaydet buton aktif pasiflik kontrolü : Sadece dairebilgileri sekmesi aktif olunca aktif olur -->
+<!-- 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const saveButton = document.getElementById("saveMySites");
@@ -202,5 +182,6 @@ $myfirm = $companyObj->findMyFirm($id);
         });
     });
 </script>
+-->
 
 

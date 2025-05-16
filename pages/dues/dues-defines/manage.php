@@ -76,8 +76,7 @@ $due = $Dues->find($id  ?? null);
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
                                     <input type="text" class="form-control" name="due_name" id="due_name"
-                                        placeholder="Aidat/Borç adı Giriniz" value="<?php echo $due->due_name ?? ''; ?>"
-                                        required>
+                                        placeholder="Aidat/Borç adı Giriniz" value="<?php echo $due->due_name ?? ''; ?>" required>
                                 </div>
                             </div>
                         </div>

@@ -1,17 +1,13 @@
 <?php
-$user_id = $_SESSION['user']->id;
-require_once "Model/MyFirmModel.php";
-require_once "App/Helper/security.php";
 
+use Model\SitesModel;
 use App\Helper\Security;
 
+$Sites = new SitesModel();
 
-$perm->checkAuthorize("my_companies_page");
-$Auths->checkFirmReturn();
+$Sites = new SitesModel();
+$mysite = $Sites->getSites();
 
-
-$MyFirmModel = new MyFirmModel();
-$myfirms = $MyFirmModel->getMyFirmByUserId();
 
 ?>
 <div class="page-header">
@@ -59,14 +55,14 @@ $myfirms = $MyFirmModel->getMyFirmByUserId();
     require_once 'pages/components/alert.php'
     ?>
     <div class="row">
-        <div class="container-xl"> 
+        <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-                               
-                            <table class="table table-hover datatables" id="sitesList">
+
+                                <table class="table table-hover datatables" id="sitesList">
                                     <thead>
                                         <tr class="text-center">
                                             <th>Sıra</th>
@@ -81,34 +77,35 @@ $myfirms = $MyFirmModel->getMyFirmByUserId();
                                     <tbody>
                                         <?php
                                         $i = 1;
-                                        foreach ($myfirms as $myfirm):
-                                            $id = Security::encrypt($myfirm->id);
-                                            ?>
+                                        foreach ($mysite as $mysites):
+                                            $enc_id = Security::encrypt($mysites->id);
+
+                                        ?>
                                             <tr>
                                                 <td><?php echo $i; ?></td>
                                                 <td><a data-page="sites/manage&id=<?php echo $id ?>" href="#">
-                                                        <?php echo $myfirm->firm_name; ?>
+                                                        <?php echo $mysites->firm_name; ?>
                                                     </a>
                                                 </td>
-                                                <td class="text-start"><?php echo $myfirm->phone; ?></td>
-                                                <td><?php echo $myfirm->email; ?></td>
-                                                <td><?php echo $myfirm->description; ?></td>
-                                                <td><?php echo $myfirm->created_at; ?></td>
+                                                <td class="text-start"><?php echo $mysites->phone; ?></td>
+                                                <td><?php echo "3" ?></td>
+                                                <td><?php echo "2" ?></td>
+                                                <td><?php echo $mysites->created_at; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md">
+                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md">
+                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md">
+                                                        <a href="javascript:void(0);" data-name="<?php echo $mysites->firm_name?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-sites" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $mysites->firm_name; ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <?php
+                                        <?php
                                             $i++;
                                         endforeach; ?>
                                     </tbody>
