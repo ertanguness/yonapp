@@ -1,7 +1,8 @@
 <?php
-require_once "Model/Company.php";
-require_once "App/Helper/cities.php";
+
 use App\Helper\Security;
+use App\Helper\Cities;
+use Model\Company;
 
 $companyObj = new Company();
 

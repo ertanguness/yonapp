@@ -1,16 +1,13 @@
 <?php
-if (!defined('ROOT')) {
-    define('ROOT', $_SERVER['DOCUMENT_ROOT']);
-}
-require_once ROOT . '/Database/db.php';
-
+namespace App\Helper;
 use Database\Db;
+use PDO;
 
 class Cities extends Db
 {
     public function citySelect($name = 'city', $id = null)
     {
-        try {
+       
             $query = $this->db->prepare('SELECT * FROM il');  // Tüm sütunları seç
             $query->execute();
             $results = $query->fetchAll(PDO::FETCH_OBJ);  // Tüm sonuçları al
@@ -23,14 +20,12 @@ class Cities extends Db
             }
             $select .= '</select>';
             return $select;
-        } catch (PDOException $e) {
-            return 'Veritabanı hatası: ' . $e->getMessage();
-        }
+      
     }
 
     public function getCityName($id)
     {
-        try {
+        
             $query = $this->db->prepare('SELECT city_name FROM il WHERE id = :id');
             $query->execute(array('id' => $id));
             $result = $query->fetch(PDO::FETCH_OBJ);
@@ -39,9 +34,7 @@ class Cities extends Db
             } else {
                 return '';
             }
-        } catch (PDOException $e) {
-            return 'Veritabanı hatası: ' . $e->getMessage();
-        }
+      
     }
 
     public function getTownName($id)
