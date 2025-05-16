@@ -67,6 +67,20 @@ if (
     }
 
 //*************DUES******************************** */
+
+
+//*************DEBIT******************************** */
+// Dues Tanımlama sayfası
+if (
+    $page == 'dues/debit/manage' ||
+    $page == 'dues/debit/list'
+) { ?>
+    <script src="/pages/dues/debit/debit.js"></script>
+
+<?php }
+//*************DEBIT******************************** */
+
+
 ?>
 
 
@@ -84,7 +98,7 @@ if ($page == 'home') {
 
 }
 ?>
-
+<script src="./src/jquery.inputmask.js"></script>
 <script src="./assets/js/flatpickr.min.js"></script>
 <script src="./assets/js/flatpickr.tr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
@@ -93,7 +107,7 @@ if ($page == 'home') {
 <script src="./assets/js/select2/js/select2.min.js"></script>
 <script src="./assets/js/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-<script src="./src/jquery.inputmask.js"></script>
+
 
 
 

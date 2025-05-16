@@ -200,7 +200,7 @@ function formatNumber(num) {
 
 $(document).on("click", ".route-link", function () {
   var page = $(this).data("page");
-  var link = "index.php?p=" + page;
+  var link = "index?p=" + page;
 
   window.location = link;
 });
@@ -445,14 +445,14 @@ if ($(".money").length > 0) {
   //1.234,52 şeklinden regex yaz
   //$(".money").inputmask("9-a{1,3}9{1,3}"); //mask with dynamic syntax
 
-  $(".money").inputmask("decimal", {
-    radixPoint: ",",
-    groupSeparator: ".",
-    digits: 2,
-    autoGroup: true,
-    rightAlign: false,
-    removeMaskOnSubmit: true,
-  });
+  // $(".money").inputmask("decimal", {
+  //   radixPoint: ",",
+  //   groupSeparator: ".",
+  //   digits: 2,
+  //   autoGroup: true,
+  //   rightAlign: false,
+  //   removeMaskOnSubmit: true,
+  // });
 
   $(document).on("focus", ".money", function () {
     $(this).inputmask("decimal", {
@@ -467,19 +467,17 @@ if ($(".money").length > 0) {
 
   //.flatpickr sınıfına sahip alanlarda tarih formatına izin verir
   $(document).on("focus", ".flatpickr", function () {
-    $(this).inputmask("datetime", {
+     $(this).inputmask("datetime", {
       alias: "datetime",
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       placeholder: "gg.aa.yyyy",
       showMaskOnHover: false,
-      showMaskOnFocus: true,
+      showMaskOnFocus: false,
       length: 10,
       regex: "[0-9.]", // sadece rakam ve nokta karakterine izin verir
     });
   });
-  $(document).ready(function(){
-    $(".flatpickr").inputmask("99.99.9999",{placeholder:"gg.aa.yyyy", clearMaskOnLostFocus: true }); //default
-  });
+ 
  
   //Para birimi olan alanlarda virgülü noktaya çevir
   // $('.money').on('keyup', function () {

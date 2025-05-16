@@ -47,6 +47,26 @@ class Helper
         '3' => 'Yüksek',
     ];
 
+    const PERIOD = [
+        "0" =>"AYLIK",
+        "1" =>"3 AYLIK",
+        "2" =>"6 AYLIK",
+        "3" =>"YILLIK",
+        "4" =>"TEK SEFERLİK",
+    ];
+
+    const STATE = [
+        "1" =>"Aktif",
+        "0" =>"Pasif",
+    ];
+
+    const TARGETTYPE = [
+            '0' => 'Seçiniz',
+            'all' => 'Tüm Sakinler',
+            'block' => 'Blok Seç',
+            'person' => 'Kişi Seç',
+        ];
+
 
 
 
@@ -230,6 +250,54 @@ class Helper
     }
 
 
+    public static function PeriodSelect($name = 'period', $selected = '0')
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        foreach (self::PERIOD as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
+        }
+        $select .= '</select>';
+        return $select;
+    }
+
+    public static function StateSelect($name = 'state', $selected = '0')
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        foreach (self::STATE as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
+        }
+        $select .= '</select>';
+        return $select;
+    }
+  
+  
+    public static function getState($state)
+    {
+        $states = self::STATE;
+        return $states[$state];
+    }
+
+    
+    public static function getTargetType($type)
+    {
+        $types = self::TARGETTYPE;
+        return $types[$type];
+    }
+
+
+
+    public static function targetTypeSelect($name = 'target_type', $selected = '0')
+        {
+            $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+            foreach (self::TARGETTYPE as $key => $value) {
+                $selectedAttr = $selected == $key ? 'selected' : '';
+                $select .= "<option value='$key' $selectedAttr>$value</option>";
+            }
+            $select .= '</select>';
+            return $select;
+        }
 
     /**
      * Get icon with color by type
