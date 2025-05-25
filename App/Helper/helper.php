@@ -63,6 +63,7 @@ class Helper
     const TARGETTYPE = [
             '0' => 'Seçiniz',
             'all' => 'Tüm Sakinler',
+            "evsahibi" => 'Ev Sahipleri',
             'block' => 'Blok Seç',
             'person' => 'Kişi Seç',
         ];

@@ -18,6 +18,16 @@ protected $table = "sites";
 
     }
 
+
+    //Giriş yapan Kullanıcının sitelerini getir
+    public function getMySitesByUserId()
+    {
+        $user_id = $_SESSION['user']->id; // Kullanıcının ID'sini alıyoruz
+        $sql = $this->db->prepare("SELECT * FROM sites WHERE user_id = ?");
+        $sql->execute([$user_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
     //aidat tablosundaki verileri alır
     public function getSites()
     {

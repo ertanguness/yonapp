@@ -4,6 +4,8 @@ use Model\DueModel;
 use App\Helper\Security;
 use App\Helper\Date;
 
+
+
 $Debit = new DebitModel();
 $Due = new DueModel();
 
@@ -29,7 +31,7 @@ $debits = $Debit->getDebits();
     <div class="page-header-right ms-auto">
         <a href="index?p=dues/debit/manage" class="btn btn-primary">
             <i class="feather-plus me-2"></i>
-            Yeni Borç Ekle
+            Borçlandırma Yap
         </a>
     </div>
 </div>
@@ -54,7 +56,8 @@ $debits = $Debit->getDebits();
                                             <th>#</th>
                                             <th>Başlık</th>
                                             <th>Tutar</th>
-                                            <th>Son Ödeme</th>
+                                            <th style="width:10%">Başlangıç Tarihi</th>
+                                            <th style="width:10%">Son Ödeme</th>
                                             <th>Kime</th>
                                             <th>Durum</th>
                                             <th>Açıklama</th>
@@ -72,9 +75,10 @@ $debits = $Debit->getDebits();
                                                 <td><?php echo $i++; ?></td>
                                                 <td><?php echo $Due->getDueName($debt->due_id); ?></td>
                                                 <td><?php echo $debt->amount; ?></td>
+                                                <td><?php echo Date::dmY($debt->start_date); ?></td>
                                                 <td><?php echo Date::dmY($debt->end_date); ?></td>
                                                 <td>
-                                                   
+                                                   TÜM SİTE
                                                 </td>
                                                 <td>
                                                  

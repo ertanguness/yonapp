@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once "Model/MyFirmModel.php";
-$myFirmObj = new MyFirmModel();
+
+require_once 'vendor/autoload.php';
 
 if (!isset($_SESSION['user'])) {
     http_response_code(401);
@@ -9,17 +9,17 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-if (!isset($_POST['firm_id']) || !isset($_POST['is_active'])) { 
+if (!isset($_POST['site_id']) || !isset($_POST['is_active'])) { 
     http_response_code(400);
     echo "Eksik parametre.";
     exit;
 }
 
-$firm_id = intval($_POST['firm_id']);
+$site_id = intval($_POST['site_id']);
 $status = intval($_POST['is_active']); // 
 
 try {
-    $result = $myFirmObj->updateFirmStatus($firm_id, $status);
+    $result = $mysiteObj->updatesiteStatus($site_id, $status);
     if ($result) {
         echo "Başarılı";
     } else {

@@ -186,3 +186,4 @@ function getPeoplesByBlock(blockId) {
        }
     });
 }
+

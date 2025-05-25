@@ -356,9 +356,9 @@ function AlertConfirm(confirmMessage = "Emin misiniz?") {
   });
 }
 
-$(document).on("change", "#myFirm", function () {
+$(document).on("change", "#mySite", function () {
   var page = new URLSearchParams(window.location.search).get("p");
-  window.location = "set-session.php?p=" + page + "&firm_id=" + $(this).val();
+  window.location = "set-session.php?p=" + page + "&site_id=" + $(this).val();
 });
 
 // function fadeOut(element, duration) {
