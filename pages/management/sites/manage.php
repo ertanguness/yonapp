@@ -1,4 +1,7 @@
 <?php
+require_once "App/Helper/cities.php";
+$cities = new Cities();
+
 use Model\SitesModel;
 use App\Helper\Security;
 $Sites = new SitesModel();

@@ -465,18 +465,7 @@ if ($(".money").length > 0) {
     });
   });
 
-  //.flatpickr sınıfına sahip alanlarda tarih formatına izin verir
-  $(document).on("focus", ".flatpickr", function () {
-     $(this).inputmask("datetime", {
-      alias: "datetime",
-      inputFormat: "dd.MM.yyyy",
-      placeholder: "gg.aa.yyyy",
-      showMaskOnHover: false,
-      showMaskOnFocus: false,
-      length: 10,
-      regex: "[0-9.]", // sadece rakam ve nokta karakterine izin verir
-    });
-  });
+ 
  
  
   //Para birimi olan alanlarda virgülü noktaya çevir
@@ -486,6 +475,8 @@ if ($(".money").length > 0) {
   //   $(this).val(value);
   // });
 }
+
+
 
 $.validator.setDefaults({
   errorPlacement: function (error, element) {
