@@ -13,23 +13,11 @@ if (
     $page == 'reports/list' ||
     $page == 'users/list' ||
     $page == 'users/roles/list' ||
-    $page == 'products/list' ||
-    $page == 'defines/service-head/list' ||
     $page == 'persons/list' ||
     $page == 'persons/manage' ||
-    $page == 'sites/list' ||
-    $page == 'financial/case/list' || $page == 'financial/case/manage' ||
-    $page == 'financial/transactions/list' ||
-    $page == 'financial/transactions/manage' ||
-    $page == 'projects/list' || $page == 'projects/manage' ||
-    $page == 'projects/add-person' ||
-    $page == 'puantaj/list' ||
-    $page == 'payroll/list' ||
-    $page == 'defines/incexp/list' ||
+
     $page == 'missions/list' || $page == 'missions/process/list' ||
-    $page == 'missions/headers/manage' || $page == 'missions/headers/list' ||
-    $page == 'defines/job-groups/list' || $page == 'defines/job-groups/manage' ||
-    $page == 'defines/project-status/list'
+    $page == 'missions/headers/manage' || $page == 'missions/headers/list' 
 ) {
     // echo '<script src="./dist/libs/datatable/datatables.min.js"></script>';
 }
@@ -59,18 +47,19 @@ if (
     }
 
 //*************DUES******************************** */
-//*************SİTES******************************** */
+
+//*************SITES******************************** */
 // Site Tanımlama sayfası
 if (
     $page == 'management/sites/manage' ||   $page == 'management/sites/list') {
         echo '<script src="/pages/management/sites/sites.js"></script>';
     }
 
-//*************DUES******************************** */
+//*************SITES******************************** */
 
 
 //*************DEBIT******************************** */
-// Dues Tanımlama sayfası
+// Debit Tanımlama sayfası
 if (
     $page == 'dues/debit/manage' ||
     $page == 'dues/debit/list'
@@ -80,12 +69,25 @@ if (
 <?php }
 //*************DEBIT******************************** */
 
+//*************BLOCKS******************************** */
+// Site Tanımlama sayfası
+if (
+    $page == 'management/blocks/manage' ||   $page == 'management/blocks/list' || 'management/sites/manage') {
+        echo '<script src="/pages/management/blocks/blocks.js"></script>';
+    }
 
-?>
+//*************BLOCKS******************************** */
+
+//*************APARTMENT TYPES******************************** */
+// Daire Tipi Tanımlama sayfası
+
+if (
+    $page == 'defines/apartment-type/manage' ||   $page == 'defines/apartment-type/list') {
+        echo '<script src="/pages/defines/apartment-type/apartment-type.js"></script>';
+    }
+//*************APARTMENT TYPES******************************** */
 
 
-
-<?php
 
 
 if ($page == 'home') {

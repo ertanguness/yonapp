@@ -1,3 +1,4 @@
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -44,17 +45,8 @@
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
-                                        <!--********** HIDDEN ROW************** -->
-                                        <div class="row d-none">
-                                            <div class="col-md-4">
-                                                <input type="text" name="id" id="id" class="form-control"
-                                                    value="<?php echo $id ?? '' ?>">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="action" value="saveApartmentType" class="form-control">
-                                            </div>
-                                        </div>
-                                        <!--********** HIDDEN ROW************** -->
+                                    <input type="hidden" name="apartment-type_id" id="apartment-type_id" value="<?php echo $id ; ?>">
+
                                         <div class="col-lg-2">
                                             <label for="apartment_type_name" class="fw-semibold">Daire Tipi Adı: </label>
                                         </div>

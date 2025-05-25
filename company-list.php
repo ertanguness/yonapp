@@ -28,10 +28,6 @@ $user = $_SESSION['user'];
 $user_id = $user->id;
 $email = $user->email;
 
-
-
-
-
 use Model\MyFirmModel;
 
 $myFirmObj = new MyFirmModel();

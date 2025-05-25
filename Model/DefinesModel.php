@@ -1,4 +1,5 @@
 <?php
+namespace Model;
 
 
 use Model\Model;
@@ -7,19 +8,12 @@ use PDO;
 class DefinesModel extends Model
 {
     protected $table = "defines";
-    protected $job_table = "job_groups";
     protected $firm_id;
 
-    const TYPES = [
-        1 => "Servis Konusu",
-        2 => "Gelir-Gider Türü",
-        3 => "İş Grubu",
-        4 => "Ödeme Türü"
-    ];
+ 
     public function __construct()
     {
         parent::__construct($this->table);
-        $this->firm_id = $_SESSION['firm_id'];
     }
 
 
@@ -30,40 +24,27 @@ class DefinesModel extends Model
         $sql->execute([$this->firm_id, $type]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+    
+    
 
-
-    //servis konusu tanım : 1
-    public function getServiceHeads()
+    public function isApartmentTypeNameExists($site_id, $name)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE user_id = ? and statu = ?");
-        $sql->execute([$_SESSION['user_id'], 1]);
-        return $sql->fetchAll(PDO::FETCH_OBJ);
+        $sql = $this->db->prepare("SELECT COUNT(*) FROM defines WHERE site_id = :site_id AND define_name = :name");
+        $sql->execute([':site_id' => $site_id, ':name' => $name]);
+        return $sql->fetchColumn() > 0;
     }
-
-
-    //gelir-gider türü tanım : 2
-    public function getIncExpTypesByFirm()
-    {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE firm_id = ? and type_id IN (1, 2)");
-        $sql->execute([$this->firm_id]);
-        return $sql->fetchAll(PDO::FETCH_OBJ);
+    
+    public function getAllByApartmentType($type) {
+        $site_id = $_SESSION['firm_id']; // aktif site ID’sini alıyoruz
+        $sql = "SELECT * FROM defines WHERE type = :type AND site_id = :site_id ORDER BY create_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'type' => $type,
+            'site_id' => $site_id
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-
-    public function getIncExpTypesByFirmandType($type)
-    {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE firm_id = ? and type_id = ?");
-        $sql->execute([$this->firm_id, $type]);
-        return $sql->fetchAll(PDO::FETCH_OBJ);
-    }
-
-    //Proje Durumu getirme : 5
-    public function getProjectStatus()
-    {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE firm_id = ? and type_id = ?");
-        $sql->execute([$this->firm_id, 5]);
-        return $sql->fetchAll(PDO::FETCH_OBJ);
-    }
-
+    
    
 
 

@@ -6,23 +6,28 @@ namespace Model;
 use Model\Model;
 use PDO;
 
-//DuesModel sınıfı BaseModel sınıfından miras alır
 class SitesModel extends Model
 {
 protected $table = "sites"; 
 
-    //DuesModel sınıfının constructor metodunu tanımlıyoruz
     public function __construct()
     {
         parent::__construct($this->table);
 
     }
 
-    //aidat tablosundaki verileri alır
     public function getSites()
     {
         $sql = $this->db->prepare("SELECT * FROM sites");
         $sql->execute();
         return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function getSiteName($id)
+    {
+        $query = $this->db->prepare("SELECT * FROM sites WHERE id = ?");
+        $query->execute([$id]);
+        $result = $query->fetch(PDO::FETCH_OBJ);
+        return $result;
     }
 }

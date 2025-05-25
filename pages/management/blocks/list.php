@@ -1,10 +1,15 @@
 <?php
 
-use Model\BlocksModel;
+use Model\BlockModel;
 use App\Helper\Security;
+use Model\SitesModel;
 
-$Sites = new BlocksModel();
-$blocks = $Sites->getBlocks();
+$Site = new SitesModel();
+
+
+$Blocks = new BlockModel();
+$blocks = $Blocks->getBlocksBySite();
+
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -63,15 +68,48 @@ $blocks = $Sites->getBlocks();
                                         <tr class="text-center">
                                             <th>Sıra</th>
                                             <th>Site Adı</th>
-                                            <th>Blok Sayısı</th>
+                                            <th>Blok Adı</th>
                                             <th>Bağımsız Bölüm Sayısı</th>
-                                            <th>Site Adresi</th>
                                             <th>Açıklama</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php
+                                        $i = 1;
+                                        foreach ($blocks as $block):
+                                            $enc_id = Security::encrypt($block->id);
+                                            $site = $Site->getSiteName($block->site_id);
 
+                                        ?>
+                                            <tr class="text-center">
+                                                <td><?php echo $i; ?></td>
+                                                <td>
+                                                <a data-page="sites/manage&id=<?php echo $block->site_id; ?>" href="#">
+                                                    <?php echo $site->firm_name; ?>
+                                                </a>
+                                                </td>
+                                                <td class="text-start"><?php echo htmlspecialchars($block->block_name); ?></td>
+                                                <td><?php echo htmlspecialchars($block->apartment_number); ?></td>
+                                                <td><?php echo htmlspecialchars($block->description); ?></td>
+                                                <td>
+                                                    <div class="hstack gap-2">
+                                                        <a href="index?p=management/blocks/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                            <i class="feather-eye"></i>
+                                                        </a>
+                                                        <a href="index?p=management/blocks/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                            <i class="feather-edit"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0);" data-name="<?php echo $block->block_name ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-blocks" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $block->block_name; ?>">
+                                                            <i class="feather-trash-2"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php
+                                            $i++;
+                                        endforeach;
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>

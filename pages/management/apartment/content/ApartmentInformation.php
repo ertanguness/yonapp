@@ -1,6 +1,9 @@
 <?php
 
-    require_once __DIR__ . '/../../../../App/Helper/cities.php';
+use Model\BlockModel;
+
+$Block = new BlockModel();
+$blocks = $Block->getBlocksBySite();
 ?>
 
 <div class="card-body apartment-info">
@@ -12,7 +15,12 @@
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"><i class="feather-trello"></i></div>
                 <select class="form-select select2 w-100" id="blockName" required>
-                    <option value="">Seçiniz</option>
+                    <option value="">Blok Seçiniz</option>
+                    <?php foreach ($blocks as $block): ?>
+                        <option value="<?= htmlspecialchars($block->id) ?>">
+                            <?= htmlspecialchars($block->block_name) ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
         </div>
@@ -77,24 +85,24 @@
             <label for="apartmentType" class="fw-semibold">Daire Tipi:</label>
         </div>
         <div class="col-lg-4">
-        <div class="input-group flex-nowrap w-100">
+            <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"> <i class="feather-home"></i></div>
                 <select class="form-control select2 w-100" id="apartmentType" required>
-                   
+
                 </select>
             </div>
         </div>
 
         <div class="col-lg-2">
-            <label for="status" class="fw-semibold">Durumu:</label>
+            <label for="status" class="fw-semibold">Kullanım Durumu:</label>
         </div>
         <div class="col-lg-4">
-            <div class="input-group">
-                <div class="input-group-text"><i class="feather-check-circle"></i></div>
-                <input type="text" class="form-control" id="status" placeholder="Durum Giriniz">
+            <div class="form-check form-switch d-flex align-items-center">
+                <input class="form-check-input" type="checkbox" id="status" style="transform: scale(2.0);">
+                <label class="form-check-label ms-4" for="status"></label>
             </div>
         </div>
-    </div>   
+    </div>
 </div>
 
 <script>

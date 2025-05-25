@@ -1,12 +1,13 @@
 <div class="card-body blocks-info">
     <div class="row mb-4 align-items-center">
         <div class="col-lg-2">
-            <label for="blockName" class="fw-semibold">Site Adı:</label>
+            <label for="sitesId" class="fw-semibold">Site Adı:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-home"></i></div>
-                <input type="text" class="form-control" id="blockName" placeholder="Site ismi çekilecek" readonly >
+                <input type="text" class="form-control" name="siteId" id="siteId" placeholder="Site ismi çekilecek" readonly value="<?php echo $site->firm_name ?? ''; ?>">
+            <input type="hidden" name="site_id" id="site_id" value="<?php echo $site->id ?? ''; ?>">
             </div>
         </div>
 
@@ -16,7 +17,7 @@
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-trello"></i></div>
-                <input type="number" class="form-control" id="blocksNumber" placeholder="Blok Sayısı Giriniz" min="1" required step="1" required onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                <input type="number" class="form-control" name="blocksNumber" id="blocksNumber" placeholder="Blok Sayısı Giriniz" min="1" required step="1" required onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="<?php echo $blocks->apartment_number ?? ''; ?>">
             </div>
         </div>
     </div>
@@ -29,7 +30,7 @@
     </div>
 </div>
 
-<!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme başlangıç -->
+<!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme başlangıç 
 <script>
     document.getElementById("blocksTabButton").addEventListener("click", function(event) {
         event.preventDefault(); // Formun post edilmesini engelle
@@ -77,7 +78,7 @@
         });
     });
 </script>
-
+-->
 <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
 
 <!-- Girilen blok Sayısına göre blok ve daire oluşturma -->
@@ -100,7 +101,7 @@
                     <div class="col-lg-4">
                         <div class="input-group">
                             <div class="input-group-text"><i class="feather-trello"></i></div>
-                            <input type="text" class="form-control block-name" name="block_names[]" placeholder="Blok Adı Giriniz" required step="1" required >
+                            <input type="text" class="form-control block-name" name="block_names[]" placeholder="Blok Adı Giriniz" required >
                         </div>
                     </div>
                     <div class="col-lg-2 d-flex align-items-center ">
@@ -109,7 +110,7 @@
                     <div class="col-lg-4">
                         <div class="input-group">
                             <div class="input-group-text"><i class="feather-layers"></i></div>
-                            <input type="number" class="form-control apartment-count" name="apartment_counts[]" placeholder="Bağımsız Bölüm Sayısı Giriniz" min="1" required onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            <input type="text" class="form-control apartment-count" name="apartment_counts[]" placeholder="Bağımsız Bölüm Sayısı Giriniz" min="1" required onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                         </div>
                     </div>
                 `;

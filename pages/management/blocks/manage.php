@@ -1,24 +1,15 @@
 <?php
-require_once "Model/Company.php";
-require_once "App/Helper/security.php";
-
+use Model\BlockModel;
 use App\Helper\Security;
+use Model\SitesModel;
 
-$companyObj = new Company();
+$Sites = new SitesModel();
+$Blocks = new BlockModel();
 
-//Sayfa başlarında eklenecek alanlar
-$perm->checkAuthorize("company_add_update");
-$id = isset($_GET["id"]) ? Security::decrypt($_GET['id']) : 0;
-$new_id = isset($_GET["id"]) ? $_GET['id'] : 0;
+$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$blocks = $Blocks->find($id  ?? null);
 
-//Eğer url'den id yazılmışsa veya id boş ise projeler sayfasına gider
-if ($id == null && isset($_GET['id'])) {
-    header("Location: /index.php?p=management/blocks/list");
-    exit;
-}
-
-$pageTitle = $id > 0 ? "Blok Güncelle" : "Yeni Blok Ekle";
-$myfirm = $companyObj->findMyFirm($id);
+$site = $Sites->getSiteName($_SESSION['firm_id'] ?? null);
 ?>
 
 <div class="page-header">
@@ -45,7 +36,7 @@ $myfirm = $companyObj->findMyFirm($id);
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>
-                <button type="button" class="btn btn-primary" id="saveMySites">
+                <button type="button" class="btn btn-primary" id="save_blocks">
                     <i class="feather-save  me-2"></i>
                     Kaydet
                 </button>
@@ -60,6 +51,7 @@ $myfirm = $companyObj->findMyFirm($id);
 </div>
 <div class="main-content">
     <?php
+    /*
     $title = $pageTitle;
     if ($pageTitle === 'Yeni Blok Ekle') {
         $text = "Yeni Blok tanımlayabilirsiniz.";
@@ -67,6 +59,7 @@ $myfirm = $companyObj->findMyFirm($id);
         $text = "Seçtiğiniz Siteye ait blok bilgilerini güncelleyebilirsiniz.";
     }
     require_once 'pages/components/alert.php'
+    */
     ?>
     <div class="row">
         <div class="container-xl">
@@ -77,17 +70,7 @@ $myfirm = $companyObj->findMyFirm($id);
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
-                                        <!--********** HIDDEN ROW************** -->
-                                        <div class='row d-none'>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='id' class='form-control'
-                                                    value="<?php echo $incexp->id ?? 0 ?>">
-                                            </div>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='action' value='saveBlocksType' class='form-control'>
-                                            </div>
-                                        </div>
-                                        <!--********** HIDDEN ROW************** -->
+                                    <input type="hidden" name="blocks_id" id="blocks_id" value="<?php echo $id ; ?>">
                                         <?php
                                             require_once 'pages/management/blocks/content/BlocksNumberPage.php';
                                         ?>

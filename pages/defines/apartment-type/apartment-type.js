@@ -1,32 +1,30 @@
-let url = "/pages/management/blocks/api.php";
+let apartmentTypeApiUrl = "/pages/defines/apartment-type/api.php";
 
-$(document).on("click", "#save_blocks", function () {
-  var form = $("#blocksForm");
+$(document).on("click", "#saveApartmentType", function () {
+  var form = $("#apartmentTypeForm");
   var formData = new FormData(form[0]);
 
-  formData.append("action", "save_blocks");
-  formData.append("id", $("#blocks_id").val());
+  formData.append("action", "saveApartmentType");
+  formData.append("id", $("#apartment-type_id").val());
 
 
-  var validator = $("#blocksForm").validate({
+  var validator = $("#apartmentTypeForm").validate({
     rules: {
-      blocksNumber: {
+      apartment_type_name: {
         required: true,
       },
-      
     },
     messages: {
-      blocksNumber: {
-        required: "Lütfen blok sayısı giriniz",
+      apartment_type_name: {
+        required: "Lütfen Daire Tipi adını giriniz",
       },
-     
     },
   });
   if (!validator.form()) {
     return;
   }
 
-  fetch(url, {
+  fetch(apartmentTypeApiUrl, {
     method: "POST",
     body: formData,
   })
@@ -44,14 +42,14 @@ $(document).on("click", "#save_blocks", function () {
     });
 });
 
-$(document).on("click", ".delete-blocks", function () {
+$(document).on("click", ".delete-apartment-type", function () {
   let id = $(this).data("id");
-  let blocksName = $(this).data("name");
+  let apartment_type_name = $(this).data("name");
   let buttonElement = $(this); // Store reference to the clicked button
   swal
     .fire({
       title: "Emin misiniz?",
-      html: `${blocksName} <br> adlı aidat tanımını silmek istediğinize emin misiniz?`,
+      html: `${apartment_type_name } <br> adlı aidat tanımını silmek istediğinize emin misiniz?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Evet",
@@ -60,21 +58,21 @@ $(document).on("click", ".delete-blocks", function () {
     .then((result) => {
       if (result.isConfirmed) {
         var formData = new FormData();
-        formData.append("action", "delete_blocks");
+        formData.append("action", "delete-apartment-type");
         formData.append("id", id);
 
-        fetch(url, {
+        fetch(apartmentTypeApiUrl, {
           method: "POST",
           body: formData,
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.status == "success") {
-              let table = $("#blocksList").DataTable();
+              let table = $("#apartmentTypesList").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${blocksName} adlı aidat tanımı başarıyla silindi.`,
+                `${apartment_type_name } adlı aidat tanımı başarıyla silindi.`,
                 "success"
               );
             }

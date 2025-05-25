@@ -2,38 +2,53 @@
 
 require_once '../../../vendor/autoload.php';
 
-use Model\SitesModel;
+use Model\BlockModel;
 use App\Helper\Security;
 
-$Sites = new SitesModel();
+$Blocks = new BlockModel();
 
 
-if ($_POST["action"] == "save_sites") {
+if ($_POST["action"] == "save_blocks") {
     $id = Security::decrypt($_POST["id"]);
+    $site_id = $_POST["site_id"];
+    $blocksNumber = $_POST["blocksNumber"];
+    $block_names = $_POST["block_names"] ?? [];
+    $apartment_counts = $_POST["apartment_counts"] ?? [];
 
-    $data = [
-        "id" => $id,
-        "firm_name" => $_POST["sites_name"],
-        "phone" => $_POST["phone"],
-        "logo" => $_POST["selectedLogo"],
-        "description" => $_POST["description"],
-        "il" => $_POST["il"],
-        "ilce" => $_POST["ilce"],
-        "adres" => $_POST["adres"],
-        "is_active" => 1,
-    ];
+    $existing_blocks = [];
 
-    $lastInsertId = $Sites->saveWithAttr($data);
+    foreach ($block_names as $key => $block_name) {
+        if ($Blocks->isBlockNameExists($site_id, $block_name)) {
+            $existing_blocks[] = $block_name;
+        }
+    }
 
-    $res = [
+    if (!empty($existing_blocks)) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Aşağıdaki blok isimleri zaten kayıtlı: " . implode(", ", $existing_blocks)
+        ]);
+        exit;
+    }
+
+    foreach ($block_names as $key => $block_name) {
+        $Blocks->saveWithAttr([
+            "site_id" => $site_id,
+            "block_name" => $block_name,
+            "apartment_number" => $apartment_counts[$key] ?? 0
+        ]);
+    }
+
+    echo json_encode([
         "status" => "success",
-        "message" => "Başarılı"
-    ];
-    echo json_encode($res);
+        "message" => "Bloklar başarıyla kaydedildi."
+    ]);
 }
 
-if ($_POST["action"] == "delete_sites") {
-    $Sites->delete($_POST["id"]);
+
+
+if ($_POST["action"] == "delete_blocks") {
+    $Blocks->delete($_POST["id"]);
 
     $res = [
         "status" => "success",

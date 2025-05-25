@@ -1,13 +1,10 @@
 <?php
 
-use Model\SitesModel;
 use App\Helper\Security;
-
-$Sites = new SitesModel();
+use Model\SitesModel;
 
 $Sites = new SitesModel();
 $mysite = $Sites->getSites();
-
 
 ?>
 <div class="page-header">
