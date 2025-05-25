@@ -16,8 +16,6 @@ protected $table = "sites";
 
     }
 
-<<<<<<< HEAD
-=======
 
     //Giriş yapan Kullanıcının sitelerini getir
     public function getMySitesByUserId()
@@ -29,7 +27,6 @@ protected $table = "sites";
     }
 
     //aidat tablosundaki verileri alır
->>>>>>> e2408f2d71a6526d11f09835a3f838bad29f803b
     public function getSites()
     {
         $sql = $this->db->prepare("SELECT * FROM sites");
