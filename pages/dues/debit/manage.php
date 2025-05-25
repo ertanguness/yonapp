@@ -221,6 +221,7 @@ $(document).ready(function() {
     $targetType.on('change', function() {
         const type = $(this).val();
         
+        
 
         if (type === 'person') {
             $targetPerson.prop('disabled', false);
