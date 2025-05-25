@@ -28,20 +28,33 @@ $user = $_SESSION['user'];
 $user_id = $user->id;
 $email = $user->email;
 
+<<<<<<< HEAD
 use Model\MyFirmModel;
+=======
 
-$myFirmObj = new MyFirmModel();
-$myFirms = $myFirmObj->getMyFirmByUserId(); // Firma kontrolü
 
-if (count($myFirms) == 1) {
-    $_SESSION['firm_id'] = $myFirms[0]->id;
+use Model\SitesModel;
+
+// use Model\MyFirmModel;
+
+// $myFirmObj = new MyFirmModel();
+// $myFirms = $myFirmObj->getMyFirmByUserId(); // Firma kontrolü
+
+
+//Kullanıcının sitelerin getir
+$Site= new SitesModel();
+$mySites = $Site->getMySitesByUserId(); // Kullanıcının sitelerini getir
+>>>>>>> e2408f2d71a6526d11f09835a3f838bad29f803b
+
+if (count($mySites) == 1) {
+    $_SESSION['site_id'] = $mySites[0]->id;
     header('Location: /index?p=home/list');
     exit();
 }
 
 // Seçim sonrası yönlendirme
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['firm_id'])) {
-    $_SESSION['firm_id'] = $_POST['firm_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
+    $_SESSION['site_id'] = $_POST['site_id'];
     $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : '/index?p=home/list';
     header("Location: $redirectUri");
     exit();
@@ -137,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['firm_id'])) {
     <div class="container py-5">
         <div class="text-center mb-4">
             <h3 class="text-muted">Hoş Geldiniz, <strong><?= htmlspecialchars($user->full_name ?? $user->email) ?></strong></h3>
-            <p class="text-muted"><?= count($myFirms) ?> adet kayıtlı siteniz bulundu. İlerlemek için lütfen birini seçiniz.</p>
+            <p class="text-muted"><?= count($mySites) ?> adet kayıtlı siteniz bulundu. İlerlemek için lütfen birini seçiniz.</p>
 
 
 
@@ -159,25 +172,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['firm_id'])) {
 
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <?php foreach ($myFirms as $myfirm): ?>
+                    <?php foreach ($mySites as $site): ?>
                         <form method="POST" class="mb-3 firm-select-form">
-                            <input type="hidden" name="firm_id" value="<?= $myfirm->id ?>">
-                            <div class="card firm-card shadow-sm p-3 list-item bg-white <?= $myfirm->is_active == 0 ? 'inactive' : '' ?>">
+                            <input type="hidden" name="site_id" value="<?= $site->id ?>">
+                            <div class="card firm-card shadow-sm p-3 list-item bg-white <?= $site->is_active == 0 ? 'inactive' : '' ?>">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center">
                                         <img src="../assets/images/logo/google-wallet.png" alt="Firma Logo" class="firm-logo me-3">
                                         <div>
-                                            <h5 class="mb-0"><?= htmlspecialchars($myfirm->firm_name) ?></h5>
-                                            <?php if (!empty($myfirm->description)): ?>
-                                                <small class="text-muted"><?= htmlspecialchars($myfirm->description) ?></small>
+                                            <h5 class="mb-0"><?= htmlspecialchars($site->firm_name) ?></h5>
+                                            <?php if (!empty($site->description)): ?>
+                                                <small class="text-muted"><?= htmlspecialchars($site->description) ?></small>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                     <!-- Aktif/Pasif Switch -->
 
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input firm-status-switch" type="checkbox" data-firm-id="<?= $myfirm->id ?>" id="firmStatusSwitch<?= $myfirm->id ?>" <?= $myfirm->is_active ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="firmStatusSwitch<?= $myfirm->id ?>">Aktif</label>
+                                        <input class="form-check-input firm-status-switch" type="checkbox" data-site-id="<?= $site->id ?>" id="firmStatusSwitch<?= $site->id ?>" <?= $site->is_active ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="firmStatusSwitch<?= $site->id ?>">Aktif</label>
                                     </div>
                                 </div>
                             </div>
@@ -215,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['firm_id'])) {
 
             // Firma durumunu değiştiren switch
             $('.firm-status-switch').change(function() {
-                var firmId = $(this).data('firm-id');
+                var siteID = $(this).data('site-id');
                 var isActive = $(this).is(':checked') ? 1 : 0;
                 var $card = $(this).closest('.firm-card');
 
@@ -223,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['firm_id'])) {
                     url: 'update_firm_status.php',
                     type: 'POST',
                     data: {
-                        firm_id: firmId,
+                        site_id: siteID,
                         is_active: isActive
                     },
                     success: function(response) {

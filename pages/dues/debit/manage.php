@@ -7,6 +7,8 @@ use App\Helper\Security;
 use Model\DebitModel;
 use App\Helper\Debit;
 
+
+
 $DueHelper = new Due();
 $Debit = new DebitModel();
 
@@ -55,11 +57,30 @@ $DebitHelper = new Debit();
     ?>
     <div class="row">
         <div class="container-xl">
+
             <div class="card">
-                <div class="card-header">
-                    <h5>Borçlandırma Biglieri</h5>
+
+                <div class="row p-4">
+                    <div class="col-lg-12">
+
+                        <div class="alert alert-dismissible d-flex alert-soft-teal-message" role="alert">
+                            <div class="me-4 d-none d-md-block">
+                                <i class="feather feather-alert-octagon fs-1"></i>
+                            </div>
+                            <div>
+                                <p class="fw-bold mb-1 text-truncate-1-line alert-header">Borç Ekleme!</p>
+                                <p class="fs-12 fw-medium text-truncate-1-line alert-description">
+                                Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara borclandırma yapılacaktır.          
+
+                            </p>
+                              
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
+                    <div class="card-body">
                     <form id="debitForm" action="" method="POST">
                         <input type="text" class="form-control d-none" name="debit_id" id="debit_id"
                             value="<?php echo $_GET["id"] ?? 0 ?>">
@@ -173,6 +194,7 @@ $DebitHelper = new Debit();
                                 </div>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -198,6 +220,8 @@ $(document).ready(function() {
 
     $targetType.on('change', function() {
         const type = $(this).val();
+        
+        
 
         if (type === 'person') {
             $targetPerson.prop('disabled', false);
@@ -212,6 +236,13 @@ $(document).ready(function() {
             $targetPerson.val(allValues).trigger('change');
             $targetPerson.prop('disabled', true);
             $blockSelect.prop('disabled', true).val(null).trigger('change');
+            $(".alert-description").fadeOut(200, function() {
+                $(this).text("Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara borclandırma yapılacaktır.").fadeIn(200);
+            });
+        }else if(type == "evsahibi"){
+            $(".alert-description").fadeOut(200, function() {
+                $(this).text("Yalnızca Ev sahiplerine borclandırma yapılacaktır.").fadeIn(200);
+            });
 
         } else if (type === 'block') {
             getBlocksBySite();

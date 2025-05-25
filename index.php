@@ -50,8 +50,8 @@ $_SESSION["user"] = $user;
 
 if ($_SESSION["user"]->parent_id != 0) {
     $email = $_SESSION['user']->email ?? null;
-    $firm_id = $_SESSION['firm_id'];
-    $user = $User->getUserByEmailAndFirm($email, $firm_id);
+    $site_id = $_SESSION['site_id'];
+    $user = $User->getUserByEmailAndFirm($email, $site_id);
     $_SESSION['user'] = $user;
 }
 

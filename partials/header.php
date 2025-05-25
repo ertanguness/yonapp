@@ -1,9 +1,16 @@
 <?php
-$firm_id = isset($_SESSION['firm_id']) ? $_SESSION['firm_id'] : 0;
+$site_id = isset($_SESSION['site_id']) ? $_SESSION['site_id'] : 0;
 
-require_once "App/Helper/company.php";
+// require_once "App/Helper/company.php";
 
-$company = new CompanyHelper();
+// $company = new CompanyHelper();
+
+
+use App\Helper\Site;
+
+
+
+
 
 // Mevcut URL'yi al
 $current_url = $_SERVER['REQUEST_URI'];
@@ -65,7 +72,7 @@ $new_url = $url_parts['path'] . '?' . $new_query_string;
                         <?php
                         // Sayfa adını kontrol et
                         if (basename($_SERVER['PHP_SELF']) != 'company-list.php') {
-                            echo $company->myCompanySelect("myFirm", $firm_id);
+                            echo Site::mySitesSelect("mySite", $site_id);
                         }
                         ?>
                     </div>
