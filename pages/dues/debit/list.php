@@ -90,7 +90,7 @@ $debits = $Debit->getDebits();
                                                 </td>
                                                 <td>
                                                     <div class="hstack gap-2">
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md" title="Görüntüle">
+                                                        <a href="index?p=dues/debit/detail&id=<?php echo $enc_id ?>" class="avatar-text avatar-md" title="Görüntüle">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=dues/debit/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" 

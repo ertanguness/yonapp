@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Helper;
+use Model\DefinesModel;
 
 class Helper
 {
@@ -48,28 +49,28 @@ class Helper
     ];
 
     const PERIOD = [
-        "0" =>"AYLIK",
-        "1" =>"3 AYLIK",
-        "2" =>"6 AYLIK",
-        "3" =>"YILLIK",
-        "4" =>"TEK SEFERLİK",
+        '0' => 'AYLIK',
+        '1' => '3 AYLIK',
+        '2' => '6 AYLIK',
+        '3' => 'YILLIK',
+        '4' => 'TEK SEFERLİK',
     ];
 
     const STATE = [
-        "1" =>"Aktif",
-        "0" =>"Pasif",
+        '1' => 'Aktif',
+        '0' => 'Pasif',
     ];
 
     const TARGETTYPE = [
-            '0' => 'Seçiniz',
-            'all' => 'Tüm Sakinler',
-            "evsahibi" => 'Ev Sahipleri',
-            'block' => 'Blok Seç',
-            'person' => 'Kişi Seç',
-        ];
+        '0' => 'Seçiniz',
+        'all' => 'Tüm Sakinler',
+        'evsahibi' => 'Ev Sahipleri',
+        'block' => 'Blok Seçerek',
+        'person' => 'Kişi Borçlandırma',
+        'dairetipi' => 'Daire Tipine Göre',
+    ];
 
-
-
+    const DAIRE_TYPE = [];
 
     public static function getPriority($priority)
     {
@@ -77,14 +78,14 @@ class Helper
         return $priorities[$priority];
     }
 
-    //Get transaction type
-
+    // Get transaction type
 
     public static function getTransactionType($type)
     {
         $types = self::INC_EXP;
         return $types[$type];
     }
+
     public static function getIncomeExpenseType($type)
     {
         $types = self::INCOME_EXPENSE_TYPE;
@@ -101,7 +102,7 @@ class Helper
         return number_format($value, 2, ',', '.') . ' ' . self::MONEY_UNIT[$currency];
     }
 
-    //109.852,25 şeklinde gelen değeri 109852.25 olarak döndürür
+    // 109.852,25 şeklinde gelen değeri 109852.25 olarak döndürür
     public static function formattedMoneyToNumber($value)
     {
         return str_replace(['.', ','], ['', '.'], $value);
@@ -113,7 +114,7 @@ class Helper
         return str_replace('.', ',', $value);
     }
 
-    //Para birim formatında TRY olmadan
+    // Para birim formatında TRY olmadan
     public static function formattedMoneyWithoutCurrency($value)
     {
         return number_format($value, 2, ',', '.');
@@ -157,9 +158,6 @@ class Helper
         }
         return self::UNITS[$unit];
     }
-
-
-
 
     public static function kdvSelect($name = 'kdv', $selected = '20')
     {
@@ -205,8 +203,7 @@ class Helper
         return $select;
     }
 
-
-    //dd fonksiyonu
+    // dd fonksiyonu
     public static function dd($data)
     {
         echo '<pre>';
@@ -214,8 +211,8 @@ class Helper
         echo '</pre>';
     }
 
-    //gelen kelimelerin sadece ilk harflerini döndürür
-    //örnek : Ahmet Yılmaz => AY
+    // gelen kelimelerin sadece ilk harflerini döndürür
+    // örnek : Ahmet Yılmaz => AY
     public static function getInitials($name, $count = 2)
     {
         if (empty($name) || $name == null) {
@@ -225,7 +222,7 @@ class Helper
         $initials = '';
         $counter = 0;
         foreach ($name as $n) {
-            if (!empty($n) && $counter < $count) { // Boş olup olmadığını ve counter'ı kontrol et
+            if (!empty($n) && $counter < $count) {  // Boş olup olmadığını ve counter'ı kontrol et
                 $initials .= $n[0];
                 $counter++;
             }
@@ -233,7 +230,7 @@ class Helper
         return strtoupper($initials);
     }
 
-    //authorize sayfasını include eder
+    // authorize sayfasını include eder
     public static function authorizePage()
     {
         echo '<div class="empty">
@@ -249,7 +246,6 @@ class Helper
             
             </div>';
     }
-
 
     public static function PeriodSelect($name = 'period', $selected = '0')
     {
@@ -272,33 +268,29 @@ class Helper
         $select .= '</select>';
         return $select;
     }
-  
-  
+
     public static function getState($state)
     {
         $states = self::STATE;
         return $states[$state];
     }
 
-    
     public static function getTargetType($type)
     {
         $types = self::TARGETTYPE;
         return $types[$type];
     }
 
-
-
     public static function targetTypeSelect($name = 'target_type', $selected = '0')
-        {
-            $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
-            foreach (self::TARGETTYPE as $key => $value) {
-                $selectedAttr = $selected == $key ? 'selected' : '';
-                $select .= "<option value='$key' $selectedAttr>$value</option>";
-            }
-            $select .= '</select>';
-            return $select;
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        foreach (self::TARGETTYPE as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
         }
+        $select .= '</select>';
+        return $select;
+    }
 
     /**
      * Get icon with color by type
@@ -307,49 +299,69 @@ class Helper
      */
     public static function getIconWithColorByType($type)
     {
-        $icon = "";
-        $color = "";
+        $icon = '';
+        $color = '';
 
         switch ($type) {
-            case 1: //Gelir
-            case 6: //Hakediş
-                $icon = "ti-arrow-up-dashed";
-                $color = "color-green";
+            case 1:  // Gelir
+            case 6:  // Hakediş
+                $icon = 'ti-arrow-up-dashed';
+                $color = 'color-green';
                 break;
             case 2:
-                $icon = "ti-arrow-down-dashed";
-                $color = "color-red";
+                $icon = 'ti-arrow-down-dashed';
+                $color = 'color-red';
                 break;
             case 3:
-                $icon = "ti-upload";
-                $color = "color-yellow";
+                $icon = 'ti-upload';
+                $color = 'color-yellow';
                 break;
-            case 5: //Ödeme
-            case 7: //Maaş
-                $icon = "ti-cash-register";
-                $color = "color-yellow";
+            case 5:  // Ödeme
+            case 7:  // Maaş
+                $icon = 'ti-cash-register';
+                $color = 'color-yellow';
                 break;
-            case 10: //Hakediş
-                $icon = "ti-building-estate";
-                $color = "color-green";
+            case 10:  // Hakediş
+                $icon = 'ti-building-estate';
+                $color = 'color-green';
                 break;
-            case 11: //Masraf
-            case 12:  //Kesinti
-            case 15: //Personel Kesinti
-                $icon = "ti-fold-down";
-                $color = "color-red";
+            case 11:  // Masraf
+            case 12:  // Kesinti
+            case 15:  // Personel Kesinti
+                $icon = 'ti-fold-down';
+                $color = 'color-red';
                 break;
-            case 14: //Puantaj Çalışma
-                $icon = "ti-stretching";
-                $color = "color-red";
+            case 14:  // Puantaj Çalışma
+                $icon = 'ti-stretching';
+                $color = 'color-red';
                 break;
 
             default:
-                $icon = "ti-question-mark";
-                $color = "";
+                $icon = 'ti-question-mark';
+                $color = '';
                 break;
         }
 
         return "<i class='ti $icon icon $color me-1'></i>";
+    }
+
+
+
+    /**
+     * Site id'ye göre daire tiplerini select olarak döndürür
+     * @param int $site_id
+     * @return string
+     */
+    public static function getApartmentTypesSelect($site_id)
+    {
+        $Defines = new DefinesModel();
+        $apartmentTypes = $Defines->getAllByApartmentType(3);
+        $select = '<select id="apartment_type" multiple name="apartment_type" class="form-select select2 w-100">';
+        $select .= '<option value="">Daire Tipi Seçiniz</option>';
+        foreach ($apartmentTypes as $type) {
+            $select .= '<option value="' . $type->id . '">' . $type->define_name . '</option>';
+        }
+        $select .= '</select>';
+        return $select;
     }
 }

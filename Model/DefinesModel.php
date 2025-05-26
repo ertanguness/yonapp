@@ -8,7 +8,7 @@ use PDO;
 class DefinesModel extends Model
 {
     protected $table = "defines";
-    protected $firm_id;
+    protected $site_id;
 
  
     public function __construct()
@@ -20,8 +20,8 @@ class DefinesModel extends Model
     //Job Groups- İş Grubu tanım : 3
     public function getDefinesByType($type)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE firm_id = ? and type_id = ?");
-        $sql->execute([$this->firm_id, $type]);
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE ite_id = ? and type_id = ?");
+        $sql->execute([$this->site_id, $type]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
     
@@ -35,7 +35,7 @@ class DefinesModel extends Model
     }
     
     public function getAllByApartmentType($type) {
-        $site_id = $_SESSION['firm_id']; // aktif site ID’sini alıyoruz
+        $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
         $sql = "SELECT * FROM defines WHERE type = :type AND site_id = :site_id ORDER BY create_at DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([

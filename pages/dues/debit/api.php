@@ -37,36 +37,41 @@ if($_POST["action"] == "save_debit"){
         "description" => $_POST["description"],
         "target_type" => $_POST["target_type"],
      
- 
-    
     ];
 
-    $lastInsertId = $Debit->saveWithAttr($data) ;
+    $lastInsertId = $Debit->saveWithAttr($data) ?? $id; ;
 
+    //Tüm siteye borçlandırma yapılıyor
     if($borclandirma_turu== "all"){
-        //Tüm siteye borçlandırma yapılıyor
            
         $data = [];
+
         //sitenin tüm kişilerini alıyoruz
         $peoples = $Peoples->getPeopleBySite($site_id);
         foreach ($peoples as $person) {
-            $data["kisi_id"] = $person->id;
+            $data = [
+                "id" => 0,
+                "debit_id" => Security::decrypt($lastInsertId),
+                "person_id" => $person->id,
+                "amount" => Helper::formattedMoneyToNumber($_POST["amount"]),
+                "start_date" => Date::Ymd($_POST["start_date"]),    
+                "end_date" => Date::Ymd($_POST["end_date"]),
+                "penalty_rate" => $_POST["penalty_rate"],
+                "description" => $_POST["description"],
+                "debit_name" => $_POST["debit_name"],
+            ];
             $DebitDetails->saveWithAttr($data);
         }
 
 
     }
 
-
-
-
-
     //Burada, gelen borçlandırmaya göre, tüm siteye veya kişilere borçlandırma yapılacak.
 
 
     $res = [
         "status" => "success",
-        "message" => "İşlem Başarı ile tamamlandı! site_id  "    
+        "message" => "İşlem Başarı ile tamamlandı! "
     ];
     echo json_encode($res);
 }

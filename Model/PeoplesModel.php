@@ -52,4 +52,29 @@ class PeoplesModel extends Model
 
         return $people;
     }
+
+    /**
+     * Belirli bir kişinin bilgilerini getirir.
+     * @param int $id Kişinin ID'si.
+     * @return object|null Kişi bilgilerini içeren nesne veya bulunamazsa null döner.
+     */
+    public function getPersonById($id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
+        $sql->execute([$id]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
+
+    /***Kişinin Adının getiri
+     * @param int $id Kişinin ID'si.
+     * @return string|null Kişinin adı veya bulunamazsa null döner.
+     */
+    public function getPersonNameById($id)
+    {
+        $sql = $this->db->prepare("SELECT fullname FROM $this->table WHERE id = ?");
+        $sql->execute([$id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? $result->fullname : null;
+    }
+
 }

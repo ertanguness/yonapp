@@ -465,6 +465,13 @@ if ($(".money").length > 0) {
     });
   });
 
+  //Tarih formatı için inputmask kullan
+  $(document).on("focus", ".flatpickr", function () {
+    $(this).inputmask("99.99.9999", {
+      placeholder: "gg.aa.yyyy",
+      clearIncomplete: true,
+    });
+  });
  
  
  

@@ -7,6 +7,12 @@ $(document).on("click", "#save_debit", function () {
 
   formData.append("action", "save_debit");
   formData.append("id", $("#debit_id").val());
+  formData.append("debit_name", $("#due_title option:selected").text());
+
+  // for(let pair of formData.entries()) {
+  //   console.log(pair[0]+ ', ' + pair[1]);
+  // }
+
 
   addCustomValidationMethods(); //validNumber methodu için
   var validator = $("#debitForm").validate({

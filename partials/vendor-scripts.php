@@ -71,11 +71,11 @@ if (
 
 //*************BLOCKS******************************** */
 // Site Tanımlama sayfası
-if (
-    $page == 'management/blocks/manage' ||   $page == 'management/blocks/list' || 'management/sites/manage') {
+if ($page == 'management/blocks/manage' ||   
+    $page == 'management/blocks/list' || 
+    $page == 'management/sites/manage') {
         echo '<script src="/pages/management/blocks/blocks.js"></script>';
     }
-
 //*************BLOCKS******************************** */
 
 //*************APARTMENT TYPES******************************** */
