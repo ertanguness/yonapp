@@ -2,12 +2,16 @@
 
 namespace App\Helper;
 
+use Model\DefinesModel;
+
 class Helper
 {
     const MONEY_UNIT = [
         '1' => 'TRY',
         '2' => 'USD',
         '3' => 'EUR',
+        // FATİH KALAYCI*0012*C2- Daire:15 Canan SUBAŞI KALAYCI gibi formatlar
+        '/\*([A-Za-z0-9]+)[\.\-]?\s*DAİRE\s*:?(\d+)/i'
     ];
 
     const UNITS = [
@@ -48,28 +52,28 @@ class Helper
     ];
 
     const PERIOD = [
-        "0" =>"AYLIK",
-        "1" =>"3 AYLIK",
-        "2" =>"6 AYLIK",
-        "3" =>"YILLIK",
-        "4" =>"TEK SEFERLİK",
+        '0' => 'AYLIK',
+        '1' => '3 AYLIK',
+        '2' => '6 AYLIK',
+        '3' => 'YILLIK',
+        '4' => 'TEK SEFERLİK',
     ];
 
     const STATE = [
-        "1" =>"Aktif",
-        "0" =>"Pasif",
+        '1' => 'Aktif',
+        '0' => 'Pasif',
     ];
 
     const TARGETTYPE = [
-            '0' => 'Seçiniz',
-            'all' => 'Tüm Sakinler',
-            "evsahibi" => 'Ev Sahipleri',
-            'block' => 'Blok Seç',
-            'person' => 'Kişi Seç',
-        ];
+        '0' => 'Seçiniz',
+        'all' => 'Tüm Sakinler',
+        'evsahibi' => 'Ev Sahipleri',
+        'block' => 'Blok Seçerek',
+        'person' => 'Kişi Borçlandırma',
+        'dairetipi' => 'Daire Tipine Göre',
+    ];
 
-
-
+    const DAIRE_TYPE = [];
 
     public static function getPriority($priority)
     {
@@ -77,14 +81,14 @@ class Helper
         return $priorities[$priority];
     }
 
-    //Get transaction type
-
+    // Get transaction type
 
     public static function getTransactionType($type)
     {
         $types = self::INC_EXP;
         return $types[$type];
     }
+
     public static function getIncomeExpenseType($type)
     {
         $types = self::INCOME_EXPENSE_TYPE;
@@ -101,7 +105,7 @@ class Helper
         return number_format($value, 2, ',', '.') . ' ' . self::MONEY_UNIT[$currency];
     }
 
-    //109.852,25 şeklinde gelen değeri 109852.25 olarak döndürür
+    // 109.852,25 şeklinde gelen değeri 109852.25 olarak döndürür
     public static function formattedMoneyToNumber($value)
     {
         return str_replace(['.', ','], ['', '.'], $value);
@@ -113,7 +117,7 @@ class Helper
         return str_replace('.', ',', $value);
     }
 
-    //Para birim formatında TRY olmadan
+    // Para birim formatında TRY olmadan
     public static function formattedMoneyWithoutCurrency($value)
     {
         return number_format($value, 2, ',', '.');
@@ -157,9 +161,6 @@ class Helper
         }
         return self::UNITS[$unit];
     }
-
-
-
 
     public static function kdvSelect($name = 'kdv', $selected = '20')
     {
@@ -205,8 +206,7 @@ class Helper
         return $select;
     }
 
-
-    //dd fonksiyonu
+    // dd fonksiyonu
     public static function dd($data)
     {
         echo '<pre>';
@@ -214,8 +214,8 @@ class Helper
         echo '</pre>';
     }
 
-    //gelen kelimelerin sadece ilk harflerini döndürür
-    //örnek : Ahmet Yılmaz => AY
+    // gelen kelimelerin sadece ilk harflerini döndürür
+    // örnek : Ahmet Yılmaz => AY
     public static function getInitials($name, $count = 2)
     {
         if (empty($name) || $name == null) {
@@ -225,7 +225,7 @@ class Helper
         $initials = '';
         $counter = 0;
         foreach ($name as $n) {
-            if (!empty($n) && $counter < $count) { // Boş olup olmadığını ve counter'ı kontrol et
+            if (!empty($n) && $counter < $count) {  // Boş olup olmadığını ve counter'ı kontrol et
                 $initials .= $n[0];
                 $counter++;
             }
@@ -233,7 +233,7 @@ class Helper
         return strtoupper($initials);
     }
 
-    //authorize sayfasını include eder
+    // authorize sayfasını include eder
     public static function authorizePage()
     {
         echo '<div class="empty">
@@ -249,7 +249,6 @@ class Helper
             
             </div>';
     }
-
 
     public static function PeriodSelect($name = 'period', $selected = '0')
     {
@@ -272,33 +271,29 @@ class Helper
         $select .= '</select>';
         return $select;
     }
-  
-  
+
     public static function getState($state)
     {
         $states = self::STATE;
         return $states[$state];
     }
 
-    
     public static function getTargetType($type)
     {
         $types = self::TARGETTYPE;
         return $types[$type];
     }
 
-
-
     public static function targetTypeSelect($name = 'target_type', $selected = '0')
-        {
-            $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
-            foreach (self::TARGETTYPE as $key => $value) {
-                $selectedAttr = $selected == $key ? 'selected' : '';
-                $select .= "<option value='$key' $selectedAttr>$value</option>";
-            }
-            $select .= '</select>';
-            return $select;
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        foreach (self::TARGETTYPE as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
         }
+        $select .= '</select>';
+        return $select;
+    }
 
     /**
      * Get icon with color by type
@@ -307,49 +302,145 @@ class Helper
      */
     public static function getIconWithColorByType($type)
     {
-        $icon = "";
-        $color = "";
+        $icon = '';
+        $color = '';
 
         switch ($type) {
-            case 1: //Gelir
-            case 6: //Hakediş
-                $icon = "ti-arrow-up-dashed";
-                $color = "color-green";
+            case 1:  // Gelir
+            case 6:  // Hakediş
+                $icon = 'ti-arrow-up-dashed';
+                $color = 'color-green';
                 break;
             case 2:
-                $icon = "ti-arrow-down-dashed";
-                $color = "color-red";
+                $icon = 'ti-arrow-down-dashed';
+                $color = 'color-red';
                 break;
             case 3:
-                $icon = "ti-upload";
-                $color = "color-yellow";
+                $icon = 'ti-upload';
+                $color = 'color-yellow';
                 break;
-            case 5: //Ödeme
-            case 7: //Maaş
-                $icon = "ti-cash-register";
-                $color = "color-yellow";
+            case 5:  // Ödeme
+            case 7:  // Maaş
+                $icon = 'ti-cash-register';
+                $color = 'color-yellow';
                 break;
-            case 10: //Hakediş
-                $icon = "ti-building-estate";
-                $color = "color-green";
+            case 10:  // Hakediş
+                $icon = 'ti-building-estate';
+                $color = 'color-green';
                 break;
-            case 11: //Masraf
-            case 12:  //Kesinti
-            case 15: //Personel Kesinti
-                $icon = "ti-fold-down";
-                $color = "color-red";
+            case 11:  // Masraf
+            case 12:  // Kesinti
+            case 15:  // Personel Kesinti
+                $icon = 'ti-fold-down';
+                $color = 'color-red';
                 break;
-            case 14: //Puantaj Çalışma
-                $icon = "ti-stretching";
-                $color = "color-red";
+            case 14:  // Puantaj Çalışma
+                $icon = 'ti-stretching';
+                $color = 'color-red';
                 break;
 
             default:
-                $icon = "ti-question-mark";
-                $color = "";
+                $icon = 'ti-question-mark';
+                $color = '';
                 break;
         }
 
         return "<i class='ti $icon icon $color me-1'></i>";
+    }
+
+    /**
+     * Site id'ye göre daire tiplerini select olarak döndürür
+     * @param int $site_id
+     * @return string
+     */
+    public static function getApartmentTypesSelect($site_id)
+    {
+        $Defines = new DefinesModel();
+        $apartmentTypes = $Defines->getAllByApartmentType(3);
+        $select = '<select id="apartment_type" multiple name="apartment_type" class="form-select select2 w-100">';
+        $select .= '<option value="">Daire Tipi Seçiniz</option>';
+        foreach ($apartmentTypes as $type) {
+            $select .= '<option value="' . $type->id . '">' . $type->define_name . '</option>';
+        }
+        $select .= '</select>';
+        return $select;
+    }
+    public static function extractApartmentInfo($description)
+    {
+        // Önce tüm desenleri tanımlayalım
+        $patterns = [
+            // Standart formatlar: C5 Daire 9, B1 DAİRE 6, C2- Daire:15
+            '/([A-Z]\d+)\s*(?:BLOK|Blok|blok)?\s*(?:DAİRE|Daire|DAiRE|D\.?)\s*[:\.\-]?\s*(\d+)/i',
+            
+            // C5 16 numara, B3 Blok Daire10 gibi bitişik yazımlar
+            '/([A-Z]\d+)\s+(\d+)\s*(?:numara|Daire|No|no)?/i',
+            
+            // C2.D.13, A1-DAİRE9 gibi nokta/tire ile ayrılmış
+            '/([A-Z]\d+)[\.\-]\s*D\.?\s*(\d+)/i',
+            
+            // B3 BLOK DAİRE5 gibi bitişik yazımlar
+            '/([A-Z]\d+)\s*BLOK\s*DAİRE\s*(\d+)/i',
+            
+            // b1 blok d 17 veya B1 Blok D 17
+            '/([A-Z]\d+)\s*blok\s*d\s*(\d+)/i',
+            
+            // c5 blok no 19
+            '/([A-Z]\d+)\s*blok\s*no\s*(\d+)/i',
+            
+            // A1-DAİRE 9, C1-Daire 5
+            '/([A-Z]\d+)[\-\.]?\s*DAİRE\s*(\d+)/i',
+            
+            // C3 16 gibi basit formatlar
+            '/([A-Z]\d+)\s+(\d+)/',
+            
+            // B1D5, C2D13 gibi direkt formatlar
+            '/([A-Z]\d+D\d+)/i',
+            
+            // Özel durumlar: C2- Daire:15
+            '/([A-Z]\d+)\-?\s*Daire\s*\:?\s*(\d+)/i',
+            
+            // Blok ve daire farklı konumda: BLOK C5 DAİRE 9
+            '/(?:BLOK|Blok)\s*([A-Z]\d+).*?(?:DAİRE|Daire)\s*(\d+)/i',
+            
+            // Daire kelimesi önce: DAİRE 9 BLOK C5
+            '/(?:DAİRE|Daire)\s*(\d+).*?(?:BLOK|Blok)\s*([A-Z]\d+)/i',
+        ];
+    
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $description, $matches)) {
+                // Eğer direkt B1D5 formatında eşleşme varsa
+                if (isset($matches[1]) && preg_match('/^[A-Z]\d+D\d+$/i', $matches[1])) {
+                    return strtoupper($matches[1]);
+                }
+                
+                // Normalde blok ve daire ayrı eşleşir
+                if (isset($matches[1]) && isset($matches[2])) {
+                    return strtoupper(trim($matches[1])) . 'D' . trim($matches[2]);
+                }
+            }
+        }
+    
+        // Özel durumlar için manuel kontrol
+        $specialCases = [
+            'C5 16 numara asansör bakım ücreti' => 'C5D16',
+            'B3 BLOK DAİRE5' => 'B3D5',
+            'B3 Blok Daire 10' => 'B3D10',
+            'b1 blok d 17' => 'B1D17',
+            'C2. D.13' => 'C2D13',
+            'C3 16' => 'C3D16',
+        ];
+        
+        foreach ($specialCases as $case => $code) {
+            if (strpos($description, $case) !== false) {
+                return $code;
+            }
+        }
+    
+        // Son çare: sayısal bloklar için (A1, B2 gibi olmayanlar)
+        if (preg_match('/(\d+)\s*(?:BLOK|Blok|blok)?\s*(?:DAİRE|Daire|DAiRE|D\.?)\s*[:\.\-]?\s*(\d+)/i', $description, $matches)) {
+            return 'BLOCK' . trim($matches[1]) . 'D' . trim($matches[2]);
+        }
+    
+        return null;
     }
 }

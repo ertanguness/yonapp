@@ -75,7 +75,7 @@ $dues = $Dues->getDues();
                                                     </td>
                                                     <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                        <a href="index?p=dues/dues-defines/detail&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">

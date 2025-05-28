@@ -8,7 +8,7 @@ use PDO;
 class DefinesModel extends Model
 {
     protected $table = "defines";
-    protected $firm_id;
+    protected $site_id;
 
  
     public function __construct()
@@ -18,8 +18,8 @@ class DefinesModel extends Model
 
     public function getDefinesByType($type)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE firm_id = ? and type_id = ?");
-        $sql->execute([$this->firm_id, $type]);
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE ite_id = ? and type_id = ?");
+        $sql->execute([$this->site_id, $type]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
     

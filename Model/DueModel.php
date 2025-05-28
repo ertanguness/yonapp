@@ -33,4 +33,5 @@ protected $table = "dues";
         $sql->execute([$id]);
         return $sql->fetch(PDO::FETCH_OBJ)->due_name;
     }
+
 }

@@ -67,14 +67,14 @@ $active_page = isset($_GET["p"]) ? $_GET["p"] : "home";
 $menu_name = $menus->getMenusByLink($active_page);
 ?>
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="zxx" >
 
 <?php $title = 'YonApp - Apartman / Site Yönetim Sistemi' ?>
 <?php include_once './partials/head.php' ?>
 
 <!-- Datatables başlangıç istediğimiz tablonun classına datatables yazmak yeterli aktif olması için -->
 
-
+<!-- 
 <script>
     function initializeDataTables() {
         $(".datatables").each(function() {
@@ -115,7 +115,7 @@ $menu_name = $menus->getMenusByLink($active_page);
     //     childList: true,
     //     subtree: true
     // });
-</script>
+</script>  -->
 
 
 
@@ -146,7 +146,6 @@ $menu_name = $menus->getMenusByLink($active_page);
             <?php
 
             if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
-
                 include "pages/{$page}.php";
             } else if (!file_exists("pages/{$page}.php")) {
 

@@ -11,7 +11,7 @@
 :root {
   --bs-body-color: #30373f;
   --bs-border-color: #dedee2;
-  --bs-primary: #1c84ee;
+  --bs-primary: #3454d1;
   --bs-secondary: #6c757d;
   --bs-border-color: #dedee2;
 }
@@ -68,14 +68,18 @@ div:where(.swal2-icon-content) {
 }
 .search-input-row input {
   margin: 0px !important;
-  padding: 8px !important;
-  border: 1px solid #bfc1c2 !important;
+  padding: 6px !important;
+  border: 1px solid #d0d2d3 !important;
 }
 
 .form-control:focus {
-  border-color: #1c84ee !important;
+  border-color: #3454d1 !important;
   box-shadow: 0 0 3px rgba(71, 216, 241, 0.527) !important;
 }
+.form-control-sm {
+
+   font-size: .78rem !important;
+  }
 
 .error {
   color: #dc3545 !important;
@@ -137,7 +141,7 @@ div:where(.swal2-icon-content) {
 }
 
 .badge-primary {
-  background-color: #1c84ee;
+  background-color: #3454d1;
 }
 
 .badge-success {
@@ -179,7 +183,7 @@ div:where(.swal2-icon-content) {
 }
 
 .badge-pill .badge-primary {
-  background-color: #1c84ee;
+  background-color: #3454d1;
 }
 
 .badge-pill .badge-success {
@@ -227,4 +231,52 @@ div:where(.swal2-icon-content) {
 
 .border-radius-12 {
   border-radius: 12px;
+}
+
+
+
+
+
+
+table th:not(.no-sort) {
+  cursor: pointer;
+}
+table thead tr:first-child th {
+  background-color: #f8f9fa !important;
+  background-image: linear-gradient(to bottom, #f8f9fa, #e9ecef) !important;
+  color: black !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid  #dee2e6 !important;
+  vertical-align: bottom !important;
+}
+
+
+.table-bordered > tbody > tr > td {
+  vertical-align: middle;
+}
+
+.dataTables_filter {
+  display: none !important;
+}
+
+.ekler .card-body {
+  padding: 0 !important;
+}
+
+.accordion-button:not(.collapsed) {
+  color: var(--bs-accordion-active-color);
+  background-color: #f8f9fa;
+  
+}
+
+.accordion-button{
+  padding: 10px !important;
+
+}
+.accordion-button:focus {
+  z-index: 3;
+  outline: 0;
+  -webkit-box-shadow: 0 0 0 0.1rem rgba(248, 249, 250, 0.25) !important;
+  box-shadow: 0 0 0 0.1rem rgba(148, 149, 150, 0.25) !important;
+
 }

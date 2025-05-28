@@ -72,7 +72,7 @@ $new_url = $url_parts['path'] . '?' . $new_query_string;
                         <?php
                         // Sayfa adını kontrol et
                         if (basename($_SERVER['PHP_SELF']) != 'company-list.php') {
-                            echo Site::mySitesSelect("mySite", $site_id);
+                            echo Site::SitelerimSelect("mySite", $site_id);
                         }
                         ?>
                     </div>

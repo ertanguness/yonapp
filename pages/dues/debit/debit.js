@@ -5,8 +5,14 @@ $(document).on("click", "#save_debit", function () {
   var form = $("#debitForm");
   var formData = new FormData(form[0]);
 
-  formData.append("action", "save_debit");
-  formData.append("id", $("#debit_id").val());
+  formData.append("action", "borclandirma_kaydet");
+  formData.append("id", $("#borc_id").val());
+  formData.append("borc_adi", $("#borc_baslik option:selected").text());
+
+  // for(let pair of formData.entries()) {
+  //   console.log(pair[0]+ ', ' + pair[1]);
+  // }
+
 
   addCustomValidationMethods(); //validNumber methodu için
   var validator = $("#debitForm").validate({
@@ -75,6 +81,8 @@ $(document).on("click", ".delete-debit", function () {
               let table = $("#debitTable").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire("Silindi", `${Name} başarıyla silindi.`, "success");
+            }else{
+              swal.fire("Hata", data.message, "error");
             }
           });
       }
@@ -87,7 +95,7 @@ $(document).ready(function () {
 });
 
 //Aidat adı değiştiğinde, aidatın güncel verilerini getir
-$(document).on("change", "#due_title", function () {
+$(document).on("change", "#borc_baslik", function () {
   getDueInfo();
 });
 
@@ -99,7 +107,7 @@ $(document).on("change", "#block_id", function () {
 //Borç bilgilerini getir
 function getDueInfo() {
   //dues tablosundan verileri getir
-  let duesId = $("#due_title").val();
+  let duesId = $("#borc_baslik").val();
 
   var formData = new FormData();
   formData.append("action", "get_due_info");
@@ -114,10 +122,10 @@ function getDueInfo() {
     })
     .then((data) => {
       if (data.status == "success") {
-        //console.log(data.data);
+       // console.log(data.data);
 
-        $("#amount").val(data.data.amount.replace(".", ","));
-        $("#penalty_rate").val(data.data.penalty_rate);
+        $("#tutar").val(data.data.amount.replace(".", ","));
+        $("#ceza_orani").val(data.data.penalty_rate);
       } else {
         swal.fire({
           title: "Hata",
@@ -134,6 +142,10 @@ function getBlocksBySite(siteId) {
   var formData = new FormData();
   formData.append("action", "get_blocks");
 
+  // for(let pair of formData.entries()) {
+  //   console.log(pair[0]+ ', ' + pair[1]);
+  // }
+
   fetch(url, {
     method: "POST",
     body: formData,
@@ -143,6 +155,7 @@ function getBlocksBySite(siteId) {
     })
     .then((data) => {
       if (data.status == "success") {
+        console.log(data);
         $("#block_id").empty();
         //Block Seçiniz seçeneği ekle
         $("#block_id").append(
@@ -150,7 +163,7 @@ function getBlocksBySite(siteId) {
         );
         $.each(data.data, function (index, block) {
           $("#block_id").append(
-            $("<option></option>").val(block.id).text(block.block_name)
+            $("<option></option>").val(block.id).text(block.blok_adi)
           );
         });
       }
@@ -163,6 +176,10 @@ function getPeoplesByBlock(blockId) {
   formData.append("action", "get_peoples_by_block");
   formData.append("block_id", blockId);
 
+  // for(let pair of formData.entries()) {
+  //   console.log(pair[0]+ ', ' + pair[1]);
+  // }
+
   fetch(url, {
     method: "POST",
     body: formData,
@@ -173,14 +190,14 @@ function getPeoplesByBlock(blockId) {
     .then((data) => {
       if (data.status == "success") {
         //console.log(data.data);
-        $("#target_person").empty();
+        $("#hedef_kisi").empty();
         //Kişi Seçiniz seçeneği ekle
-        $("#target_person").append(
+        $("#hedef_kisi").append(
           $("<option disabled></option>").val(0).text("Kişileri Seçiniz")
         );
         $.each(data.data, function (index, people) {
-          $("#target_person").append(
-            $("<option></option>").val(people.id).text(people.fullname)
+          $("#hedef_kisi").append(
+            $("<option></option>").val(people.id).text(people.adi_soyadi)
           );
         });
        }

@@ -1,20 +1,15 @@
 <?php 
 
-
 namespace Model;
 
 use Model\Model;
-use PDO;
 
-class DebitDetailsModel extends Model
-{
-    protected $table = "debit_details"; 
+class KasaModel extends Model{
+    protected $table = "kasa";
 
     public function __construct()
     {
         parent::__construct($this->table);
     }
-
- 
-   
+    
 }

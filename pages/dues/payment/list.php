@@ -1,3 +1,15 @@
+<?php 
+
+use App\Helper\Security;
+
+use Model\BorclandirmaDetayModel;
+
+$BorcDetayModel = new BorclandirmaDetayModel();
+$borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
+
+
+
+?>
 
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -8,6 +20,22 @@
             <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Borç Listesi</li>
         </ul>
+    </div>
+    <div class="page-header-right ms-auto">
+        <div class="page-header-right-items">
+            <div class="d-flex d-md-none">
+                <a href="javascript:void(0)" class="page-header-right-close-toggle">
+                    <i class="feather-arrow-left me-2"></i>
+                  
+                </a>
+            </div>
+            <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
+              
+                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-primary">
+                    <i class="feather-file-plus me-2"></i>Excelden Ödeme Yükle
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -29,43 +57,48 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Blok</th>
-                                            <th>Daire No</th>
+                                            <th>Blok Adı</th>
                                             <th>Ad Soyad</th>
                                             <th>Borç Tutarı</th>
+                                            <th>Ödenen</th>
+                                            <th>Kalan Borç</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Örnek borç listesi, veritabanından çekilecek
-                                        $debts = [
-                                            ['block' => 'A', 'flat_no' => 1, 'name' => 'Ali Veli', 'total_debt' => 500],
-                                            ['block' => 'B', 'flat_no' => 2, 'name' => 'Ayşe Kaya', 'total_debt' => 800],
-                                            ['block' => 'C', 'flat_no' => 3, 'name' => 'Mehmet Can', 'total_debt' => 200],
-                                        ];
-                                        foreach ($debts as $index => $debt):
+                                       
+                                        foreach ($borc_listesi as $index => $borc):
+                                            $enc_id = Security::encrypt($borc->borc_id);
                                         ?>
-                                            <tr>
-                                                <td><?= $index + 1; ?></td>
-                                                <td><?= $debt['block']; ?></td>
-                                                <td><?= $debt['flat_no']; ?></td>
-                                                <td><?= $debt['name']; ?></td>
-                                                <td><?= $debt['total_debt']; ?> ₺</td>
-                                                
-                                                <td>
-                                                    <div class="d-flex justify-content-center gap-2">
-                                                        <a href="#" class="btn btn-light-secondary route-link px-2 py-2"
-                                                            data-page="dues/payment/manage"
-                                                            data-block="<?= $debt['block']; ?>"
-                                                            data-flat-no="<?= $debt['flat_no']; ?>"
-                                                            style="display: inline-flex; align-items: center; justify-content: center; padding: 0 10px;">
-                                                            <i class="feather-eye me-2"></i>
-                                                            <span>Detay</span>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                        <tr>
+
+                                            <td><?= $index + 1 ?></td>
+                                            <td><?= $borc->blok_adi ?></td>
+                                            <td><?= $borc->kisi_adi ?></td>
+                                            <td><?= $borc->toplam_borc   ?> TL</td>
+                                            <td><?= $borc->odenen_borc ?? 0 ?> TL</td>
+                                            <td><?= $borc->kalan_borc ?? 0 ?> TL</td>
+                                            <td style="width:10%">
+                                                <div class="hstack gap-2 ">
+                                                    <a href="index?p=dues/payment/detail&id=<?php echo $enc_id ?>"
+                                                        class="avatar-text avatar-md">
+                                                        <i class="feather-eye"></i>
+                                                    </a>
+                                                    <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>"
+                                                        class="avatar-text avatar-md">
+                                                        <i class="feather-edit"></i>
+                                                    </a>
+                                                    <a href="javascript:void(0);"
+                                                        data-name="<?php echo $borc->borc_adi ?>"
+                                                        data-id="<?php echo $enc_id ?>"
+                                                        class="avatar-text avatar-md delete-dues">
+                                                        <i class="feather-trash-2"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+
+                                        </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>

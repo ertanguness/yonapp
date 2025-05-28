@@ -12,4 +12,5 @@
 	<script src="assets/js/widgets-charts-init.min.js"></script>	
     <!--! BEGIN: Theme Customizer  !-->
     <script src="assets/js/theme-customizer-init.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
 <?php echo (isset($script) ? $script   : '')?>

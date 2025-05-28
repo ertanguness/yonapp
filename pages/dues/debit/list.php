@@ -1,16 +1,16 @@
 <?php 
-use Model\DebitModel;
-use Model\DueModel;
 use App\Helper\Security;
 use App\Helper\Date;
 
+use Model\DueModel;
+use Model\BorclandirmaModel;
 
 
-$Debit = new DebitModel();
+$Borc = new BorclandirmaModel();
 $Due = new DueModel();
 
 //borçlandırmaları getir
-$debits = $Debit->getDebits();
+$borclar = $Borc->all();
 
 
 
@@ -67,16 +67,16 @@ $debits = $Debit->getDebits();
                                     <tbody>
                                         <?php
                                         $i = 1;
-                                        foreach ($debits as $debt){
-                                            $enc_id = Security::encrypt($debt->id);
+                                        foreach ($borclar as $borc){
+                                            $enc_id = Security::encrypt($borc->id);
                                             
                                         ?>
                                             <tr class="text-center">
                                                 <td><?php echo $i++; ?></td>
-                                                <td><?php echo $Due->getDueName($debt->due_id); ?></td>
-                                                <td><?php echo $debt->amount; ?></td>
-                                                <td><?php echo Date::dmY($debt->start_date); ?></td>
-                                                <td><?php echo Date::dmY($debt->end_date); ?></td>
+                                                <td><?php echo $Due->getDueName($borc->borc_tipi_id); ?></td>
+                                                <td><?php echo $borc->tutar; ?></td>
+                                                <td><?php echo Date::dmY($borc->baslangic_tarihi); ?></td>
+                                                <td><?php echo Date::dmY($borc->bitis_tarihi); ?></td>
                                                 <td>
                                                    TÜM SİTE
                                                 </td>
@@ -85,12 +85,12 @@ $debits = $Debit->getDebits();
                                                 </td>
                                                 <td>
                                                     <div class="text-truncate" style="max-width: 200px;">
-                                                        <?php echo $debt->description; ?>
+                                                        <?php echo $borc->aciklama; ?>
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="hstack gap-2">
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md" title="Görüntüle">
+                                                        <a href="index?p=dues/debit/detail&id=<?php echo $enc_id ?>" class="avatar-text avatar-md" title="Görüntüle">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=dues/debit/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" 
@@ -99,7 +99,7 @@ $debits = $Debit->getDebits();
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);" class="avatar-text avatar-md delete-debit" title="Sil"
-                                                        data-id="<?php echo $enc_id; ?>" data-name="<?php echo $debt->due_id; ?>"
+                                                        data-id="<?php echo $enc_id; ?>" data-name="<?php echo $Due->getDueName($borc->borc_tipi_id); ?>"
                                                         >
                                                             <i class="feather-trash-2"></i>
                                                         </a>

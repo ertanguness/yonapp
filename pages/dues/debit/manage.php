@@ -4,18 +4,30 @@ use App\Helper\Date;
 use App\Helper\Due;
 use App\Helper\Helper;
 use App\Helper\Security;
-use Model\DebitModel;
+use Model\BorclandirmaModel;
 use App\Helper\Debit;
 
 
 
 $DueHelper = new Due();
-$Debit = new DebitModel();
+$Borc = new BorclandirmaModel();
 
 $id = Security::decrypt(@$_GET["id"] ?? 0) ?? 0;
-$debit = $Debit->find($id ) ?? null;
+$borc = $Borc->find($id ) ?? null;
 
 $DebitHelper = new Debit();
+
+//içinde olduğumuz ayın ilk gününü alıyoruz
+$baslangic_tarihi = Date::firstDay(
+    Date::getMonth(),
+    Date::getYear()
+
+);
+//içinde olduğumuz ayın son gününü alıyoruz
+$bitis_tarihi = Date::lastDay(
+    Date::getMonth(),
+    Date::getYear()
+);
 
 ?>
 
@@ -70,19 +82,20 @@ $DebitHelper = new Debit();
                             <div>
                                 <p class="fw-bold mb-1 text-truncate-1-line alert-header">Borç Ekleme!</p>
                                 <p class="fs-12 fw-medium text-truncate-1-line alert-description">
-                                Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara borclandırma yapılacaktır.          
+                                    Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara
+                                    borclandırma yapılacaktır.
 
-                            </p>
-                              
+                                </p>
+
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"
                                     aria-label="Close"></button>
                             </div>
                         </div>
                     </div>
                 </div>
-                    <div class="card-body">
+                <div class="card-body">
                     <form id="debitForm" action="" method="POST">
-                        <input type="text" class="form-control d-none" name="debit_id" id="debit_id"
+                        <input type="text" class="form-control d-none" name="borc_id" id="borc_id"
                             value="<?php echo $_GET["id"] ?? 0 ?>">
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
@@ -91,19 +104,19 @@ $DebitHelper = new Debit();
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-file-invoice"></i></div>
-                                    <?php echo $DueHelper->getDuesSelect("due_title") ?>
+                                    <?php echo $DueHelper->getDuesSelect("borc_baslik") ?>
 
                                 </div>
                             </div>
 
                             <div class="col-lg-2">
-                                <label for="amount" class="fw-semibold">Tutar (₺):</label>
+                                <label for="tutar" class="fw-semibold">Tutar (₺):</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-money-bill"></i></div>
-                                    <input type="text" class="form-control money" name="amount" id="amount"
-                                        value="<?php echo $debit->amount ?? ''; ?>" placeholder="Tutar giriniz"
+                                    <input type="text" class="form-control money" name="tutar" id="tutar"
+                                        value="<?php echo $borc->tutar ?? ''; ?>" placeholder="Tutar giriniz"
                                         required>
                                 </div>
                             </div>
@@ -111,24 +124,33 @@ $DebitHelper = new Debit();
 
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="end_date" class="fw-semibold">Son Ödeme Tarihi:</label>
+                                <label for="bitis_tarihi" class="fw-semibold">Dönemi:</label>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-2">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                                    <input type="text" class="form-control flatpickr" name="end_date" id="end_date"
-                                        value="<?php echo Date::dmY($debit->end_date ?? ''); ?>" autocomplete="off"
-                                        required>
+                                    <input type="text" class="form-control flatpickr" name="baslangic_tarihi" id="baslangic_tarihi"
+                                        value="<?php echo Date::dmY($borc->baslangic_tarihi ?? $baslangic_tarihi); ?>"
+                                        autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+
+                                <div class="input-group">
+                                    <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+                                    <input type="text" class="form-control flatpickr" name="bitis_tarihi" id="bitis_tarihi"
+                                        value="<?php echo Date::dmY($borc->bitis_tarihi ?? $bitis_tarihi); ?>"
+                                        autocomplete="off" required>
                                 </div>
                             </div>
 
                             <div class="col-lg-2">
-                                <label for="penalty_rate" class="fw-semibold">Ceza Oranı (%):</label>
+                                <label for="ceza_orani" class="fw-semibold">Ceza Oranı (%):</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-percentage"></i></div>
-                                    <input type="number" class="form-control" name="penalty_rate" id="penalty_rate"
+                                    <input type="number" class="form-control" name="ceza_orani" id="ceza_orani"
                                         placeholder="Ceza oranı" step="0.01" min="0">
                                 </div>
                             </div>
@@ -136,19 +158,19 @@ $DebitHelper = new Debit();
 
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="target_type" class="fw-semibold">Kime Borçlandırılacak:</label>
+                                <label for="hedef_tipi" class="fw-semibold">Kime Borçlandırılacak:</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-users"></i></div>
-                                    <?php echo Helper::targetTypeSelect('target_type', $debit->target_type ?? "all"); ?>
+                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all"); ?>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
-                                <label for="block_id" class="fw-semibold">Blok Seç:</label>
+                            <div class="col-lg-2 ">
+                                <label for="block_id" class="fw-semibold blok-sec-label">Blok Seç:</label>
                             </div>
                             <div class="col-lg-4">
-                                <div class="input-group flex-nowrap w-100">
+                                <div class="input-group flex-nowrap w-100 blok-sec">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
                                     <select class="form-control select2-single" name="block_id" id="block_id" disabled>
                                         <option value="">Seçiniz</option>
@@ -157,17 +179,21 @@ $DebitHelper = new Debit();
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
+                                <div class="input-group flex-nowrap w-100 dairetipi-sec d-none">
+                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
+                                    <?php echo Helper::getApartmentTypesSelect($site_id) ?>
+                                </div>
                             </div>
 
                         </div>
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="target_person" class="fw-semibold">Kişi(ler):</label>
+                                <label for="hedef_kisi" class="fw-semibold">Kişi(ler):</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-user-friends"></i></div>
-                                    <select name="target_person" id="target_person" data-placeholder="Yours Placeholder"
+                                    <select name="hedef_kisi" id="hedef_kisi" data-placeholder="Yours Placeholder"
                                         multiple disabled class="form-control select2"></select>
                                 </div>
                             </div>
@@ -184,13 +210,13 @@ $DebitHelper = new Debit();
                         </div>
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="description" class="fw-semibold">Açıklama:</label>
+                                <label for="aciklama" class="fw-semibold">Açıklama:</label>
                             </div>
                             <div class="col-lg-10">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-info-circle"></i></div>
-                                    <textarea class="form-control" name="description" id="description" rows="3"
-                                        placeholder="Açıklama giriniz"><?php echo $debit->description ?? ''; ?></textarea>
+                                    <textarea class="form-control" name="aciklama" id="aciklama" rows="3"
+                                        placeholder="Açıklama giriniz"><?php echo $borc->aciklama ?? ''; ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -203,6 +229,122 @@ $DebitHelper = new Debit();
 </div>
 <script>
 $(document).ready(function() {
+    const $targetType = $('#hedef_tipi');
+    const $targetPerson = $('#hedef_kisi');
+    const $blockSelect = $('#block_id');
+    const $targetDaireTipi = $("#daire_tipi");
+    const $alertDescription = $(".alert-description");
+
+    function updateAlertMessage(message) {
+        $alertDescription.fadeOut(200, function() {
+            $(this).text(message).fadeIn(200);
+        });
+    }
+
+    function toggleElements(options) {
+        $targetPerson.prop('disabled', options.targetPersonDisabled).val(null).trigger('change');
+        $blockSelect.prop('disabled', options.blockSelectDisabled).val(null).trigger('change');
+        $targetDaireTipi.prop('disabled', options.targetDaireTipiDisabled).val(null).trigger('change');
+        $(".dairetipi-sec").toggleClass("d-none", options.hideDaireTipi);
+        $(".blok-sec").toggleClass("d-none", options.hideBlokSec);
+        $(".blok-sec-label").text(options.blokSecLabel || "Blok Seç:");
+    }
+
+    $targetType.on('change', function() {
+        const type = $(this).val();
+
+        switch (type) {
+            case '0':
+                toggleElements({
+                    targetPersonDisabled: true,
+                    blockSelectDisabled: true,
+                    hideDaireTipi: true,
+                    hideBlokSec: true
+                });
+                updateAlertMessage("Borçlandırma yapmak için listeden seçim yapınız.");
+                break;
+
+            case 'person':
+                toggleElements({
+                    targetPersonDisabled: false,
+                    blockSelectDisabled: true,
+                    hideDaireTipi: true,
+                    hideBlokSec: false
+                });
+                updateAlertMessage(
+                "Kişiler listesinden seçtiğiniz kişilere borclandırma yapılacaktır.");
+                break;
+
+            case 'all':
+                const allValues = $targetPerson.find('option').map(function() {
+                    return $(this).val();
+                }).get();
+                $targetPerson.val(allValues).trigger('change');
+                toggleElements({
+                    targetPersonDisabled: true,
+                    blockSelectDisabled: true,
+                    hideDaireTipi: true,
+                    hideBlokSec: false
+                });
+                updateAlertMessage(
+                    "Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara borclandırma yapılacaktır."
+                    );
+                break;
+
+            case 'evsahibi':
+                toggleElements({
+                    targetPersonDisabled: false,
+                    blockSelectDisabled: true,
+                    hideDaireTipi: true,
+                    hideBlokSec: false
+
+                });
+                updateAlertMessage("Yalnızca Ev sahiplerine borclandırma yapılacaktır.");
+                break;
+
+            case 'dairetipi':
+                toggleElements({
+                    targetPersonDisabled: true,
+                    blockSelectDisabled: true,
+                    hideDaireTipi: false,
+                    hideBlokSec: true,
+                    blokSecLabel: "Daire Tipi Seç:"
+                });
+                updateAlertMessage("Daire tiplerine göre borclandırma yapılacaktır.");
+                break;
+
+            case 'block':
+                getBlocksBySite();
+                toggleElements({
+                    targetPersonDisabled: false,
+                    blockSelectDisabled: false,
+                    hideDaireTipi: true,
+                    hideBlokSec: false
+                });
+                updateAlertMessage(
+                    "Seçtiğiniz bloktaki kişilere veya ayrıca sadece seçilen kişilere borclandırma yapılacaktır."
+                    );
+                break;
+
+            default:
+                toggleElements({
+                    targetPersonDisabled: true,
+                    blockSelectDisabled: true,
+                    hideDaireTipi: true,
+                    hideBlokSec: true
+                });
+                break;
+        }
+    });
+
+    $blockSelect.on('change', function() {
+        const selectedBlock = $(this).val();
+        $targetPerson.val(null).trigger('change');
+        $targetPerson.find('option').hide().filter(function() {
+            return $(this).data('block') == selectedBlock;
+        }).show();
+    });
+
     $('.select2-single').select2({
         placeholder: 'Seçiniz',
         width: '100%',
@@ -212,59 +354,6 @@ $(document).ready(function() {
     $('.select2-multiple').select2({
         placeholder: 'Kişi seçiniz',
         width: '100%'
-    });
-
-    const $targetType = $('#target_type');
-    const $targetPerson = $('#target_person');
-    const $blockSelect = $('#block_id');
-
-    $targetType.on('change', function() {
-        const type = $(this).val();
-        
-        
-
-        if (type === 'person') {
-            $targetPerson.prop('disabled', false);
-            $blockSelect.prop('disabled', true).val(null).trigger('change');
-            $targetPerson.find('option').show();
-            $targetPerson.val(null).trigger('change');
-
-        } else if (type === 'all') {
-            const allValues = $targetPerson.find('option').map(function() {
-                return $(this).val();
-            }).get();
-            $targetPerson.val(allValues).trigger('change');
-            $targetPerson.prop('disabled', true);
-            $blockSelect.prop('disabled', true).val(null).trigger('change');
-            $(".alert-description").fadeOut(200, function() {
-                $(this).text("Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara borclandırma yapılacaktır.").fadeIn(200);
-            });
-        }else if(type == "evsahibi"){
-            $(".alert-description").fadeOut(200, function() {
-                $(this).text("Yalnızca Ev sahiplerine borclandırma yapılacaktır.").fadeIn(200);
-            });
-
-        } else if (type === 'block') {
-            getBlocksBySite();
-            $blockSelect.prop('disabled', false);
-            $targetPerson.prop('disabled', false).val(null).trigger('change');
-            //$targetPerson.find('option').hide(); // şimdilik tümü gizlenir
-        } else {
-            $targetPerson.prop('disabled', true).val(null).trigger('change');
-            $blockSelect.prop('disabled', true).val(null).trigger('change');
-        }
-    });
-
-    $blockSelect.on('change', function() {
-        const selectedBlock = $(this).val();
-        $targetPerson.val(null).trigger('change');
-        $targetPerson.find('option').hide();
-
-        $targetPerson.find('option').each(function() {
-            if ($(this).data('block') == selectedBlock) {
-                $(this).show();
-            }
-        });
     });
 });
 </script>
