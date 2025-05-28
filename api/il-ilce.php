@@ -2,27 +2,12 @@
 require_once '../Database/require.php';
 require_once '../App/Helper/cities.php';
 
+use App\Helper\Cities;
 
 
 
-$cityObj = new Cities();
+$cities = new Cities(); 
 
-if ($_POST['action'] == 'getTowns') {
-    $city_id = $_POST['city_id'];
-
-    try {
-        $towns = $cityObj->getCityTowns($city_id);
-        $status = 'success';
-        $message = '';
-    } catch (PDOException $exh) {
-        $status = 'error';
-        $message = $exh->getMessage();
-    }
-
-    $res = [
-        'status' => $status,
-        'message' => $message,
-        'towns' => $towns
-    ];
-    echo json_encode($res);
+if(isset($_POST['city_id']) && is_numeric($_POST['city_id'])) {
+    echo $cities->getCityTowns($_POST['city_id']);
 }

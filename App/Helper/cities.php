@@ -48,18 +48,19 @@ class Cities extends Db
             return 'Bilinmiyor';
         }
     }
-
     public function getCityTowns($city_id)
     {
         $query = $this->db->prepare('SELECT * FROM ilce WHERE il_id = :city_id');
-        $query->execute(array('city_id' => $city_id));
+        $query->execute(['city_id' => $city_id]);
         $towns = $query->fetchAll(PDO::FETCH_OBJ);
-
+    
         $select = '<option value="">İlçe Seçiniz</option>';
         foreach ($towns as $town) {
             $select .= "<option value=\"{$town->id}\">{$town->ilce_adi}</option>";
         }
-
+    
         return $select;
     }
+    
+    
 }

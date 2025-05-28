@@ -28,9 +28,6 @@ $user = $_SESSION['user'];
 $user_id = $user->id;
 $email = $user->email;
 
-<<<<<<< HEAD
-use Model\MyFirmModel;
-=======
 
 
 use Model\SitesModel;
@@ -44,7 +41,6 @@ use Model\SitesModel;
 //Kullanıcının sitelerin getir
 $Site= new SitesModel();
 $mySites = $Site->getMySitesByUserId(); // Kullanıcının sitelerini getir
->>>>>>> e2408f2d71a6526d11f09835a3f838bad29f803b
 
 if (count($mySites) == 1) {
     $_SESSION['site_id'] = $mySites[0]->id;

@@ -24,7 +24,7 @@
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>
-                <button type="button" class="btn btn-primary" id="saveMyFirm">
+                <button type="button" class="btn btn-primary" id="save_apartment">
                     <i class="feather-save  me-2"></i>
                     Kaydet
                 </button>
@@ -58,17 +58,8 @@
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
-                                        <!--********** HIDDEN ROW************** -->
-                                        <div class='row d-none'>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='id' class='form-control'
-                                                    value="<?php echo $incexp->id ?? 0 ?>">
-                                            </div>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='action' value='saveApartmentType' class='form-control'>
-                                            </div>
-                                        </div>
-                                        <!--********** HIDDEN ROW************** -->
+                                    <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $id ; ?>">
+
                                         <?php
                                             require_once 'pages/management/apartment/content/ApartmentInformation.php';
                                         ?>

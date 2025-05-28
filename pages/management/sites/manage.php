@@ -1,12 +1,9 @@
 <?php
-require_once "App/Helper/cities.php";
-$cities = new Cities();
-
 use Model\SitesModel;
 use App\Helper\Security;
-$Sites = new SitesModel();
 use App\Helper\Cities;
 
+$Sites = new SitesModel();
 $cities = new Cities();
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;

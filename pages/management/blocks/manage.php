@@ -9,7 +9,7 @@ $Blocks = new BlockModel();
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 $blocks = $Blocks->find($id  ?? null);
 
-$site = $Sites->getSiteName($_SESSION['firm_id'] ?? null);
+$site = $Sites->getSiteName($_SESSION['site_id'] ?? null);
 ?>
 
 <div class="page-header">

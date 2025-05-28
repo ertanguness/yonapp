@@ -8,7 +8,7 @@ $Site = new SitesModel();
 
 
 $Blocks = new BlockModel();
-$blocks = $Blocks->getBlocksBySite();
+$blocks = $Blocks->getBlocksBySite($_SESSION['site_id'] ?? null);
 
 ?>
 <div class="page-header">
