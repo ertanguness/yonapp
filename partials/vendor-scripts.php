@@ -80,14 +80,16 @@ if ($page == 'management/blocks/manage' ||
     }
 //*************BLOCKS******************************** */
 
-//*************APARTMENT TYPES******************************** */
+//*************APARTMENT******************************** */
+
+//*************Define APARTMENT TYPES******************************** */
 // Daire Tipi Tanımlama sayfası
 
 if (
     $page == 'defines/apartment-type/manage' ||   $page == 'defines/apartment-type/list') {
         echo '<script src="/pages/defines/apartment-type/apartment-type.js"></script>';
     }
-//*************APARTMENT TYPES******************************** */
+//*************define APARTMENT TYPES******************************** */
 
 
 if ($page == 'finans-yonetimi/kasa/duzenle' || $page == 'finans-yonetimi/kasa/list') {

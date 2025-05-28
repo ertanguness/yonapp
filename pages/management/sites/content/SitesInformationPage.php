@@ -30,7 +30,7 @@
             <div class="col-lg-4">
                 <div class="input-group">
                     <div class="input-group-text"><i class="feather-phone"></i></div>
-                    <input type="text" class="form-control" id="phone"  name="phone"  placeholder="0xxx xxx xx xx"  value="<?php echo $company->phone ?? ''; ?>"
+                    <input type="text" class="form-control" id="phone" name="phone" placeholder="0xxx xxx xx xx" value="<?php echo $company->phone ?? ''; ?>"
                         pattern="0[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}"
                         maxlength="14"
                         oninput="this.value = this.value
@@ -40,19 +40,22 @@
                             });" />
                 </div>
             </div>
-
+        </div>
+        <!-- İl Seçimi -->
+        <div class="row mb-4 align-items-center">
             <div class="col-lg-2">
                 <label class="fw-semibold">İl: </label>
             </div>
             <div class="col-lg-4">
                 <div class="input-group flex-nowrap w-100">
                     <div class="input-group-text"><i class="feather-map-pin"></i></div>
-                    <?php echo $cities->citySelect("il", $company->il ?? ''); ?>
+                    <?php echo $cities->citySelect("il"); ?>
                 </div>
             </div>
-        </div>
 
-        <div class="row mb-4 align-items-center">
+
+            <!-- İlçe Seçimi -->
+
             <div class="col-lg-2">
                 <label class="fw-semibold">İlçe: </label>
             </div>
@@ -61,9 +64,6 @@
                     <div class="input-group-text"><i class="feather-map-pin"></i></div>
                     <select name="ilce" id="ilce" class="form-control select2" style="width:100%">
                         <option value="">İlçe Seçiniz</option>
-                        <option selected value="<?php echo $company->ilce ?? ''; ?>">
-                            <?php echo $cities->getTownName($company->ilce ?? ''); ?>
-                        </option>
                     </select>
                 </div>
             </div>
@@ -206,5 +206,27 @@
         });
     </script>
     
-                    -->
+            -->
     <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
+    <script>
+        $(document).ready(function() {
+            $('#il').change(function() {
+                var cityID = $(this).val();
+
+                if (cityID) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'api/il-ilce.php',
+                        data: {
+                            city_id: cityID
+                        },
+                        success: function(html) {
+                            $('#ilce').html(html);
+                        }
+                    });
+                } else {
+                    $('#ilce').html('<option value="">İlçe Seçiniz</option>');
+                }
+            });
+        });
+    </script>

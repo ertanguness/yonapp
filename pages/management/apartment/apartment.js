@@ -1,32 +1,50 @@
-let blocksurl = "/pages/management/blocks/api.php";
+let urlApartment = "/pages/management/apartment/api.php";
 
-$(document).on("click", "#save_blocks", function () {
-  var form = $("#blocksForm");
+$(document).on("click", "#save_apartment", function () {
+  var form = $("#apartmentForm");
   var formData = new FormData(form[0]);
 
-  formData.append("action", "save_blocks");
-  formData.append("id", $("#blocks_id").val());
+  formData.append("action", "save_apartment");
+  formData.append("id", $("#apartment_id").val());
 
 
-  var validator = $("#blocksForm").validate({
+  var validator = $("#apartmentForm").validate({
     rules: {
-      blocksNumber: {
+      blockName: {
+        required: true,
+      },
+      floor: {
         required: true,
       },
       
+      flatNumber: {
+        required: true,
+      },
+      apartment_type: {
+        required: true,
+      },
     },
     messages: {
-      blocksNumber: {
-        required: "Lütfen blok sayısı giriniz",
+      blockName: {
+        required: "Lütfen blok seçiniz",
+      },
+      floor: {
+        required: "Lütfen kat giriniz",
       },
      
+      flatNumber: {
+        required: "Lütfen daire no giriniz",
+      },
+      apartment_type: {
+        required: "Lütfen daire tipi seçiniz",
+      },
     },
   });
   if (!validator.form()) {
     return;
   }
 
-  fetch(blocksurl, {
+  fetch(urlApartment, {
     method: "POST",
     body: formData,
   })
@@ -44,14 +62,14 @@ $(document).on("click", "#save_blocks", function () {
     });
 });
 
-$(document).on("click", ".delete-blocks", function () {
+$(document).on("click", ".delete-apartment", function () {
   let id = $(this).data("id");
-  let blocksName = $(this).data("name");
+  let apartmenName = $(this).data("name");
   let buttonElement = $(this); // Store reference to the clicked button
   swal
     .fire({
       title: "Emin misiniz?",
-      html: `${blocksName} <br> adlı aidat tanımını silmek istediğinize emin misiniz?`,
+      html: `${apartmenName} <br> adlı aidat tanımını silmek istediğinize emin misiniz?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Evet",
@@ -60,21 +78,21 @@ $(document).on("click", ".delete-blocks", function () {
     .then((result) => {
       if (result.isConfirmed) {
         var formData = new FormData();
-        formData.append("action", "delete_blocks");
+        formData.append("action", "delete_apartment");
         formData.append("id", id);
 
-        fetch(blocksurl, {
+        fetch(urlApartment, {
           method: "POST",
           body: formData,
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.status == "success") {
-              let table = $("#blocksList").DataTable();
+              let table = $("#apartmentList").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${blocksName} adlı aidat tanımı başarıyla silindi.`,
+                `${sitesName} adlı aidat tanımı başarıyla silindi.`,
                 "success"
               );
             }

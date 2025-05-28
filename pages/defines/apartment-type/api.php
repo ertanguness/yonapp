@@ -6,7 +6,7 @@ use Model\DefinesModel;
 use App\Helper\Security;
 
 $Defines = new DefinesModel();
-$site_id = $_SESSION["firm_id"] ?? null;
+$site_id = $_SESSION["site_id"] ?? null;
 
 if ($_POST["action"] == "saveApartmentType") {
     $id = isset($_POST["id"]) ? Security::decrypt($_POST["id"]) : null;

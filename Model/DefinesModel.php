@@ -16,8 +16,6 @@ class DefinesModel extends Model
         parent::__construct($this->table);
     }
 
-
-    //Job Groups- İş Grubu tanım : 3
     public function getDefinesByType($type)
     {
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE ite_id = ? and type_id = ?");
@@ -44,7 +42,14 @@ class DefinesModel extends Model
         ]);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-    
+    public function getDefinesTypes($siteId, $type) {
+        $sql = "SELECT * FROM defines WHERE site_id = :site_id AND type = :type ORDER BY define_name ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':site_id', $siteId, PDO::PARAM_INT);
+        $stmt->bindParam(':type', $type, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
    
 
 

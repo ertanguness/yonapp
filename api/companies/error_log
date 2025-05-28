@@ -1,7 +1,0 @@
-[05-Nov-2024 19:57:05 Europe/Istanbul] PHP Fatal error:  Uncaught Exception: Kayıt bulunamadı.zT5LrxKyv9aFaOsevaCRmXa8qGuLgVdTIPsbRU8v in /home/mbeyazil/puantor.com.tr/Model/BaseModel.php:88
-Stack trace:
-#0 /home/mbeyazil/puantor.com.tr/Model/BaseModel.php(59): Model->update()
-#1 /home/mbeyazil/puantor.com.tr/Model/Company.php(48): Model->saveWithAttr()
-#2 /home/mbeyazil/puantor.com.tr/api/companies/mycompanies.php(56): Company->saveMyFirms()
-#3 {main}
-  thrown in /home/mbeyazil/puantor.com.tr/Model/BaseModel.php on line 88
