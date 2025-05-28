@@ -25,7 +25,7 @@
     $title = "Toplu Ödeme Yükleme";
     $text = "*Bu sayfada Excel dosyasından toplu ödeme bilgilerini yükleyebilirsiniz. ";
     $text .= "<br>*Lütfen aşağıdaki örnek şablona uygun bir dosya kullanınız.";
-    $text .=  "<br>*Dosyada olması gereken alanlar: Tarih*, Tutar*, <strong>Açıklama(Daire Kodundan Eşleşme Yapılacak)*</strong>, Referans Numarası";
+    $text .=  "<br>*Dosyada olması gereken alanlar: Tarih*, Tutar*,Daire Kodu, <strong>Açıklama(Daire Kodundan Eşleşme Yapılacak)*</strong>, Referans Numarası";
     $text .= "<br><strong></strong> <a href='files\payment-upload-from-xls.xlsx' target='_blank'>Örnek Excel Dosyası İndir</a>";
     require_once 'pages/components/alert.php';
     ?>

@@ -2,6 +2,10 @@
 
 require_once '../../../vendor/autoload.php';
 
+
+use \PhpOffice\PhpSpreadsheet\IOFactory;
+use \PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+
 use App\Helper\Date;
 use App\Helper\Error;
 use App\Helper\Helper;
@@ -76,10 +80,10 @@ if ($_POST['action'] == 'payment_file_upload') {
 
     /**
      * Başarılı eşleşen daire için tahsilat kaydını veritabanına ekler.
-     * @param $Tahsilat TahsilatModel örneği
+     * @param $Tahsilat TahsilatModel öği
      * @param $data Satır verisi (array)
-     * @param $daire_id Eşleşen daire ID'si
-     * @return mixed Son eklenen kaydın ID'si
+     * @param $daire Eşleşen daire ID'si
+     * @return md Son eklenen kaydın ID'si
      */
     function kaydetTahsilat($Tahsilat, $data, $daire_id) {
         // Gerekirse diğer alanlar eklenebilir
@@ -87,7 +91,7 @@ if ($_POST['action'] == 'payment_file_upload') {
             'id' => 0,
             'islem_tarihi' => $data[0], // İşlem tarihi
             'daire_id' => $daire_id,
-            // 'tutar' => Helper::formattedMoneyToNumber($data[1]),
+            // 'tutar' => ($data[1]),
             // 'makbuz_no' => $data[4],
             // 'aciklama' => $data[3],
         ]);
@@ -104,7 +108,7 @@ if ($_POST['action'] == 'payment_file_upload') {
         return $TahsilatHavuzu->saveWithAttr([
             'id' => 0,
             'islem_tarihi' => Date::Ymd($data[0]), // İşlem tarihi
-            'tahsilat_tutari' => $data[1],         // Tutar
+            'tahsilat_tutari' => Helper::formattedMoneyToNumber($data[1]),  // Tutar
             'ham_aciklama' => $data[3] ?? '',      // Açıklama
             'referans_no' => $data[4] ?? '',       // Makbuz no
             'aciklama' => $aciklamaEk,             // Ek açıklama veya hata
@@ -112,9 +116,12 @@ if ($_POST['action'] == 'payment_file_upload') {
     }
 
     // Excel dosyasını oku ve satırları işle
-    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileTmpName);
+    $spreadsheet = IOFactory::load($fileTmpName);
     $sheet = $spreadsheet->getActiveSheet();
     $rows = $sheet->toArray();
+
+    // B Sütununun veri türü SAyı olarak ayarlanması
+    $sheet->getStyle('B')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
 
     foreach ($rows as $i => $data) {
         if ($i == 0) continue; // Başlık satırını atla

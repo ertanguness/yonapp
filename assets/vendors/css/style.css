@@ -15,6 +15,12 @@
   --bs-secondary: #6c757d;
   --bs-border-color: #dedee2;
 }
+body {
+  font-size: 0.9rem !important;
+}
+.nxl-navbar{
+  font-size: 1rem !important;
+}
 .swal2-popup {
   border-radius: 16px !important;
 }
@@ -126,7 +132,7 @@ div:where(.swal2-icon-content) {
 .se .strong {
   font-weight: 700;
 }
-.badge {
+/* .badge {
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.5;
@@ -212,7 +218,7 @@ div:where(.swal2-icon-content) {
 
 .badge-pill .badge-secondary {
   background-color: #6c757d;
-}
+} */
 
 .font-size-36 {
   font-size: 36px;
@@ -243,11 +249,12 @@ table th:not(.no-sort) {
 }
 table thead tr:first-child th {
   background-color: #f8f9fa !important;
-  background-image: linear-gradient(to bottom, #f8f9fa, #e9ecef) !important;
+  /* background-image: linear-gradient(to bottom, #e3f2fd, #bbdefb) !important; */
   color: black !important;
   font-weight: 600 !important;
-  border-bottom: 2px solid  #dee2e6 !important;
+  /* border-bottom: 2px solid  #dee2e6 !important; */
   vertical-align: bottom !important;
+  padding: 15px !important;
 }
 
 
@@ -273,10 +280,19 @@ table thead tr:first-child th {
   padding: 10px !important;
 
 }
-.accordion-button:focus {
+/* .accordion-button:focus {
   z-index: 3;
   outline: 0;
   -webkit-box-shadow: 0 0 0 0.1rem rgba(248, 249, 250, 0.25) !important;
-  box-shadow: 0 0 0 0.1rem rgba(148, 149, 150, 0.25) !important;
+  box-shadow: 0 0 0 0 rem rgba(148, 149, 150, 0.25) !important;
 
+} */
+
+
+.accordion-item:has(.accordion-button:focus) {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Gölge ekler */
+  border-color: rgba(0, 0, 0, 0.2); /* Sınır rengini değiştirir */
+  border-radius: 8px; /* Köşe yuvarlama */
+  transition: box-shadow 0.3s ease-in-out; /* Geçiş efekti */
+  background-color: #f8f9fa; /* Arka plan rengini değiştirir */
 }
