@@ -75,7 +75,6 @@ $monthlyDebts = [
 </div>
 
 <div class="main-content">
-    <div class="container-xl">
         <div class="row row-deck row-cards">
             <div class="card">
                 <div class="card-body">
@@ -151,7 +150,6 @@ $monthlyDebts = [
                 </div>
             </div>
         </div>
-    </div>
 </div>
 
 <script>
@@ -192,6 +190,7 @@ $monthlyDebts = [
 
         Swal.fire({
             title: 'Ödeme Onayı',
+            icon : 'question',
             html: `
                 <div>
                     <p>Şu ayların borcunu ödemek üzeresiniz:</p>
@@ -199,7 +198,7 @@ $monthlyDebts = [
                     <p>Toplam Tutar: <strong>${totalAmount}</strong></p>
                     <p>Ödeme Yöntemi Seçiniz:</p>
                     <select id="payment-method" class="swal2-input">
-                        <option value="nakit">Nakit</option>
+                        <option value="">Nakit</option>
                         <option value="havale">Havale/EFT</option>
                     </select>
                 </div>

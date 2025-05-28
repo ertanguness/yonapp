@@ -8,7 +8,7 @@ $page = isset($_GET['p']) ? $_GET['p'] : '';
 
 
 if (
-    $page == 'companies/list' ||
+    $page == 'dues/dues-defines/list' ||
     $page == 'offers/list' ||
     $page == 'reports/list' ||
     $page == 'users/list' ||
@@ -18,9 +18,11 @@ if (
 
     $page == 'missions/list' || $page == 'missions/process/list' ||
     $page == 'missions/headers/manage' || $page == 'missions/headers/list' 
-) {
-    // echo '<script src="./dist/libs/datatable/datatables.min.js"></script>';
-}
+) { ?>
+     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
+     <script src="assets/vendors/js/dataTables.min.js"></script>
+     <script src="assets/vendors/js/dataTables.bs5.min.js"></script>	
+<?php  } 
 
 //*************USERS********************************* */
 // Kullanıcı ekleme ve düzenleme sayfası
@@ -88,6 +90,16 @@ if (
 //*************APARTMENT TYPES******************************** */
 
 
+if ($page == 'finans-yonetimi/kasa/duzenle' || $page == 'finans-yonetimi/kasa/list') {
+    echo '<script src="/pages/finans-yonetimi/kasa/js/kasa.js"></script>';
+}
+
+//Payment upload from excel
+if ($page == 'dues/payment/upload-from-xls') {
+    echo '<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mini.min.js"></script>';
+    echo '<script src="/pages/dues/payment/js/upload.js"></script>';
+
+}
 
 
 if ($page == 'home') {
@@ -100,17 +112,18 @@ if ($page == 'home') {
 
 }
 ?>
+ 
 <script src="./src/jquery.inputmask.js"></script>
 <script src="./assets/js/flatpickr.min.js"></script>
 <script src="./assets/js/flatpickr.tr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="./assets/js/select2/js/select2.min.js"></script>
 <script src="./assets/js/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
 
-
+<script src="./assets/js/select2/js/select2.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script> -->
 
 <script src="./src/app.js" defer??></script>

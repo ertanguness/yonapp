@@ -28,12 +28,9 @@ $user = $_SESSION['user'];
 $user_id = $user->id;
 $email = $user->email;
 
-<<<<<<< HEAD
-use Model\MyFirmModel;
-=======
 
 
-use Model\SitesModel;
+use Model\SitelerModel;
 
 // use Model\MyFirmModel;
 
@@ -42,9 +39,8 @@ use Model\SitesModel;
 
 
 //Kullanıcının sitelerin getir
-$Site= new SitesModel();
-$mySites = $Site->getMySitesByUserId(); // Kullanıcının sitelerini getir
->>>>>>> e2408f2d71a6526d11f09835a3f838bad29f803b
+$Site= new SitelerModel();
+$mySites = $Site->Sitelerim(); // Kullanıcının sitelerini getir
 
 if (count($mySites) == 1) {
     $_SESSION['site_id'] = $mySites[0]->id;
@@ -175,21 +171,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
                     <?php foreach ($mySites as $site): ?>
                         <form method="POST" class="mb-3 firm-select-form">
                             <input type="hidden" name="site_id" value="<?= $site->id ?>">
-                            <div class="card firm-card shadow-sm p-3 list-item bg-white <?= $site->is_active == 0 ? 'inactive' : '' ?>">
+                            <div class="card firm-card shadow-sm p-3 list-item bg-white <?= $site->aktif_mi == 0 ? 'inactive' : '' ?>">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center">
                                         <img src="../assets/images/logo/google-wallet.png" alt="Firma Logo" class="firm-logo me-3">
-                                        <div>
-                                            <h5 class="mb-0"><?= htmlspecialchars($site->firm_name) ?></h5>
-                                            <?php if (!empty($site->description)): ?>
-                                                <small class="text-muted"><?= htmlspecialchars($site->description) ?></small>
+                                        <div class="text-start">
+                                            <h5 class="mb-0"><?= htmlspecialchars($site->site_adi) ?></h5>
+                                            <?php if (!empty($site->tam_adres)): ?>
+                                                <small class="text-muted"><?= htmlspecialchars($site->tam_adres) ?></small>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                     <!-- Aktif/Pasif Switch -->
 
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input firm-status-switch" type="checkbox" data-site-id="<?= $site->id ?>" id="firmStatusSwitch<?= $site->id ?>" <?= $site->is_active ? 'checked' : '' ?>>
+                                        <input class="form-check-input firm-status-switch" type="checkbox" data-site-id="<?= $site->id ?>" id="firmStatusSwitch<?= $site->id ?>" <?= $site->aktif_mi ? 'checked' : '' ?>>
                                         <label class="form-check-label" for="firmStatusSwitch<?= $site->id ?>">Aktif</label>
                                     </div>
                                 </div>

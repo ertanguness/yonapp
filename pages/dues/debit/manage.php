@@ -4,27 +4,27 @@ use App\Helper\Date;
 use App\Helper\Due;
 use App\Helper\Helper;
 use App\Helper\Security;
-use Model\DebitModel;
+use Model\BorclandirmaModel;
 use App\Helper\Debit;
 
 
 
 $DueHelper = new Due();
-$Debit = new DebitModel();
+$Borc = new BorclandirmaModel();
 
 $id = Security::decrypt(@$_GET["id"] ?? 0) ?? 0;
-$debit = $Debit->find($id ) ?? null;
+$borc = $Borc->find($id ) ?? null;
 
 $DebitHelper = new Debit();
 
 //içinde olduğumuz ayın ilk gününü alıyoruz
-$start_date = Date::firstDay(
+$baslangic_tarihi = Date::firstDay(
     Date::getMonth(),
     Date::getYear()
 
 );
 //içinde olduğumuz ayın son gününü alıyoruz
-$end_date = Date::lastDay(
+$bitis_tarihi = Date::lastDay(
     Date::getMonth(),
     Date::getYear()
 );
@@ -95,7 +95,7 @@ $end_date = Date::lastDay(
                 </div>
                 <div class="card-body">
                     <form id="debitForm" action="" method="POST">
-                        <input type="text" class="form-control d-none" name="debit_id" id="debit_id"
+                        <input type="text" class="form-control d-none" name="borc_id" id="borc_id"
                             value="<?php echo $_GET["id"] ?? 0 ?>">
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
@@ -104,19 +104,19 @@ $end_date = Date::lastDay(
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-file-invoice"></i></div>
-                                    <?php echo $DueHelper->getDuesSelect("due_title") ?>
+                                    <?php echo $DueHelper->getDuesSelect("borc_baslik") ?>
 
                                 </div>
                             </div>
 
                             <div class="col-lg-2">
-                                <label for="amount" class="fw-semibold">Tutar (₺):</label>
+                                <label for="tutar" class="fw-semibold">Tutar (₺):</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-money-bill"></i></div>
-                                    <input type="text" class="form-control money" name="amount" id="amount"
-                                        value="<?php echo $debit->amount ?? ''; ?>" placeholder="Tutar giriniz"
+                                    <input type="text" class="form-control money" name="tutar" id="tutar"
+                                        value="<?php echo $borc->tutar ?? ''; ?>" placeholder="Tutar giriniz"
                                         required>
                                 </div>
                             </div>
@@ -124,13 +124,13 @@ $end_date = Date::lastDay(
 
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="end_date" class="fw-semibold">Dönemi:</label>
+                                <label for="bitis_tarihi" class="fw-semibold">Dönemi:</label>
                             </div>
                             <div class="col-lg-2">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                                    <input type="text" class="form-control flatpickr" name="start_date" id="start_date"
-                                        value="<?php echo Date::dmY($debit->start_date ?? $start_date); ?>"
+                                    <input type="text" class="form-control flatpickr" name="baslangic_tarihi" id="baslangic_tarihi"
+                                        value="<?php echo Date::dmY($borc->baslangic_tarihi ?? $baslangic_tarihi); ?>"
                                         autocomplete="off" required>
                                 </div>
                             </div>
@@ -138,19 +138,19 @@ $end_date = Date::lastDay(
 
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                                    <input type="text" class="form-control flatpickr" name="end_date" id="end_date"
-                                        value="<?php echo Date::dmY($debit->end_date ?? $end_date); ?>"
+                                    <input type="text" class="form-control flatpickr" name="bitis_tarihi" id="bitis_tarihi"
+                                        value="<?php echo Date::dmY($borc->bitis_tarihi ?? $bitis_tarihi); ?>"
                                         autocomplete="off" required>
                                 </div>
                             </div>
 
                             <div class="col-lg-2">
-                                <label for="penalty_rate" class="fw-semibold">Ceza Oranı (%):</label>
+                                <label for="ceza_orani" class="fw-semibold">Ceza Oranı (%):</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-percentage"></i></div>
-                                    <input type="number" class="form-control" name="penalty_rate" id="penalty_rate"
+                                    <input type="number" class="form-control" name="ceza_orani" id="ceza_orani"
                                         placeholder="Ceza oranı" step="0.01" min="0">
                                 </div>
                             </div>
@@ -158,12 +158,12 @@ $end_date = Date::lastDay(
 
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="target_type" class="fw-semibold">Kime Borçlandırılacak:</label>
+                                <label for="hedef_tipi" class="fw-semibold">Kime Borçlandırılacak:</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-users"></i></div>
-                                    <?php echo Helper::targetTypeSelect('target_type', $debit->target_type ?? "all"); ?>
+                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all"); ?>
                                 </div>
                             </div>
                             <div class="col-lg-2 ">
@@ -188,12 +188,12 @@ $end_date = Date::lastDay(
                         </div>
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="target_person" class="fw-semibold">Kişi(ler):</label>
+                                <label for="hedef_kisi" class="fw-semibold">Kişi(ler):</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-user-friends"></i></div>
-                                    <select name="target_person" id="target_person" data-placeholder="Yours Placeholder"
+                                    <select name="hedef_kisi" id="hedef_kisi" data-placeholder="Yours Placeholder"
                                         multiple disabled class="form-control select2"></select>
                                 </div>
                             </div>
@@ -210,13 +210,13 @@ $end_date = Date::lastDay(
                         </div>
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="description" class="fw-semibold">Açıklama:</label>
+                                <label for="aciklama" class="fw-semibold">Açıklama:</label>
                             </div>
                             <div class="col-lg-10">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-info-circle"></i></div>
-                                    <textarea class="form-control" name="description" id="description" rows="3"
-                                        placeholder="Açıklama giriniz"><?php echo $debit->description ?? ''; ?></textarea>
+                                    <textarea class="form-control" name="aciklama" id="aciklama" rows="3"
+                                        placeholder="Açıklama giriniz"><?php echo $borc->aciklama ?? ''; ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -229,8 +229,8 @@ $end_date = Date::lastDay(
 </div>
 <script>
 $(document).ready(function() {
-    const $targetType = $('#target_type');
-    const $targetPerson = $('#target_person');
+    const $targetType = $('#hedef_tipi');
+    const $targetPerson = $('#hedef_kisi');
     const $blockSelect = $('#block_id');
     const $targetDaireTipi = $("#daire_tipi");
     const $alertDescription = $(".alert-description");

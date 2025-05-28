@@ -1,28 +1,17 @@
-if ($(".datatable").length > 0) {
-  var table = $(".datatable:not(#puantajTable)").DataTable({
-    autoWidth: false,
-    order: false,
+let table;
+$(document).ready(function () {
+  table = $(".datatables").DataTable({
+    stateSave: true,
+    responsive: false,
     language: {
-      url: "src/tr.json",
+      url: "assets/js/tr.json",
     },
-    //dom: "Bfrtip",
-    buttons: [
-      {
-        extend: "excelHtml5",
-        className: "d-none", // Butonu gizliyoruz
-        exportOptions: {
-          columns: ":visible:not(.no-export)", // .no-export sınıfına sahip sütunları dışa aktarma
-        },
-      },
-    ],
-    layout: {
-      bottomStart: "pageLength",
-      bottom2Start: "info",
-      topStart: null,
-      topEnd: null,
-    },
+
+    ...getTableSpecificOptions(),
+
     initComplete: function (settings, json) {
       var api = this.api();
+      var tableId = settings.sTableId;
       var tableId = settings.sTableId;
       $("#" + tableId + " thead").append('<tr class="search-input-row"></tr>');
 
@@ -30,12 +19,10 @@ if ($(".datatable").length > 0) {
         let column = this;
         let title = column.header().textContent;
 
-        //0. ve 1. kolonun index numarasına göre arama kutusu ekle
-        //kolon başlığında checkbox varsa arama kutusu ekleme
-
         if (
           title != "İşlem" &&
           title != "Seç" &&
+          title != "#" &&
           $(column.header()).find('input[type="checkbox"]').length === 0
         ) {
           // Create input element
@@ -45,10 +32,14 @@ if ($(".datatable").length > 0) {
           input.classList.add("form-control-sm");
           input.setAttribute("autocomplete", "off");
 
+          // // Append input element to the new row
+          // $("#" + tableId + " .search-input-row").append(
+          //   $('<th class="search">').append(input)
+          // );
+
           // Append input element to the new row
-          $("#" + tableId + " .search-input-row").append(
-            $('<th class="search">').append(input)
-          );
+          const th = $('<th class="search">').append(input);
+          $("#" + tableId + " .search-input-row").append(th);
 
           // Event listener for user input
           $(input).on("keyup change", function () {
@@ -56,87 +47,63 @@ if ($(".datatable").length > 0) {
               column.search(this.value).draw();
             }
           });
+
+          // Sütunun gerçekten görünür olup olmadığını kontrol et
+          const isColumnVisible =
+            column.visible() && !$(column.header()).hasClass("dtr-hidden");
+
+          //  const isColumnVisible =
+          //  column.visible() && $(column.header()).css("display") !== "none";
+
+          if (!isColumnVisible) {
+            th.hide(); // Sütun gerçekten görünmüyorsa input'u da gizle
+          }
         } else {
           // Eğer "İşlem" sütunuysa, boş bir th ekleyin
-          $("#" + tableId + " .search-input-row").append("<th></th>");
+        
+            // Sütun görünürse <th> elemanını ekle
+            $("#" + tableId + " .search-input-row").append("<th></th>");
+          
         }
       });
-    },
-  });
-  //Tüm tablolar için excel dışa aktarım butonu
-  $("#export_excel").on("click", function () {
-    table.button(".buttons-excel").trigger();
-  });
 
-  //Personelin çalışma bilgileri tablosu için
-  $("#export_excel_puantaj_info").on("click", function () {
-    var table_puantaj_info = $("#puantaj_info_table").DataTable();
-    table_puantaj_info.button(".buttons-excel").trigger();
-  });
-
-  //Puantaj tablosu için
-  var puantaj_table = $("#puantajTable").DataTable({
-    ordering: false,
-
-    layout: {
-      bottomStart: "pageLength",
-      bottom2Start: "info",
-      topStart: null,
-      topEnd: "search",
-    },
-    language: {
-      url: "src/tr.json",
-    },
-    buttons: [
-      {
-        extend: "excelHtml5",
-        className: "d-none", // Butonu gizliyoruz
-        exportOptions: {
-          columns: ":visible:not(.no-export)", // .no-export sınıfına sahip sütunları dışa aktarma
-        },
-      },
-    ],
-
-    initComplete: function (settings, json) {
-      var api = this.api();
-      var tableId = settings.sTableId;
-      $("#" + tableId + " thead").append('<tr class="search-input-row"></tr>');
-
-      api.columns().every(function () {
-        let column = this;
-        let title = api.column(0).header().textContent;
-        //0. kolonun title bilgisini al
-
-        //0. ve 1. kolonun index numarasına göre arama kutusu ekle
-        if (column.index() == 0 || column.index() == 1) {
-          // Create input element
-          let input = document.createElement("input");
-          // Set placeholder based on column index
-          input.placeholder = column.index() === 0 ? "Adı Soyadı" : "Unvanı";
-          input.classList.add("form-control");
-          input.classList.add("form-control-sm");
-          input.setAttribute("autocomplete", "off");
-
-          // Append input element to the existing row
-          $(
-            "#" + tableId + " thead tr:eq(1) th:eq(" + column.index() + ")"
-          ).append(input);
-
-          // Event listener for user input
-          $(input).on("keyup change", function () {
-            if (column.search() !== this.value) {
-              column.search(this.value).draw();
-            }
-          });
-        }
+      // Responsive olayını dinle
+      table.on("responsive-resize", function (e, datatable, columns) {
+        // Sütun görünürlüğünü kontrol et ve inputları gizle/göster
+        $("#" + tableId + " .search-input-row th").each(function (index) {
+          if (columns[index]) {
+            $(this).show(); // Sütun görünüyorsa inputu göster
+          } else {
+            $(this).hide(); // Sütun gizliyse inputu gizle
+          }
+        });
       });
-    },
-  });
 
-  $("#export_excel_puantaj").on("click", function () {
-    puantaj_table.button(".buttons-excel").trigger();
+      var state = table.state.loaded();
+      if (state) {
+        $("input", table.table().header()).each(function (index) {
+          var searchValue = state.columns[index].search.search;
+          if (searchValue) {
+            $(this).val(searchValue);
+          }
+        });
+      }
+    },
+
+    
   });
+});
+$("#exportExcel").on("click", function () {
+  table.button(".buttons-excel").trigger();
+});
+
+function getTableSpecificOptions() {
+  return {
+    ordering: document.getElementById("gelirGiderTable") ? false : true,
+  };
 }
+
+
 
 if ($(".select2").length > 0) {
   $(".select2").select2();
@@ -361,23 +328,6 @@ $(document).on("change", "#mySite", function () {
   window.location = "set-session.php?p=" + page + "&site_id=" + $(this).val();
 });
 
-// function fadeOut(element, duration) {
-//   var op = 1; // Opaklık başlangıç değeri
-//   var interval = 50; // Milisaniye cinsinden aralık
-//   var delta = interval / duration; // Her adımda azaltılacak opaklık miktarı
-
-//   function reduceOpacity() {
-//     op -= delta;
-//     if (op <= 0) {
-//       op = 0;
-//       element.style.display = "none"; // Elementi gizle
-//       clearInterval(fading); // Animasyonu durdur
-//     }
-//     element.style.opacity = op;
-//   }
-
-//   var fading = setInterval(reduceOpacity, interval);
-// }
 
 //İl seçildiğinde ilçeleri getir
 function getTowns(cityId, targetElement) {

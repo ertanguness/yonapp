@@ -21,7 +21,8 @@
 	
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/jquery-jvectormap.min.css">
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/vendors/css/select2-theme.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="assets/vendors/css/select2-theme.min.css"> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/jquery.time-to.min.css">	
 	
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/tagify.min.css">
@@ -51,6 +52,8 @@
 			<script src="https:oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
     <?php echo (isset($css) ? $css   : '')?>
+
+
 
     <script src="./assets/js/jquery.3.7.1.min.js"></script>
 </head>

@@ -23,7 +23,7 @@
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>
-                <button type="button" class="btn btn-primary" id="saveIncExpType">
+                <button type="button" class="btn btn-primary" id="kasa_kaydet">
                     <i class="feather-save  me-2"></i>
                     Kaydet
                 </button>
@@ -50,7 +50,7 @@
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <form action="" id="bankForm">
+                        <form action="" id="kasaForm">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
@@ -151,12 +151,8 @@
         </div>
     </div>
 </div>
-<!-- Toastr CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
-<!-- Toastr JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
+<!-- 
 <script>
     
 document.getElementById("saveIncExpType").addEventListener("click", function (e) {
@@ -229,5 +225,5 @@ document.getElementById("iban").addEventListener("input", function (e) {
     e.target.value = value; // Güncellenmiş değeri input'a uygula
 });
 
-</script>
+</script> -->
 
