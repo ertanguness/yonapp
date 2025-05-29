@@ -171,6 +171,7 @@ $menu_name = $menus->getMenusByLink($active_page);
     <?php include_once './partials/homepage-script.php'; ?>
 
     <?php include_once "./partials/vendor-scripts.php" ?>
+ 
 
 
 </body>

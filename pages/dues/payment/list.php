@@ -31,7 +31,7 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-success">
+                <a href="index?p=dues/payment/tahsilat_onay" class="btn btn-outline-success">
                     <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
                 </a>
                 <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-secondary">
@@ -52,7 +52,7 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
     require_once 'pages/components/alert.php';
     ?>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -62,8 +62,7 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
                                 <table class="table table-hover datatables" id="debtListTable">
                                     <thead>
                                         <tr>
-                                        <th class="wd-30 sorting" tabindex="0" aria-controls="customerList" rowspan="1" colspan="1" aria-label="
-                                                      : activate to sort column ascending" style="width: 30px;">
+                                        <th class="wd-30 no-sorting" tabindex="0" aria-controls="customerList"  style="width: 40px;">
                                                         <div class="btn-group mb-1">
                                                             <div class="custom-control custom-checkbox ms-1">
                                                                 <input type="checkbox" class="custom-control-input" id="checkAllCustomer">
@@ -87,18 +86,17 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
                                         ?>
                                         <tr>
 
-                                            <td class="">
-                                                <div class="item-checkbox ms-1">
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input checkbox"
-                                                            id="checkBox_1">
-                                                        <label class="custom-control-label" for="checkBox_1"></label>
+                                            <td>
+                                            <div class="item-checkbox ms-1">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input checkbox" id="checkBox_1">
+                                                            <label class="custom-control-label" for="checkBox_1"></label>
+                                                        </div>
                                                     </div>
-                                                </div>
                                             </td>
 
 
-                                            <td><?= $borc->blok_adi ?></td>
+                                            <td><?= $borc->blok_adi ?> ...</td>
                                             <td><?= $borc->kisi_adi ?></td>
                                             <td><?= $borc->toplam_borc   ?> TL</td>
                                             <td><?= $borc->odenen_borc ?? 0 ?> TL</td>

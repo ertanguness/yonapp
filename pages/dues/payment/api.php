@@ -1,6 +1,7 @@
 <?php
 
 require_once '../../../vendor/autoload.php';
+session_start();
 
 
 use \PhpOffice\PhpSpreadsheet\IOFactory;
@@ -18,6 +19,7 @@ use Model\DueModel;
 use Model\KisilerModel;
 use Model\TahsilatHavuzuModel;
 use Model\TahsilatModel;
+use Model\TahsilatOnayModel;
 
 $Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
@@ -25,6 +27,7 @@ $Due = new DueModel();
 $Bloklar = new BloklarModel();
 $Tahsilat = new TahsilatModel();
 $TahsilatHavuzu = new TahsilatHavuzuModel();
+$TahsilatOnay = new TahsilatOnayModel();
 $Daire = new DairelerModel();
 $Kisi = new KisilerModel();
 
@@ -87,7 +90,7 @@ if ($_POST['action'] == 'payment_file_upload') {
      * @param $daire Eşleşen daire ID'si
      * @return mixed Son eklenen kaydın ID'si
      */
-    function kaydetTahsilat($Tahsilat, $data, $daire_id) {
+    function kaydetTahsilatOnay($TahsilatOnay, $data, $daire_id) {
         //
 
         $islem_tarihi = Date::YmdHIS($data[0]); // İşlem tarihi
@@ -97,9 +100,10 @@ if ($_POST['action'] == 'payment_file_upload') {
 
 
         // Gerekirse diğer alanlar eklenebilir
-        return $Tahsilat->saveWithAttr([
+        return $TahsilatOnay->saveWithAttr([
             'id' => 0,
             'kisi_id' => $data['kisi_id'] ?? 0, // Kişi ID'si
+            'site_id' => $_SESSION['site_id'], // Site ID'si
             'tahsilat_tipi' => $tahsilat_tipi, // Tahsilat tipi
             'islem_tarihi' => $islem_tarihi,
             'daire_id' => $daire_id,
@@ -168,7 +172,7 @@ if ($_POST['action'] == 'payment_file_upload') {
             // Eşleşen daire bulunduysa tahsilat kaydet
             if ($daire_id > 0 && !empty($kisi_id)) {
                 $data['kisi_id'] = $kisi_id; // Kişi ID'sini ekle
-                kaydetTahsilat($Tahsilat, $data, $daire_id);
+                kaydetTahsilatOnay($TahsilatOnay, $data, $daire_id);
                 $bulunan_daireler[] = $apartmentInfo ?? $daire_kodu  . "kisi_id: " . $data['kisi_id'];
                 $successCount++;
             } else {

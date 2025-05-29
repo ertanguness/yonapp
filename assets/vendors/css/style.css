@@ -295,4 +295,10 @@ table thead tr:first-child th {
   border-radius: 8px; /* Köşe yuvarlama */
   transition: box-shadow 0.3s ease-in-out; /* Geçiş efekti */
   background-color: #f9f9f9; /* Arka plan rengini değiştirir */
+} 
+
+
+
+.dataTables_wrapper .row:last-child {
+  border-top: none !important; /* Son satırın üst sınırını kaldır */
 }
