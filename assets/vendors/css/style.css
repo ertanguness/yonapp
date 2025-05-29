@@ -294,5 +294,5 @@ table thead tr:first-child th {
   border-color: rgba(0, 0, 0, 0.2); /* Sınır rengini değiştirir */
   border-radius: 8px; /* Köşe yuvarlama */
   transition: box-shadow 0.3s ease-in-out; /* Geçiş efekti */
-  background-color: #f8f9fa; /* Arka plan rengini değiştirir */
+  background-color: #f9f9f9; /* Arka plan rengini değiştirir */
 }

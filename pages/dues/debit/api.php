@@ -66,7 +66,7 @@ if($_POST["action"] == "borclandirma_kaydet"){
                 "borc_id" => Security::decrypt($lastInsertId),
                 "kisi_id" => $kisi->id,
                 "tutar" => Helper::formattedMoneyToNumber($_POST["tutar"]),
-                //"baslangic_tarihi" => Date::Ymd($_POST["baslangic_tarihi"]),    
+                "baslangic_tarihi" => Date::Ymd($_POST["baslangic_tarihi"]),    
                 "bitis_tarihi" => Date::Ymd($_POST["bitis_tarihi"]),
                 "ceza_orani" => $_POST["ceza_orani"],
                 "aciklama" => $_POST["aciklama"],

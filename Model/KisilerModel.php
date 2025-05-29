@@ -77,4 +77,14 @@ class KisilerModel extends Model
         return $result ? $result->adi_soyadi : null;
     }
 
+    /**Daire id'si ve uyelik_tipi'nden şu anda aktif olan kiracıyı veya ev sahibini bul
+     * @param int $daire_id Daire ID'si.
+     * @param string $uyelik_tipi Kullanıcının tipi (ev sahibi veya kiracı).
+     */
+    public function AktifKisiByDaireId($daire_id, $uyelik_tipi)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE daire_id = ? AND uyelik_tipi = ? AND silinme_tarihi IS NULL ORDER BY id DESC LIMIT 1");
+        $sql->execute([$daire_id, $uyelik_tipi]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
 }

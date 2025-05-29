@@ -26,6 +26,7 @@ $Bloklar = new BloklarModel();
 $Tahsilat = new TahsilatModel();
 $TahsilatHavuzu = new TahsilatHavuzuModel();
 $Daire = new DairelerModel();
+$Kisi = new KisilerModel();
 
 // CREATE TABLE `tahsilatlar` (
 // 	`id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -77,23 +78,34 @@ if ($_POST['action'] == 'payment_file_upload') {
     $failRows = [];
     $bulunan_daireler = [];
     $eşleşmeyen_kayıtlar = 0;
+    $eslesmeyen_daireler = [];
 
     /**
      * Başarılı eşleşen daire için tahsilat kaydını veritabanına ekler.
      * @param $Tahsilat TahsilatModel öği
      * @param $data Satır verisi (array)
      * @param $daire Eşleşen daire ID'si
-     * @return md Son eklenen kaydın ID'si
+     * @return mixed Son eklenen kaydın ID'si
      */
     function kaydetTahsilat($Tahsilat, $data, $daire_id) {
+        //
+
+        $islem_tarihi = Date::YmdHIS($data[0]); // İşlem tarihi
+        $tutar = $data[1]; // Tutar, sayıya dönüştürülür
+        $tahsilat_tipi = $data[4] ?? ''; // Tahsilat tipi (Ödeme Türü)
+        $aciklama = $data[5] ?? ''; // Açıklama alanı, varsa kullanılır
+
+
         // Gerekirse diğer alanlar eklenebilir
         return $Tahsilat->saveWithAttr([
             'id' => 0,
-            'islem_tarihi' => $data[0], // İşlem tarihi
+            'kisi_id' => $data['kisi_id'] ?? 0, // Kişi ID'si
+            'tahsilat_tipi' => $tahsilat_tipi, // Tahsilat tipi
+            'islem_tarihi' => $islem_tarihi,
             'daire_id' => $daire_id,
-            // 'tutar' => ($data[1]),
+             'tutar' => $tutar,
             // 'makbuz_no' => $data[4],
-            // 'aciklama' => $data[3],
+            'aciklama' => $aciklama,
         ]);
     }
 
@@ -105,12 +117,18 @@ if ($_POST['action'] == 'payment_file_upload') {
      * @return mixed Son eklenen kaydın ID'si
      */
     function kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk = '') {
+        $islem_tarihi = Date::Ymd($data[0]); // İşlem tarihi
+        $ham_aciklama = $data[5] ?? ''; // Ham açıklama alanı, varsa kullanılır
+        $referans_no = $data[6] ?? ''; // Makbuz no, varsa kullanılır
+       
+
+
         return $TahsilatHavuzu->saveWithAttr([
             'id' => 0,
-            'islem_tarihi' => Date::Ymd($data[0]), // İşlem tarihi
+            'islem_tarihi' => $islem_tarihi, 
             'tahsilat_tutari' => Helper::formattedMoneyToNumber($data[1]),  // Tutar
-            'ham_aciklama' => $data[3] ?? '',      // Açıklama
-            'referans_no' => $data[4] ?? '',       // Makbuz no
+            'ham_aciklama' => $ham_aciklama, 
+            'referans_no' => $referans_no,
             'aciklama' => $aciklamaEk,             // Ek açıklama veya hata
         ]);
     }
@@ -128,30 +146,38 @@ if ($_POST['action'] == 'payment_file_upload') {
         try {
             $daire_id = 0;
             $apartmentInfo = null;
+            $daire_kodu = $data[2] ?? ''; // Daire kodu
+            $iyelik_tipi = $data[3] ?? 'Ev Sahibi'; // Ödeyen tipi (Ev Sahibi, Kiracı)
+            $aciklama = $data[5] ;
 
             // Öncelikle doğrudan daire kodu ile eşleşme dene
-            if (!empty($data[2])) {
-                $daire_id = $Daire->DaireId($data[2]) ?? 0;
+            if (!empty($daire_kodu)) {
+                $daire_id = $Daire->DaireId($daire_kodu) ?? 0;
+                $kisi_id = $Kisi->AktifKisiByDaireId($daire_id, $iyelik_tipi)->id ?? 0;
             }
             // Daire kodu yoksa açıklamadan blok/daire bilgisi çıkar
-            else if (!empty($data[3])) {
-                $apartmentInfo = Helper::extractApartmentInfo($data[3]);
+            else if (!empty($aciklama)) {
+                $apartmentInfo = Helper::extractApartmentInfo($aciklama);
                 if ($apartmentInfo) {
                     $daire_id = $Daire->DaireId($apartmentInfo) ?? 0;
+                    $kisi_id = $Kisi->AktifKisiByDaireId($daire_id, $iyelik_tipi)->id ?? 0;
+                     
                 }
             }
 
             // Eşleşen daire bulunduysa tahsilat kaydet
-            if ($daire_id > 0) {
+            if ($daire_id > 0 && !empty($kisi_id)) {
+                $data['kisi_id'] = $kisi_id; // Kişi ID'sini ekle
                 kaydetTahsilat($Tahsilat, $data, $daire_id);
-                $bulunan_daireler[] = $apartmentInfo ?? $data[2];
+                $bulunan_daireler[] = $apartmentInfo ?? $daire_kodu  . "kisi_id: " . $data['kisi_id'];
                 $successCount++;
             } else {
                 // Eşleşmeyen kayıtları havuza kaydet
-                $aciklamaEk = !empty($data[2])
-                    ? 'Daire Kodu eşleşmedi: ' . $data[2]
-                    : ('Bilgi var ' . ($data[3] ?? ''));
+                $aciklamaEk = !empty($daire_kodu)
+                    ? 'Daire Kodu eşleşmedi: ' . $daire_kodu
+                    : ('Bilgi var ' . ($aciklama ?? ''));
                 kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk);
+                $eslesmeyen_daireler[] = $apartmentInfo ?? $daire_kodu;
                 $eşleşmeyen_kayıtlar++;
             }
         } catch (Exception $e) {
@@ -173,6 +199,7 @@ if ($_POST['action'] == 'payment_file_upload') {
     echo json_encode([
         'status' => $status,
         'message' => $message,
-        'bulunan_daireler' => $bulunan_daireler
+        'bulunan_daireler' => $bulunan_daireler,
+        'eslesmeyen_daireler' => $eslesmeyen_daireler,
     ]);
 }

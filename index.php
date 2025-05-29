@@ -166,7 +166,7 @@ $menu_name = $menus->getMenusByLink($active_page);
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
     <!--<< Footer Section Start >>-->
-    <?php include_once './partials/theme-customizer.php' ?>
+    <?php //include_once './partials/theme-customizer.php' ?>
     <!--<< All JS Plugins >>-->
     <?php include_once './partials/homepage-script.php'; ?>
 
