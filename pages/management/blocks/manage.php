@@ -9,7 +9,7 @@ $Blocks = new BlockModel();
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 $blocks = $Blocks->find($id  ?? null);
 
-$site = $Siteler->SiteAdi($_SESSION['firm_id'] ?? null);
+$site = $Siteler->SiteAdi($_SESSION['site_id'] ?? null);
 ?>
 
 <div class="page-header">
@@ -70,7 +70,7 @@ $site = $Siteler->SiteAdi($_SESSION['firm_id'] ?? null);
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
-                                    <input type="hidden" name="blocks_id" id="blocks_id" value="<?php echo $id ; ?>">
+                                    <input type="hidden" name="blok_id" id="blok_id" value="<?php echo $id ; ?>">
                                         <?php
                                             require_once 'pages/management/blocks/content/BlocksNumberPage.php';
                                         ?>

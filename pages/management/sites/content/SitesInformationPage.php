@@ -172,6 +172,7 @@
             });
         });
     </script>
+    Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
     <script>
         let selectedLogoSrc = '';
 
@@ -206,8 +207,7 @@
         });
     </script>
     
-            -->
-    <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
+    
     <script>
         $(document).ready(function() {
             $('#il').change(function() {

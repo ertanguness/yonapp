@@ -1,14 +1,15 @@
 <?php
 
-use Model\BlockModel;
+use Model\BloklarModel;
 use App\Helper\Security;
+use Model\SitelerModel;
 use Model\SitesModel;
 
-$Site = new SitesModel();
+$Site = new SitelerModel();
 
 
-$Blocks = new BlockModel();
-$blocks = $Blocks->getBlocksBySite($_SESSION['site_id'] ?? null);
+$Blocks = new BloklarModel();
+$Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
 
 ?>
 <div class="page-header">
@@ -65,33 +66,33 @@ $blocks = $Blocks->getBlocksBySite($_SESSION['site_id'] ?? null);
 
                                 <table class="table table-hover datatables" id="blocksList">
                                     <thead>
-                                        <tr class="text-center">
+                                        <tr class="text-center align-middle">
                                             <th>Sıra</th>
                                             <th>Site Adı</th>
                                             <th>Blok Adı</th>
-                                            <th>Bağımsız Bölüm Sayısı</th>
-                                            <th>Açıklama</th>
+                                            <th style="width: 100px;">B. Bölüm Sayısı</th>
+                                            <th style="min-width: 250px;">Açıklama</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
                                         $i = 1;
-                                        foreach ($blocks as $block):
-                                            $enc_id = Security::encrypt($block->id);
-                                            $site = $Site->getSiteName($block->site_id);
+                                        foreach ($Bloklar as $blok):
+                                            $enc_id = Security::encrypt($blok->id);
+                                            $site = $Site->SiteAdi($blok->site_id);
 
                                         ?>
                                             <tr class="text-center">
                                                 <td><?php echo $i; ?></td>
                                                 <td>
-                                                <a data-page="sites/manage&id=<?php echo $block->site_id; ?>" href="#">
-                                                    <?php echo $site->firm_name; ?>
+                                                <a data-page="sites/manage&id=<?php echo $blok->site_id; ?>" href="#">
+                                                    <?php echo $site->site_adi; ?>
                                                 </a>
                                                 </td>
-                                                <td class="text-start"><?php echo htmlspecialchars($block->block_name); ?></td>
-                                                <td><?php echo htmlspecialchars($block->apartment_number); ?></td>
-                                                <td><?php echo htmlspecialchars($block->description); ?></td>
+                                                <td class="text-start"><?php echo htmlspecialchars($blok->blok_adi); ?></td>
+                                                <td style="width: 100px;"><?php echo htmlspecialchars($blok->daire_sayisi); ?></td>
+                                                <td style="min-width: 250px;"><?php echo !empty($blok->aciklama) ? htmlspecialchars($blok->aciklama) : '-'; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2">
                                                         <a href="index?p=management/blocks/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
@@ -100,7 +101,7 @@ $blocks = $Blocks->getBlocksBySite($_SESSION['site_id'] ?? null);
                                                         <a href="index?p=management/blocks/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" data-name="<?php echo $block->block_name ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-blocks" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $block->block_name; ?>">
+                                                        <a href="javascript:void(0);" data-name="<?php echo $blok->blok_adi ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-blocks" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $blok->blok_adi; ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>

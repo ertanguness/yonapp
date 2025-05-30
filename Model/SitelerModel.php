@@ -15,8 +15,6 @@ protected $table = "siteler";
         parent::__construct($this->table);
 
     }
-
-
     /**
      * Giriş yapan Kullanıcının sitelerini getirir
      * @return array

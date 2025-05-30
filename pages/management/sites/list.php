@@ -1,10 +1,14 @@
 <?php
 
 use App\Helper\Security;
-use Model\SitesModel;
+use Model\SitelerModel;
+use Model\BloklarModel;
 
-$Sites = new SitesModel();
-$mysite = $Sites->getSites();
+$Bloklar = new BloklarModel();
+$Siteler = new SitelerModel();
+$Sitem = $Siteler->Sitelerim();
+
+$blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 
 ?>
 <div class="page-header">
@@ -59,44 +63,46 @@ $mysite = $Sites->getSites();
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
 
-                                <table class="table table-hover datatables" id="sitesList">
+                                <table class="table table-hover datatables" id="SitelerList">
                                     <thead>
                                         <tr class="text-center">
                                             <th>Sıra</th>
                                             <th>Site Adı</th>
                                             <th>Blok Sayısı</th>
                                             <th>Bağımsız Bölüm Sayısı</th>
-                                            <th>Site Adresi</th>
-                                            <th>Açıklama</th>
+                                            <th>Telefon</th>
+                                            <th>Adres</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
                                         $i = 1;
-                                        foreach ($mysite as $mysites):
-                                            $enc_id = Security::encrypt($mysites->id);
+                                        foreach ($Sitem as $Siteler):
+                                            $enc_id = Security::encrypt($Siteler->id);
+                                            $blokSayisi = $Bloklar->SitedekiBloksayisi($Siteler->id ?? null);
+                                            $daireSayisi = $Bloklar->SitedekiDaireSayisi($Siteler->id ?? null);
 
                                         ?>
                                             <tr>
                                                 <td><?php echo $i; ?></td>
-                                                <td><a data-page="sites/manage&id=<?php echo $id ?>" href="#">
-                                                        <?php echo $mysites->firm_name; ?>
+                                                <td><a data-page="Siteler/manage&id=<?php echo $id ?>" href="#">
+                                                        <?php echo $Siteler->site_adi; ?>
                                                     </a>
                                                 </td>
-                                                <td class="text-start"><?php echo $mysites->phone; ?></td>
-                                                <td><?php echo "3" ?></td>
-                                                <td><?php echo "2" ?></td>
-                                                <td><?php echo $mysites->created_at; ?></td>
+                                                <td class="text-start"><?php echo $blokSayisi; ?></td>
+                                                <td><?php echo $daireSayisi; ?></td>
+                                                <td><?php echo $Siteler->telefon; ?></td>
+                                                <td><?php echo $Siteler->tam_adres; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                        <a href="index?p=management/Siteler/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                        <a href="index?p=management/Siteler/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" data-name="<?php echo $mysites->firm_name?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-sites" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $mysites->firm_name; ?>">
+                                                        <a href="javascript:void(0);" data-name="<?php echo $Siteler->site_adi?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-Siteler" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $Siteler->site_adi; ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>

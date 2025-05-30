@@ -1,25 +1,3 @@
-<?php
-require_once "Model/Company.php";
-require_once "App/Helper/security.php";
-
-use App\Helper\Security;
-
-$companyObj = new Company();
-
-//Sayfa başlarında eklenecek alanlar
-$perm->checkAuthorize("company_add_update");
-$id = isset($_GET["id"]) ? Security::decrypt($_GET['id']) : 0;
-$new_id = isset($_GET["id"]) ? $_GET['id'] : 0;
-
-//Eğer url'den id yazılmışsa veya id boş ise projeler sayfasına gider
-if ($id == null && isset($_GET['id'])) {
-    header("Location: /index.php?p=management/peoples/list");
-    exit;
-}
-$pageTitle = $id > 0 ? "Site Sakini Bilgileri Güncelle" : "Yeni Site Sakini Ekle";
-$myfirm = $companyObj->findMyFirm($id);
-?>
-
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -58,14 +36,14 @@ $myfirm = $companyObj->findMyFirm($id);
     </div>
 </div>
 <div class="main-content">
-    <?php
+    <?php /*
     $title = $pageTitle;
     if ($pageTitle === 'Yeni Site Sakini Ekle') {
         $text = "Yeni Site Sakini Ekleme sayfasındasınız. Bu sayfada yeni bir site sakini ekleyebilirsiniz.";
     } else {
         $text = "Site Sakini Güncelleme sayfasındasınız. Bu sayfada site sakini bilgilerini güncelleyebilirsiniz.";
     }
-    require_once 'pages/components/alert.php'
+    require_once 'pages/components/alert.php' */
     ?>
     <div class="row">
         <div class="container-xl">

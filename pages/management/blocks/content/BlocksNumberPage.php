@@ -6,7 +6,7 @@
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-home"></i></div>
-                <input type="text" class="form-control" name="siteId" id="siteId" placeholder="Site ismi çekilecek" readonly value="<?php echo $site->firm_name ?? ''; ?>">
+                <input type="text" class="form-control" name="siteId" id="siteId" placeholder="Site ismi çekilecek" readonly value="<?php echo $site->site_adi ?? ''; ?>">
             <input type="hidden" name="site_id" id="site_id" value="<?php echo $site->id ?? ''; ?>">
             </div>
         </div>

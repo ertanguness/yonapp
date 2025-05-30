@@ -1,11 +1,11 @@
 <?php
 $site_id = $_SESSION['site_id'] ?? 0;
 
-use Model\BlockModel;
+use Model\BloklarModel;
 use Model\DefinesModel;
 
-$Block = new BlockModel();
-$blocks = $Block->getBlocksBySite($site_id);
+$Block = new BloklarModel();
+$blocks = $Block->SiteBloklari($site_id);
 
 $definesModel = new DefinesModel();
 $apartmentTypes = $definesModel->getDefinesTypes($site_id,3);
@@ -23,7 +23,7 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id,3);
                     <option value="">Blok Seçiniz</option>
                     <?php foreach ($blocks as $block): ?>
                         <option value="<?= htmlspecialchars($block->id) ?>">
-                            <?= htmlspecialchars($block->block_name) ?>
+                            <?= htmlspecialchars($block->blok_adi) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -109,9 +109,45 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id,3);
             </div>
         </div>
     </div>
-
-    
+    <input type="hidden" name="daire_kodu" id="daire_kodu"> 
 </div>
+<!-- Daire kodu oluşturma başlangıç -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const blockSelect = document.getElementById('blockName');
+    const flatNumberInput = document.getElementById('flatNumber');
+    const hiddenCodeInput = document.getElementById('daire_kodu');
+
+    function generateDaireKodu() {
+        const selectedOption = blockSelect.options[blockSelect.selectedIndex];
+        let blokAdi = selectedOption.text.trim();
+        const daireNo = flatNumberInput.value.trim();
+
+        if (!blokAdi || !daireNo) {
+            hiddenCodeInput.value = '';
+            return;
+        }
+
+        // "blok" kelimesinden sonrasını tamamen kaldır (büyük/küçük harf duyarsız)
+        const blokIndex = blokAdi.toLowerCase().indexOf('blok');
+        if (blokIndex !== -1) {
+            blokAdi = blokAdi.substring(0, blokIndex);
+        }
+
+        // Temizle ve ilk kelimeyi al
+        const firstWord = blokAdi.trim().split(' ')[0];
+
+        // Kod oluştur
+        const daireKodu = `${firstWord}D${daireNo}`.toUpperCase();
+
+        hiddenCodeInput.value = daireKodu;
+    }
+
+    blockSelect.addEventListener('change', generateDaireKodu);
+    flatNumberInput.addEventListener('input', generateDaireKodu);
+});
+</script>
+<!-- Daire kodu oluşturma bitiş -->
 <!--
 <script>
     document.getElementById("save_apartment").addEventListener("click", function(event) {

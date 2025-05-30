@@ -6,9 +6,27 @@ $site_id = $_SESSION["site_id"];
 use Model\DairelerModel;
 use App\Helper\Security;
 
-$Apartment = new DairelerModel();
+$Daireler = new DairelerModel();
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['blok_id'])) {
+    $blok_id = (int) $_POST['blok_id'];
 
+    $Daireler = new DairelerModel();
+    $daireler = $Daireler->BlokDaireleri($blok_id);
+
+    $response = [];
+    foreach ($daireler as $daire) {
+        $response[] = [
+            'id' => $daire->id,
+            'no' => $daire->daire_no
+        ];
+    }
+
+    echo json_encode($response);
+    exit;
+}
+
+/*
 if ($_POST["action"] == "save_apartment") {
     $id = Security::decrypt($_POST["id"]);
     $block_id = $_POST["blockName"];
@@ -69,4 +87,5 @@ if ($_POST["action"] == "delete_apartment") {
         "message" => "Başarılı"
     ];
     echo json_encode($res);
-}
+} 
+    */

@@ -1,13 +1,13 @@
 <?php
-use Model\SitesModel;
+use Model\SitelerModel;
 use App\Helper\Security;
 use App\Helper\Cities;
 
-$Sites = new SitesModel();
+$Sites = new SitelerModel();
 $cities = new Cities();
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
-$company = $Sites->find($id  ?? null);
+$site = $Sites->find($id  ?? null);
 
 ?>
 <div class="page-header">

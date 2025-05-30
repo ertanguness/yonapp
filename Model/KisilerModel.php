@@ -76,5 +76,11 @@ class KisilerModel extends Model
         $result = $sql->fetch(PDO::FETCH_OBJ);
         return $result ? $result->adi_soyadi : null;
     }
-
+ 
+    /**
+     * Belirli bir blok_id'ye sahip kişilerin daire numaralarını getirir.
+     * @param int $blok_id Blok ID'si.
+     * @return array Daire numaralarını içeren bir dizi döner.
+     */
+   
 }

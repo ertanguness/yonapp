@@ -1,11 +1,11 @@
 <?php
-
+session_start();
 require_once '../../../vendor/autoload.php';
 
-use Model\SitesModel;
+use Model\SitelerModel;
 use App\Helper\Security;
 
-$Sites = new SitesModel();
+$Siteler = new SitelerModel();
 
 
 if ($_POST["action"] == "save_sites") {
@@ -13,17 +13,18 @@ if ($_POST["action"] == "save_sites") {
 
     $data = [
         "id" => $id,
-        "firm_name" => $_POST["sites_name"],
-        "phone" => $_POST["phone"],
-        "logo" => $_POST["selectedLogo"],
-        "description" => $_POST["description"],
+        "user_id" => $_SESSION["user"]->id,
+        "site_adi" => $_POST["sites_name"],
+        "telefon" => $_POST["phone"],
         "il" => $_POST["il"],
         "ilce" => $_POST["ilce"],
-        "adres" => $_POST["adres"],
-        "is_active" => 1,
+        "tam_adres" => $_POST["adres"],
+        "aciklama" => $_POST["description"],
+        "logo_path" => $_POST["selectedLogo"],
+        "aktif_mi" => 1,
     ];
 
-    $lastInsertId = $Sites->saveWithAttr($data);
+    $lastInsertId = $Siteler->saveWithAttr($data);
 
     $res = [
         "status" => "success",
@@ -32,12 +33,13 @@ if ($_POST["action"] == "save_sites") {
     echo json_encode($res);
 }
 
-if ($_POST["action"] == "delete_sites") {
-    $Sites->delete($_POST["id"]);
+if ($_POST["action"] == "delete-Siteler") {
+    $Siteler->delete($_POST["id"]);
 
     $res = [
         "status" => "success",
         "message" => "Başarılı"
     ];
     echo json_encode($res);
+    session_destroy();
 }

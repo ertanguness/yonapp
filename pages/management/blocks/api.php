@@ -2,10 +2,10 @@
 
 require_once '../../../vendor/autoload.php';
 
-use Model\BlockModel;
+use Model\BloklarModel;
 use App\Helper\Security;
 
-$Blocks = new BlockModel();
+$Blocks = new BloklarModel();
 
 
 if ($_POST["action"] == "save_blocks") {
@@ -18,7 +18,7 @@ if ($_POST["action"] == "save_blocks") {
     $existing_blocks = [];
 
     foreach ($block_names as $key => $block_name) {
-        if ($Blocks->isBlockNameExists($site_id, $block_name)) {
+        if ($Blocks->BlokVarmi($site_id, $block_name)) {
             $existing_blocks[] = $block_name;
         }
     }
@@ -34,8 +34,10 @@ if ($_POST["action"] == "save_blocks") {
     foreach ($block_names as $key => $block_name) {
         $Blocks->saveWithAttr([
             "site_id" => $site_id,
-            "block_name" => $block_name,
-            "apartment_number" => $apartment_counts[$key] ?? 0
+            "blok_adi" => $block_name,
+            "daire_sayisi" => $apartment_counts[$key] ?? 0,
+            "aktif_mi" => 1,
+
         ]);
     }
 

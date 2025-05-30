@@ -56,14 +56,14 @@ $(document).on("click", "#save_sites", function () {
     });
 });
 
-$(document).on("click", ".delete-sites", function () {
+$(document).on("click", ".delete-Siteler", function () {
   let id = $(this).data("id");
   let sitesName = $(this).data("name");
   let buttonElement = $(this); // Store reference to the clicked button
   swal
     .fire({
       title: "Emin misiniz?",
-      html: `${sitesName} <br> adlı aidat tanımını silmek istediğinize emin misiniz?`,
+      html: `${sitesName} <br> sitesini silmek istediğinize emin misiniz?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Evet",
@@ -72,7 +72,7 @@ $(document).on("click", ".delete-sites", function () {
     .then((result) => {
       if (result.isConfirmed) {
         var formData = new FormData();
-        formData.append("action", "delete_sites");
+        formData.append("action", "delete-Siteler");
         formData.append("id", id);
 
         fetch(url, {
@@ -82,11 +82,11 @@ $(document).on("click", ".delete-sites", function () {
           .then((response) => response.json())
           .then((data) => {
             if (data.status == "success") {
-              let table = $("#sitesList").DataTable();
+              let table = $("#SitelerList").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${sitesName} adlı aidat tanımı başarıyla silindi.`,
+                `${sitesName} sitesi  tanımı başarıyla silindi.`,
                 "success"
               );
             }

@@ -1,12 +1,13 @@
 <?php
+
 use App\Helper\Security;
-use Model\ApartmentModel;
-use Model\BlockModel;
+use Model\DairelerModel;
+use Model\BloklarModel;
 
-$Apartment = new ApartmentModel();
-$Block = new BlockModel();
+$Apartment = new DairelerModel();
+$Block = new BloklarModel();
 
-$apartments = $Apartment->getApartmentBySite($_SESSION['site_id'] ?? null);
+$apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
 ?>
 
 <div class="page-header">
@@ -62,11 +63,13 @@ $apartments = $Apartment->getApartmentBySite($_SESSION['site_id'] ?? null);
                                 <table class="table table-hover datatables" id="apartmentsList">
                                     <thead>
                                         <tr class="text-center">
-                                            <th>Sıra</th>
+                                            <th>#</th>
+                                            <th>Daire Kodu</th>
                                             <th>Blok Adı</th>
                                             <th>Daire No</th>
                                             <th>Kat Maliki</th>
                                             <th>Kiracı</th>
+                                            <th>Durumu</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
@@ -75,27 +78,40 @@ $apartments = $Apartment->getApartmentBySite($_SESSION['site_id'] ?? null);
                                         $i = 1;
                                         foreach ($apartments as $apartment):
                                             $enc_id = Security::encrypt($apartment->id);
-                                            $block = $Block->getBlockByID($apartment->blok_id);
+                                            $block = $Block->Blok($apartment->blok_id);
                                         ?>
                                             <tr class="text-center">
                                                 <td><?php echo $i; ?></td>
+                                                <td><?php echo htmlspecialchars($apartment->daire_kodu); ?></td>
                                                 <td>
                                                     <a data-page="management/blocks/manage&id=<?php echo $block->id ?? 0; ?>" href="#">
-                                                        <?php echo htmlspecialchars($block->block_name ?? ''); ?>
+                                                        <?php echo htmlspecialchars($block->blok_adi ?? ''); ?>
                                                     </a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($apartment->daire_no); ?></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td>Kişilerden gelecek </td>
+                                                <td>Kişilerden gelecek </td>
                                                 <td>
-                                                    <div class="hstack gap-2">
+                                                    <?php if ($apartment->aktif_mi == 1): ?>
+                                                        <span class="text-success">
+                                                            <i class="feather-check-circle"></i> Dolu
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="text-danger">
+                                                            <i class="feather-x-circle"></i> Boş
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                                <td>
+                                                    <div class="hstack gap-1">
                                                         <a href="index?p=management/apartments/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=management/apartment/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" data-name="Daire <?php echo $apartment->apartment_no ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-apartment">
+                                                        <a href="javascript:void(0);" data-name=" <?php echo $apartment->daire_no ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-apartment" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $apartment->daire_no; ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>

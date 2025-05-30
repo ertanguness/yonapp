@@ -81,7 +81,12 @@ if ($page == 'management/blocks/manage' ||
 //*************BLOCKS******************************** */
 
 //*************APARTMENT******************************** */
-
+if (
+    $page == 'management/apartment/manage' ||   $page == 'management/apartment/list') {
+        echo '<script src="/pages/management/apartment/apartment.js"></script>';
+    }
+   //*************APARTMENT******************************** */
+ 
 //*************Define APARTMENT TYPES******************************** */
 // Daire Tipi Tanımlama sayfası
 

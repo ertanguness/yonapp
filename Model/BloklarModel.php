@@ -20,10 +20,34 @@ class BloklarModel extends Model
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
-    public function isBlockNameExists($site_id, $block_name)
+    public function BlokVarmi($site_id, $block_name)
     {
         $query = $this->db->prepare("SELECT COUNT(*) FROM blocks WHERE site_id = ? AND block_name = ?");
         $query->execute([$site_id, $block_name]);
         return $query->fetchColumn() > 0;
+    }
+    public function SitedekiBloksayisi($site_id)
+    {
+        $sql = $this->db->prepare("SELECT COUNT(*) as count FROM $this->table WHERE site_id = ?");
+        $sql->execute([$site_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? (int)$result->count : 0;
+    }
+    public function SitedekiDaireSayisi($site_id)
+    {
+        $sql = $this->db->prepare("SELECT daire_sayisi FROM $this->table WHERE site_id = ?");
+        $sql->execute([$site_id]);
+        $results = $sql->fetchAll(PDO::FETCH_OBJ);
+        $total = 0;
+        foreach ($results as $row) {
+            $total += (int)$row->daire_sayisi;
+        }
+        return $total;
+    }
+    public function Blok($blok_id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM {$this->table} WHERE id = ?");
+        $sql->execute([$blok_id]);
+        return $sql->fetch(PDO::FETCH_OBJ);
     }
 }

@@ -5,7 +5,7 @@ $(document).on("click", "#save_blocks", function () {
   var formData = new FormData(form[0]);
 
   formData.append("action", "save_blocks");
-  formData.append("id", $("#blocks_id").val());
+  formData.append("id", $("#blok_id").val());
 
 
   var validator = $("#blocksForm").validate({
@@ -51,7 +51,7 @@ $(document).on("click", ".delete-blocks", function () {
   swal
     .fire({
       title: "Emin misiniz?",
-      html: `${blocksName} <br> adlı aidat tanımını silmek istediğinize emin misiniz?`,
+      html: `${blocksName} <br> adlı bloğu silmek istediğinize emin misiniz?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Evet",
@@ -74,7 +74,7 @@ $(document).on("click", ".delete-blocks", function () {
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${blocksName} adlı aidat tanımı başarıyla silindi.`,
+                `${blocksName} adlı blok  başarıyla silindi.`,
                 "success"
               );
             }
