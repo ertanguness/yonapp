@@ -37,14 +37,8 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-success">
-                    <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
-                </a>
-                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-secondary">
-                    <i class="feather-copy me-2"></i>Eşleşmeyen Ödemeler
-                </a>
-                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-primary">
-                    <i class="feather-file-plus me-2"></i>Excelden Ödeme Yükle
+                   <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-primary">
+                    <i class="feather-file-plus me-2"></i>Toplu Onay
                 </a>
             </div>
         </div>
@@ -65,7 +59,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
                     <div class="card widget-tasks-content">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive tasks-items-wrapper m-3">
-                                <table class="table table-hover datatables " id="debtListTable">
+                                <table class="table table-hover datatables " id="tahsilatOnayTable">
                                     <thead>
                                         <tr>
                                             <th>Sıra</th>
@@ -86,7 +80,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
                                             $enc_id = Security::encrypt($onay->id);
                                             $tahsilat_tutari =$onay->tutar ?? 0;
                                             $islenen_tutar = $TahsilatOnay->OnaylanmisTahsilatToplami($onay->id) ?? 0;
-                                            $kalan_tutar = Helper::formattedMoney($tahsilat_tutari - $islenen_tutar);
+                                            $kalan_tutar = $tahsilat_tutari - $islenen_tutar;
 
 
                                         ?>
@@ -109,6 +103,8 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
                                                     <span>|</span>
                                                     <a href="javascript:void(0);">Düzenle</a>
                                                     <span>|</span>
+                                                    <a href="javascript:void(0);">Eşleşmeyen Havuzuna Gönder</a>
+                                                    <span>|</span>
                                                     <a href="javascript:void(0);" class="text-danger">Sil</a>
                                                 </div>
                                             </td>
@@ -122,11 +118,12 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
                                             </td>
 
                                             
-                                            <td class="text-right"><?= $kalan_tutar  ?> </td>
+                                            <td class="text-right"><?php echo Helper::formattedMoney($kalan_tutar)  ?> </td>
                                             <td style="width:150px;">
-                                                <input type="text" class="form-control"
-                                                    name="islenecek_tutar[<?= $onay->id ?>]"
-                                                    value="<?= ($onay->kalan_tutar ?? 0) ?>" />
+                                                <input type="text" class="form-control islenecek-tutar money"
+                                                    name="islenecek_tutar[<?= $onay->id ?>]" 
+                                                    id="islenecek_tutar<?= $index ?>"
+                                                    value="<?php echo Helper::formattedMoneyWithoutCurrency($kalan_tutar ?? 0) ?>" />
 
                                             </td>
                                             <td>
@@ -134,22 +131,16 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
 
                                             </td>
                                             <td style="width:5%">
+                                                <!-- kalan tutar 0 dan büyükse göster -->
+                                                <?php if ($kalan_tutar > 0): ?>
                                                 <div class="hstack gap-2  ">
-                                                    <a href="index?p=dues/payment/detail&id=<?php echo $enc_id ?>"
-                                                        class="avatar-text avatar-md  bg-success">
+                                                    <a href="#" data-id="<?php echo $enc_id ?>"
+                                                        class="avatar-text avatar-md tahsilat-onayla bg-success">
                                                         <i class="feather-check text-white"></i>
                                                     </a>
-                                                    <!-- <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>"
-                                                        class="avatar-text avatar-md">
-                                                        <i class="feather-edit"></i>
-                                                    </a>
-                                                    <a href="javascript:void(0);"
-                                                        data-name="<?php echo $onay->borc_adi ?>"
-                                                        data-id="<?php echo $enc_id ?>"
-                                                        class="avatar-text avatar-md delete-dues">
-                                                        <i class="feather-trash-2"></i>
-                                                    </a> -->
+                                                    
                                                 </div>
+                                                <?php endif ?>
                                             </td>
 
                                         </tr>

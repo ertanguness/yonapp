@@ -102,6 +102,10 @@ if ($page == 'dues/payment/upload-from-xls') {
     echo '<script src="/pages/dues/payment/js/upload.js"></script>';
 
 }
+if ($page == 'dues/payment/tahsilat_onay') {
+    echo '<script src="/pages/dues/payment/js/tahsilat-onay.js"></script>';
+
+}
 
 
 if ($page == 'home') {

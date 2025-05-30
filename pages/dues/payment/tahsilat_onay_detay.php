@@ -17,6 +17,13 @@ $id = Security::decrypt($_GET['id'] ?? 0);
 $tahsilat = $TahsilatOnay->find($id);
 
 $islenen_tahsilatlar = $Tahsilat->IslenenTahsilatlar($id);
+$islenen_toplam_tahsilat = $TahsilatOnay->OnaylanmisTahsilatToplami($id);
+$tahsilat_tamanlanma_orani =$tahsilat->tutar > 0 ? ($islenen_toplam_tahsilat / $tahsilat->tutar) * 100 : 0;
+$tahsilat_son_hareket = $Tahsilat->SonHareketTarihi($id);
+
+$red = max(255 - (2.55 * $tahsilat_tamanlanma_orani), 0); // Kırmızı değeri azalır
+$green = min(2.55 * $tahsilat_tamanlanma_orani, 200); // Yeşil değeri artar
+$progress_color = "rgb($red, $green, 0)"; // Dinamik renk
 
 ?>
 
@@ -86,20 +93,29 @@ $islenen_tahsilatlar = $Tahsilat->IslenenTahsilatlar($id);
 
                     <div class="mt-4 storage-status mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h2 class="fs-10 fw-bold text-uppercase tx-spacing-1 mb-0">Storage</h2>
+                            <h2 class="fs-10 fw-bold text-uppercase tx-spacing-1 mb-0">
+                                <?php echo Helper::formattedMoney($islenen_toplam_tahsilat); ?></h2>
                             <div class="fs-10 text-muted text-uppercase">
-                                <span class="text-truncate-1-line">286.45GB used</span>
+                                <span
+                                    class="text-truncate-1-line fw-bold"><?php echo Helper::formattedMoney($tahsilat->tutar); ?></span>
                             </div>
                         </div>
                         <div class="progress ht-5">
-                            <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="50" aria-valuemin="0"
-                                aria-valuemax="100" style="width: 26%"></div>
+
+                            <div class="progress-bar" role="progressbar"
+                                aria-valuenow="<?php echo $tahsilat_tamanlanma_orani; ?>" aria-valuemin="0"
+                                aria-valuemax="100"
+                                style="width: <?php echo $tahsilat_tamanlanma_orani; ?>%; background-color: <?php echo $progress_color; ?>;">
+                            </div>
+                            <!-- <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="50" aria-valuemin="0"
+                                aria-valuemax="100" style="width: <?php //echo $tahsilat_tamanlanma_orani; ?>%"></div>-->
                         </div>
                         <div class="d-flex align-items-center mt-2">
                             <div class="me-1">
                                 <i class="feather-clock fs-10 text-muted"></i>
                             </div>
-                            <div class="fs-11 fw-normal text-muted text-truncate-1-line">Last Activity: 36 Mins Ago
+                            <div class="fs-11 fw-normal text-muted text-truncate-1-line">Son İşlem Tarihi :
+                                <?php echo $tahsilat_son_hareket; ?>
                             </div>
                         </div>
                     </div>
@@ -110,7 +126,7 @@ $islenen_tahsilatlar = $Tahsilat->IslenenTahsilatlar($id);
                                 <tr>
                                     <th scope="col">Tahsilat Adı</th>
                                     <th scope="col">İşlem Tarih</th>
-                                    <th scope="col">Durun</th>
+                                    <th scope="col">Durum</th>
                                     <th scope="col">Tutar</th>
                                 </tr>
                             </thead>
@@ -128,14 +144,16 @@ $islenen_tahsilatlar = $Tahsilat->IslenenTahsilatlar($id);
                                     </td>
 
                                     <td>
-                                    <?php echo $iTahsilat->islem_tarihi; ?>
+                                        <?php echo $iTahsilat->islem_tarihi; ?>
                                     </td>
                                     <td>
                                         <a href="javascript:void(0)" class="badge bg-soft-success text-success">
-                                            açıklama buraya
+                                            Onaylandı
                                         </a>
                                     </td>
-                                    <td><a href="javascript:void(0);"><?php echo Helper::formattedMoney($iTahsilat->tutar); ?></a></td>
+                                    <td><a
+                                            href="javascript:void(0);"><?php echo Helper::formattedMoney($iTahsilat->tutar); ?></a>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
 

@@ -3,10 +3,6 @@
 require_once '../../../vendor/autoload.php';
 session_start();
 
-
-use \PhpOffice\PhpSpreadsheet\IOFactory;
-use \PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-
 use App\Helper\Date;
 use App\Helper\Error;
 use App\Helper\Helper;
@@ -20,6 +16,8 @@ use Model\KisilerModel;
 use Model\TahsilatHavuzuModel;
 use Model\TahsilatModel;
 use Model\TahsilatOnayModel;
+use \PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use \PhpOffice\PhpSpreadsheet\IOFactory;
 
 $Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
@@ -90,24 +88,24 @@ if ($_POST['action'] == 'payment_file_upload') {
      * @param $daire Eşleşen daire ID'si
      * @return mixed Son eklenen kaydın ID'si
      */
-    function kaydetTahsilatOnay($TahsilatOnay, $data, $daire_id) {
+    function kaydetTahsilatOnay($TahsilatOnay, $data, $daire_id)
+    {
         //
 
-        $islem_tarihi = Date::YmdHIS($data[0]); // İşlem tarihi
-        $tutar = $data[1]; // Tutar, sayıya dönüştürülür
-        $tahsilat_tipi = $data[4] ?? ''; // Tahsilat tipi (Ödeme Türü)
-        $aciklama = $data[5] ?? ''; // Açıklama alanı, varsa kullanılır
-
+        $islem_tarihi = Date::YmdHIS($data[0]);  // İşlem tarihi
+        $tutar = $data[1];  // Tutar, sayıya dönüştürülür
+        $tahsilat_tipi = $data[4] ?? '';  // Tahsilat tipi (Ödeme Türü)
+        $aciklama = $data[5] ?? '';  // Açıklama alanı, varsa kullanılır
 
         // Gerekirse diğer alanlar eklenebilir
         return $TahsilatOnay->saveWithAttr([
             'id' => 0,
-            'kisi_id' => $data['kisi_id'] ?? 0, // Kişi ID'si
-            'site_id' => $_SESSION['site_id'], // Site ID'si
-            'tahsilat_tipi' => $tahsilat_tipi, // Tahsilat tipi
+            'kisi_id' => $data['kisi_id'] ?? 0,  // Kişi ID'si
+            'site_id' => $_SESSION['site_id'],  // Site ID'si
+            'tahsilat_tipi' => $tahsilat_tipi,  // Tahsilat tipi
             'islem_tarihi' => $islem_tarihi,
             'daire_id' => $daire_id,
-             'tutar' => $tutar,
+            'tutar' => $tutar,
             // 'makbuz_no' => $data[4],
             'aciklama' => $aciklama,
         ]);
@@ -120,20 +118,19 @@ if ($_POST['action'] == 'payment_file_upload') {
      * @param $aciklamaEk Açıklama veya hata mesajı
      * @return mixed Son eklenen kaydın ID'si
      */
-    function kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk = '') {
-        $islem_tarihi = Date::Ymd($data[0]); // İşlem tarihi
-        $ham_aciklama = $data[5] ?? ''; // Ham açıklama alanı, varsa kullanılır
-        $referans_no = $data[6] ?? ''; // Makbuz no, varsa kullanılır
-       
-
+    function kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk = '')
+    {
+        $islem_tarihi = Date::Ymd($data[0]);  // İşlem tarihi
+        $ham_aciklama = $data[5] ?? '';  // Ham açıklama alanı, varsa kullanılır
+        $referans_no = $data[6] ?? '';  // Makbuz no, varsa kullanılır
 
         return $TahsilatHavuzu->saveWithAttr([
             'id' => 0,
-            'islem_tarihi' => $islem_tarihi, 
+            'islem_tarihi' => $islem_tarihi,
             'tahsilat_tutari' => Helper::formattedMoneyToNumber($data[1]),  // Tutar
-            'ham_aciklama' => $ham_aciklama, 
+            'ham_aciklama' => $ham_aciklama,
             'referans_no' => $referans_no,
-            'aciklama' => $aciklamaEk,             // Ek açıklama veya hata
+            'aciklama' => $aciklamaEk,  // Ek açıklama veya hata
         ]);
     }
 
@@ -146,13 +143,14 @@ if ($_POST['action'] == 'payment_file_upload') {
     $sheet->getStyle('B')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
 
     foreach ($rows as $i => $data) {
-        if ($i == 0) continue; // Başlık satırını atla
+        if ($i == 0)
+            continue;  // Başlık satırını atla
         try {
             $daire_id = 0;
             $apartmentInfo = null;
-            $daire_kodu = $data[2] ?? ''; // Daire kodu
-            $iyelik_tipi = $data[3] ?? 'Ev Sahibi'; // Ödeyen tipi (Ev Sahibi, Kiracı)
-            $aciklama = $data[5] ;
+            $daire_kodu = $data[2] ?? '';  // Daire kodu
+            $iyelik_tipi = $data[3] ?? 'Ev Sahibi';  // Ödeyen tipi (Ev Sahibi, Kiracı)
+            $aciklama = $data[5];
 
             // Öncelikle doğrudan daire kodu ile eşleşme dene
             if (!empty($daire_kodu)) {
@@ -165,15 +163,14 @@ if ($_POST['action'] == 'payment_file_upload') {
                 if ($apartmentInfo) {
                     $daire_id = $Daire->DaireId($apartmentInfo) ?? 0;
                     $kisi_id = $Kisi->AktifKisiByDaireId($daire_id, $iyelik_tipi)->id ?? 0;
-                     
                 }
             }
 
             // Eşleşen daire bulunduysa tahsilat kaydet
             if ($daire_id > 0 && !empty($kisi_id)) {
-                $data['kisi_id'] = $kisi_id; // Kişi ID'sini ekle
+                $data['kisi_id'] = $kisi_id;  // Kişi ID'sini ekle
                 kaydetTahsilatOnay($TahsilatOnay, $data, $daire_id);
-                $bulunan_daireler[] = $apartmentInfo ?? $daire_kodu  . "kisi_id: " . $data['kisi_id'];
+                $bulunan_daireler[] = $apartmentInfo ?? $daire_kodu . 'kisi_id: ' . $data['kisi_id'];
                 $successCount++;
             } else {
                 // Eşleşmeyen kayıtları havuza kaydet
@@ -196,8 +193,10 @@ if ($_POST['action'] == 'payment_file_upload') {
     // Sonuç mesajı oluştur
     $status = 'success';
     $message = "Yükleme tamamlandı.<br> Başarılı: $successCount, <br>Hatalı: $failCount";
-    if ($failCount > 0) $message .= '. <br>Hatalı satırlar: ' . implode(', ', $failRows);
-    if ($eşleşmeyen_kayıtlar > 0) $message .= '. <br>Eşleşmeyen kayıt sayısı: ' . $eşleşmeyen_kayıtlar;
+    if ($failCount > 0)
+        $message .= '. <br>Hatalı satırlar: ' . implode(', ', $failRows);
+    if ($eşleşmeyen_kayıtlar > 0)
+        $message .= '. <br>Eşleşmeyen kayıt sayısı: ' . $eşleşmeyen_kayıtlar;
 
     // Sonuçları JSON olarak döndür
     echo json_encode([
@@ -206,4 +205,68 @@ if ($_POST['action'] == 'payment_file_upload') {
         'bulunan_daireler' => $bulunan_daireler,
         'eslesmeyen_daireler' => $eslesmeyen_daireler,
     ]);
+}
+
+// Tahsilat onaylama işlemi
+if ($_POST['action'] == 'tahsilat_onayla') {
+    $id = Security::decrypt($_POST['id']);
+    $tutar = Helper::formattedMoneyToNumber($_POST['islenecek_tutar'] );
+    $tahsilat_turu = $_POST['tahsilat_turu']; // Tahsilat tipi varsayılan olarak Nakit
+    $islenen_tahsilatlar= 0;
+
+
+    $tahsilat = $TahsilatOnay->find($id);
+
+    $tahsilat_tutari =$tahsilat->tutar ?? 0;
+    $islenen_tutar = $TahsilatOnay->OnaylanmisTahsilatToplami($id) ?? 0;
+    $kalan_tutar = $tahsilat_tutari - $islenen_tutar;
+
+    try {
+        $onay = $TahsilatOnay->find($id);
+
+
+        //gelen tutar kalan tutardan büyükse onaylama
+        if ($tutar > $kalan_tutar) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Tahsilat tutarı kalan tutardan büyük olamaz. Kalan tutar: ' . Helper::formattedMoney($kalan_tutar)
+                
+            ]);
+            exit;
+        }
+
+        if (!$onay) {
+            echo json_encode(throw new Exception('Tahsilat onayı bulunamadı.'));
+            exit;
+        }
+
+        $data = [
+            'id' => 0,
+            'tahsilat_onay_id' => $onay->id, // Tahsilat onay ID'si
+            'tahsilat_tipi' => $tahsilat_turu, // Tahsilat tipi
+            'tutar' => $tutar,
+            "islem_tarihi" => date("Y-m-d H:i:s"), // İşlem tarihi
+            'aciklama' => $onay->aciklama,
+        ];
+
+        // Tahsilat kaydını oluştur
+        $lastInsertId = $Tahsilat->saveWithAttr($data);
+
+        $islenen_tahsilatlar = $TahsilatOnay->OnaylanmisTahsilatToplami($onay->id) ;
+        $kalan_tutar = $onay->tutar - $islenen_tahsilatlar;
+
+        $status = 'success';
+        $message = 'Tahsilat onaylama işlemi başarılı.';
+    } catch (PDOException $ex) {
+        $status = 'error';
+        $message = $ex->getMessage();
+    }
+
+    $res = [
+        'status' => $status,
+        'message' => $message ,
+        "islenen_tahsilatlar" => Helper::formattedMoney($islenen_tahsilatlar),
+        "kalan_tutar" => Helper::formattedMoney($kalan_tutar),
+    ];
+    echo json_encode($res);
 }
