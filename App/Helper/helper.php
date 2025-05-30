@@ -97,6 +97,7 @@ class Helper
 
     public static function short($value, $lenght = 21)
     {
+        if(empty($value)) return;
         return strlen($value) > $lenght ? substr($value, 0, $lenght) . '...' : $value;
     }
 

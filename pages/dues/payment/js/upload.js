@@ -25,7 +25,7 @@ document
         const range = XLSX.utils.decode_range(firstSheet["!ref"]);
 
         // Satır sayısını hesapla
-        const satir_sayisi = range.e.r - range.s.r + 1;
+        const satir_sayisi = range.e.r - range.s.r;
 
         //Tutarları Topla
         let toplam_tutar = 0;
@@ -107,6 +107,11 @@ $(document).on("click", "#upload_payment_file", function (e) {
         confirmButtonText: "Tamam",
       });
     });
+});
+$(document).on('click', '#clear_payment_file', function() {
+        $(".alert-description")
+        .html('Yüklenen dosya bilgileri temizlendi. Lütfen yeni bir dosya yükleyin.').fadeIn(400);
+
 });
 
 

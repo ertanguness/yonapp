@@ -7,7 +7,7 @@ use PDO;
 
 class DairelerModel extends Model
 {
-    protected $table = "daireler";
+    protected $table = "daireler"; 
 
     public function __construct()
     {

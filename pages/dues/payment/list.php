@@ -26,11 +26,17 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
             <div class="d-flex d-md-none">
                 <a href="javascript:void(0)" class="page-header-right-close-toggle">
                     <i class="feather-arrow-left me-2"></i>
-                  
+
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-              
+
+                <a href="index?p=dues/payment/tahsilat_onay" class="btn btn-outline-success">
+                    <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
+                </a>
+                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-secondary">
+                    <i class="feather-copy me-2"></i>Eşleşmeyen Ödemeler
+                </a>
                 <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-primary">
                     <i class="feather-file-plus me-2"></i>Excelden Ödeme Yükle
                 </a>
@@ -46,7 +52,7 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
     require_once 'pages/components/alert.php';
     ?>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -56,7 +62,14 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
                                 <table class="table table-hover datatables" id="debtListTable">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
+                                        <th class="wd-30 no-sorting" tabindex="0" aria-controls="customerList"  style="width: 40px;">
+                                                        <div class="btn-group mb-1">
+                                                            <div class="custom-control custom-checkbox ms-1">
+                                                                <input type="checkbox" class="custom-control-input" id="checkAllCustomer">
+                                                                <label class="custom-control-label" for="checkAllCustomer"></label>
+                                                            </div>
+                                                        </div>
+                                                    </th>
                                             <th>Blok Adı</th>
                                             <th>Ad Soyad</th>
                                             <th>Borç Tutarı</th>
@@ -73,8 +86,17 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
                                         ?>
                                         <tr>
 
-                                            <td><?= $index + 1 ?></td>
-                                            <td><?= $borc->blok_adi ?></td>
+                                            <td>
+                                            <div class="item-checkbox ms-1">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input checkbox" id="checkBox_1">
+                                                            <label class="custom-control-label" for="checkBox_1"></label>
+                                                        </div>
+                                                    </div>
+                                            </td>
+
+
+                                            <td><?= $borc->blok_adi ?> ...</td>
                                             <td><?= $borc->kisi_adi ?></td>
                                             <td><?= $borc->toplam_borc   ?> TL</td>
                                             <td><?= $borc->odenen_borc ?? 0 ?> TL</td>

@@ -76,11 +76,15 @@ class KisilerModel extends Model
         $result = $sql->fetch(PDO::FETCH_OBJ);
         return $result ? $result->adi_soyadi : null;
     }
- 
-    /**
-     * Belirli bir blok_id'ye sahip kişilerin daire numaralarını getirir.
-     * @param int $blok_id Blok ID'si.
-     * @return array Daire numaralarını içeren bir dizi döner.
+
+    /**Daire id'si ve uyelik_tipi'nden şu anda aktif olan kiracıyı veya ev sahibini bul
+     * @param int $daire_id Daire ID'si.
+     * @param string $uyelik_tipi Kullanıcının tipi (ev sahibi veya kiracı).
      */
-   
+    public function AktifKisiByDaireId($daire_id, $uyelik_tipi)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE daire_id = ? AND uyelik_tipi = ? AND silinme_tarihi IS NULL ORDER BY id DESC LIMIT 1");
+        $sql->execute([$daire_id, $uyelik_tipi]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
 }

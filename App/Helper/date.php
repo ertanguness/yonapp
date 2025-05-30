@@ -2,9 +2,11 @@
 
 namespace App\Helper;
 
+use DateTime;
+
 class Date
 {
-    public static function dmY($date =null, $format = 'd.m.Y')
+    public static function dmY($date = null, $format = 'd.m.Y')
     {
         if ($date == null) {
             $date = date('Y-m-d');
@@ -19,6 +21,57 @@ class Date
         }
         return date($format, strtotime($date));
     }
+
+    public static function YmdHIS($date, $format = 'YmdHis')
+    {
+        if ($date == null) {
+            return '';
+        }
+
+        return self::normalizeDate( $date);
+    }
+
+    public static function normalizeDate($date, $outputFormat = 'Y-m-d H:i:s') 
+    {
+        if (empty($date)) {
+            return '';
+        }
+    
+        // Önceden tanımlanmış yaygın formatlar
+        $commonFormats = [
+            'd/m/Y-H:i:s',    // 26/05/2025-14:02:40
+            'd.m.Y H:i:s',     // 26.05.2025 14:02:40
+            'Y-m-d H:i:s',     // 2025-05-26 14:02:40
+            'd/m/Y H:i:s',     // 26/05/2025 14:02:40
+            'm/d/Y H:i:s',     // 05/26/2025 14:02:40 (US format)
+            'Ymd His',         // 20250526 140240
+            'D M d Y H:i:s',   // Tue May 26 2025 14:02:40
+            DateTime::ATOM,     // 2025-05-26T14:02:40+00:00
+            DateTime::RFC2822,  // Tue, 26 May 2025 14:02:40 +0000
+        ];
+    
+        // Önce DateTime objesi oluşturmayı dene
+        $datetime = date_create($date);
+        
+        // Başarısız olursa, bilinen formatları dene
+        if ($datetime === false) {
+            foreach ($commonFormats as $format) {
+                $datetime = DateTime::createFromFormat($format, $date);
+                if ($datetime !== false) {
+                    break;
+                }
+            }
+        }
+    
+        // Hala geçerli bir tarih yoksa, şimdiki zamanı dön
+        if ($datetime === false) {
+            return date($outputFormat);
+        }
+    
+        return $datetime->format($outputFormat);
+    }
+
+
 
     public static function firstDay($month, $year)
     {
@@ -40,11 +93,13 @@ class Date
     {
         return date($format, strtotime('+1 day'));
     }
+
     public static function getDay($date = null, $leadingZero = true)
     {
         $format = $leadingZero ? 'd' : 'j';
         return $date ? date($format, strtotime($date)) : date($format);
     }
+
     public static function getMonth($date = null, $leadingZero = true)
     {
         $format = $leadingZero ? 'm' : 'n';
@@ -55,7 +110,6 @@ class Date
     {
         return $date ? date('Y', strtotime($date)) : date('Y');
     }
-
 
     public static function daysInMonth($month, $year)
     {
@@ -72,7 +126,6 @@ class Date
         }
         return $dateList;
     }
-
 
     public static function isWeekend($date)
     {
@@ -133,7 +186,7 @@ class Date
 
     public static function monthName($month)
     {
-        //09 şeklinde gelen ayları 9 şekline çevir
+        // 09 şeklinde gelen ayları 9 şekline çevir
         $month = ltrim($month, '0');
         return self::MONTHS[$month];
     }
@@ -181,7 +234,7 @@ class Date
      */
     public static function getDateDiff($date1, $date2 = '')
     {
-        //date2 boş ise bugünün tarihi alınır
+        // date2 boş ise bugünün tarihi alınır
         if ($date2 == '') {
             $date2 = date('Y-m-d H:i:s');
         }
@@ -191,18 +244,16 @@ class Date
         return (int) $interval->format('%a');
     }
 
-
-    //Kalan günü hesaplar
+    // Kalan günü hesaplar
     public static function getRemainingDays($date)
     {
-        if($date == null){
+        if ($date == null) {
             return '';
-        }   
+        }
 
         $today = date('Y-m-d');
         $date = date('Y-m-d', strtotime($date));
         $diff = strtotime($date) - strtotime($today);
         return floor($diff / (60 * 60 * 24));
     }
-
 }

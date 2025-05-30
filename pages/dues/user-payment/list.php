@@ -1,3 +1,21 @@
+<?php
+use App\Helper\Helper;
+use App\Helper\Security;
+
+
+use Model\UserPaymentModel;
+
+// Kullanıcı Ödemeleri
+$UserPayment = new UserPaymentModel();
+
+// Kullanıcının Gruplanmış Borç Başlıklarını ve Ödeme Durumlarını Getirir
+$gruplanmisBorc = $UserPayment->KategoriBazliOzet(113);
+$hesap_ozet = $UserPayment->KullaniciToplamBorc(113);
+$bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
+
+
+?>
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -15,164 +33,172 @@
         </a>
     </div>
 </div>
+<style>
+.activity-feed-1 .feed-item {
+    padding-bottom: 15px !important;
+
+}
+</style>
 
 <div class="main-content">
-    <div class="container-xl">
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle datatables">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Başlık</th>
-                                <th>Tutar (₺)</th>
-                                <th>Ceza Tutarı (₺)</th>
-                                <th>Son Tarih</th>
-                                <th>Durum</th>
-                                <th>İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td><i class="fas fa-file-invoice me-1 text-primary"></i> Ocak Aidatı</td>
-                                <td><strong>500.00</strong></td>
-                                <td><strong>25.00</strong></td>
-                                <td>31.01.2025</td>
-                                <td><span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Bekliyor</span></td>
-                                <td>
-                                    <div class="hstack gap-2"></div>
-                                        <a href="javascript:void(0);" class="avatar-text avatar-md" title="Detay" data-bs-toggle="modal" data-bs-target="#borcDetayModal">
-                                            <i class="feather-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
+    <div class="row">
+        <div class="container-xl mb-5">
+            <div class="row">
 
-                            <tr>
-                                <td>2</td>
-                                <td><i class="fas fa-file-invoice me-1 text-primary"></i> Şubat Aidatı</td>
-                                <td><strong>500.00</strong></td>
-                                <td><strong>0.00</strong></td>
-                                <td>29.02.2025</td>
-                                <td><span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Ödendi</span></td>
-                                <td>
-                                    <div class="hstack gap-2"></div>
-                                        <a href="javascript:void(0);" class="avatar-text avatar-md" title="Detay" data-bs-toggle="modal" data-bs-target="#borcDetayModal">
-                                            <i class="feather-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
 
-                            <tr>
-                                <td>3</td>
-                                <td><i class="fas fa-wrench me-1 text-danger"></i> Tesisat Gideri</td>
-                                <td><strong>300.00</strong></td>
-                                <td><strong>15.00</strong></td>
-                                <td>15.03.2025</td>
-                                <td><span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Bekliyor</span></td>
-                                <td>
-                                    <div class="hstack gap-2">
-                                        <a href="javascript:void(0);" class="avatar-text avatar-md" title="Detay" data-bs-toggle="modal" data-bs-target="#borcDetayModal">
-                                            <i class="feather-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>4</td>
-                                <td><i class="fas fa-tools me-1 text-secondary"></i> Ortak Alan Temizliği</td>
-                                <td><strong>150.00</strong></td>
-                                <td><strong>0.00</strong></td>
-                                <td>10.04.2025</td>
-                                <td><span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Ödendi</span></td>
-                                <td>
-                                    <div class="hstack gap-2"></div>
-                                        <a href="javascript:void(0);" class="avatar-text avatar-md" title="Detay" data-bs-toggle="modal" data-bs-target="#borcDetayModal">
-                                            <i class="feather-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>5</td>
-                                <td><i class="fas fa-bolt me-1 text-warning"></i> Elektrik Gideri</td>
-                                <td><strong>220.50</strong></td>
-                                <td><strong>11.03</strong></td>
-                                <td>05.05.2025</td>
-                                <td><span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Bekliyor</span></td>
-                                <td>
-                                    <div class="hstack gap-2">
-                                        <a href="javascript:void(0);" class="avatar-text avatar-md" title="Detay" data-bs-toggle="modal" data-bs-target="#borcDetayModal">
-                                            <i class="feather-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Eğer hiç borç yoksa -->
-                            <!--
-                            <tr>
-                                <td colspan="7" class="text-center text-muted">Henüz herhangi bir borcunuz bulunmamaktadır.</td>
-                            </tr>
-                            -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Borç Detay Modal -->
-<div class="modal fade" id="borcDetayModal" tabindex="-1" aria-labelledby="borcDetayModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="borcDetayModalLabel">
-                        <div class="d-flex justify-content-center align-items-center">
-                                <i class="feather-info me-3 text-primary" style="font-size: 2.0rem;"></i>
-                                <span>Borç Detayı</span>
+                <div class="col-xxl-4 col-lg-4 col-md-6">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="fs-12 fw-medium text-muted mb-3">BORÇ (₺)</div>
+                            <div class="hstack justify-content-between lh-base">
+                                <h3><span class="counter text-danger"><?php echo $hesap_ozet->toplam_borc ?> ₺</span></h3>
+                                <div class="hstack gap-2 fs-11 text-success">
+                                    <i class="feather-arrow-up-circle fs-12"></i>
+                                    <span>+25.48%</span>
+                                </div>
+                            </div>
                         </div>
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <p><strong>Başlık:</strong> Ocak Aidatı</p>
-                        <p><strong>Tutar:</strong> 500.00 ₺</p>
-                        <p><strong>Oluşturulma:</strong> 01.01.2025</p>
-
-                        <p><strong>Son Ödeme Tarihi:</strong> 31.01.2025</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Ceza Oranı:</strong> %5</p>
-                        <p><strong>Ceza Tutarı:</strong> 25.00 ₺</p>
-                        <p><strong>Gecikme Gün sayısı:</strong> 3 </p>
-                        <p><strong>Durum:</strong> <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Bekliyor</span></p>
                     </div>
                 </div>
-                <p><strong>Açıklama:</strong> Bu borç Ocak ayına ait aidat ödemesini kapsamaktadır. Gecikme halinde ceza uygulanır.</p>
+                <div class="col-xxl-4 col-lg-4 col-md-6">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="fs-12 fw-medium text-muted mb-3">ÖDENEN (₺)</div>
+                            <div class="hstack justify-content-between lh-base">
+                                <h3><span class="counter text-success"><?php echo $hesap_ozet->toplam_tahsilat ?> ₺</span></h3>
+                                <div class="hstack gap-2 fs-11 text-success">
+                                    <i class="feather-arrow-up-circle fs-12"></i>
+                                    <span>+25.48%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-4 col-lg-4 col-md-6">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="fs-12 fw-medium text-muted mb-3">KALAN (₺)</div>
+                            <div class="hstack justify-content-between lh-base">
+                                <h3><span class="counter text-<?php echo $bakiye_color ?>"><?php echo $hesap_ozet->bakiye ?> ₺</span></h3>
+                                <div class="hstack gap-2 fs-11 text-success">
+                                    <i class="feather-arrow-up-circle fs-12"></i>
+                                    <span>+25.48%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xxl-12 col-lg-12 ">
+                    <div class="card stretch stretch-full">
+                        <div class="card-header">
+                            <h5 class="card-title">Özet Bilgilerim</h5>
+                            <div class="card-header-action">
+                                <div class="card-header-btn">
+
+                                    <div data-bs-toggle="tooltip" title="" data-bs-original-title="Refresh">
+                                        <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning"
+                                            data-bs-toggle="refresh"> </a>
+                                    </div>
+                                    <div data-bs-toggle="tooltip" title="" data-bs-original-title="Maximize/Minimize">
+                                        <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success"
+                                            data-bs-toggle="expand"> </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-body custom-card-action">
+                            <div class="accordion" id="weeklyBestsellerAccordion">
+                                <?php foreach ($gruplanmisBorc as $borc) { 
+                                    $color = $borc->bakiye > 0 ? "success" : "danger";
+                                    ?>
+
+                                <div class="accordion-item border border-dashed border-gray-500 my-3">
+                                    <h2 class="accordion-header" id="heading<?php echo $borc->kategori_adi; ?>">
+                                        <button class="accordion-button collapsed bg-white" type="button"
+                                            aria-expanded="true" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse<?php echo $borc->kategori_adi; ?>">
+                                            <div class="d-flex align-items-center w-100">
+                                                <div
+                                                    class="avatar-text avatar-lg bg-soft-success text-success border-soft-success rounded me-3">
+                                                    <i class="feather-award"></i>
+                                                </div>
+                                                <div>
+                                                    <a href="javascript:void(0);"><?php echo $borc->kategori_adi; ?></a>
+                                                </div>
+                                                <div class="text-end ms-auto pe-3">
+                                                    <span class="fw-bold d-block text-<?php echo $color; ?>"><?php echo Helper::formattedMoney($borc->bakiye) ?> </span>
+                                                    <span class="fs-12 text-muted"><?php echo $borc->kayit_sayisi ?> Hareket</span>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse<?php echo $borc->kategori_adi; ?>" class="accordion-collapse collapse"
+                                        aria-labelledby="heading<?php echo $borc->kategori_adi; ?>">
+                                        <div class="accordion-body">
+
+                                            <ul class="list-unstyled mb-0 activity-feed-1">
+                                               
+
+                                                <?php 
+                                                $borc_detay = $UserPayment->KullaniciBorcDetaylari(113,$borc->kategori_adi);
+
+                                              
+                                                foreach ($borc_detay as $detay) { 
+                                                    $enc_id = Security::encrypt($detay->borc_id ?? 0);
+                                                    $color = $detay->islem_turu == "tahsilat" ? "success" : "danger";
+
+
+                                                ?>
+                                                <li class="feed-item feed-item-<?php echo  $color ; ?>">
+                                                    <div class="d-flex gap-4 justify-content-between">
+                                                        <div>
+                                                            <div class="mb-2 text-truncate-1-line"><a
+                                                                    href="javascript:void(0)"
+                                                                    class="fw-semibold text-dark">
+                                                                <?php echo $detay->islem_adi ; ?>
+                                                                </a>
+                                                            </div>
+                                                            <p class="fs-12 text-muted mb-3 text-truncate-2-line">
+                                                            <?php echo  $detay->aciklama ; ?></p>
+
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <div>
+
+                                                                <div
+                                                                    class="fw-semibold text-<?php echo  $color ; ?> text-uppercase text-muted text-nowrap">
+                                                                    <?php echo Helper::formattedMoneyWithoutCurrency($detay->tutar); ?> ₺
+                                                                </div>
+                                                            </div>
+                                                            <span class="fs-10 fw-semibold text-muted">Bak. <?php echo Helper::formattedMoneyWithoutCurrency($detay->bakiye); ?>
+                                                                ₺</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <?php } ?>
+                                            </ul>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php } ?>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                <button type="button" class="btn btn-primary" onclick="redirectToManage()"><i class="feather-credit-card me-1"></i>Ödeme Yap</button>
-            </div>
+
         </div>
+
     </div>
+
+
 </div>
-
-<script>
-    function redirectToManage() {
-        // Close the modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('borcDetayModal'));
-        modal.hide();
-
-        // Redirect to the manage page
-        window.location.href = 'index?p=dues/user-payment/manage';
-    }
-</script>
