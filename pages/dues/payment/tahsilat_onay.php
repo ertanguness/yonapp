@@ -169,14 +169,5 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
 </div>
 
 <script>
-$(document).on('click', '.detay-goruntule', function() {
-    var id = $(this).data("id")
 
-    $.get("pages/dues/payment/tahsilat_onay_detay.php", {
-        id: id
-    }, function(data) {
-        $(".tahsilat-detay").html(data);
-    });
-    $("#tahsilatDetayModal").modal("show");
-});
 </script>

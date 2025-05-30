@@ -29,32 +29,6 @@ $TahsilatOnay = new TahsilatOnayModel();
 $Daire = new DairelerModel();
 $Kisi = new KisilerModel();
 
-// CREATE TABLE `tahsilatlar` (
-// 	`id` INT(11) NOT NULL AUTO_INCREMENT,
-// 	`borc_id` INT(11) NOT NULL,
-// 	`person_id` INT(11) NOT NULL,
-// 	`kasa_id` INT(11) NOT NULL,
-// 	`tutar` DECIMAL(10,2) NOT NULL,
-// 	`islem_tarihi` DATE NOT NULL,
-// 	`tahsilat_tipi` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-// 	`makbuz_no` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-// 	`taksit_no` INT(11) NULL DEFAULT NULL,
-// 	`toplam_taksit` INT(11) NULL DEFAULT NULL,
-// 	`aciklama` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-// 	`deleted_at` DATETIME NULL DEFAULT NULL,
-// 	`delete_user` INT(11) NULL DEFAULT NULL,
-// 	`created_at` DATETIME NULL DEFAULT current_timestamp(),
-// 	`create_user` INT(11) NULL DEFAULT NULL,
-// 	`updated_at` DATETIME NULL DEFAULT NULL ON UPDATE current_timestamp(),
-// 	`update_user` INT(11) NULL DEFAULT NULL,
-// 	PRIMARY KEY (`id`) USING BTREE,
-// 	INDEX `FK_tahsilatlar_peoples` (`person_id`) USING BTREE,
-// 	CONSTRAINT `FK_tahsilatlar_peoples` FOREIGN KEY (`person_id`) REFERENCES `peoples` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-// )
-// COLLATE='utf8mb4_general_ci'
-// ENGINE=InnoDB
-// ;
-
 /* Excel dosyasından toplu ödeme yükleme işlemi */
 if ($_POST['action'] == 'payment_file_upload') {
     $file = $_FILES['payment_file'];
@@ -269,4 +243,39 @@ if ($_POST['action'] == 'tahsilat_onayla') {
         "kalan_tutar" => Helper::formattedMoney($kalan_tutar),
     ];
     echo json_encode($res);
+}
+
+
+//onayli_tahsilat_sil
+if ($_POST['action'] == 'onayli_tahsilat_sil') {
+    $id = Security::decrypt($_POST['id']);
+    try {
+        $tahsilat = $Tahsilat->find($id);
+        if (!$tahsilat) {
+            throw new Exception('Tahsilat kaydı bulunamadı.');
+        }
+
+        // Tahsilat kaydını sil
+        $Tahsilat->delete($_POST['id']);
+        
+        //İşlenmiş tahsilatların toplamını al
+        $tahsilat_tutar = $TahsilatOnay->find($tahsilat->tahsilat_onay_id)->tutar ?? 0;
+        $islenen_tutar = $TahsilatOnay->OnaylanmisTahsilatToplami( $tahsilat->tahsilat_onay_id) ;
+        $kalan_tutar = $tahsilat_tutar - $islenen_tutar;
+
+        // Başarılı mesajı
+        $status = 'success';
+        $message = 'Tahsilat kaydı başarıyla silindi.' ;
+        $islenen_tahsilatlar = $islenen_tutar;
+    } catch (Exception $e) {
+        $status = 'error';
+        $message = $e->getMessage();
+    }
+
+    echo json_encode([
+        'status' => $status,
+        'message' => $message,
+        'islenen_tahsilatlar' => Helper::formattedMoney($islenen_tahsilatlar) ?? 0,
+        'kalan_tutar' => Helper::formattedMoney($kalan_tutar) ?? 0
+    ]);
 }
