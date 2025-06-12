@@ -121,17 +121,20 @@ $progress_color = "rgb($red, $green, 0)"; // Dinamik renk
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover datatables" id="islenenTahsilatlarTable">
                             <thead>
                                 <tr>
                                     <th scope="col">Tahsilat Adı</th>
                                     <th scope="col">İşlem Tarih</th>
                                     <th scope="col">Durum</th>
                                     <th scope="col">Tutar</th>
+                                    <th>Sil</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($islenen_tahsilatlar as $iTahsilat): ?>
+                                <?php foreach ($islenen_tahsilatlar as $iTahsilat): 
+                                    $enc_id = Security::encrypt($iTahsilat->id);
+                                    ?>
 
                                 <tr>
                                     <td class="position-relative">
@@ -154,6 +157,10 @@ $progress_color = "rgb($red, $green, 0)"; // Dinamik renk
                                     <td><a
                                             href="javascript:void(0);"><?php echo Helper::formattedMoney($iTahsilat->tutar); ?></a>
                                     </td>
+                                    <td>
+                                        <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>" class="text-danger onayli-tahsilat-sil">
+                                            <i class="feather-trash-2"></i>
+                                        </a>
                                 </tr>
                                 <?php endforeach; ?>
 
@@ -166,3 +173,12 @@ $progress_color = "rgb($red, $green, 0)"; // Dinamik renk
         </div>
     </div>
 </div>
+<script>
+
+    $("#islenenTahsilatlarTable").DataTable({
+        "dom": 'tip',
+        "language": {
+            url: "/assets/js/tr.json",
+        }
+    });
+</script>
