@@ -439,8 +439,8 @@ $.validator.setDefaults({
   errorPlacement: function (error, element) {
     // Hata mesajını input grubunun altına ekle
     error.addClass("text-danger"); // Hata mesajına stil ekleyin
-    if (element.closest(".input-group").length) {
-      element.closest(".input-group").after(error); // Input grubunun altına ekle
+    if (element.closest(".form-floating").length) {
+      element.closest(".form-floating").after(error); // Input grubunun altına ekle
     } else {
       element.after(error); // Diğer durumlarda input'un altına ekle
     }
@@ -448,14 +448,14 @@ $.validator.setDefaults({
   highlight: function (element) {
     // Hatalı input alanına kırmızı border ekle
     $(element).addClass("is-invalid");
-    // Input'un en yakın input-group kapsayıcısına is-invalid sınıfını ekle
-    $(element).closest(".input-group").addClass("is-invalid");
+    // Input'un en yakın form-floating kapsayıcısına is-invalid sınıfını ekle
+    $(element).closest(".form-floating").addClass("is-invalid");
   },
   unhighlight: function (element) {
     // Hatalı input alanından kırmızı border'ı kaldır
     $(element).removeClass("is-invalid");
-    // Input'un en yakın input-group kapsayıcısından is-invalid sınıfını kaldır
-    $(element).closest(".input-group").removeClass("is-invalid");
+    // Input'un en yakın form-floating kapsayıcısından is-invalid sınıfını kaldır
+    $(element).closest(".form-floating").removeClass("is-invalid");
   },
 });
 

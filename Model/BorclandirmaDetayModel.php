@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 namespace Model;
@@ -8,7 +8,7 @@ use PDO;
 
 class BorclandirmaDetayModel extends Model
 {
-    protected $table = "borclandirma_detayi"; 
+    protected $table = "borclandirma_detayi";
 
     public function __construct()
     {
@@ -16,12 +16,13 @@ class BorclandirmaDetayModel extends Model
     }
 
     // Borçlandırma detaylarını borç ID'sine göre getirir
-    public function borcDetaylariniGetir($borc_id)
+    public function KisiBorclandirmalari($kisi_id)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE borc_id = ?");
-        $sql->execute([$borc_id]);
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE kisi_id = ? AND silinme_tarihi IS NULL");
+        $sql->execute([$kisi_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+  
 
 
     /**
@@ -55,5 +56,38 @@ class BorclandirmaDetayModel extends Model
         $sql->execute();
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
-   
+
+    /**
+     * Belirli bir kişinin toplam borçlarını getirir
+     * @param int $kisi_id
+     * @return float
+     */
+    public function KisiToplamBorc($kisi_id)
+    {
+        $sql = $this->db->prepare("SELECT SUM(tutar) AS toplam_borc FROM $this->table WHERE kisi_id = ? AND silinme_tarihi IS NULL");
+        $sql->execute([$kisi_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? (float)$result->toplam_borc : 0.0; // Eğer sonuç varsa toplam borcu döndür, yoksa 0 döndür
+    }
+
+
+    /**
+     * Kişinin finansal durumunu özetler (toplam borç, toplam ödeme, bakiye)
+     * @param int $kisi_id
+     * @return object
+     */
+    public function KisiFinansalDurum($kisi_id)
+    {
+        $sql = $this->db->prepare("
+       SELECT 
+    (SELECT COALESCE(SUM(tutar), 0) FROM $this->table WHERE kisi_id = :kisi_id) AS toplam_borc,
+    (SELECT COALESCE(SUM(tutar), 0) FROM tahsilatlar WHERE kisi_id = :kisi_id) AS toplam_odeme,
+    (SELECT COALESCE(SUM(tutar), 0) FROM tahsilatlar WHERE kisi_id = :kisi_id) - 
+    (SELECT COALESCE(SUM(tutar), 0) FROM $this->table WHERE kisi_id = :kisi_id) AS bakiye;
+    ");
+        $sql->execute([
+            ':kisi_id' => $kisi_id
+        ]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
 }

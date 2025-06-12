@@ -3,6 +3,8 @@
 require_once '../../../vendor/autoload.php';
 session_start();
 
+
+
 use App\Helper\Date;
 use App\Helper\Error;
 use App\Helper\Helper;
@@ -28,6 +30,8 @@ $TahsilatHavuzu = new TahsilatHavuzuModel();
 $TahsilatOnay = new TahsilatOnayModel();
 $Daire = new DairelerModel();
 $Kisi = new KisilerModel();
+
+Security::checkLogin();
 
 /* Excel dosyasından toplu ödeme yükleme işlemi */
 if ($_POST['action'] == 'payment_file_upload') {
@@ -216,6 +220,7 @@ if ($_POST['action'] == 'tahsilat_onayla') {
 
         $data = [
             'id' => 0,
+            'kisi_id' => $onay->kisi_id, // Kişi ID'si
             'tahsilat_onay_id' => $onay->id, // Tahsilat onay ID'si
             'tahsilat_tipi' => $tahsilat_turu, // Tahsilat tipi
             'tutar' => $tutar,
@@ -228,6 +233,16 @@ if ($_POST['action'] == 'tahsilat_onayla') {
 
         $islenen_tahsilatlar = $TahsilatOnay->OnaylanmisTahsilatToplami($onay->id) ;
         $kalan_tutar = $onay->tutar - $islenen_tahsilatlar;
+
+
+        //Eğer kalan tutar 0 ise tahsilat onayını güncelle
+        if ($kalan_tutar <= 0) {
+            $data = [
+                'id' => $onay->id,
+                'onay_durumu' => 1,
+            ];
+            $TahsilatOnay->saveWithAttr($data);
+        }
 
         $status = 'success';
         $message = 'Tahsilat onaylama işlemi başarılı.';

@@ -6,7 +6,7 @@ class Security
 {
     public static function escape($data)
     {
-        return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+        return htmlentities ($data, ENT_QUOTES, 'UTF-8');
     }
 
     // CSRF Token
@@ -29,6 +29,18 @@ class Security
 
    
     }
+
+    /*
+    *Login Kontrolü yapılır,api sayfalarına erişim kontrolü için kullanılır
+    */
+    public static function checkLogin()
+    {
+        if (!isset($_SESSION['user'])) {
+            echo "Unauthorized access. Please log in.";
+            exit;
+        }
+    }
+
 
     public static function generatePassword($password)
     {

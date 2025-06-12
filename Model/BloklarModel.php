@@ -50,4 +50,18 @@ class BloklarModel extends Model
         $sql->execute([$blok_id]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
+
+    /********************************************************************** */
+    /**
+     * Gelen id'den blok adını getirir
+     * @param int $blok_id
+     * @return string|null
+     */
+    public function BlokAdi($blok_id)
+    {
+        $sql = $this->db->prepare("SELECT blok_adi FROM {$this->table} WHERE id = ?");
+        $sql->execute([$blok_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? $result->blok_adi : null; // Eğer sonuç varsa blok adını döndür, yoksa null döndür
+    }
 }
