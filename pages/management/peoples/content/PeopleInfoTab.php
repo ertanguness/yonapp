@@ -135,16 +135,18 @@ $blocks = $Block->SiteBloklari($site_id);
 
     <!-- Doğum Bilgileri -->
     <div class="row mb-4 align-items-center">
+      
         <div class="col-lg-2">
-            <label for="birthDate" class="fw-semibold">Doğum Tarihi:</label>
+            <label for="tcPassportNo" class="fw-semibold">TC Kimlik No / Pasaport No:</label>
         </div>
-
         <div class="col-lg-4">
             <div class="input-group">
-                <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                <input type="text" class="form-control flatpickr" id="birthDate" name="birthDate" placeholder="Doğum Tarihi Giriniz">
+                <div class="input-group-text"><i class="fas fa-id-card"></i></div>
+                <input type="text" class="form-control" id="tcPassportNo" name="tcPassportNo" placeholder="TC Kimlik No veya Pasaport No Giriniz" maxlength="11">
             </div>
         </div>
+
+
         <div class="col-lg-2">
             <label for="gender" class="fw-semibold">Cinsiyet:</label>
         </div>
@@ -162,16 +164,17 @@ $blocks = $Block->SiteBloklari($site_id);
 
     <!-- İletişim Bilgileri -->
     <div class="row mb-4 align-items-center">
-        <div class="col-lg-2">
-            <label for="tcPassportNo" class="fw-semibold">TC Kimlik No / Pasaport No:</label>
-        </div>
-        <div class="col-lg-4">
-            <div class="input-group">
-                <div class="input-group-text"><i class="fas fa-id-card"></i></div>
-                <input type="text" class="form-control" id="tcPassportNo" name="tcPassportNo" placeholder="TC Kimlik No veya Pasaport No Giriniz" maxlength="11">
-            </div>
+       
+    <div class="col-lg-2">
+            <label for="birthDate" class="fw-semibold">Doğum Tarihi:</label>
         </div>
 
+        <div class="col-lg-4">
+            <div class="input-group">
+                <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+                <input type="text" class="form-control flatpickr" id="birthDate" name="birthDate" placeholder="Doğum Tarihi Giriniz">
+            </div>
+        </div>
 
         <div class="col-lg-2">
             <label for="email" class="fw-semibold">E-Posta Adresi:</label>
