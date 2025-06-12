@@ -87,4 +87,41 @@ class KisilerModel extends Model
         $sql->execute([$daire_id, $uyelik_tipi]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
+
+    public function SiteKisileriJoin($site_id)
+    {
+        if (!$site_id) {
+            return [];
+        }
+
+        $stmt = $this->db->prepare("
+        SELECT 
+            kisiler.*, 
+            araclar.id AS arac_id, 
+            araclar.plaka, 
+            araclar.marka_model
+        FROM kisiler
+        INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
+        LEFT JOIN araclar ON kisiler.id = araclar.kisi_id
+        WHERE bloklar.site_id = :site_id
+    ");
+        $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function KisiVarmi($kimlikNo)
+    {
+        $query = $this->db->prepare("SELECT COUNT(*) FROM $this->table WHERE kimlik_no = ?");
+        $query->execute([$kimlikNo]);
+        return $query->fetchColumn() > 0;
+    }
+    // Bloğun kişilerini getir
+    public function DaireKisileri($daire_id)
+    {
+        $query = $this->db->prepare("SELECT id, adi_soyadi FROM kisiler WHERE daire_id = :daire_id");
+        $query->execute(['daire_id' => $daire_id]);
+        return $query->fetchAll(PDO::FETCH_OBJ);
+    }
 }

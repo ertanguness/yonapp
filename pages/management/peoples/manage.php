@@ -1,7 +1,22 @@
+<?php
+
+use Model\BlockModel;
+use App\Helper\Security;
+use Model\SitelerModel;
+
+$Siteler = new SitelerModel();
+$Blocks = new BlockModel();
+
+$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$blocks = $Blocks->find($id  ?? null);
+
+$site = $Siteler->SiteAdi($_SESSION['site_id'] ?? null);
+?>
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
-            <h5 class="m-b-10">Tanımlamalar</h5>
+            <h5 class="m-b-10">Site Yönetim</S></h5>
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
@@ -22,8 +37,8 @@
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>
-                <button type="button" class="btn btn-primary" id="savePeoples">
-                    <i class="feather-save  me-2"></i>
+                <button type="button" class="btn btn-primary" id="savePeoples" class="dynamic-save-button">
+                    <i class="feather-save me-2"></i>
                     Kaydet
                 </button>
             </div>
@@ -54,17 +69,8 @@
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
-                                        <!--********** HIDDEN ROW************** -->
-                                        <div class='row d-none'>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='id' class='form-control'
-                                                    value="<?php echo $incexp->id ?? 0 ?>">
-                                            </div>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='action' value='savePeoplesType' class='form-control'>
-                                            </div>
-                                        </div>
-                                        <!--********** HIDDEN ROW************** -->
+                                        <input type="hidden" name="kisi_id" id="kisi_id" value="<?php echo $id; ?>">
+
                                         <div class="card-header p-0">
                                             <!-- Nav tabs -->
                                             <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
@@ -91,15 +97,15 @@
                                                 ?>
                                             </div>
                                             <div class="tab-pane fade " id="peopleCarInfoTab" role="tabpanel">
-                                            <?php
+                                                <?php
                                                 require_once 'pages/management/peoples/content/PeopleCarInfoTab.php';
                                                 ?>
-                                            </div>      
+                                            </div>
                                             <div class="tab-pane fade " id="peoplesEmergencyInfoTab" role="tabpanel">
-                                            <?php
+                                                <?php
                                                 require_once 'pages/management/peoples/content/PeoplesEmergencyInfoTab.php';
                                                 ?>
-                                            </div>    
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -110,3 +116,59 @@
         </div>
     </div>
 </div>
+<div id="modalContainer"></div>
+
+<!-- Tab sekmesine göre Kaydet buton değişimi -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const saveButton = document.getElementById('savePeoples');
+    const tabLinks = document.querySelectorAll('.nav-link');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('shown.bs.tab', function (event) {
+            const targetId = event.target.getAttribute('data-bs-target');
+
+            if (targetId === '#peopleInfoTab') {
+                saveButton.id = 'save_peoples';
+                saveButton.innerHTML = '<i class="feather-save me-2"></i>Kaydet';
+            } 
+            else if (targetId === '#peopleCarInfoTab') {
+                saveButton.id = 'ekle_araba';
+                saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
+            } 
+            else if (targetId === '#peoplesEmergencyInfoTab') {
+                saveButton.id = 'ekle_acildurum';
+                saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
+            }
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.id === 'ekle_araba') {
+            fetch('pages/management/peoples/content/AracModal.php')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalContainer').innerHTML = html;
+                    let aracModal = new bootstrap.Modal(document.getElementById('aracEkleModal'));
+                    aracModal.show();
+                })
+                .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
+        }
+        if (e.target && e.target.id === 'ekle_acildurum') {
+            fetch('pages/management/peoples/content/AcilDurumModal.php')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalContainer').innerHTML = html;
+                    let acilDurumModal = new bootstrap.Modal(document.getElementById('acilDurumEkleModal'));
+                    acilDurumModal.show();
+                })
+                .catch(error => console.error('Acil Durum Modal yüklenirken hata oluştu:', error));
+        }
+    });
+});
+</script>
+<script src="src/daire-kisi.js"></script>
+<script src="src/blok-daire.js"></script>

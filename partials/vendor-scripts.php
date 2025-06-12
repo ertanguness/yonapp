@@ -86,6 +86,17 @@ if (
         echo '<script src="/pages/management/apartment/apartment.js"></script>';
     }
    //*************APARTMENT******************************** */
+
+   //*************PEOPLES******************************** */
+if (
+    $page == 'management/peoples/manage' ||   $page == 'management/peoples/list') {
+        echo '<script src="/pages/management/peoples/js/kisiBilgileri.js"></script>';
+        echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
+        echo '<script src="/pages/management/peoples/js/acilDurumBilgileri.js"></script>';
+
+
+    }
+   //*************PEOPLES******************************** */
  
 //*************Define APARTMENT TYPES******************************** */
 // Daire Tipi Tanımlama sayfası

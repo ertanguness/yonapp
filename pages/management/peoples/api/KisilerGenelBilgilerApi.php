@@ -1,76 +1,80 @@
 <?php
 session_start();
-require_once '../../../vendor/autoload.php';
+require_once '../../../../vendor/autoload.php';
 $site_id = $_SESSION["site_id"];
 
-use Model\DairelerModel;
 use App\Helper\Security;
+use Model\DairelerModel;
+use Model\KisilerModel;
+use App\Helper\Date;
 
 $Daireler = new DairelerModel();
+$Kisiler = new KisilerModel();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['blok_id'])) {
-    $blok_id = (int) $_POST['blok_id'];
 
-    $Daireler = new DairelerModel();
-    $daireler = $Daireler->BlokDaireleri($blok_id);
 
-    $response = [];
-    foreach ($daireler as $daire) {
-        $response[] = [
-            'id' => $daire->id,
-            'no' => $daire->daire_no
-        ];
-    }
-
-    echo json_encode($response);
-    exit;
-}
-
-/*
-if ($_POST["action"] == "save_apartment") {
+if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
     $id = Security::decrypt($_POST["id"]);
-    $block_id = $_POST["blockName"];
-    $daire_no = $_POST["flatNumber"];
-    $daire_kodu = $_POST["daire_kodu"] ?? null;
+    $kimlikNo = $_POST["tcPassportNo"] ?? null;
 
+    $dogumTarihi     = Date::Ymd($_POST["birthDate"] ?? null);
+    $satinAlmaTarihi = Date::Ymd($_POST["buyDate"] ?? null);
+    $girisTarihi     = Date::Ymd($_POST["entryDate"] ?? null);
+    $cikisTarihi     = Date::Ymd($_POST["exitDate"] ?? null);
 
-    if ($Apartment->DaireVarmi($site_id, $block_id, $daire_no)) {
-        $existing_apartment = $daire_no;
+    if ($Kisiler->KisiVarmi( $kimlikNo)) {
+        $kayitli_kisi= $kimlikNo;
     }
-    if (!empty($existing_apartment)) {
+    if (!empty($kayitli_kisi)) {
         echo json_encode([
             "status" => "error",
-            "message" => $existing_apartment ." numaralı daire ilgili blokta zaten kayıtlı: "  
+            "message" => $kayitli_kisi . " kimlik numarası ile kayıt önceden yapılmıştır. Lütfen farklı bir kimlik numarası giriniz."
         ]);
         exit;
     }
-    if ($Apartment->DaireKoduVarMi($site_id, $block_id, $daire_kodu)) {
-        $mevcut_kod = $daire_kodu;
+    // Tarih kontrolleri
+    if (!empty($cikisTarihi)) {
+        if (!empty($girisTarihi) && $cikisTarihi < $girisTarihi) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Çıkış tarihi, giriş tarihinden önce olamaz."
+            ]);
+            exit;
+        }
+        if (!empty($satinAlmaTarihi) && $cikisTarihi < $satinAlmaTarihi) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Çıkış tarihi, satın alma tarihinden önce olamaz."
+            ]);
+            exit;
+        }
     }
 
-    if (!empty($mevcut_kod)) {
+    if (!empty($girisTarihi) && !empty($satinAlmaTarihi) && $girisTarihi < $satinAlmaTarihi) {
         echo json_encode([
             "status" => "error",
-            "message" => $mevcut_kod ." kod önceden oluşturulmuş lütfen oluşturmak istediğini kodu giriniz:  "  
+            "message" => "Giriş tarihi, satın alma tarihinden önce olamaz."
         ]);
         exit;
     }
 
     $data = [
-        "id" => $id,
-        "site_id" => $site_id,
-        "blok_id" => $block_id,
-        "kat" => $_POST["floor"],
-        "daire_no" => $daire_no,
-        "daire_kodu" => $daire_kodu,
-        "daire_tipi" => $_POST["apartment_type"],
-        "brut_alan" => $_POST["grossArea"],
-        "net_alan" => $_POST["netArea"],
-        "arsa_payi" => $_POST["landShare"],
-        "aktif_mi" => isset($_POST["status"]) ? 1 : 0
+        "id"               => $id,
+        "blok_id"          => $_POST["blokAdi"],
+        "daire_id"         => $_POST["daireNo"],
+        "kimlik_no"        => $kimlikNo,
+        "adi_soyadi"       => $_POST["fullName"],
+        "dogum_tarihi"     => $dogumTarihi,
+        "cinsiyet"         => $_POST["gender"],
+        "uyelik_tipi"      => $_POST["residentType"],
+        "telefon"          => $_POST["phoneNumber"],
+        "eposta"           => $_POST["email"],
+        "satin_alma_tarihi" => $satinAlmaTarihi,
+        "giris_tarihi"     => $girisTarihi,
+        "cikis_tarihi"     => $cikisTarihi
     ];
 
-    $lastInsertId = $Apartment->saveWithAttr($data);
+    $lastInsertId = $Kisiler->saveWithAttr($data);
 
     $res = [
         "status" => "success",
@@ -79,13 +83,12 @@ if ($_POST["action"] == "save_apartment") {
     echo json_encode($res);
 }
 
-if ($_POST["action"] == "delete_apartment") {
-    $Apartment->delete($_POST["id"]);
+if (isset($_POST["action"]) && $_POST["action"] == "delete_peoples") {
+    $Kisiler->delete($_POST["id"]);
 
     $res = [
         "status" => "success",
         "message" => "Başarılı"
     ];
     echo json_encode($res);
-} 
-    */
+}

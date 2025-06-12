@@ -7,7 +7,7 @@ use Model\DefinesModel;
 class Helper
 {
     const MONEY_UNIT = [
-        '1' => 'TRY',
+        '1' => 'TL',
         '2' => 'USD',
         '3' => 'EUR',
         // FATİH KALAYCI*0012*C2- Daire:15 Canan SUBAŞI KALAYCI gibi formatlar
