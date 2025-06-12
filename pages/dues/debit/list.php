@@ -1,16 +1,19 @@
-<?php 
+<?php
 use App\Helper\Security;
 use App\Helper\Date;
+use App\Helper\Helper;
 
 use Model\DueModel;
 use Model\BorclandirmaModel;
+use Model\BorclandirmaDetayModel;
 
 
 $Borc = new BorclandirmaModel();
+$BorcDetay = new BorclandirmaDetayModel();
 $Due = new DueModel();
 
 //borçlandırmaları getir
-$borclar = $Borc->all();
+$borclar = $Borc->all($site_id);
 
 
 
@@ -59,7 +62,8 @@ $borclar = $Borc->all();
                                             <th style="width:10%">Başlangıç Tarihi</th>
                                             <th style="width:10%">Son Ödeme</th>
                                             <th>Kime</th>
-                                            <th>Durum</th>
+                                            <th>Toplam Borç Miktarı</th>
+                                            <th>Ödenen Tutar</th>
                                             <th>Açıklama</th>
                                             <th>İşlem</th>
                                         </tr>
@@ -69,19 +73,41 @@ $borclar = $Borc->all();
                                         $i = 1;
                                         foreach ($borclar as $borc){
                                             $enc_id = Security::encrypt($borc->id);
-                                            
+
                                         ?>
-                                            <tr class="text-center">
+                                            <tr class="">
                                                 <td><?php echo $i++; ?></td>
                                                 <td><?php echo $Due->getDueName($borc->borc_tipi_id); ?></td>
                                                 <td><?php echo $borc->tutar; ?></td>
                                                 <td><?php echo Date::dmY($borc->baslangic_tarihi); ?></td>
                                                 <td><?php echo Date::dmY($borc->bitis_tarihi); ?></td>
+
                                                 <td>
-                                                   TÜM SİTE
+                                                   <?php
+                                                   $borc_tipi = $borc->hedef_tipi;
+                                                   $borclandirma_tipi='';
+                                                    $borclandirma_detay = '';
+                                                   
+                                                   if($borc_tipi == 'all'){
+                                                      $borclandirma_tipi = "Tüm Site";
+                                                      $borclandirma_detay =  "Site Üyeleri";
+                                                    }elseif($borc_tipi == 'block'){
+                                                      $borclandirma_tipi = "Blok";
+                                                      $borclandirma_detay =  $BorcDetay->BorclandirilmisBlokIsimleri($borc->id);
+                                                   }
+                                                   ?>
+                                                   <a href="javascript:void(0)" class="hstack gap-3 text-decoration-none text-dark text-left">
+                                                        <!-- <div class="avatar-image avatar-md bg-warning text-white">N</div> -->
+                                                        <div>
+                                                            <span class="text-truncate-1-line text-left"><?php echo $borclandirma_tipi ?></span>
+                                                            <small class="fs-12 fw-normal text-muted"><?php echo $borclandirma_detay; ?></small>
+                                                        </div>
+                                                    </a>
                                                 </td>
                                                 <td>
-                                                 
+                                                    <?php echo Helper::formattedMoney($BorcDetay->ToplamBorclandirmaTutar($borc->id)); ?>
+                                                </td>
+                                                <td>
                                                 </td>
                                                 <td>
                                                     <div class="text-truncate" style="max-width: 200px;">
@@ -93,8 +119,8 @@ $borclar = $Borc->all();
                                                         <a href="index?p=dues/debit/detail&id=<?php echo $enc_id ?>" class="avatar-text avatar-md" title="Görüntüle">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="index?p=dues/debit/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" 
-                                                        
+                                                        <a href="index?p=dues/debit/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md"
+
                                                         title="Düzenle">
                                                             <i class="feather-edit"></i>
                                                         </a>
@@ -115,5 +141,5 @@ $borclar = $Borc->all();
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
 </div>

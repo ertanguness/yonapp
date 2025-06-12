@@ -4,6 +4,7 @@
 namespace Model;
 
 use Model\Model;
+use Model\BloklarModel;
 use PDO;
 
 class BorclandirmaDetayModel extends Model
@@ -14,6 +15,53 @@ class BorclandirmaDetayModel extends Model
     {
         parent::__construct($this->table);
     }
+
+
+    /**
+     * Borçlandırma tipi blok olan kayıtların gruplanmış blok id'lerini döndürür
+     * @param int $borclandirma_id
+     * @return array
+     * @throws \Exception
+     */
+    public function BorclandirilmisBloklar($borclandirma_id)
+    {
+        $query = "SELECT DISTINCT blok_id FROM {$this->table} WHERE borclandirma_id = :borclandirma_id AND hedef_tipi = 'block'";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':borclandirma_id', $borclandirma_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**
+     * Borçlandırılmış Blokların isimlerini getirir
+     * @param int $borclandirma_id
+     *  @return array
+     */
+    public function BorclandirilmisBlokIsimleri($borclandirma_id){
+        $Bloklar = new BloklarModel();
+        $boclandirilmis_bloklar = $this->BorclandirilmisBloklar($borclandirma_id);
+        $blokIsimleri = [];
+        foreach ($boclandirilmis_bloklar as $blok) {
+            $blokIsimleri[] = $Bloklar->BlokAdi($blok->blok_id);
+        }
+        return implode(', ', $blokIsimleri); // Blok isimlerini virgülle ayırarak döndürür
+
+    }
+
+
+    /**
+     * Toplam Borcandirma Tutarını getirir
+     * @param int $borclandirma_id
+     * @return float
+     */
+    public function ToplamBorclandirmaTutar($borclandirma_id)
+    {
+        $sql = $this->db->prepare("SELECT SUM(tutar) AS toplam_borc FROM $this->table WHERE borclandirma_id = ? AND silinme_tarihi IS NULL");
+        $sql->execute([$borclandirma_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? (float)$result->toplam_borc : 0.0; // Eğer sonuç varsa toplam borcu döndür, yoksa 0 döndür
+    }
+
 
     // Borçlandırma detaylarını borç ID'sine göre getirir
     public function KisiBorclandirmalari($kisi_id)
@@ -90,4 +138,7 @@ class BorclandirmaDetayModel extends Model
         ]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
+
+
+
 }
