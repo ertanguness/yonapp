@@ -5,9 +5,10 @@ use Model\BloklarModel;
 use Model\DairelerModel;
 
 $Block = new BloklarModel();
+$Daireler = new DairelerModel();
+
 $blocks = $Block->SiteBloklari($site_id);
 
-$Daireler = new DairelerModel();
 ?>
 <div class="card-body people-info">
     <!-- Blok Adı ve Daire No -->
@@ -18,7 +19,7 @@ $Daireler = new DairelerModel();
         <div class="col-lg-4">
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"><i class="fas fa-building"></i></div>
-                <select class="form-select select2 w-100" id="blokAdi" name="blokAdi" required>
+                <select class="form-select select2 w-100 blokAdi"  name="blok_id">
                     <option value="">Blok Seçiniz</option>
                     <?php foreach ($blocks as $block): ?>
                         <option value="<?= $block->id ?>">
@@ -30,13 +31,14 @@ $Daireler = new DairelerModel();
         </div>
 
         <div class="col-lg-2">
-            <label for="apartmentNo" class="fw-semibold">Daire No:</label>
+            <label for="daireNo" class="fw-semibold">Daire No:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"><i class="fas fa-door-closed"></i></div>
-                <select class="form-select select2 w-100" id="apartmentNo" required>
-                    
+                <select class="form-select select2 w-100 daireNo"  name="daire_id">
+                    <option value="">Daire Seçiniz</option>
+
                 </select>
             </div>
         </div>
@@ -50,24 +52,17 @@ $Daireler = new DairelerModel();
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-id-card"></i></div>
-                <input type="text" class="form-control" id="tcPassportNo" placeholder="TC Kimlik No veya Pasaport No Giriniz" maxlength="11" required>
+                <input type="text" class="form-control" id="tcPassportNo" name="tcPassportNo" placeholder="TC Kimlik No veya Pasaport No Giriniz" maxlength="11">
             </div>
         </div>
 
         <div class="col-lg-2">
-            <label for="residentType" class="fw-semibold">Konut Sakini Türü:</label>
+            <label for="fullName" class="fw-semibold">Ad Soyad:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"><i class="fas fa-user"></i></div>
-                <select class="form-select select2 w-100" id="residentType" required>
-                    <option value="">Seçiniz</option>
-                    <option value="owner">Kat Maliki</option>
-                    <option value="tenant">Kiracı</option>
-                    <option value="employee">Çalışan</option>
-                    <option value="guest">Misafir</option>
-                    <option value="empty">Boş</option>
-                </select>
+                <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Adı Soyadı Giriniz">
             </div>
         </div>
     </div>
@@ -77,10 +72,11 @@ $Daireler = new DairelerModel();
         <div class="col-lg-2">
             <label for="birthDate" class="fw-semibold">Doğum Tarihi:</label>
         </div>
+
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                <input type="date" class="form-control" id="birthDate" required>
+                <input type="text" class="form-control flatpickr" id="birthDate" name="birthDate" placeholder="Doğum Tarihi Giriniz" >
             </div>
         </div>
         <div class="col-lg-2">
@@ -89,10 +85,10 @@ $Daireler = new DairelerModel();
         <div class="col-lg-4">
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"><i class="fas fa-venus-mars"></i></div>
-                <select class="form-select select2 w-100" id="gender" required>
+                <select class="form-select select2 w-100" id="gender" name="gender">
                     <option value="">Cinsiyet Seçiniz</option>
-                    <option value="male">Erkek</option>
-                    <option value="female">Kadın</option>
+                    <option value="E">Erkek</option>
+                    <option value="K">Kadın</option>
                 </select>
             </div>
         </div>
@@ -106,7 +102,7 @@ $Daireler = new DairelerModel();
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-phone"></i></div>
-                <input type="text" class="form-control" id="phoneNumber" placeholder="Telefon Numarası Giriniz" required>
+                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Telefon Numarası Giriniz">
             </div>
         </div>
         <div class="col-lg-2">
@@ -115,7 +111,7 @@ $Daireler = new DairelerModel();
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-envelope"></i></div>
-                <input type="email" class="form-control" id="email" placeholder="E-posta Adresi Giriniz">
+                <input type="email" class="form-control" id="email" name="email" placeholder="E-posta Adresi Giriniz">
             </div>
         </div>
     </div>
@@ -128,8 +124,10 @@ $Daireler = new DairelerModel();
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-check"></i></div>
-                <input type="date" class="form-control" id="entryDate" required>
+                <input type="text" class="form-control flatpickr" id="entryDate" name="entryDate" placeholder="Giriş Tarihi Giriniz">
             </div>
+            <small id="buyDateHelp" class="form-text text-muted">
+                Kişi kayıt yaptığında tarih girilmelidir. </small>
         </div>
 
         <div class="col-lg-2">
@@ -138,8 +136,10 @@ $Daireler = new DairelerModel();
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-times"></i></div>
-                <input type="date" class="form-control" id="exitDate">
+                <input type="text" class="form-control flatpickr" id="exitDate" name="exitDate" placeholder="Çıkış Tarihi Giriniz">
             </div>
+            <small id="buyDateHelp" class="form-text text-muted">
+                Kişi çıkış yaptığında tarih girilmelidir. </small>
         </div>
     </div>
     <!-- Satın Alma Tarihi -->
@@ -150,45 +150,67 @@ $Daireler = new DairelerModel();
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-shopping-cart"></i></div>
-                <input type="date" class="form-control" id="buyDate" required>
+                <input type="text" class="form-control flatpickr" id="buyDate" name="buyDate" placeholder="Satın Alma Tarihi Giriniz" disabled>
             </div>
+            <small id="buyDateHelp" class="form-text text-muted">
+                Sadece Kat Maliki seçildiğinde aktif olur.
+            </small>
+        </div>
+        <div class="col-lg-2">
+            <label for="residentType" class="fw-semibold">Konut Sakini Türü:</label>
+        </div>
+        <div class="col-lg-4">
+            <div class="input-group flex-nowrap w-100">
+                <div class="input-group-text"><i class="fas fa-user"></i></div>
+                <select class="form-select select2 w-100" id="residentType" name="residentType">
+                    <option value="">Seçiniz</option>
+                    <option value="1">Kat Maliki</option>
+                    <option value="2">Kiracı</option>
+                    <option value="3">Çalışan</option>
+                    <option value="4">Misafir</option>
+                    <option value="5">Mirasçı</option>
+                </select>
+            </div>
+            <small id="sakinTürü" class="form-text text-muted">
+            </small>
         </div>
     </div>
 </div>
+<!-- Konut sakin türüne göre satın alma tarihi aktif etme -->
 <script>
     $(document).ready(function() {
-        $('#blokAdi').on('change', function() {
-                var blockId = $(this).val();
-                console.log('Seçilen blok ID:', blockId);
-
-
-                if (blockId) {
-                    $.ajax({
-                            url: 'pages/management/peoples/api/KisilerGenelBilgilerApi.php',
-                            type: 'POST',
-                            data: {
-                                blok_id: blockId
-                            },
-                            dataType: 'json',
-                        success: function(response) {
-                            $('#apartmentNo').empty().append('<option value="">Daire No Seçiniz</option>');
-                            if (response && response.length > 0) {
-                                response.forEach(function(daire) {
-
-                                    $('#apartmentNo').append('<option value="' + daire_id + '">' + daire_no + '</option>');
-                                });
-                            } else {
-                                $('#apartmentNo').append('<option value="">Daire bulunamadı</option>');
-                            }
-                        },
-                        error: function() {
-                        ;
-                            $('#apartmentNo').empty().append('<option value="">Hata oluştu</option>');
-                        }
-                    });
+        $('#residentType').on('change', function() {
+            var val = $(this).val();
+            if (val === '1') {
+                $('#buyDate').prop('disabled', false);
+                $('#buyDateHelp').show();
             } else {
-                $('#apartmentNo').empty().append('<option value="">Blok seçiniz</option>');
+                $('#buyDate').prop('disabled', true);
+                $('#buyDateHelp').show();
             }
         });
     });
+</script>
+
+<!-- Bloğa göre daire numaralarının gelmesi -->
+
+<script>
+$(document).ready(function () {
+  // Telefon numarasına maske uygula (Türkiye GSM formatı)
+  $("#phoneNumber").inputmask("(0999) 999 99 99");
+
+  // TC Kimlik veya Pasaport alanı için otomatik maske
+  $("#tcPassportNo").on("input", function () {
+    let value = $(this).val();
+
+    // Eğer sadece rakamsa ve uzunluğu 11'e kadar çıkıyorsa TC Kimlik varsayılır
+    if (/^\d*$/.test(value)) {
+      $(this).inputmask("99999999999"); // 11 haneli TC
+    } else {
+      $(this).inputmask('remove'); // Pasaport için maske kaldırılır
+      // Harf ve rakam dışındaki karakterleri sil, maksimum 9 karakter
+      this.value = value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 9);
+    }
+  });
+});
 </script>

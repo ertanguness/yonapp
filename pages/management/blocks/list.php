@@ -7,7 +7,6 @@ use Model\SitesModel;
 
 $Site = new SitelerModel();
 
-
 $Blocks = new BloklarModel();
 $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
 

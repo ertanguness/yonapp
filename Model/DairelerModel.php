@@ -57,7 +57,7 @@ class DairelerModel extends Model
     // *************************************************************************************** */
     public function BlokDaireleri($blok_id)
     {
-        $sql = $this->db->prepare("SELECT id, daire_no FROM $this->table WHERE blok_id = ?");
+        $sql = $this->db->prepare("SELECT id, daire_no FROM $this->table WHERE blok_id = ? order by daire_no ASC");
         $sql->execute([$blok_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);  // Her daire bir nesne olarak dönsün
     }
@@ -71,9 +71,9 @@ class DairelerModel extends Model
      */
     public function DaireAdi($daire_id)
     {
-        $sql = $this->db->prepare("Select daire_adi from $this->table WHERE id = ?");
+        $sql = $this->db->prepare("Select daire_no from $this->table WHERE id = ?");
         $sql->execute([$daire_id]);
-        return $sql->fetch(PDO::FETCH_OBJ) ?? '';
+        return $sql->fetch(PDO::FETCH_OBJ);
     }
 
     // *************************************************************************************** */

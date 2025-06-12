@@ -18,7 +18,7 @@ class DefinesModel extends Model
 
     public function getDefinesByType($type)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE ite_id = ? and type_id = ?");
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE site_id = ? and type_id = ?");
         $sql->execute([$this->site_id, $type]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
