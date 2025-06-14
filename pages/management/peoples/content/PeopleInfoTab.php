@@ -205,7 +205,6 @@ $blocks = $Block->SiteBloklari($site_id);
     });
 </script>
 
-<!-- Bloğa göre daire numaralarının gelmesi -->
 
 <script>
     $(document).ready(function() {

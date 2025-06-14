@@ -88,28 +88,62 @@ class KisilerModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ);
     }
 
-    public function SiteKisileriJoin($site_id)
+    public function SiteKisileriJoin($site_id, $filter = null)
     {
-        if (!$site_id) {
-            return [];
+        if (!$site_id) return [];
+
+        switch ($filter) {
+            case 'acil':
+                $stmt = $this->db->prepare("
+                SELECT 
+                    kisiler.*, 
+                    acil.id AS acil_id,
+                    acil.adi_soyadi AS acil_adi_soyadi,
+                    acil.telefon AS acil_telefon,
+                    acil.yakinlik AS acil_yakinlik
+                FROM kisiler
+                INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
+                INNER JOIN acil_durum_kisileri acil ON kisiler.id = acil.kisi_id
+                WHERE bloklar.site_id = :site_id
+            ");
+                break;
+
+            case 'arac':
+                $stmt = $this->db->prepare("
+                SELECT 
+                    kisiler.*, 
+                    arac.id AS arac_id,
+                    arac.plaka,
+                    arac.marka_model
+                FROM kisiler
+                INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
+                INNER JOIN araclar arac ON kisiler.id = arac.kisi_id
+                WHERE bloklar.site_id = :site_id
+            ");
+                break;
+
+            default:
+            $stmt = $this->db->prepare("
+            SELECT 
+                kisiler.*,
+                GROUP_CONCAT(arac.plaka SEPARATOR '<br>') AS plaka_listesi
+            FROM kisiler
+            INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
+            LEFT JOIN araclar arac ON kisiler.id = arac.kisi_id
+            WHERE bloklar.site_id = :site_id
+            GROUP BY kisiler.id
+        ");
+        
         }
 
-        $stmt = $this->db->prepare("
-        SELECT 
-            kisiler.*, 
-            araclar.id AS arac_id, 
-            araclar.plaka, 
-            araclar.marka_model
-        FROM kisiler
-        INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
-        LEFT JOIN araclar ON kisiler.id = araclar.kisi_id
-        WHERE bloklar.site_id = :site_id
-    ");
         $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+
+
+
 
     public function KisiVarmi($kimlikNo)
     {

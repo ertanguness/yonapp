@@ -1,53 +1,56 @@
-let aracEkleUrl = "/pages/management/peoples/api/AracBilgileriApi.php";
+let acilDurumKisiEkleUrl = "/pages/management/peoples/api/AcilDurumKisileriApi.php";
 
-
-
-$(document).on("click", "#AracEkle", function () {
-  var form = $("#aracEkleForm");
+$(document).on("click", "#AcilDurumEkle", function () {
+  var form = $("#acilDurumKisileriEkleForm");
   var formData = new FormData(form[0]);
 
-  formData.append("action", "AracEkle");
-  formData.append("id", $("#kisi_id").val());
+  formData.append("action", "AcilDurumEkle");
+  formData.append("id", $("#acil_kisi_id").val());
 
- 
-
-  // Plaka inputunda harfleri otomatik olarak büyük harfe çevir
-  $("#modalAracPlaka").on("input", function () {
-    this.value = this.value.toUpperCase();
+  // Telefon numarası için sadece rakam ve 10 hane kontrolü
+  $("#acilDurumKisiTelefon").on("input", function () {
+    // Sadece rakam girilmesine izin ver
+    this.value = this.value.replace(/\D/g, "");
+    // Maksimum 10 karaktere sınırla
+    if (this.value.length > 10) {
+      this.value = this.value.slice(0, 10);
+    }
   });
 
-  var validator = $("#aracEkleForm").validate({
+  var validator = $("#acilDurumKisileriEkleForm").validate({
     rules: {
       blok_id: { required: true },
       daire_id: { required: true },
       kisi_id: { required: true },
-      modalAracPlaka: {
+      acilDurumKisi: { required: true },
+      acilDurumKisiTelefon: { 
         required: true,
-        plakaKontrol: true
-      },
-      modalAracMarka: { required: false }
+        digits: true,
+        minlength: 10,
+        maxlength: 10
+      },     
+       yakinlik: { required: true }
     },
     messages: {
       blok_id: { required: "Lütfen blok seçiniz" },
       daire_id: { required: "Lütfen daire seçiniz" },
       kisi_id: { required: "Lütfen kişi seçiniz" },
-      modalAracPlaka: {
-        required: "Lütfen araç plakası giriniz",
-        plakaKontrol: "Geçerli bir plaka giriniz (örn: 34 ABC 123 veya DE 1234 XYZ)"
-      }
+      acilDurumKisi: { required: "Lütfen acil durum kişisi adını giriniz" },
+      acilDurumKisiTelefon: { 
+        required: "Lütfen telefon numarası giriniz",
+        digits: "Telefon numarası sadece rakamlardan oluşmalıdır",
+        minlength: "Telefon numarası 10 haneli olmalıdır",
+        maxlength: "Telefon numarası 10 haneli olmalıdır"
+      },      
+      yakinlik: { required: "Lütfen yakınlık derecesini seçiniz" }
     }
   });
   
-  $.validator.addMethod("plakaKontrol", function (value, element) {
-    return this.optional(element) || /^[A-Z0-9\s\-]{4,12}$/i.test(value);
-  }, "Lütfen geçerli bir plaka giriniz");
-  
-
   if (!validator.form()) {
     return;
   }
 
-  fetch(aracEkleUrl, {
+  fetch(acilDurumKisiEkleUrl, {
     method: "POST",
     body: formData,
   })
@@ -57,8 +60,8 @@ $(document).on("click", "#AracEkle", function () {
     .then((data) => {
       console.log(data);
       if (data.status == "success") {
-        let table = $("#aracList").DataTable();
-        table.row.add($(data.yeniAracEkle)).draw(false);
+        let table = $("#acilDurumKisileriList").DataTable();
+        table.row.add($(data.yeniAcilDurumKisiEkle)).draw(false);
        
        
         //Eğer işlem başarılı ve güncelleme ise tablodaki veriyi güncelle
@@ -80,14 +83,14 @@ $(document).on("click", "#AracEkle", function () {
     });
 });
 
-$(document).on("click", ".delete-car", function () {
+$(document).on("click", ".delete-acilDurumKisi", function () {
   let id = $(this).data("id");
-  let carName = $(this).data("name");
+  let acilDurumKisiName = $(this).data("name");
   let buttonElement = $(this); // Store reference to the clicked button
   swal
     .fire({
       title: "Emin misiniz?",
-      html: `${carName} <br> plakalı aracı silmek istediğinize emin misiniz?`,
+      html: `${acilDurumKisiName} <br> adlı kişiyi silmek istediğinize emin misiniz?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Evet",
@@ -96,21 +99,21 @@ $(document).on("click", ".delete-car", function () {
     .then((result) => {
       if (result.isConfirmed) {
         var formData = new FormData();
-        formData.append("action", "delete_car");
+        formData.append("action", "delete_acilDurumKisi");
         formData.append("id", id);
 
-        fetch(aracEkleUrl, {
+        fetch(acilDurumKisiEkleUrl, {
           method: "POST",
           body: formData,
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.status == "success") {
-              let table = $("#aracList").DataTable();
+              let table = $("#acilDurumKisileriList").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${carName} plakalı arac  başarıyla silindi.`,
+                `${acilDurumKisiName} adlı kişi  başarıyla silindi.`,
                 "success"
               );
             }

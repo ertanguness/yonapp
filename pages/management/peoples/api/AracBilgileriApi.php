@@ -5,9 +5,19 @@ $site_id = $_SESSION["site_id"];
 
 use App\Helper\Security;
 use Model\AraclarModel;
-use Model\KisilerModel;
 
 $Araclar = new AraclarModel();
+
+$plaka=$_POST["modalAracPlaka"] ?? '';
+
+
+if (!empty($plaka) && $Araclar->AracVarmi($plaka)) {
+    echo json_encode([
+        "status" => "error",
+        "message" => $plaka . " plakası ile kayıt önceden yapılmıştır. Lütfen farklı plaka giriniz."
+    ]);
+    exit;
+}
 
 if (isset($_POST["action"]) && $_POST["action"] == "AracEkle") {
     $id = Security::decrypt($_POST["id"]);
