@@ -14,11 +14,11 @@ $BorcDetay = new BorclandirmaDetayModel();
 $id = Security::decrypt($_GET['id']);
 
 
-$borc_detay = $BorcDetay->gruplanmisBorcListesi();
+$borc_detay = $BorcDetay->gruplanmisBorcListesi($id);
 
 
 // echo "<pre>";
-// print_r($borc_detay);
+// print_r($id);
 // echo "</pre>";
 
 ?>
@@ -42,14 +42,14 @@ $borc_detay = $BorcDetay->gruplanmisBorcListesi();
     </div>
 </div>
 
-<div class="main-content">
+<div class="main-content ">
     <?php
     $title = "Borçlandırma Detayı";
     $text = "Borçlandırmaya ait detayları buradan yönetebilirsiniz.";
     require_once 'pages/components/alert.php';
     ?>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">

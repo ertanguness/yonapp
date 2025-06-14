@@ -78,7 +78,7 @@ class BorclandirmaDetayModel extends Model
      * 
      * @return array
      */
-    public function gruplanmisBorcListesi()
+    public function gruplanmisBorcListesi($borclandirma_id = 0)
     {
         $sql = $this->db->prepare("SELECT
                         bd.id as borc_id,
@@ -97,11 +97,16 @@ class BorclandirmaDetayModel extends Model
                         LEFT JOIN kisiler k ON k.id = bd.kisi_id 
                         LEFT JOIN bloklar b ON b.id = k.blok_id
                     WHERE
+                        bd.borclandirma_id = :borclandirma_id AND
                         bd.silinme_tarihi IS NULL  -- Silinmemiş kayıtlar
                     GROUP BY
                         k.id, b.id
                     ORDER BY toplam_borc DESC;");
-        $sql->execute();
+        $sql->execute(
+            [
+                ':borclandirma_id' => $borclandirma_id // Burada borclandirma_id'yi 0 olarak ayarlıyoruz, çünkü tüm borçları listelemek istiyoruz
+            ]
+        );
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 

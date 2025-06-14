@@ -11,7 +11,7 @@ ob_start();
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
     if (!isset($_GET["p"])) {
-        $returnUrl = urlencode("/index.php?p=home/list");
+        $returnUrl = urlencode("/index?p=home/list");
     }
     header("Location: sign-in.php?returnUrl={$returnUrl}");
     exit();
@@ -166,7 +166,7 @@ $menu_name = $menus->getMenusByLink($active_page);
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
     <!--<< Footer Section Start >>-->
-    <?php //include_once './partials/theme-customizer.php' ?>
+     <?php include_once './partials/theme-customizer.php' ?> 
     <!--<< All JS Plugins >>-->
     <?php include_once './partials/homepage-script.php'; ?>
 

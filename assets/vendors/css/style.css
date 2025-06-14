@@ -97,8 +97,8 @@ div:where(.swal2-icon-content) {
   .select2-selection__choice {
   position: relative;
   color: #283c50;
-  font-size: 13px;
-  font-weight: 600;
+  /* font-size: 13px; */
+  /* font-weight: 600; */
   padding: 4px !important;
   border-color: #e5e7eb;
 }

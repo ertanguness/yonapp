@@ -1,97 +1,125 @@
 let table;
 $(document).ready(function () {
-  table = $(".datatables").DataTable({
-    stateSave: true,
-    responsive: false,
-    language: {
-      url: "assets/js/tr.json",
-    },
+  if ($(".datatables").length > 0) {
+    table = $(".datatables").DataTable({
+      stateSave: true,
+      responsive: false,
+      language: {
+        url: "assets/js/tr.json",
+      },
 
-    ...getTableSpecificOptions(),
+      ...getTableSpecificOptions(),
 
-    initComplete: function (settings, json) {
-      var api = this.api();
-      var tableId = settings.sTableId;
-      var tableId = settings.sTableId;
-      $("#" + tableId + " thead").append('<tr class="search-input-row"></tr>');
+      initComplete: function (settings, json) {
+        var api = this.api();
+        var tableId = settings.sTableId;
+        var tableId = settings.sTableId;
+        $("#" + tableId + " thead").append(
+          '<tr class="search-input-row"></tr>'
+        );
 
-      api.columns().every(function () {
-        let column = this;
-        let title = column.header().textContent;
+        api.columns().every(function () {
+          let column = this;
+          let title = column.header().textContent;
 
-        if (
-          title != "İşlem" &&
-          title != "Seç" &&
-          title != "#" &&
-          $(column.header()).find('input[type="checkbox"]').length === 0
-        ) {
-          // Create input element
-          let input = document.createElement("input");
-          input.placeholder = title;
-          input.classList.add("form-control");
-          input.classList.add("form-control-sm");
-          input.setAttribute("autocomplete", "off");
+          if (
+            title != "İşlem" &&
+            title != "Seç" &&
+            title != "#" &&
+            $(column.header()).find('input[type="checkbox"]').length === 0
+          ) {
+            // Create input element
+            let input = document.createElement("input");
+            input.placeholder = title;
+            input.classList.add("form-control");
+            input.classList.add("form-control-sm");
+            input.setAttribute("autocomplete", "off");
 
-          // // Append input element to the new row
-          // $("#" + tableId + " .search-input-row").append(
-          //   $('<th class="search">').append(input)
-          // );
+            // // Append input element to the new row
+            // $("#" + tableId + " .search-input-row").append(
+            //   $('<th class="search">').append(input)
+            // );
 
-          // Append input element to the new row
-          const th = $('<th class="search">').append(input);
-          $("#" + tableId + " .search-input-row").append(th);
+            // Append input element to the new row
+            const th = $('<th class="search">').append(input);
+            $("#" + tableId + " .search-input-row").append(th);
 
-          // Event listener for user input
-          $(input).on("keyup change", function () {
-            if (column.search() !== this.value) {
-              column.search(this.value).draw();
+            // Event listener for user input
+            $(input).on("keyup change", function () {
+              if (column.search() !== this.value) {
+                column.search(this.value).draw();
+              }
+            });
+
+            // Sütunun gerçekten görünür olup olmadığını kontrol et
+            const isColumnVisible =
+              column.visible() && !$(column.header()).hasClass("dtr-hidden");
+
+            //  const isColumnVisible =
+            //  column.visible() && $(column.header()).css("display") !== "none";
+
+            if (!isColumnVisible) {
+              th.hide(); // Sütun gerçekten görünmüyorsa input'u da gizle
             }
-          });
+          } else {
+            // Eğer "İşlem" sütunuysa, boş bir th ekleyin
 
-          // Sütunun gerçekten görünür olup olmadığını kontrol et
-          const isColumnVisible =
-            column.visible() && !$(column.header()).hasClass("dtr-hidden");
-
-          //  const isColumnVisible =
-          //  column.visible() && $(column.header()).css("display") !== "none";
-
-          if (!isColumnVisible) {
-            th.hide(); // Sütun gerçekten görünmüyorsa input'u da gizle
-          }
-        } else {
-          // Eğer "İşlem" sütunuysa, boş bir th ekleyin
-        
             // Sütun görünürse <th> elemanını ekle
             $("#" + tableId + " .search-input-row").append("<th></th>");
-          
-        }
-      });
-
-      // Responsive olayını dinle
-      table.on("responsive-resize", function (e, datatable, columns) {
-        // Sütun görünürlüğünü kontrol et ve inputları gizle/göster
-        $("#" + tableId + " .search-input-row th").each(function (index) {
-          if (columns[index]) {
-            $(this).show(); // Sütun görünüyorsa inputu göster
-          } else {
-            $(this).hide(); // Sütun gizliyse inputu gizle
           }
         });
-      });
 
-      var state = table.state.loaded();
-      if (state) {
-        $("input", table.table().header()).each(function (index) {
-          var searchValue = state.columns[index].search.search;
-          if (searchValue) {
-            $(this).val(searchValue);
-          }
+        // Responsive olayını dinle
+        table.on("responsive-resize", function (e, datatable, columns) {
+          // Sütun görünürlüğünü kontrol et ve inputları gizle/göster
+          $("#" + tableId + " .search-input-row th").each(function (index) {
+            if (columns[index]) {
+              $(this).show(); // Sütun görünüyorsa inputu göster
+            } else {
+              $(this).hide(); // Sütun gizliyse inputu gizle
+            }
+          });
         });
-      }
-    },
 
+        // var state = table.state.loaded();
+        // if (state) {
+        //   $("input", table.table().header()).each(function (index) {
+        //     var searchValue = state.columns[index]?.search?.search || ""; // Arama değerini al
+        //     if (searchValue) {
+        //       console.log(index, searchValue);
+        //       $(this).val(searchValue);
+        //     }
+        //   });
+        // }
+        var state = table.state.loaded();
+if (state) {
+    // Tüm başlık inputlarını al
+    var inputs = $("thead input");
     
-  });
+    inputs.each(function(inputIndex) {
+        // DataTable'daki gerçek sütun indeksini bul
+        var columnIndex = $(this).closest('th').index();
+        var searchValue = state.columns[columnIndex]?.search?.search || "";
+        
+        if (searchValue) {
+            $(this).val(searchValue);
+            // console.log("Input index:", inputIndex, 
+            //            "Column index:", columnIndex, 
+            //            "Value:", searchValue);
+            
+            
+            // Arama filtrelerini uygula
+            table.column(columnIndex).search(searchValue);
+        }
+    });
+    
+    // Değişiklikleri çiz
+    table.draw();
+}
+        
+      },
+    });
+  }
 });
 $("#exportExcel").on("click", function () {
   table.button(".buttons-excel").trigger();
@@ -102,8 +130,6 @@ function getTableSpecificOptions() {
     ordering: document.getElementById("gelirGiderTable") ? false : true,
   };
 }
-
-
 
 if ($(".select2").length > 0) {
   $(".select2").select2();
@@ -328,7 +354,6 @@ $(document).on("change", "#mySite", function () {
   window.location = "set-session.php?p=" + page + "&site_id=" + $(this).val();
 });
 
-
 //İl seçildiğinde ilçeleri getir
 function getTowns(cityId, targetElement) {
   var formData = new FormData();
@@ -422,9 +447,7 @@ if ($(".money").length > 0) {
       clearIncomplete: true,
     });
   });
- 
- 
- 
+
   //Para birimi olan alanlarda virgülü noktaya çevir
   // $('.money').on('keyup', function () {
   //   var value = $(this).val();
@@ -432,8 +455,6 @@ if ($(".money").length > 0) {
   //   $(this).val(value);
   // });
 }
-
-
 
 $.validator.setDefaults({
   errorPlacement: function (error, element) {

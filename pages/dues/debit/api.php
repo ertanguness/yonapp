@@ -13,13 +13,17 @@ use Model\BorclandirmaModel;
 use Model\BorclandirmaDetayModel;
 use Model\DueModel;
 use Model\BloklarModel;
+use Model\DairelerModel;
 use Model\KisilerModel;
+use Model\DefinesModel;
 
 $Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $Due = new DueModel();
 $Bloklar = new BloklarModel();
+$Daire = new DairelerModel();
 $Kisiler = new KisilerModel();
+$Defines = new DefinesModel();
 
 
 
@@ -84,6 +88,35 @@ if ($_POST["action"] == "borclandir") {
             $data["person_id"] = Security::decrypt($person_id);
             $BorcDetay->saveWithAttr($data);
         }
+    }else if($borclandirma_turu == 'dairetipi'){
+        //Daire tipine göre borçlandırma yapılıyor
+        $daire_tipleri = $_POST["apartment_type"];
+        // foreach ($kisiler as $kisi) {
+        //     $data["kisi_id"] = $kisi->id;
+        //     $data["blok_id"] = $kisi->blok_id; // Blok ID'sini de ekliyoruz
+        //     $BorcDetay->saveWithAttr($data);
+       
+        //Daire Tipi id'lerinde döngü yap
+        foreach($daire_tipleri as $daire_tipi_id){
+            $daire_tipi_id = Security::decrypt($daire_tipi_id);
+           
+            //Daireler tablosundan bu daire tipine sahip daireleri getir
+            $daireler = $Daire->DaireTipineGoreDaireler($daire_tipi_id);
+
+            foreach ($daireler as $daire) {
+                $data["kisi_id"] = 11; // Daireye ait kişinin ID'sini alıyoruz
+                $data["blok_id"] = $daire->blok_id; // Daireye ait blok ID'sini alıyoruz
+                $data["daire_id"] = $daire->id; // Daire ID'sini ekliyoruz
+                $BorcDetay->saveWithAttr($data);
+            }
+        }
+
+        echo json_encode([
+            "status" => "success",
+            "message" => "Daire Tipine göre borçlandırma tamamlandı!",
+            "data" => $data
+        ]);
+        exit;
     }
 
     $res = [
@@ -148,6 +181,23 @@ if ($_POST["action"] == "get_peoples_by_block") {
     $id = Security::decrypt($_POST["block_id"]);
 
     $data = $Kisiler->BlokKisileri($id);
+
+    //id'yi şifreli hale getiriyoruz
+    foreach ($data as $key => $value) {
+        $data[$key]->id = Security::encrypt($value->id);
+    }
+
+    $res = [
+        "status" => "success",
+        "data" => $data
+    ];
+
+    echo json_encode($res);
+}
+
+//Daire Tiplerini getir
+if ($_POST["action"] == "get_apartment_types") {
+    $data = $Defines->getAllByApartmentType(3);
 
     //id'yi şifreli hale getiriyoruz
     foreach ($data as $key => $value) {

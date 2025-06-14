@@ -89,4 +89,16 @@ class DairelerModel extends Model
         $sql->execute([$daire_id]);
         return $sql->fetch(PDO::FETCH_OBJ)->daire_kodu ?? '';
     }
+
+
+    /**Daire tipine göre daireleri getirir
+     * @param int $daire_tipi_id
+     * @return array
+     */
+    public function DaireTipineGoreDaireler($daire_tipi_id)
+    {
+        $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE daire_tipi = ? ORDER BY blok_id ASC, daire_no ASC");
+        $query->execute([$daire_tipi_id]);
+        return $query->fetchAll(PDO::FETCH_OBJ);
+    }
 }

@@ -351,7 +351,7 @@ class Helper
     {
         $Defines = new DefinesModel();
         $apartmentTypes = $Defines->getAllByApartmentType(3);
-        $select = '<select id="apartment_type" multiple name="apartment_type" class="form-select select2 w-100">';
+        $select = '<select id="apartment_type" multiple data-live-search="true" name="apartment_type[]"  class="form-select select2 w-100">';
         $select .= '<option value="">Daire Tipi Seçiniz</option>';
         foreach ($apartmentTypes as $type) {
             $select .= '<option value="' . $type->id . '">' . $type->define_name . '</option>';
