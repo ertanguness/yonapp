@@ -76,7 +76,7 @@ $site = $Siteler->SiteAdi($_SESSION['site_id'] ?? null);
                                             <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
                                                 id="myTab" role="tablist">
                                                 <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link active"
+                                                    <a href="javascript:void(0);" class="nav-link"
                                                         data-bs-toggle="tab" data-bs-target="#peopleInfoTab"
                                                         role="tab">Genel Bilgiler</a>
                                                 </li>
@@ -91,7 +91,7 @@ $site = $Siteler->SiteAdi($_SESSION['site_id'] ?? null);
                                             </ul>
                                         </div>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade show active" id="peopleInfoTab" role="tabpanel">
+                                            <div class="tab-pane fade " id="peopleInfoTab" role="tabpanel">
                                                 <?php
                                                 require_once 'pages/management/peoples/content/PeopleInfoTab.php';
                                                 ?>
@@ -172,3 +172,32 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 <script src="src/daire-kisi.js"></script>
 <script src="src/blok-daire.js"></script>
+<!-- Araç ve acil durum sekmesinin butonla aktif edilmesi -->
+<script> 
+    document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab');
+
+    const tabMap = {
+        'general': '#peopleInfoTab',
+        'car': '#peopleCarInfoTab',
+        'emergency': '#peoplesEmergencyInfoTab'
+    };
+
+    let activeTabSelector = '#peopleInfoTab'; // default
+    if (tab && tabMap[tab]) {
+        activeTabSelector = tabMap[tab];
+    }
+
+    // İlgili sekmenin başlığını seçelim (nav-link)
+    const triggerEl = document.querySelector(`a[data-bs-target="${activeTabSelector}"]`);
+    if (triggerEl) {
+        // Bootstrap tab instance yarat ve göster
+        const tabTrigger = new bootstrap.Tab(triggerEl);
+        tabTrigger.show();
+    }
+});
+
+</script>
+
+

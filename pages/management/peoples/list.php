@@ -1,11 +1,14 @@
 <?php
+
 use App\Helper\Security;
 use Model\KisilerModel;
 use Model\BloklarModel;
+use Model\DairelerModel;
 
 $Kisiler = new KisilerModel();
 $Bloklar = new BloklarModel();
-$kisi = $Kisiler ->SiteKisileriJoin($_SESSION['site_id'] ?? null);
+$Daireler = new DairelerModel();
+$kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
 
 $ikametTuru = [
     '1' => 'Kat Maliki',
@@ -36,9 +39,18 @@ $ikametTuru = [
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php
-                require_once 'pages/components/search.php';
                 require_once 'pages/components/download.php'
                 ?>
+                <a href="index?p=management/peoples/manage&tab=car" class="btn btn-outline-secondary">
+                    <i class="feather-truck me-2"></i>
+                    <span>Araç Bilgisi Ekle</span>
+                </a>
+
+                <a href="index?p=management/peoples/manage&tab=emergency" class="btn btn-outline-danger">
+                    <i class="feather-alert-triangle me-2"></i>
+                    <span>Acil Durum Ekle</span>
+                </a>
+
 
                 <a href="#" class="btn btn-primary route-link" data-page="management/peoples/manage">
                     <i class="feather-plus me-2"></i>
@@ -85,20 +97,25 @@ $ikametTuru = [
                                         <?php
                                         $i = 1;
                                         foreach ($kisi as $row):
+                                            $daire = $Daireler->DaireAdi($row->daire_id ?? null);
+
                                             $enc_id = Security::encrypt($row->id);
                                             $blok = $Bloklar->Blok(isset($row->blok_id) ? htmlspecialchars($row->blok_id) : '-');
-                                            $daire_no = isset($row->daire_id) ? htmlspecialchars($row->daire_id) : '-';
+                                            $daire_no = is_object($daire) ? htmlspecialchars($daire->daire_no) : '-';
                                             $adi_soyadi = isset($row->adi_soyadi) ? htmlspecialchars($row->adi_soyadi) : '-';
                                             $telefon = isset($row->telefon) ? htmlspecialchars($row->telefon) : '-';
                                             $ikamet_turu = isset($ikametTuru[$row->uyelik_tipi]) ? $ikametTuru[$row->uyelik_tipi] : '-';
-                                            ?>
+                                            $plaka = !empty($row->plaka_listesi)
+                                                ? nl2br(htmlspecialchars_decode($row->plaka_listesi))
+                                                : '-';
+                                        ?>
                                             <tr class="text-center">
                                                 <td><?php echo $i; ?></td>
                                                 <td><?php echo $blok->blok_adi; ?></td>
                                                 <td><?php echo $daire_no; ?></td>
                                                 <td><?php echo $adi_soyadi; ?></td>
                                                 <td><?php echo $telefon; ?></td>
-                                                <td><?php echo "Plaka Tablosundan gelecek" ?></td>
+                                                <td><?php echo $plaka; ?></td>
                                                 <td><?php echo $ikamet_turu; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2">

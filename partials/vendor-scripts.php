@@ -92,7 +92,7 @@ if (
     $page == 'management/peoples/manage' ||   $page == 'management/peoples/list') {
         echo '<script src="/pages/management/peoples/js/kisiBilgileri.js"></script>';
         echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
-        echo '<script src="/pages/management/peoples/js/acilDurumBilgileri.js"></script>';
+        echo '<script src="/pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
 
 
     }

@@ -3,10 +3,14 @@
 use App\Helper\Security;
 use Model\KisilerModel;
 use Model\BloklarModel;
+use Model\DairelerModel;
+
 
 $Kisiler = new KisilerModel();
 $Bloklar = new BloklarModel();
-$kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
+$Daireler = new DairelerModel();
+
+$kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac');
 ?>
 <div class="table-responsive">
     <table class="table table-hover datatables" id="aracList">
@@ -33,11 +37,13 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
 
                 $enc_id = Security::encrypt($row->arac_id);
                 $blok = $Bloklar->Blok($row->blok_id ?? null);
+                $daire = $Daireler->DaireAdi($row->daire_id ?? null);
+
             ?>
                 <tr data-id="<?php echo $enc_id; ?>" class="text-center">
                     <td><?= $i++; ?></td>
                     <td><?= htmlspecialchars($blok->blok_adi ?? '-') ?></td>
-                    <td><?= htmlspecialchars($row->daire_id ?? '-') ?></td>
+                    <td><?= is_object($daire) ? htmlspecialchars($daire->daire_no) : '-' ?></td>
                     <td><?= htmlspecialchars($row->adi_soyadi ?? '-') ?></td>
                     <td><?= htmlspecialchars($row->telefon ?? '-') ?></td>
                     <td><?= htmlspecialchars($row->plaka) ?></td>

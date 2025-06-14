@@ -10,16 +10,16 @@ use PDO;
 
 
 
-class AraclarModel extends Model
+class AcilDurumKisileriModel extends Model
 {
-    protected $table = 'araclar';
+    protected $table = 'acil_durum_kisileri';
 
     public function __construct()
     {
         parent::__construct($this->table);
     }
     
-    public function aracEkleTableRow($id)
+    public function acilDurumKisiEkleTableRow($id)
     {
         $Bloklar = new BloklarModel();
         $Kisiler= new KisilerModel();
@@ -37,9 +37,9 @@ class AraclarModel extends Model
             <td>' . ($blok->blok_adi ?: '-') . '</td>        
             <td>' . (is_object($daire) && isset($daire->daire_no) ? $daire->daire_no : '-') . '</td>
             <td>' . ($kisi->adi_soyadi ?: '-') . '</td>
-            <td>' . ($kisi->telefon ?: '-') . '</td>
-            <td>' . ($data->plaka ?: '-') . '</td>
-            <td>' . ($data->marka_model ?: '-') . '</td>
+            <td>' . ($data->adi_soyadi ?: '-') . '</td>
+            <td>' . ($data->telefon ?: '-') . '</td>
+            <td>' . ($data->yakinlik ?: '-') . '</td>
             <td>
                 <div class="hstack gap-2">
                     <a href="index?p=management/peoples/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Görüntüle">
@@ -48,18 +48,19 @@ class AraclarModel extends Model
                     <a href="index?p=management/peoples/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Düzenle">
                         <i class="feather-edit"></i>
                     </a>
-                    <a href="javascript:void(0);" data-name="<?php echo $data->plaka; ?>" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md delete-car" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $data->plaka; ?>">
+                    <a href="javascript:void(0);" data-name="<?php echo $data->adi_soyadi; ?>" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md delete-acilDurumKisi" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $data->adi_soyadi; ?>">
                         <i class="feather-trash-2"></i>
                     </a>
                 </div>
             </td>
         </tr>';
     }
-    public function AracVarmi($plaka)
+    public function AcilDurumKisiVarmi($telefon)
     {
-        $query = $this->db->prepare("SELECT COUNT(*) FROM $this->table WHERE plaka = ?");
-        $query->execute([$plaka]);
+        $query = $this->db->prepare("SELECT COUNT(*) FROM $this->table WHERE telefon = ?");
+        $query->execute([$telefon]);
         return $query->fetchColumn() > 0;
-    }   
+    }
+   
     
 }

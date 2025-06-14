@@ -4,26 +4,28 @@ session_start();
 $site_id = $_SESSION['site_id'] ?? 0;
 
 use Model\BloklarModel;
+use App\Helper\Security;
 
 $Block = new BloklarModel();
 
 $blocks = $Block->SiteBloklari($site_id);
+$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 
 $relationOptions = [
-    "Anne",
-    "Baba",
-    "Kardeş",
-    "Eş",
-    "Çocuk",
-    "Dede",
-    "Babaanne",
-    "Anneanne",
-    "Amca",
-    "Dayı",
-    "Teyze",
-    "Hala",
-    "Kuzen",
-    "Diğer"
+    1  => "Anne",
+    2  => "Baba",
+    3  => "Kardeş",
+    4  => "Eş",
+    5  => "Çocuk",
+    6  => "Dede",
+    7  => "Babaanne",
+    8  => "Anneanne",
+    9  => "Amca",
+    10 => "Dayı",
+    11 => "Teyze",
+    12 => "Hala",
+    13 => "Kuzen",
+    14 => "Diğer"
 ];
 
 ?>
@@ -35,10 +37,11 @@ $relationOptions = [
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="aracEkleForm">
+                <form id="acilDurumKisileriEkleForm">
+                <input type="hidden" name="acil_kisi_id" id="acil_kisi_id" value="<?php echo $id; ?>">
                     <!-- Blok Seçimi -->
                     <div class="mb-3">
-                        <label for="modalBlok" class="form-label fw-semibold">Blok Seçimi</label>
+                        <label for="blokAdi" class="form-label fw-semibold">Blok Seçimi</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
                             <select id="blokAdi" class="form-select blokAdi" name="blok_id">
@@ -72,28 +75,28 @@ $relationOptions = [
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="emergencyContact" class="form-label fw-semibold">Acil Durumda Ulaşılacak Kişi Adı:</label>
+                        <label for="acilDurumKisi" class="form-label fw-semibold">Acil Durumda Ulaşılacak Kişi Adı:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-user-shield"></i></span>
-                            <input type="text" id="emergencyContact" name="emergencyContact" class="form-control" placeholder="Acil Durum Kişisi Giriniz">
+                            <input type="text" id="acilDurumKisi" name="acilDurumKisi" class="form-control" placeholder="Acil Durum Kişisi Giriniz">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="emergencyPhone" class="form-label fw-semibold">Acil Durumda Ulaşılacak Telefon Numarası:</label>
+                        <label for="acilDurumKisiTelefon" class="form-label fw-semibold">Acil Durumda Ulaşılacak Telefon Numarası:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                            <input type="text" id="emergencyPhone" name="emergencyPhone" class="form-control" placeholder="Telefon Numarası Giriniz">
+                            <input type="text" id="acilDurumKisiTelefon" name="acilDurumKisiTelefon" class="form-control" placeholder="Telefon Numarası Giriniz">
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="relation" class="form-label fw-semibold">Yakınlık Derecesi:</label>
+                        <label for="yakinlik" class="form-label fw-semibold">Yakınlık Derecesi:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
-                            <select id="relation" name="relation" class="form-select">
+                            <select id="yakinlik" name="yakinlik" class="form-select">
                                 <option value="">Yakınlık Derecesi Seçiniz</option>
-                                <?php foreach ($relationOptions as $option): ?>
-                                    <option value="<?= htmlspecialchars($option) ?>"><?= htmlspecialchars($option) ?></option>
+                                <?php foreach ($relationOptions as $key => $option): ?>
+                                    <option value="<?= htmlspecialchars($key) ?>"><?= htmlspecialchars($option) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -102,7 +105,7 @@ $relationOptions = [
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="AcilDurumEKle" class="btn btn-success">Kaydet</button>
+                <button id="AcilDurumEkle" class="btn btn-success">Kaydet</button>
                 <button class="btn btn-danger" data-bs-dismiss="modal">İptal</button>
             </div>
         </div>
