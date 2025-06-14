@@ -17,11 +17,15 @@ if (
     $page == 'persons/manage' ||
 
     $page == 'missions/list' || $page == 'missions/process/list' ||
-    $page == 'missions/headers/manage' || $page == 'missions/headers/list' 
+    $page == 'missions/headers/manage' || $page == 'missions/headers/list' ||
+    $page =="uye/list"
+
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
      <script src="assets/vendors/js/dataTables.min.js"></script>
      <script src="assets/vendors/js/dataTables.bs5.min.js"></script>	
+     
+
 <?php  } 
 
 //*************USERS********************************* */
@@ -133,8 +137,16 @@ if ($page == 'home') {
 
 
 }
+
+
+
 ?>
- 
+
+
+
+
+
+
 <script src="./src/jquery.inputmask.js"></script>
 <script src="./assets/js/flatpickr.min.js"></script>
 <script src="./assets/js/flatpickr.tr.min.js"></script>
@@ -143,7 +155,6 @@ if ($page == 'home') {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="./assets/js/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-
 
 <script src="./assets/js/select2/js/select2.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script> -->

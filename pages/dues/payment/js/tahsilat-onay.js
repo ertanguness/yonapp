@@ -69,8 +69,8 @@ $(document).on("click", ".tahsilat-onayla", function (event) {
 
         islenecek_tutar_input.val(data.kalan_tutar); // İşlenecek tutar inputunu temizle
         // Eğer kalan tutar 0 ise, butonu gizle
-        if (data.kalan_tutar == "0,00 TRY") {
-          $(this).closest("tr").find(".tahsilat-onayla").hide();
+        if (data.kalan_tutar == "0,00 TL") {
+            $(this).closest("tr").find(".tahsilat-onayla").hide();
         }
       }
     });

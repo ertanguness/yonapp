@@ -15,11 +15,20 @@ class BorclandirmaModel extends Model
         parent::__construct($this->table);
     }
 
-    //aidat tablosundaki verileri alır
-    public function getDebits()
+   /**
+    * Siteye ait tüm borçlandırmaları getirir.
+    *@param int $site_id
+    *@return array
+    */
+    public function all($site_id = null)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table");
-        $sql->execute();
-        return $sql->fetchAll(PDO::FETCH_OBJ);
+
+        $query = "SELECT * FROM {$this->table} WHERE site_id = :site_id ORDER BY id DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':site_id', $site_id, );
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+
+
 }

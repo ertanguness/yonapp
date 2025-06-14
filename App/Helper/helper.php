@@ -81,19 +81,8 @@ class Helper
         return $priorities[$priority];
     }
 
-    // Get transaction type
+ 
 
-    public static function getTransactionType($type)
-    {
-        $types = self::INC_EXP;
-        return $types[$type];
-    }
-
-    public static function getIncomeExpenseType($type)
-    {
-        $types = self::INCOME_EXPENSE_TYPE;
-        return $types[$type];
-    }
 
     public static function short($value, $lenght = 21)
     {
@@ -215,8 +204,12 @@ class Helper
         echo '</pre>';
     }
 
-    // gelen kelimelerin sadece ilk harflerini döndürür
-    // örnek : Ahmet Yılmaz => AY
+    /*     
+    * Gelen kelime adından baş harfleri alır
+     * @param string $name
+     * @param int $count Baş harf sayısı
+     * @return string Baş harfler
+     */
     public static function getInitials($name, $count = 2)
     {
         if (empty($name) || $name == null) {

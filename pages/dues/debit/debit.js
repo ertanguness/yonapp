@@ -5,14 +5,13 @@ $(document).on("click", "#save_debit", function () {
   var form = $("#debitForm");
   var formData = new FormData(form[0]);
 
-  formData.append("action", "borclandirma_kaydet");
+  formData.append("action", "borclandir");
   formData.append("id", $("#borc_id").val());
   formData.append("borc_adi", $("#borc_baslik option:selected").text());
 
-  // for(let pair of formData.entries()) {
-  //   console.log(pair[0]+ ', ' + pair[1]);
-  // }
-
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ", " + pair[1]);
+  }
 
   addCustomValidationMethods(); //validNumber methodu için
   var validator = $("#debitForm").validate({
@@ -81,7 +80,7 @@ $(document).on("click", ".delete-debit", function () {
               let table = $("#debitTable").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire("Silindi", `${Name} başarıyla silindi.`, "success");
-            }else{
+            } else {
               swal.fire("Hata", data.message, "error");
             }
           });
@@ -91,7 +90,11 @@ $(document).on("click", ".delete-debit", function () {
 
 //sayfa yüklenince aidat bilgilerini getir
 $(document).ready(function () {
-  getDueInfo();
+  // Manage sayfasında aidat bilgilerini getir
+  let pageUrl = window.location.href;
+  if (pageUrl.includes("manage")) {
+    getDueInfo();
+  }
 });
 
 //Aidat adı değiştiğinde, aidatın güncel verilerini getir
@@ -122,7 +125,7 @@ function getDueInfo() {
     })
     .then((data) => {
       if (data.status == "success") {
-       // console.log(data.data);
+        // console.log(data.data);
 
         $("#tutar").val(data.data.amount.replace(".", ","));
         $("#ceza_orani").val(data.data.penalty_rate);
@@ -143,7 +146,7 @@ function getBlocksBySite(siteId) {
   formData.append("action", "get_blocks");
 
   // for(let pair of formData.entries()) {
-  //   console.log(pair[0]+ ', ' + pair[1]);
+  // console.log(pair[0]+ ', ' + pair[1]);
   // }
 
   fetch(url, {
@@ -177,7 +180,7 @@ function getPeoplesByBlock(blockId) {
   formData.append("block_id", blockId);
 
   // for(let pair of formData.entries()) {
-  //   console.log(pair[0]+ ', ' + pair[1]);
+  // console.log(pair[0]+ ', ' + pair[1]);
   // }
 
   fetch(url, {
@@ -200,7 +203,6 @@ function getPeoplesByBlock(blockId) {
             $("<option></option>").val(people.id).text(people.adi_soyadi)
           );
         });
-       }
+      }
     });
 }
-

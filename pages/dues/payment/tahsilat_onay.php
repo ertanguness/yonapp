@@ -37,7 +37,10 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                   <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-primary">
+                <a href="index?p=dues/payment/list" class="btn btn-outline-secondary">
+                    <i class="feather-arrow-left me-2"></i>Listeye Dön
+                </a>
+                   <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-success">
                     <i class="feather-file-plus me-2"></i>Toplu Onay
                 </a>
             </div>

@@ -1,12 +1,22 @@
-<?php 
+<?php
 
 use App\Helper\Security;
+use App\Helper\Helper;
 
+use Model\BloklarModel;
+use Model\DairelerModel;
+use Model\KisilerModel;
 use Model\BorclandirmaDetayModel;
+use Model\TahsilatModel;
 
-$BorcDetayModel = new BorclandirmaDetayModel();
-$borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
+$Blok = new BloklarModel();
+$Daire = new DairelerModel();
+$KisiModel = new KisilerModel();
+$BorcDetay = new BorclandirmaDetayModel();
+$Tahsilat = new TahsilatModel();
 
+
+$kisiler = $KisiModel->SiteKisileri($_SESSION['site_id']);
 
 
 ?>
@@ -62,65 +72,65 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
                                 <table class="table table-hover datatables" id="debtListTable">
                                     <thead>
                                         <tr>
-                                        <th class="wd-30 no-sorting" tabindex="0" aria-controls="customerList"  style="width: 40px;">
-                                                        <div class="btn-group mb-1">
-                                                            <div class="custom-control custom-checkbox ms-1">
-                                                                <input type="checkbox" class="custom-control-input" id="checkAllCustomer">
-                                                                <label class="custom-control-label" for="checkAllCustomer"></label>
-                                                            </div>
-                                                        </div>
-                                                    </th>
-                                            <th>Blok Adı</th>
+                                            <th class="wd-30 no-sorting" tabindex="0" aria-controls="customerList" style="width: 40px;">
+                                                <div class="btn-group mb-1">
+                                                    <div class="custom-control custom-checkbox ms-1">
+                                                        <input type="checkbox" class="custom-control-input" id="checkAllCustomer">
+                                                        <label class="custom-control-label" for="checkAllCustomer"></label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th>Daire Adı</th>
                                             <th>Ad Soyad</th>
-                                            <th>Borç Tutarı</th>
-                                            <th>Ödenen</th>
-                                            <th>Kalan Borç</th>
+                                            <th class="text-end" style="width:11%">Borç Tutarı</th>
+                                            <th class="text-end" style="width:11%">Ödenen</th>
+                                            <th class="text-end" style="width:11%">BAKİYE</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                       
-                                        foreach ($borc_listesi as $index => $borc):
-                                            $enc_id = Security::encrypt($borc->borc_id);
-                                        ?>
-                                        <tr>
 
-                                            <td>
-                                            <div class="item-checkbox ms-1">
+                                        foreach ($kisiler as $index => $kisi):
+                                            $enc_id = Security::encrypt($kisi->id);
+                                            $toplam_borc = -$BorcDetay->KisiToplamBorc($kisi->id);
+                                            $toplam_tahsilat = $Tahsilat->KisiToplamTahsilat($kisi->id);
+                                            $kalan_borc =  $toplam_borc + $toplam_tahsilat;
+                                            $tahsilat_color = $toplam_tahsilat > 0 ? 'success' : 'secondary';
+                                            //$color = $kalan_borc < 0 ? 'danger' : 'success';
+
+                                        ?>
+                                            <tr>
+
+                                                <td>
+                                                    <div class="item-checkbox ms-1">
                                                         <div class="custom-control custom-checkbox">
                                                             <input type="checkbox" class="custom-control-input checkbox" id="checkBox_1">
                                                             <label class="custom-control-label" for="checkBox_1"></label>
                                                         </div>
                                                     </div>
-                                            </td>
+                                                </td>
 
 
-                                            <td><?= $borc->blok_adi ?> ...</td>
-                                            <td><?= $borc->kisi_adi ?></td>
-                                            <td><?= $borc->toplam_borc   ?> TL</td>
-                                            <td><?= $borc->odenen_borc ?? 0 ?> TL</td>
-                                            <td><?= $borc->kalan_borc ?? 0 ?> TL</td>
-                                            <td style="width:10%">
-                                                <div class="hstack gap-2 ">
-                                                    <a href="index?p=dues/payment/detail&id=<?php echo $enc_id ?>"
-                                                        class="avatar-text avatar-md">
-                                                        <i class="feather-eye"></i>
-                                                    </a>
-                                                    <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>"
-                                                        class="avatar-text avatar-md">
-                                                        <i class="feather-edit"></i>
-                                                    </a>
-                                                    <a href="javascript:void(0);"
-                                                        data-name="<?php echo $borc->borc_adi ?>"
-                                                        data-id="<?php echo $enc_id ?>"
-                                                        class="avatar-text avatar-md delete-dues">
-                                                        <i class="feather-trash-2"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
+                                                <td><?= $Daire->DaireKodu($kisi->daire_id) ?> </td>
+                                                <td><?= $kisi->adi_soyadi ?></td>
+                                                <td class="text-end">
+                                                    <i class="feather-trending-down fw-bold text-danger"></i>
+                                                    
+                                                    <?= Helper::formattedMoney($toplam_borc)   ?>
+                                                </td>
+                                                <td class="text-end"><?= Helper::formattedMoney($toplam_tahsilat) ?></td>
+                                                <td class="text-end"><?= Helper::formattedMoney($kalan_borc) ?></td>
+                                                <td style="width:5%;">
+                                                    <div class="hstack gap-2 ">
+                                                        <a href="#" data-id="<?php echo $enc_id ?>" 
+                                                                    class="avatar-text avatar-md kisi-borc-detay">
+                                                            <i class="feather-eye"></i>
+                                                        </a>
+                                                                                                     </div>
+                                                </td>
 
-                                        </tr>
+                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -132,3 +142,31 @@ $borc_listesi = $BorcDetayModel->gruplanmisBorcListesi();
         </div>
     </div>
 </div>
+<div class="modal fade" id="kisiBorcDetay" tabindex="-1" data-bs-keyboard="false" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered" role="document">
+        <div class="modal-content borc-detay">
+
+            <div class="modal-footer">
+                <button id="btn-n-save" class="float-left btn btn-success">Save</button>
+                <button class="btn btn-danger" data-dismiss="modal">Discard</button>
+                <button id="btn-n-add" class="btn btn-success" disabled="disabled">Add Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).on('click', '.kisi-borc-detay', function() {
+    var kisiId = $(this).data('id');
+
+    $.get("pages/dues/payment/detail.php", {
+        kisi_id: kisiId
+    }, function(data) {
+        // Verileri tabloya ekle
+        $('.borc-detay').html(data);
+        // Modal'ı göster
+        $('#kisiBorcDetay').modal('show');
+    });
+});
+
+</script>

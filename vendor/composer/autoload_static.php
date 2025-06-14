@@ -55,6 +55,7 @@ class ComposerStaticInitdf457f6088e865ee4c2005a5b0dcf4a9
         ),
         'C' => 
         array (
+            'Composer\\Pcre\\' => 14,
             'Complex\\' => 8,
         ),
         'A' => 
@@ -144,6 +145,10 @@ class ComposerStaticInitdf457f6088e865ee4c2005a5b0dcf4a9
         'Database\\' => 
         array (
             0 => __DIR__ . '/../..' . '/Database',
+        ),
+        'Composer\\Pcre\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/pcre/src',
         ),
         'Complex\\' => 
         array (
