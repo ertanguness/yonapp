@@ -87,6 +87,10 @@ div:where(.swal2-icon-content) {
    font-size: .78rem !important;
   }
 
+  .form-select {
+  font-size: 0.9rem !important;
+  }
+
 .error {
   color: #dc3545 !important;
 }

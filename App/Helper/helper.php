@@ -72,6 +72,39 @@ class Helper
         'person' => 'Kişi Borçlandırma',
         'dairetipi' => 'Daire Tipine Göre',
     ];
+    // 1  => "Anne",
+    // 2  => "Baba",
+    // 3  => "Kardeş",
+    // 4  => "Eş",
+    // 5  => "Çocuk",
+    // 6  => "Dede",
+    // 7  => "Babaanne",
+    // 8  => "Anneanne",
+    // 9  => "Amca",
+    // 10 => "Dayı",
+    // 11 => "Teyze",
+    // 12 => "Hala",
+    // 13 => "Kuzen",
+    // 14 => "Diğer"
+
+    const  RELATIONSHIP = [
+        '1' => 'Anne',
+        '2' => 'Baba',
+        '3' => 'Kardeş',
+        '4' => 'Eş',
+        '5' => 'Çocuk',
+        '6' => 'Dede',
+        '7' => 'Babaanne',
+        '8' => 'Anneanne',
+        '9' => 'Amca',
+        '10' => 'Dayı',
+        '11' => 'Teyze',
+        '12' => 'Hala',
+        '13' => 'Kuzen',
+        '14' => 'Diğer'
+    ];
+
+
 
     const DAIRE_TYPE = [];
 
@@ -81,12 +114,12 @@ class Helper
         return $priorities[$priority];
     }
 
- 
+
 
 
     public static function short($value, $lenght = 21)
     {
-        if(empty($value)) return;
+        if (empty($value)) return;
         return strlen($value) > $lenght ? substr($value, 0, $lenght) . '...' : $value;
     }
 
@@ -195,6 +228,24 @@ class Helper
         $select .= '</select>';
         return $select;
     }
+
+    /**
+     * Yakınlık derecelerini select olarak döndürür
+     * @param string $name
+     * @param string $selected
+     * @return string
+     */
+    public static function relationshipSelect($name = 'relationship', $selected = '1')
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        foreach (self::RELATIONSHIP as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
+        }
+        $select .= '</select>';
+        return $select;
+    }
+
 
     // dd fonksiyonu
     public static function dd($data)
@@ -365,55 +416,55 @@ class Helper
         $patterns = [
             // Standart formatlar: C5 Daire 9, B1 DAİRE 6, C2- Daire:15
             '/([A-Z]\d+)\s*(?:BLOK|Blok|blok)?\s*(?:DAİRE|Daire|DAiRE|D\.?)\s*[:\.\-]?\s*(\d+)/i',
-            
+
             // C5 16 numara, B3 Blok Daire10 gibi bitişik yazımlar
             '/([A-Z]\d+)\s+(\d+)\s*(?:numara|Daire|No|no)?/i',
-            
+
             // C2.D.13, A1-DAİRE9 gibi nokta/tire ile ayrılmış
             '/([A-Z]\d+)[\.\-]\s*D\.?\s*(\d+)/i',
-            
+
             // B3 BLOK DAİRE5 gibi bitişik yazımlar
             '/([A-Z]\d+)\s*BLOK\s*DAİRE\s*(\d+)/i',
-            
+
             // b1 blok d 17 veya B1 Blok D 17
             '/([A-Z]\d+)\s*blok\s*d\s*(\d+)/i',
-            
+
             // c5 blok no 19
             '/([A-Z]\d+)\s*blok\s*no\s*(\d+)/i',
-            
+
             // A1-DAİRE 9, C1-Daire 5
             '/([A-Z]\d+)[\-\.]?\s*DAİRE\s*(\d+)/i',
-            
+
             // C3 16 gibi basit formatlar
             '/([A-Z]\d+)\s+(\d+)/',
-            
+
             // B1D5, C2D13 gibi direkt formatlar
             '/([A-Z]\d+D\d+)/i',
-            
+
             // Özel durumlar: C2- Daire:15
             '/([A-Z]\d+)\-?\s*Daire\s*\:?\s*(\d+)/i',
-            
+
             // Blok ve daire farklı konumda: BLOK C5 DAİRE 9
             '/(?:BLOK|Blok)\s*([A-Z]\d+).*?(?:DAİRE|Daire)\s*(\d+)/i',
-            
+
             // Daire kelimesi önce: DAİRE 9 BLOK C5
             '/(?:DAİRE|Daire)\s*(\d+).*?(?:BLOK|Blok)\s*([A-Z]\d+)/i',
         ];
-    
+
         foreach ($patterns as $pattern) {
             if (preg_match($pattern, $description, $matches)) {
                 // Eğer direkt B1D5 formatında eşleşme varsa
                 if (isset($matches[1]) && preg_match('/^[A-Z]\d+D\d+$/i', $matches[1])) {
                     return strtoupper($matches[1]);
                 }
-                
+
                 // Normalde blok ve daire ayrı eşleşir
                 if (isset($matches[1]) && isset($matches[2])) {
                     return strtoupper(trim($matches[1])) . 'D' . trim($matches[2]);
                 }
             }
         }
-    
+
         // Özel durumlar için manuel kontrol
         $specialCases = [
             'C5 16 numara asansör bakım ücreti' => 'C5D16',
@@ -423,18 +474,18 @@ class Helper
             'C2. D.13' => 'C2D13',
             'C3 16' => 'C3D16',
         ];
-        
+
         foreach ($specialCases as $case => $code) {
             if (strpos($description, $case) !== false) {
                 return $code;
             }
         }
-    
+
         // Son çare: sayısal bloklar için (A1, B2 gibi olmayanlar)
         if (preg_match('/(\d+)\s*(?:BLOK|Blok|blok)?\s*(?:DAİRE|Daire|DAiRE|D\.?)\s*[:\.\-]?\s*(\d+)/i', $description, $matches)) {
             return 'BLOCK' . trim($matches[1]) . 'D' . trim($matches[2]);
         }
-    
+
         return null;
     }
 }

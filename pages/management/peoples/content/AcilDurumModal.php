@@ -5,28 +5,19 @@ $site_id = $_SESSION['site_id'] ?? 0;
 
 use Model\BloklarModel;
 use App\Helper\Security;
+use App\Helper\Helper;
+use App\Helper\Form;
 
 $Block = new BloklarModel();
 
 $blocks = $Block->SiteBloklari($site_id);
+$blockOptions = [];
+foreach ($blocks as $block) {
+    $blockOptions[$block->id] = $block->blok_adi;
+}
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 
-$relationOptions = [
-    1  => "Anne",
-    2  => "Baba",
-    3  => "Kardeş",
-    4  => "Eş",
-    5  => "Çocuk",
-    6  => "Dede",
-    7  => "Babaanne",
-    8  => "Anneanne",
-    9  => "Amca",
-    10 => "Dayı",
-    11 => "Teyze",
-    12 => "Hala",
-    13 => "Kuzen",
-    14 => "Diğer"
-];
+
 
 ?>
 <div class="modal fade" id="acilDurumEkleModal" tabindex="-1" data-bs-keyboard="false" role="dialog">
@@ -42,16 +33,16 @@ $relationOptions = [
                     <!-- Blok Seçimi -->
                     <div class="mb-3">
                         <label for="blokAdi" class="form-label fw-semibold">Blok Seçimi</label>
-                        <div class="input-group">
+                        <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
-                            <select id="blokAdi" class="form-select blokAdi" name="blok_id">
-                                <option value="">Blok Seçiniz</option>
-                                <?php foreach ($blocks as $block): ?>
-                                    <option value="<?= $block->id ?>">
-                                        <?= htmlspecialchars($block->blok_adi) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                           
+                            <?php echo Form::Select2(
+                                'blok_ids', 
+                                $blockOptions,
+                                2, 
+                             ) ?>
+
+                             
                         </div>
                     </div>
                     <!-- Daire No -->
@@ -91,14 +82,14 @@ $relationOptions = [
 
                     <div class="mb-3">
                         <label for="yakinlik" class="form-label fw-semibold">Yakınlık Derecesi:</label>
-                        <div class="input-group">
+                        <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
-                            <select id="yakinlik" name="yakinlik" class="form-select">
-                                <option value="">Yakınlık Derecesi Seçiniz</option>
-                                <?php foreach ($relationOptions as $key => $option): ?>
-                                    <option value="<?= htmlspecialchars($key) ?>"><?= htmlspecialchars($option) ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                            
+                            <?php echo Form::Select2(
+                                'yakinlik', 
+                                Helper::RELATIONSHIP,
+                                1, 
+                             ) ?>
                         </div>
                     </div>
 
@@ -111,3 +102,5 @@ $relationOptions = [
         </div>
     </div>
 </div>
+
+

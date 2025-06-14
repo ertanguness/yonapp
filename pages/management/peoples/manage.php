@@ -154,9 +154,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('modalContainer').innerHTML = html;
                     let aracModal = new bootstrap.Modal(document.getElementById('aracEkleModal'));
                     aracModal.show();
+                    $(".select2").select2( {
+                        dropdownParent: $('#aracEkleModal'),
+                    } );
                 })
                 .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
         }
+        Pace.restart();
         if (e.target && e.target.id === 'ekle_acildurum') {
             fetch('pages/management/peoples/content/AcilDurumModal.php')
                 .then(response => response.text())
@@ -164,6 +168,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('modalContainer').innerHTML = html;
                     let acilDurumModal = new bootstrap.Modal(document.getElementById('acilDurumEkleModal'));
                     acilDurumModal.show();
+                    $(".select2").select2( {
+                        dropdownParent: $('#acilDurumEkleModal'),
+                    } );
                 })
                 .catch(error => console.error('Acil Durum Modal yüklenirken hata oluştu:', error));
         }

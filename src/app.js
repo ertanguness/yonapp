@@ -152,7 +152,7 @@ if ($(".select2").length > 0) {
   //   dropdownParent: $(".modal")
   // });
 
-  //Modal'daki select2'lerin dropdown parent'ını modal yap
+ // Modal'daki select2'lerin dropdown parent'ını modal yap
   $(".modal .select2").each(function () {
     $(this).select2({ dropdownParent: $(this).parent() });
   });
