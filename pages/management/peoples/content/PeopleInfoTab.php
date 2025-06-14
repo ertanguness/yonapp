@@ -209,7 +209,7 @@ $blocks = $Block->SiteBloklari($site_id);
 <script>
     $(document).ready(function() {
         // Telefon numarasına maske uygula (Türkiye GSM formatı)
-        $("#phoneNumber").inputmask("(0999) 999 99 99");
+      //  $("#phoneNumber").inputmask("(0999) 999 99 99");
 
         // TC Kimlik veya Pasaport alanı için otomatik maske
         $("#tcPassportNo").on("input", function() {

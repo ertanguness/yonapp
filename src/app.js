@@ -457,27 +457,32 @@ if ($(".money").length > 0) {
 }
 
 $.validator.setDefaults({
-  errorPlacement: function (error, element) {
-    // Hata mesajını input grubunun altına ekle
-    error.addClass("text-danger"); // Hata mesajına stil ekleyin
-    if (element.closest(".form-floating").length) {
-      element.closest(".form-floating").after(error); // Input grubunun altına ekle
+  highlight: function(element) {
+    // input-group varsa, tüm input-group'u işaretle
+    var $group = $(element).closest('.input-group');
+    if ($group.length) {
+      $group.addClass('is-invalid');
     } else {
-      element.after(error); // Diğer durumlarda input'un altına ekle
+      $(element).addClass('is-invalid');
     }
   },
-  highlight: function (element) {
-    // Hatalı input alanına kırmızı border ekle
-    $(element).addClass("is-invalid");
-    // Input'un en yakın form-floating kapsayıcısına is-invalid sınıfını ekle
-    $(element).closest(".form-floating").addClass("is-invalid");
+  unhighlight: function(element) {
+    var $group = $(element).closest('.input-group');
+    if ($group.length) {
+      $group.removeClass('is-invalid');
+    } else {
+      $(element).removeClass('is-invalid');
+    }
+    $(element).next('.error').remove();
   },
-  unhighlight: function (element) {
-    // Hatalı input alanından kırmızı border'ı kaldır
-    $(element).removeClass("is-invalid");
-    // Input'un en yakın form-floating kapsayıcısından is-invalid sınıfını kaldır
-    $(element).closest(".form-floating").removeClass("is-invalid");
-  },
+  errorPlacement: function(error, element) {
+    var $group = $(element).closest('.input-group');
+    if ($group.length) {
+      error.insertAfter($group);
+    } else {
+      error.insertAfter(element);
+    }
+  }
 });
 
 //Jquery validate ile yapılan doğrulamalarda para birimi formatı için

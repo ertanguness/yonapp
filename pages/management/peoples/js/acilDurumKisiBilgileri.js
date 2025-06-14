@@ -43,7 +43,8 @@ $(document).on("click", "#AcilDurumEkle", function () {
         maxlength: "Telefon numarası 10 haneli olmalıdır"
       },      
       yakinlik: { required: "Lütfen yakınlık derecesini seçiniz" }
-    }
+    },
+    
   });
   
   if (!validator.form()) {
@@ -65,7 +66,7 @@ $(document).on("click", "#AcilDurumEkle", function () {
        
        
         //Eğer işlem başarılı ve güncelleme ise tablodaki veriyi güncelle
-        // let rownode = table.$(`tr[data-id="${islem_id}"]`)[0];
+        // let rownode = table.$(tr[data-id="${islem_id}"])[0];
         // //console.log(rownode);
         // if (rownode) {
         //   table.row(rownode).remove().draw();
@@ -90,7 +91,7 @@ $(document).on("click", ".delete-acilDurumKisi", function () {
   swal
     .fire({
       title: "Emin misiniz?",
-      html: `${acilDurumKisiName} <br> adlı kişiyi silmek istediğinize emin misiniz?`,
+      html: acilDurumKisiName + " <br> adlı kişiyi silmek istediğinize emin misiniz?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Evet",
@@ -113,7 +114,7 @@ $(document).on("click", ".delete-acilDurumKisi", function () {
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${acilDurumKisiName} adlı kişi  başarıyla silindi.`,
+                acilDurumKisiName + " adlı kişi başarıyla silindi.",
                 "success"
               );
             }

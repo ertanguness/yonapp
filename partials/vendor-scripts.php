@@ -1,3 +1,4 @@
+
 <?php
 
 
@@ -19,7 +20,8 @@ if (
     $page == 'missions/list' || $page == 'missions/process/list' ||
     $page == 'missions/headers/manage' || $page == 'missions/headers/list' ||
     $page =="uye/list"  ||
-    $page == 'dues/debit/detail' || $page == 'dues/payment/list' || $page == 'dues/debit/list'
+    $page == 'dues/debit/detail' || $page == 'dues/payment/list' || $page == 'dues/debit/list' ||
+    $page == "management/peoples/list" || $page == "management/peoples/manage"
 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -147,9 +149,9 @@ if ($page == 'home') {
 
 
 
-
-
 <script src="./src/jquery.inputmask.js"></script>
+
+
 <script src="./assets/js/flatpickr.min.js"></script>
 <script src="./assets/js/flatpickr.tr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>

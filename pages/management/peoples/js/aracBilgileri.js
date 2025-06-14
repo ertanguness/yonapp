@@ -35,7 +35,8 @@ $(document).on("click", "#AracEkle", function () {
         required: "Lütfen araç plakası giriniz",
         plakaKontrol: "Geçerli bir plaka giriniz (örn: 34 ABC 123 veya DE 1234 XYZ)"
       }
-    }
+    },
+  
   });
   
   $.validator.addMethod("plakaKontrol", function (value, element) {
@@ -62,7 +63,7 @@ $(document).on("click", "#AracEkle", function () {
        
        
         //Eğer işlem başarılı ve güncelleme ise tablodaki veriyi güncelle
-        // let rownode = table.$(`tr[data-id="${islem_id}"]`)[0];
+        // let rownode = table.$(tr[data-id="${islem_id}"])[0];
         // //console.log(rownode);
         // if (rownode) {
         //   table.row(rownode).remove().draw();
@@ -110,7 +111,7 @@ $(document).on("click", ".delete-car", function () {
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${carName} plakalı arac  başarıyla silindi.`,
+                `${carName} plakalı araç başarıyla silindi.`,
                 "success"
               );
             }
