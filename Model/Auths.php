@@ -107,7 +107,7 @@ class Auths extends Model
     {
         //user'in firm_id'si ve Session firm_id'si aynı mı kontrolü yapılır
         if ($_SESSION['user']->firm_id != $_SESSION['firm_id']) {
-            header("Location: index.php?p=authorize");
+            header("Location: index?p=authorize");
             exit();
         }
         if (!$this->Authorize($auth_name)) {

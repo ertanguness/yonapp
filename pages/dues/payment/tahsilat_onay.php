@@ -2,12 +2,12 @@
 
 use App\Helper\Security;
 use App\Helper\Helper;
-use App\Helper\Due;
+use App\Helper\Aidat;
 use Model\DairelerModel;
 use Model\TahsilatOnayModel;
 use Model\KisilerModel;
 
-$DueHelper = new Due();
+$DueHelper = new Aidat();
 $Daire = new DairelerModel();
 $Kisi = new KisilerModel();
 
@@ -130,7 +130,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
 
                                             </td>
                                             <td>
-                                                <?php echo $DueHelper->getDuesSelect("borc_baslik". $index) ?>
+                                                <?php echo $DueHelper->AidatTuruSelect("borc_baslik". $index) ?>
 
                                             </td>
                                             <td style="width:5%">

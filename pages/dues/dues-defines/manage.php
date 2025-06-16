@@ -7,7 +7,7 @@ use Model\DueModel;
 $Dues = new DueModel();
 
 // Yeni eklemelerde 0 olarak gönderilmesi gerekir
-$id = Security::decrypt($_GET['id'] ?? 0 ) ?? 0;
+$id = Security::decrypt($_GET['id'] ?? 0) ?? 0;
 $due = $Dues->find($id ?? null);
 
 ?>
@@ -54,7 +54,7 @@ $due = $Dues->find($id ?? null);
 
 <div class="main-content">
     <form id="duesForm" method="POST">
-    <input type="hidden" name="dues_id" id="dues_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+        <input type="hidden" name="dues_id" id="dues_id" value="<?php echo $_GET['id'] ?? 0; ?>">
         <div class="row">
             <div class="container-xl">
                 <div class="card">
@@ -62,7 +62,7 @@ $due = $Dues->find($id ?? null);
                         <h5>Aidat Bilgileri</h5>
                     </div>
                     <div class="card-body aidat-info">
-                        
+
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
                                 <label for="block" class="fw-semibold">Tür Adı:</label>
@@ -81,7 +81,7 @@ $due = $Dues->find($id ?? null);
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-toggle-on"></i></div>
-                                    <?php echo Helper::StateSelect("state",$due->state ?? 1); ?>
+                                    <?php echo Helper::StateSelect("state", $due->state ?? 1); ?>
                                 </div>
                             </div>
                         </div>
@@ -143,13 +143,21 @@ $due = $Dues->find($id ?? null);
 
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="start_date" class="fw-semibold">Başlangıç Tarihi:</label>
+                                <label for="start_date" class="fw-semibold">Başlangıç/Bitiş Tarihi:</label>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-2">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
                                     <input type="text" class="form-control flatpickr" name="start_date" id="start_date"
                                         required value="<?php echo $due->start_date ?? ''; ?>">
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2">
+                                <div class="input-group">
+                                    <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+                                    <input type="text" class="form-control flatpickr" name="end_date" id="end_date"
+                                        value="<?php echo $due->end_date ?? ''; ?>">
                                 </div>
                             </div>
 
@@ -177,9 +185,20 @@ $due = $Dues->find($id ?? null);
                                 </div>
                             </div>
                             <div class="col-lg-2">
+                                <label for="block" class="fw-semibold">Gün Bazında:</label>
+                            </div>
+                            <div class="col-lg-1">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input " name="day_based"
+                                        id="day_based" <?php echo isset($_POST['day_based']) ? 'checked' : ''; ?>>
+                                    <label class="custom-control-label c-pointer text-muted" for="day_based"></label>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
                                 <label for="block" class="fw-semibold">Otomatik Yenileme:</label>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-1">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input " name="auto_renew"
                                         id="auto_renew" <?php echo isset($_POST['auto_renew']) ? 'checked' : ''; ?>>
@@ -193,5 +212,27 @@ $due = $Dues->find($id ?? null);
 
                     </div>
                 </div>
+            </div>
     </form>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('#period').on('change', function() {
+            var period = $(this).val();
+            switch (parseInt(period)) {
+                case 0: // Aylık
+                case 1: // 3 Aylık
+                case 2: // 6 Aylık
+                case 3: // Yıllık
+                    $('#day_based, #auto_renew').prop('checked', false);
+                    $('#day_based, #auto_renew').prop('disabled', false);
+                    break;
+                default: // Tek Seferlik
+                    $('#day_based, #auto_renew').prop('checked', false);
+                    $('#day_based, #auto_renew').prop('disabled', true);
+
+            }
+        })
+    })
+</script>

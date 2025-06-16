@@ -87,6 +87,10 @@ div:where(.swal2-icon-content) {
    font-size: .78rem !important;
   }
 
+  .form-select {
+  font-size: 0.84rem !important;
+  }
+
 .error {
   color: #dc3545 !important;
 }
@@ -97,8 +101,8 @@ div:where(.swal2-icon-content) {
   .select2-selection__choice {
   position: relative;
   color: #283c50;
-  font-size: 13px;
-  font-weight: 600;
+  /* font-size: 13px; */
+  /* font-weight: 600; */
   padding: 4px !important;
   border-color: #e5e7eb;
 }
@@ -287,6 +291,9 @@ table thead tr:first-child th {
   background-color: #f8f9fa;
   
 }
+.cursor-pointer {
+  cursor: pointer !important;
+}
 
 .accordion-button{
   padding: 10px !important;
@@ -299,6 +306,12 @@ table thead tr:first-child th {
   box-shadow: 0 0 0 0 rem rgba(148, 149, 150, 0.25) !important;
 
 } */
+ .page-header{
+  position: sticky;
+  top: 60;
+  z-index: 1000;
+
+ }
 
 
 .accordion-item:has(.accordion-button:focus) {

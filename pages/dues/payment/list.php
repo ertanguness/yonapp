@@ -16,7 +16,7 @@ $BorcDetay = new BorclandirmaDetayModel();
 $Tahsilat = new TahsilatModel();
 
 
-$kisiler = $KisiModel->SiteKisileri($_SESSION['site_id']);
+$kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
 
 
 ?>
@@ -72,11 +72,14 @@ $kisiler = $KisiModel->SiteKisileri($_SESSION['site_id']);
                                 <table class="table table-hover datatables" id="debtListTable">
                                     <thead>
                                         <tr>
-                                            <th class="wd-30 no-sorting" tabindex="0" aria-controls="customerList" style="width: 40px;">
+                                            <th class="wd-30 no-sorting" tabindex="0" aria-controls="customerList"
+                                                style="width: 40px;">
                                                 <div class="btn-group mb-1">
                                                     <div class="custom-control custom-checkbox ms-1">
-                                                        <input type="checkbox" class="custom-control-input" id="checkAllCustomer">
-                                                        <label class="custom-control-label" for="checkAllCustomer"></label>
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="checkAllCustomer">
+                                                        <label class="custom-control-label"
+                                                            for="checkAllCustomer"></label>
                                                     </div>
                                                 </div>
                                             </th>
@@ -92,11 +95,8 @@ $kisiler = $KisiModel->SiteKisileri($_SESSION['site_id']);
                                         <?php
 
                                         foreach ($kisiler as $index => $kisi):
-                                            $enc_id = Security::encrypt($kisi->id);
-                                            $toplam_borc = -$BorcDetay->KisiToplamBorc($kisi->id);
-                                            $toplam_tahsilat = $Tahsilat->KisiToplamTahsilat($kisi->id);
-                                            $kalan_borc =  $toplam_borc + $toplam_tahsilat;
-                                            $tahsilat_color = $toplam_tahsilat > 0 ? 'success' : 'secondary';
+                                            $enc_id = Security::encrypt($kisi->kisi_id);
+                                            $tahsilat_color = 'secondary';
                                             //$color = $kalan_borc < 0 ? 'danger' : 'success';
 
                                         ?>
@@ -105,7 +105,8 @@ $kisiler = $KisiModel->SiteKisileri($_SESSION['site_id']);
                                                 <td>
                                                     <div class="item-checkbox ms-1">
                                                         <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input checkbox" id="checkBox_1">
+                                                            <input type="checkbox" class="custom-control-input checkbox"
+                                                                id="checkBox_1">
                                                             <label class="custom-control-label" for="checkBox_1"></label>
                                                         </div>
                                                     </div>
@@ -116,18 +117,23 @@ $kisiler = $KisiModel->SiteKisileri($_SESSION['site_id']);
                                                 <td><?= $kisi->adi_soyadi ?></td>
                                                 <td class="text-end">
                                                     <i class="feather-trending-down fw-bold text-danger"></i>
-                                                    
-                                                    <?= Helper::formattedMoney($toplam_borc)   ?>
+
+                                                    <?= Helper::formattedMoney($kisi->toplam_borc)   ?>
                                                 </td>
-                                                <td class="text-end"><?= Helper::formattedMoney($toplam_tahsilat) ?></td>
-                                                <td class="text-end"><?= Helper::formattedMoney($kalan_borc) ?></td>
+                                                <td class="text-end"><?= Helper::formattedMoney($kisi->toplam_tahsilat) ?></td>
+                                                <td class="text-end"><?= Helper::formattedMoney($kisi->bakiye) ?></td>
                                                 <td style="width:5%;">
                                                     <div class="hstack gap-2 ">
-                                                        <a href="#" data-id="<?php echo $enc_id ?>" 
-                                                                    class="avatar-text avatar-md kisi-borc-detay">
+                                                        <a href="#" data-id="<?php echo $enc_id ?>"
+                                                            class="avatar-text avatar-md kisi-borc-detay">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                                                                     </div>
+
+                                                        <a href="#" data-id="<?php echo $enc_id ?>" title="Tahsilat Gir"
+                                                            class="avatar-text avatar-md tahsilat-gir">
+                                                            <i class="bi bi-credit-card-2-front"></i>
+                                                        </a>
+                                                    </div>
                                                 </td>
 
                                             </tr>
@@ -146,27 +152,64 @@ $kisiler = $KisiModel->SiteKisileri($_SESSION['site_id']);
     <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered" role="document">
         <div class="modal-content borc-detay">
 
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="tahsilatGir" tabindex="-1" data-bs-keyboard="false" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitleId">Tahsilat Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body tahsilat-modal-body">
+
+            </div>
             <div class="modal-footer">
-                <button id="btn-n-save" class="float-left btn btn-success">Save</button>
-                <button class="btn btn-danger" data-dismiss="modal">Discard</button>
-                <button id="btn-n-add" class="btn btn-success" disabled="disabled">Add Note</button>
+                <a class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</a>
+                <a href="#" class="btn btn-outline-primary" id="tahsilatKaydet">
+                    <i class="feather-save me-2"></i>Kaydet
+                </a>
             </div>
         </div>
     </div>
 </div>
-
 <script>
-$(document).on('click', '.kisi-borc-detay', function() {
-    var kisiId = $(this).data('id');
+    $(document).on('click', '.kisi-borc-detay', function() {
+        var kisiId = $(this).data('id');
 
-    $.get("pages/dues/payment/detail.php", {
-        kisi_id: kisiId
-    }, function(data) {
-        // Verileri tabloya ekle
-        $('.borc-detay').html(data);
-        // Modal'ı göster
-        $('#kisiBorcDetay').modal('show');
+        $.get("pages/dues/payment/detail.php", {
+            kisi_id: kisiId
+        }, function(data) {
+            // Verileri tabloya ekle
+            $('.borc-detay').html(data);
+            // Modal'ı göster
+            $('#kisiBorcDetay').modal('show');
+        });
     });
-});
 
+    $(document).on('click', '.tahsilat-gir', function() {
+        var kisiId = $(this).data('id');
+
+        $.get("pages/dues/payment/tahsilat_gir_modal.php", {
+            kisi_id: kisiId
+        }, function(data) {
+            // Verileri tabloya ekle
+            $('.tahsilat-modal-body').html(data);
+            // Modal'ı göster
+            $('#tahsilatGir').modal('show');
+            $(".select2").select2({
+                placeholder: "Kasa Seçiniz",
+                dropdownParent: $('#tahsilatGir'),
+            });
+
+            $(".flatpickr").flatpickr({
+                dateFormat: "d.m.Y",
+                locale: "tr", // locale for this instance only
+            });
+        });
+
+        // Modal'ı göster
+    });
 </script>

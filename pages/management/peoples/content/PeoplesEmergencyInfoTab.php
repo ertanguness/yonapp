@@ -1,6 +1,9 @@
 <?php
 
 use App\Helper\Security;
+use App\Helper\Helper;
+
+
 use Model\KisilerModel;
 use Model\BloklarModel;
 use Model\DairelerModel;
@@ -27,6 +30,7 @@ $relationOptions = [
     14 => "Diğer"
 ];
 ?>
+
 <div class="table-responsive">
     <table class="table table-hover datatables" id="acilDurumKisileriList">
         <thead>

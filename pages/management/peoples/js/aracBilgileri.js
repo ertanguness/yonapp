@@ -36,32 +36,7 @@ $(document).on("click", "#AracEkle", function () {
         plakaKontrol: "Geçerli bir plaka giriniz (örn: 34 ABC 123 veya DE 1234 XYZ)"
       }
     },
-    highlight: function(element) {
-      // input-group varsa, tüm input-group'u işaretle
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        $group.addClass('is-invalid');
-      } else {
-        $(element).addClass('is-invalid');
-      }
-    },
-    unhighlight: function(element) {
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        $group.removeClass('is-invalid');
-      } else {
-        $(element).removeClass('is-invalid');
-      }
-      $(element).next('.error').remove();
-    },
-    errorPlacement: function(error, element) {
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        error.insertAfter($group);
-      } else {
-        error.insertAfter(element);
-      }
-    }
+  
   });
   
   $.validator.addMethod("plakaKontrol", function (value, element) {
@@ -88,7 +63,7 @@ $(document).on("click", "#AracEkle", function () {
        
        
         //Eğer işlem başarılı ve güncelleme ise tablodaki veriyi güncelle
-        // let rownode = table.$(`tr[data-id="${islem_id}"]`)[0];
+        // let rownode = table.$(tr[data-id="${islem_id}"])[0];
         // //console.log(rownode);
         // if (rownode) {
         //   table.row(rownode).remove().draw();
@@ -136,7 +111,7 @@ $(document).on("click", ".delete-car", function () {
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${carName} plakalı arac  başarıyla silindi.`,
+                `${carName} plakalı araç başarıyla silindi.`,
                 "success"
               );
             }

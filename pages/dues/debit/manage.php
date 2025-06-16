@@ -1,16 +1,20 @@
 <?php
-
 use App\Helper\Date;
-use App\Helper\Due;
+use App\Helper\Aidat;
 use App\Helper\Helper;
 use App\Helper\Security;
 use Model\BorclandirmaModel;
 use App\Helper\Debit;
+use Model\Auths;
 
 
 
-$DueHelper = new Due();
+
+$DueHelper = new Aidat();
 $Borc = new BorclandirmaModel();
+$Auths = new Auths();
+
+//$Auths->checkAuthorize('dues/debit/manage');
 
 $id = Security::decrypt(@$_GET["id"] ?? 0) ?? 0;
 $borc = $Borc->find($id ) ?? null;
@@ -82,7 +86,7 @@ $bitis_tarihi = Date::lastDay(
                             <div>
                                 <p class="fw-bold mb-1 text-truncate-1-line alert-header">Borç Ekleme!</p>
                                 <p class="fs-12 fw-medium text-truncate-1-line alert-description">
-                                    Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara
+                                    Tüm Sakinler seçildiğinde, şu anda sitede oturan <strong>AKTİF</strong> ev sahibi ve kiracılara
                                     borclandırma yapılacaktır.
 
                                 </p>
@@ -91,6 +95,7 @@ $bitis_tarihi = Date::lastDay(
                                     aria-label="Close"></button>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
                 <div class="card-body">
@@ -104,7 +109,7 @@ $bitis_tarihi = Date::lastDay(
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-file-invoice"></i></div>
-                                    <?php echo $DueHelper->getDuesSelect("borc_baslik") ?>
+                                    <?php echo $DueHelper->AidatTuruSelect("borc_baslik") ?>
 
                                 </div>
                             </div>
@@ -179,8 +184,10 @@ $bitis_tarihi = Date::lastDay(
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
+                              
                                 <div class="input-group flex-nowrap w-100 dairetipi-sec d-none">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
+                                   
                                     <?php echo Helper::getApartmentTypesSelect($site_id) ?>
                                 </div>
                             </div>
@@ -193,18 +200,25 @@ $bitis_tarihi = Date::lastDay(
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-user-friends"></i></div>
-                                    <select name="hedef_kisi" id="hedef_kisi" data-placeholder="Yours Placeholder"
-                                        multiple disabled class="form-control select2"></select>
+                                    <select name="hedef_kisi[]" id="hedef_kisi" data-placeholder="Yours Placeholder"
+                                        multiple class="form-control select2">
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-lg-2">
-                                <label for="status" class="fw-semibold">Durum:</label>
+                                <label for="block" class="fw-semibold">
+                                    Gün Bazında:
+                                    <i class="bi bi-info-circle  c-pointer text-primary"  
+                                    data-toggle="tooltip" data-placement="top" title="Seçili olduğu zaman seçtiğiniz dönem arasındaki, daireye giriş çıkış tarihleri dikkate alınarak hesaplama yapılacaktır."></i>
+                                </label>
+                                
                             </div>
-                            <div class="col-lg-4">
-                                <div class="form-check form-switch form-switch-md">
-                                    <input class="form-check-input" type="checkbox" id="status" name="status"
-                                        value="Aktif" checked>
-                                    <label class="form-check-label" for="status">Aktif</label>
+                            <div class="col-lg-1">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input " name="day_based"
+                                        id="day_based"  >
+                                    <label class="custom-control-label c-pointer text-muted" for="day_based"></label>
+
                                 </div>
                             </div>
                         </div>
@@ -227,133 +241,3 @@ $bitis_tarihi = Date::lastDay(
         </div>
     </div>
 </div>
-<script>
-$(document).ready(function() {
-    const $targetType = $('#hedef_tipi');
-    const $targetPerson = $('#hedef_kisi');
-    const $blockSelect = $('#block_id');
-    const $targetDaireTipi = $("#daire_tipi");
-    const $alertDescription = $(".alert-description");
-
-    function updateAlertMessage(message) {
-        $alertDescription.fadeOut(200, function() {
-            $(this).text(message).fadeIn(200);
-        });
-    }
-
-    function toggleElements(options) {
-        $targetPerson.prop('disabled', options.targetPersonDisabled).val(null).trigger('change');
-        $blockSelect.prop('disabled', options.blockSelectDisabled).val(null).trigger('change');
-        $targetDaireTipi.prop('disabled', options.targetDaireTipiDisabled).val(null).trigger('change');
-        $(".dairetipi-sec").toggleClass("d-none", options.hideDaireTipi);
-        $(".blok-sec").toggleClass("d-none", options.hideBlokSec);
-        $(".blok-sec-label").text(options.blokSecLabel || "Blok Seç:");
-    }
-
-    $targetType.on('change', function() {
-        const type = $(this).val();
-
-        switch (type) {
-            case '0':
-                toggleElements({
-                    targetPersonDisabled: true,
-                    blockSelectDisabled: true,
-                    hideDaireTipi: true,
-                    hideBlokSec: true
-                });
-                updateAlertMessage("Borçlandırma yapmak için listeden seçim yapınız.");
-                break;
-
-            case 'person':
-                toggleElements({
-                    targetPersonDisabled: false,
-                    blockSelectDisabled: true,
-                    hideDaireTipi: true,
-                    hideBlokSec: false
-                });
-                updateAlertMessage(
-                "Kişiler listesinden seçtiğiniz kişilere borclandırma yapılacaktır.");
-                break;
-
-            case 'all':
-                const allValues = $targetPerson.find('option').map(function() {
-                    return $(this).val();
-                }).get();
-                $targetPerson.val(allValues).trigger('change');
-                toggleElements({
-                    targetPersonDisabled: true,
-                    blockSelectDisabled: true,
-                    hideDaireTipi: true,
-                    hideBlokSec: false
-                });
-                updateAlertMessage(
-                    "Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara borclandırma yapılacaktır."
-                    );
-                break;
-
-            case 'evsahibi':
-                toggleElements({
-                    targetPersonDisabled: false,
-                    blockSelectDisabled: true,
-                    hideDaireTipi: true,
-                    hideBlokSec: false
-
-                });
-                updateAlertMessage("Yalnızca Ev sahiplerine borclandırma yapılacaktır.");
-                break;
-
-            case 'dairetipi':
-                toggleElements({
-                    targetPersonDisabled: true,
-                    blockSelectDisabled: true,
-                    hideDaireTipi: false,
-                    hideBlokSec: true,
-                    blokSecLabel: "Daire Tipi Seç:"
-                });
-                updateAlertMessage("Daire tiplerine göre borclandırma yapılacaktır.");
-                break;
-
-            case 'block':
-                getBlocksBySite();
-                toggleElements({
-                    targetPersonDisabled: false,
-                    blockSelectDisabled: false,
-                    hideDaireTipi: true,
-                    hideBlokSec: false
-                });
-                updateAlertMessage(
-                    "Seçtiğiniz bloktaki kişilere veya ayrıca sadece seçilen kişilere borclandırma yapılacaktır."
-                    );
-                break;
-
-            default:
-                toggleElements({
-                    targetPersonDisabled: true,
-                    blockSelectDisabled: true,
-                    hideDaireTipi: true,
-                    hideBlokSec: true
-                });
-                break;
-        }
-    });
-
-    $blockSelect.on('change', function() {
-        const selectedBlock = $(this).val();
-        $targetPerson.val(null).trigger('change');
-        $targetPerson.find('option').hide().filter(function() {
-            return $(this).data('block') == selectedBlock;
-        }).show();
-    });
-
-    $('.select2-single').select2({
-        placeholder: 'Seçiniz',
-        width: '100%',
-        minimumResultsForSearch: Infinity
-    });
-
-    $('.select2-multiple').select2({
-        placeholder: 'Kişi seçiniz',
-        width: '100%'
-    });
-});
-</script>

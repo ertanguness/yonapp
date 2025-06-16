@@ -34,7 +34,7 @@ class DefinesModel extends Model
     
     public function getAllByApartmentType($type) {
         $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
-        $sql = "SELECT * FROM defines WHERE type = :type AND site_id = :site_id ORDER BY create_at DESC";
+        $sql = "SELECT * FROM defines WHERE type = :type AND site_id = :site_id ORDER BY define_name DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'type' => $type,

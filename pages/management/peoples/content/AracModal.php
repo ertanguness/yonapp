@@ -5,11 +5,17 @@ $site_id = $_SESSION['site_id'] ?? 0;
 
 use Model\BloklarModel;
 use App\Helper\Security;
+use App\Helper\Form;
+use App\Helper\Helper;
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 
 $Block = new BloklarModel();
 $blocks = $Block->SiteBloklari($site_id);
+$blockOptions = [];
+foreach ($blocks as $block) {
+    $blockOptions[$block->id] = $block->blok_adi;
+}
 
 ?>
 <div class="modal fade" id="aracEkleModal" tabindex="-1" data-bs-keyboard="false" role="dialog">
@@ -26,14 +32,13 @@ $blocks = $Block->SiteBloklari($site_id);
                         <label for="blokAdi" class="form-label fw-semibold">Blok Adı</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
-                            <select id="blokAdi" class="form-select select2 w-100 blokAdi" name="blok_id">
-                                <option value="">Blok Seçiniz</option>
-                                <?php foreach ($blocks as $block): ?>
-                                    <option value="<?= $block->id ?>">
-                                        <?= htmlspecialchars($block->blok_adi) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                            
+                            <?php echo Form::Select2(
+                                'blok_id', 
+                                $blockOptions,
+                                1, 
+                             ) ?>
+
                         </div>
                     </div>
 

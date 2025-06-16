@@ -10,7 +10,7 @@
     <title>Apartman / Site Yönetim Sistemi</title>
     <!--! END:  Apps Title-->
     <!--! BEGIN: Favicon-->
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/yonapp-logo-sm.svg" />
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo/favicon.svg" />
     <!--! END: Favicon-->
     <!--! BEGIN: Bootstrap CSS-->
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css" />
@@ -56,4 +56,7 @@
 
 
     <script src="./assets/js/jquery.3.7.1.min.js"></script>
+    <script src="assets/js/common-init.min.js"></script>
+    
+
 </head>

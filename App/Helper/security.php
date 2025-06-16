@@ -54,6 +54,41 @@ class Security
 
     //encrypt//encrypt
 //encrypt
+// public static function encrypt($data)
+// {
+//     if (empty($data)) {
+//         return ''; // veya uygun bir hata mesajı döndürebilirsiniz
+//     }
+
+//     $method = "AES-256-GCM";
+//     $key = hash('sha256', 'mysecretkey', true);
+//     $iv = openssl_random_pseudo_bytes(12); // GCM için 12 byte IV kullanılır
+//     $tag = null;
+//     $encrypted_data = openssl_encrypt($data, $method, $key, OPENSSL_RAW_DATA, $iv, $tag);
+//     //içinde + varsa onu değiştir
+//     $result = str_replace('+', '-', $encrypted_data);
+//     $result = str_replace('/', '_', $encrypted_data);
+//     $result = str_replace('=', '*', $encrypted_data);
+//     $result = base64_encode($iv . $tag . $encrypted_data);
+//     return rawurlencode($result); // URL kodlaması ekle
+// }
+
+// public static function decrypt($data)
+// {
+//     if (empty($data) || $data === '0') {
+//         return 0; // Eğer veri boşsa veya '0' ise 0 döndür
+//     }
+//     $method = "AES-256-GCM";
+//     $key = hash('sha256', 'mysecretkey', true);
+//     $data = rawurldecode($data); // URL kodlamasını çöz
+//     $data = base64_decode($data); // base64 kodlamasını çöz
+//     $iv = substr($data, 0, 12); // GCM için 12 byte IV kullanılır
+//     $tag = substr($data, 12, 16); // 16 byte authentication tag
+//     $encrypted_data = substr($data, 28); // IV (12 byte) + Tag (16 byte) sonrası şifreli veri
+//     return openssl_decrypt($encrypted_data, $method, $key, OPENSSL_RAW_DATA, $iv, $tag);
+// }
+
+
 public static function encrypt($data)
 {
     if (empty($data)) {
@@ -101,5 +136,4 @@ public static function decrypt($data)
 
     return openssl_decrypt($encrypted_data, $method, $key, OPENSSL_RAW_DATA, $iv, $tag);
 }
-
 }

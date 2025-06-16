@@ -1,4 +1,103 @@
-<div class="main-content">
+<div class="main-content mb-5">
+    <style>
+    .flex-fill {
+        transition: background-color 0.3s ease-in-out;
+        display: inline-block;
+        /* Satırı tamamen kaplamasını engeller */
+        align-items: center;
+        /* İçerikleri ortalar */
+        text-align: center;
+        /* Metni ortalar */
+        margin-bottom: 4px;
+    }
+
+    .flex-fill:hover {
+        background-color: #f8f9fa;
+        /* Hover durumunda arka plan rengi değişir */
+    }
+
+    .flex-fill i {
+        font-size: 24px;
+        /* İkon boyutunu artırır */
+    }
+    </style>
+    <div class="col-xxl-12">
+        <div class="card stretch stretch-full">
+            <div class="card-header">
+                <h5 class="card-title">Hızlı İşlemler</h5>
+            </div>
+            <div class="card-body">
+
+
+                <a href="index?p=management/sites/manage"
+                    class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                    <i class="bi bi-diagram-3"></i>
+                    <p class="fs-12 text-muted mb-0">Site Ekle</p>
+                </a>
+                <a href="index?p=management/blocks/manage"
+                    class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                    <i class="bi bi-building"></i>
+                    <p class="fs-12 text-muted mb-0">Blok Ekle</p>
+                </a>
+                <a href="index?p=management/apartment/manage"
+                    class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                    <i class="bi bi-textarea"></i>
+                    <p class="fs-12 text-muted mb-0">Daire Ekle</p>
+                </a>
+                <a href="index?p=management/peoples/manage"
+                    class="flex-fill py-3 px-4 me-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                    <i class="feather-user-plus"></i>
+                    <p class="fs-12 text-muted mb-0">Kişi Ekle</p>
+                </a>
+
+
+                <a href="#" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                <i class="bi bi-credit-card"></i>
+                    <p class="fs-12 text-muted mb-0">Gelir Ekle</p>
+                </a>
+                <a href="#" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                <i class="bi bi-credit-card-2-back"></i>
+                    <p class="fs-12 text-muted mb-0">Gider Ekle</p>
+                </a>
+                <a href="#"
+                    class="flex-fill py-3 px-4 me-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                    <i class="bi bi-wallet2"></i>
+                    <p class="fs-12 text-muted mb-0">Finansal İşlemler</p>
+                </a>
+
+
+                <a href="#" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                <i class="bi bi-folder-plus"></i>
+                    <p class="fs-12 text-muted mb-0">Aidat Tanımla</p>
+                </a>
+                <a href="#" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                <i class="bi bi-clipboard-plus"></i>
+                    <p class="fs-12 text-muted mb-0">Borçlandırma Yap</p>
+                </a>
+                <a href="#"
+                    class="flex-fill py-3 px-4 me-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                    <i class="bi bi-person-workspace"></i>
+                    <p class="fs-12 text-muted mb-0">Yönetici Aidat Ödeme</p>
+                </a>
+
+
+                <a href="#" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                <i class="bi bi-envelope"></i>
+                    <p class="fs-12 text-muted mb-0">Email Gönder</p>
+                </a>
+                <a href="#" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
+                <i class="bi bi-send-plus"></i>
+                    <p class="fs-12 text-muted mb-0">Sms Gönder</p>
+                </a>
+
+
+
+
+            </div>
+
+        </div>
+    </div>
+
     <div class="row row-cards">
         <!-- [Mini Card] start -->
         <div class="col-xxl-3 col-md-6">
@@ -98,8 +197,8 @@
         </div>
         <!-- [Mini Card] end -->
     </div>
-  <!-- Takvim -->
-  <div class="card stretch stretch-full">
+    <!-- Takvim -->
+    <div class="card stretch stretch-full">
         <div class="apps-container apps-calendar">
             <div class="nxl-content without-header nxl-full-content">
                 <!-- [ Main Content ] start -->
@@ -113,7 +212,8 @@
                             </a>
                         </div>
                         <div class="content-sidebar-header">
-                            <a href="javascript:void(0);" id="btn-new-schedule" class="btn btn-primary w-100" data-toggle="modal">
+                            <a href="javascript:void(0);" id="btn-new-schedule" class="btn btn-primary w-100"
+                                data-toggle="modal">
                                 <i class="feather-calendar me-2"></i>
                                 <span>Yeni Etkinlik</span>
                             </a>
@@ -123,36 +223,55 @@
                             <div id="lnb-calendars" class="lnb-calendars">
                                 <div class="lnb-calendars-item">
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="viewAllSchedules" value="all" checked="checked">
+                                        <input type="checkbox" class="custom-control-input" id="viewAllSchedules"
+                                            value="all" checked="checked">
                                         <label class="custom-control-label c-pointer" for="viewAllSchedules">
-                                            <span class="fs-13 fw-semibold lh-lg" style="margin-top: -2px">Tüm Etkinlikleri Göster</span>
+                                            <span class="fs-13 fw-semibold lh-lg" style="margin-top: -2px">Tüm
+                                                Etkinlikleri Göster</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div id="calendarList" class="lnb-calendars-d1">
                                     <div class="lnb-calendars-item">
-                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="1" checked=""><span style="border-color: #5485e4; background-color: #5485e4"></span><span>Ofis</span></label>
+                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="1"
+                                                checked=""><span
+                                                style="border-color: #5485e4; background-color: #5485e4"></span><span>Ofis</span></label>
                                     </div>
                                     <div class="lnb-calendars-item">
-                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="2" checked=""><span style="border-color: #25b865; background-color: #25b865"></span><span>Aile</span></label>
+                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="2"
+                                                checked=""><span
+                                                style="border-color: #25b865; background-color: #25b865"></span><span>Aile</span></label>
                                     </div>
                                     <div class="lnb-calendars-item">
-                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="3" checked=""><span style="border-color: rgb(209, 59, 76); background-color: rgb(209, 59, 76)"></span><span>Arkadaş</span></label>
+                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="3"
+                                                checked=""><span
+                                                style="border-color: rgb(209, 59, 76); background-color: rgb(209, 59, 76)"></span><span>Arkadaş</span></label>
                                     </div>
                                     <div class="lnb-calendars-item">
-                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="4" checked=""><span style="border-color: #17a2b8; background-color: #17a2b8"></span><span>Seyahat</span></label>
+                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="4"
+                                                checked=""><span
+                                                style="border-color: #17a2b8; background-color: #17a2b8"></span><span>Seyahat</span></label>
                                     </div>
                                     <div class="lnb-calendars-item">
-                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="5" checked=""><span style="border-color: #e49e3d; background-color: #e49e3d"></span><span>Özel</span></label>
+                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="5"
+                                                checked=""><span
+                                                style="border-color: #e49e3d; background-color: #e49e3d"></span><span>Özel</span></label>
                                     </div>
                                     <div class="lnb-calendars-item">
-                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="6" checked=""><span style="border-color: #5856d6; background-color: #5856d6"></span><span>Tatil</span></label>
+                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="6"
+                                                checked=""><span
+                                                style="border-color: #5856d6; background-color: #5856d6"></span><span>Tatil</span></label>
                                     </div>
                                     <div class="lnb-calendars-item">
-                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="7" checked=""><span style="border-color: #3dc7be; background-color: #3dc7be"></span><span>Şirket</span></label>
+                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="7"
+                                                checked=""><span
+                                                style="border-color: #3dc7be; background-color: #3dc7be"></span><span>Şirket</span></label>
                                     </div>
                                     <div class="lnb-calendars-item">
-                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="8" checked=""><span style="border-color: #475e77; background-color: #475e77"></span><span>Doğum Günleri</span></label>
+                                        <label><input type="checkbox" class="tui-full-calendar-checkbox-round" value="8"
+                                                checked=""><span
+                                                style="border-color: #475e77; background-color: #475e77"></span><span>Doğum
+                                                Günleri</span></label>
                                     </div>
                                 </div>
                             </div>
@@ -163,18 +282,23 @@
                     <div class="content-area" data-scrollbar-target="#psScrollbarInit">
                         <div class="content-area-header sticky-top">
                             <div class="page-header-left d-flex align-items-center gap-2">
-                               
+
                                 <div id="menu" class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex calendar-action-btn">
                                         <div class="dropdown me-1">
-                                            <button id="dropdownMenu-calendarType" class="dropdown-toggle calendar-dropdown-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-offset="0,17">
-                                                <i id="calendarTypeIcon" class="feather-grid calendar-icon fs-12 me-1"></i>
+                                            <button id="dropdownMenu-calendarType"
+                                                class="dropdown-toggle calendar-dropdown-btn" type="button"
+                                                data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                                                data-bs-offset="0,17">
+                                                <i id="calendarTypeIcon"
+                                                    class="feather-grid calendar-icon fs-12 me-1"></i>
                                                 <span id="calendarTypeName">Görünüm</span>
                                             </button>
                                         </div>
                                         <div class="menu-navi d-none d-sm-flex">
                                             <button type="button" class="move-today" data-action="move-today">
-                                                <i class="feather-clock calendar-icon me-1 fs-12" data-action="move-today"></i>
+                                                <i class="feather-clock calendar-icon me-1 fs-12"
+                                                    data-action="move-today"></i>
                                                 <span>Bugün</span>
                                             </button>
                                         </div>
@@ -185,10 +309,12 @@
                                 <div class="hstack gap-2">
                                     <div id="renderRange" class="render-range d-none d-sm-flex"></div>
                                     <div class="btn-group gap-1 menu-navi" role="group">
-                                        <button type="button" class="avatar-text avatar-md move-day" data-action="move-prev">
+                                        <button type="button" class="avatar-text avatar-md move-day"
+                                            data-action="move-prev">
                                             <i class="feather-chevron-left fs-12" data-action="move-prev"></i>
                                         </button>
-                                        <button type="button" class="avatar-text avatar-md move-day" data-action="move-next">
+                                        <button type="button" class="avatar-text avatar-md move-day"
+                                            data-action="move-next">
                                             <i class="feather-chevron-right fs-12" data-action="move-next"></i>
                                         </button>
                                     </div>
@@ -198,8 +324,7 @@
                         <div class="content-area-body p-0">
                             <div id="tui-calendar-init"></div>
                         </div>
-                        <!-- [ Footer ] start -->
-                        <?php include './partials/footer.php' ?>
+
                         <!-- [ Footer ] end -->
                     </div>
                     <!-- [ Content Area ] end -->
@@ -208,6 +333,7 @@
             </div>
         </div>
     </div>
+
     <!-- [Takvim] end -->
     <!-- [Aylık Gelir Gider Tablosu] -->
     <div class="col-xxl-12">
@@ -217,13 +343,16 @@
                 <div class="card-header-action">
                     <div class="card-header-btn">
                         <div data-bs-toggle="tooltip" title="Delete">
-                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-danger" data-bs-toggle="remove"> </a>
+                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-danger"
+                                data-bs-toggle="remove"> </a>
                         </div>
                         <div data-bs-toggle="tooltip" title="Refresh">
-                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning"
+                                data-bs-toggle="refresh"> </a>
                         </div>
                         <div data-bs-toggle="tooltip" title="Maximize/Minimize">
-                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success" data-bs-toggle="expand"> </a>
+                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success"
+                                data-bs-toggle="expand"> </a>
                         </div>
                     </div>
                 </div>
@@ -249,25 +378,28 @@
             </div>
         </div>
     </div>
-  
-    
+
+
 
     <!-- [Payment Records] end -->
     <!-- [Inquiry Channel] start -->
-    <div class="col-xxl-12">
+    <div class="col-xxl-12 mb-5">
         <div class="card stretch stretch-full">
             <div class="card-header">
                 <h5 class="card-title">Yıllık Aidat Ödeme Grafiği</h5>
                 <div class="card-header-action">
                     <div class="card-header-btn">
                         <div data-bs-toggle="tooltip" title="Delete">
-                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-danger" data-bs-toggle="remove"> </a>
+                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-danger"
+                                data-bs-toggle="remove"> </a>
                         </div>
                         <div data-bs-toggle="tooltip" title="Refresh">
-                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning"
+                                data-bs-toggle="refresh"> </a>
                         </div>
                         <div data-bs-toggle="tooltip" title="Maximize/Minimize">
-                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success" data-bs-toggle="expand"> </a>
+                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success"
+                                data-bs-toggle="expand"> </a>
                         </div>
                     </div>
                 </div>
@@ -277,6 +409,7 @@
             </div>
         </div>
     </div>
+    <hr>
     <!-- [Inquiry Channel] end -->
 </div>
 
