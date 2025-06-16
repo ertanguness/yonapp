@@ -32,6 +32,21 @@ class BorclandirmaDetayModel extends Model
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
+    
+    //******************************************************************** */
+
+    /**Borclandırma Detayını getirir
+    * @param int $borclandirma_id
+    * @return array
+    */
+    public function BorclandirmaDetay($borclandirma_id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE borclandirma_id = ? AND silinme_tarihi IS NULL");
+        $sql->execute([$borclandirma_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+
     /**
      * Borçlandırılmış Blokların isimlerini getirir
      * @param int $borclandirma_id
@@ -48,6 +63,39 @@ class BorclandirmaDetayModel extends Model
 
     }
 
+
+    
+     //******************************************************************************
+    /**
+     * Borçlandırılmış Daire Tiperini isimlerini getirir
+     * @return array
+     */
+    public function BorclandirilmisDaireTipleri($borclandirma_id)
+    {
+        $query = "SELECT 
+                    bd.daire_id,
+                    df.id,
+                    df.define_name
+                  FROM borclandirma_detayi bd 
+                  LEFT JOIN daireler d ON d.id = bd.daire_id
+                  LEFT JOIN defines df ON df.id = d.daire_tipi
+                  WHERE hedef_tipi = ?
+                  AND borclandirma_id = ?
+                  GROUP BY define_name";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([
+            'dairetipi', // hedef_tipi olarak 'apartment' kullanılıyor
+            $borclandirma_id
+        ]);
+        $daireler = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $daire_tipleri = [];
+
+        foreach($daireler as $daire){
+            $daire_tipleri[]= $daire->define_name;
+        };
+        return implode(", ", $daire_tipleri);
+    }
+    //******************************************************************************
 
     /**
      * Toplam Borcandirma Tutarını getirir
@@ -144,6 +192,6 @@ class BorclandirmaDetayModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ);
     }
 
-
+  
 
 }

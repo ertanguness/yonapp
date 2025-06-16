@@ -6,7 +6,8 @@ use Database\Db;
 use App\Helper\Security;
 use PDO;
 
-class Due extends Db
+
+class Aidat extends Db
 {
     protected $table = 'dues';
     public function __construct()
@@ -14,10 +15,10 @@ class Due extends Db
         parent::__construct();
     }
     
-    public function getDuesSelect($name = 'dues', $id = null)
+    public function AidatTuruSelect($name = 'dues', $id = null)
     {
-        $query = $this->db->prepare('SELECT * FROM dues');  // Tüm sütunları seç
-        $query->execute();
+        $query = $this->db->prepare('SELECT * FROM dues where site_id = ?');  // Tüm sütunları seç
+        $query->execute([$_SESSION['site_id']]);  // site_id'ye göre filtrele
         $results = $query->fetchAll(PDO::FETCH_OBJ);  // Tüm sonuçları al
 
         $select = '<select name="' . $name . '" class="form-select select2" id="' . $name . '" style="width:100%">';

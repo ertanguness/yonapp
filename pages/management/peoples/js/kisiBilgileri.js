@@ -60,32 +60,7 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
       },
       entryDate: { required: "Lütfen giriş tarihi giriniz" },
     },
-    highlight: function(element) {
-      // input-group varsa, tüm input-group'u işaretle
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        $group.addClass('is-invalid');
-      } else {
-        $(element).addClass('is-invalid');
-      }
-    },
-    unhighlight: function(element) {
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        $group.removeClass('is-invalid');
-      } else {
-        $(element).removeClass('is-invalid');
-      }
-      $(element).next('.error').remove();
-    },
-    errorPlacement: function(error, element) {
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        error.insertAfter($group);
-      } else {
-        error.insertAfter(element);
-      }
-    }
+    
   });
 
   // Özel kural: 11 karakter ise sadece rakam, daha kısa ise harf olabilir

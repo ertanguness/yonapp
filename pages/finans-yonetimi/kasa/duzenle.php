@@ -19,7 +19,7 @@
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="income-expense/case/list">
+                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="finans-yonetimi/kasa/list">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>

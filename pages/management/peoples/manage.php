@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', function (e) {
         if (e.target && e.target.id === 'ekle_araba') {
+            Pace.restart();
             fetch('pages/management/peoples/content/AracModal.php')
                 .then(response => response.text())
                 .then(html => {
@@ -160,8 +161,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
         }
-        Pace.restart();
+      
         if (e.target && e.target.id === 'ekle_acildurum') {
+            Pace.restart();
             fetch('pages/management/peoples/content/AcilDurumModal.php')
                 .then(response => response.text())
                 .then(html => {

@@ -9,20 +9,32 @@ use PDO;
 class KisilerModel extends Model
 {
     protected $table = 'kisiler';
+    protected $siteaktifkisiler = 'site_aktif_kisiler'; // Bu değişken kullanılmıyor, kaldırılabilir
+
+    protected $kisilerborcozet = 'view_kisi_borc_ozet'; // Bu değişken kullanılmıyor, kaldırılabilir
 
     public function __construct()
     {
         parent::__construct($this->table);
     }
 
-    // aidat tablosundaki verileri alır
-    public function getKisiler()
+
+    //**************************************************************************************************** */
+    /**Siteye ait aktif tüm kişileri getirir.
+     * @param int $site_id Sitenin ID'si.
+     * @return array Aktif Kişileri içeren bir dizi döner.
+     */
+    public function SiteAktifKisileri($site_id)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table");
-        $sql->execute();
+        $sql = $this->db->prepare("SELECT * FROM $this->siteaktifkisiler  
+                                          WHERE site_id = ? 
+                                          ");
+        $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
+
+    /**************************************************************************************************** */
     // Bloğun kişilerini getir
     public function BlokKisileri($block_id)
     {
@@ -30,7 +42,31 @@ class KisilerModel extends Model
         $sql->execute([$block_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+    //----------------------------------------------------------------------------------------------------\\
 
+
+
+    /**************************************************************************************************** */
+    /**Blokta oturan aktif kişileri getirir
+     * @param int $block_id Blok ID'si
+     * @return array Aktif kişileri içeren bir dizi döner.
+     * @throws \Exception
+     */
+
+    public function BlokAktifKisileri($block_id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table 
+                                          WHERE blok_id = ? 
+                                          AND cikis_tarihi IS NULL
+                                          AND silinme_tarihi IS NULL");
+        $sql->execute([$block_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+    //----------------------------------------------------------------------------------------------------\\
+
+
+
+    /**************************************************************************************************** */
     /**
      * Siteye ait blokları ve bu bloklara ait kişileri getirir.
      *
@@ -52,7 +88,11 @@ class KisilerModel extends Model
 
         return $kisiler;
     }
+    //----------------------------------------------------------------------------------------------------\\
 
+
+
+    /**************************************************************************************************** */
     /**
      * Belirli bir kişinin bilgilerini getirir.
      * @param int $id Kişinin ID'si.
@@ -65,6 +105,11 @@ class KisilerModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ);
     }
 
+    //----------------------------------------------------------------------------------------------------\\
+
+
+
+    /**************************************************************************************************** */
     /***Kişi ID'sinden Kişi Adını Getirir
      * @param int $id Kişinin ID'si.
      * @return string|null Kişinin adı veya bulunamazsa null döner.
@@ -76,7 +121,12 @@ class KisilerModel extends Model
         $result = $sql->fetch(PDO::FETCH_OBJ);
         return $result ? $result->adi_soyadi : null;
     }
+    //----------------------------------------------------------------------------------------------------\\
 
+
+
+
+    /**************************************************************************************************** */
     /**Daire id'si ve uyelik_tipi'nden şu anda aktif olan kiracıyı veya ev sahibini bul
      * @param int $daire_id Daire ID'si.
      * @param string $uyelik_tipi Kullanıcının tipi (ev sahibi veya kiracı).
@@ -87,6 +137,42 @@ class KisilerModel extends Model
         $sql->execute([$daire_id, $uyelik_tipi]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
+    //----------------------------------------------------------------------------------------------------\\
+
+
+
+
+    /**************************************************************************************************** */
+    /**Daire id'sinden, şu anda dairede oturan aktif kişiyi getirir
+     * @param int $daire_id Daire ID'si.
+     * @return object|null Dairede oturan kişinin bilgilerini içeren nesne veya bulunamazsa null döner.
+     */
+    public function AktifKisiByDaire($daire_id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table 
+                                            WHERE daire_id = ? 
+                                            AND (giris_tarihi IS NOT NULL AND giris_tarihi != '0000-00-00') 
+                                            AND cikis_tarihi IS NULL 
+                                            AND silinme_tarihi IS NULL 
+                                            ORDER BY daire_id");
+        $sql->execute([$daire_id]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
+    //----------------------------------------------------------------------------------------------------\\
+
+
+    /**************************************************************************************************** */
+    /**Siteye ait kişilerin toplam borç ve tahsilatlarını getirir
+     * @param int $site_id Sitenin ID'si.
+     * @return array Siteye ait kişilerin toplam borç ve tahsilatlarını içeren bir dizi döner.
+     */
+    public function SiteKisiBorcOzet($site_id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->kisilerborcozet WHERE site_id = ?");
+        $sql->execute([$site_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
 
     public function SiteKisileriJoin($site_id, $filter = null)
     {
@@ -123,7 +209,7 @@ class KisilerModel extends Model
                 break;
 
             default:
-            $stmt = $this->db->prepare("
+                $stmt = $this->db->prepare("
             SELECT 
                 kisiler.*,
                 GROUP_CONCAT(arac.plaka SEPARATOR '<br>') AS plaka_listesi
@@ -133,7 +219,6 @@ class KisilerModel extends Model
             WHERE bloklar.site_id = :site_id
             GROUP BY kisiler.id
         ");
-        
         }
 
         $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);

@@ -46,7 +46,7 @@ $borclar = $Borc->all($site_id);
     require_once 'pages/components/alert.php';
     ?>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -94,7 +94,13 @@ $borclar = $Borc->all($site_id);
                                                     }elseif($borc_tipi == 'block'){
                                                       $borclandirma_tipi = "Blok";
                                                       $borclandirma_detay =  $BorcDetay->BorclandirilmisBlokIsimleri($borc->id);
-                                                   }
+                                                   }elseif($borc_tipi == 'kisi'){
+                                                      $borclandirma_tipi = "Kişi";
+                                                      $borclandirma_detay =  'Kişilere göre borçlandırma yapıldı';
+                                                    }elseif($borc_tipi == 'dairetipi'){
+                                                        $borclandirma_tipi = "Daire Tipi";
+                                                        $borclandirma_detay =  $BorcDetay->BorclandirilmisDaireTipleri($borc->id);
+                                                    }
                                                    ?>
                                                    <a href="javascript:void(0)" class="hstack gap-3 text-decoration-none text-dark text-left">
                                                         <!-- <div class="avatar-image avatar-md bg-warning text-white">N</div> -->

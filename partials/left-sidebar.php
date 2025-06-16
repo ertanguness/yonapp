@@ -32,6 +32,8 @@ $Auths = new Auths();
                     // Aktif sayfa alınır
                     $active_page = $_GET['p'] ?? '';
 
+                   // echo '<script>console.log("Aktif Sayfa: ' . $active_page . '");</script>';
+
                     // Menü isimleri Model altındaki Menus.php sayfası ile tablodan getirilir
                     $top_menus = $menus->getMenus();
 

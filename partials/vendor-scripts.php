@@ -21,7 +21,9 @@ if (
     $page == 'missions/headers/manage' || $page == 'missions/headers/list' ||
     $page =="uye/list"  ||
     $page == 'dues/debit/detail' || $page == 'dues/payment/list' || $page == 'dues/debit/list' ||
-    $page == "management/peoples/list" || $page == "management/peoples/manage"
+    $page == "management/peoples/list" || $page == "management/peoples/manage" ||
+    $page == 'management/blocks/list' || $page == 'management/apartment/list' ||
+    $page == 'defines/apartment-type/list'
 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -131,6 +133,10 @@ if ($page == 'dues/payment/tahsilat_onay') {
 
 }
 
+if($page == 'dues/payment/list') {
+    echo '<script src="/pages/dues/payment/js/tahsilat-gir.js"></script>';
+}
+
 
 if ($page == 'home') {
     // //echo '<script src="./dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>';
@@ -138,8 +144,8 @@ if ($page == 'home') {
     // echo '<script src="./dist/libs/jsvectormap/dist/maps/world.js" defer></script>';
     // echo '<script src="./dist/libs/jsvectormap/dist/maps/world-merc.js" defer></script>';
     // echo '<script src="./src/charts.js" defer></script>';
-   echo '<script src="assets/vendors/js/apexcharts.min.js"></script>';
-   echo ' <script src="assets/js/dashboard-init.min.js"></script>';
+    echo '<script src="assets/vendors/js/apexcharts.min.js"></script>';
+    echo ' <script src="assets/js/dashboard-init.min.js"></script>';
 }
 
 

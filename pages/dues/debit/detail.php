@@ -14,7 +14,7 @@ $BorcDetay = new BorclandirmaDetayModel();
 $id = Security::decrypt($_GET['id']);
 
 
-$borc_detay = $BorcDetay->gruplanmisBorcListesi($id);
+$borc_detay = $BorcDetay->BorclandirmaDetay($id);
 
 
 // echo "<pre>";
@@ -74,14 +74,14 @@ $borc_detay = $BorcDetay->gruplanmisBorcListesi($id);
                                         <?php
                                         $i = 1;
                                         foreach ($borc_detay as $detay){
-                                            $enc_id = Security::encrypt($detay->borc_id);
+                                            $enc_id = Security::encrypt($detay->id);
                                             
                                         ?>
                                         <tr class="text-center">
                                             <td><?php echo $i++; ?></td>
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
-                                                    <?php echo $detay->kisi_adi ?>
+                                                    <?php echo $Kisiler->KisiAdi($detay->kisi_id) ?>
                                                 </div>
                                             </td>
                                             <td>
@@ -91,7 +91,7 @@ $borc_detay = $BorcDetay->gruplanmisBorcListesi($id);
                                             </td>
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
-                                                    <?php echo Helper::formattedMoney($detay->toplam_borc); ?> 
+                                                    <?php echo Helper::formattedMoney($detay->tutar); ?> 
                                                 </div>
                                             </td>
                                             <td><?php echo Date::dmY($detay->baslangic_tarihi); ?></td>

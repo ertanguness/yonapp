@@ -55,7 +55,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
     $text = "Seçili siteye ait blokları görüntüleyip ekleme, düzenleme, silme ve yeni Blok tanımlama işlemlerinizi  yapabilirsiniz.";
     require_once 'pages/components/alert.php'
     ?>
-    <div class="row">
+    <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -65,13 +65,13 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
 
                                 <table class="table table-hover datatables" id="blocksList">
                                     <thead>
-                                        <tr class="text-center align-middle">
-                                            <th>Sıra</th>
+                                        <tr >
+                                            <th style="width:7%">#</th>
                                             <th>Site Adı</th>
                                             <th>Blok Adı</th>
                                             <th style="width: 100px;">B. Bölüm Sayısı</th>
                                             <th style="min-width: 250px;">Açıklama</th>
-                                            <th>İşlem</th>
+                                            <th style="width:7%">İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -82,7 +82,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                                             $site = $Site->SiteAdi($blok->site_id);
 
                                         ?>
-                                            <tr class="text-center">
+                                            <tr class="">
                                                 <td><?php echo $i; ?></td>
                                                 <td>
                                                 <a data-page="sites/manage&id=<?php echo $blok->site_id; ?>" href="#">

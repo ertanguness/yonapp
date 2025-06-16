@@ -1,11 +1,10 @@
-
-<?php 
+<?php
 
 use Model\DueModel;
 use App\Helper\Security;
 use App\Helper\Helper;
 
-$Dues = new DueModel();    
+$Dues = new DueModel();
 
 $dues = $Dues->getDues();
 
@@ -38,7 +37,7 @@ $dues = $Dues->getDues();
     require_once 'pages/components/alert.php';
     ?>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -59,21 +58,21 @@ $dues = $Dues->getDues();
                                         </tr>
                                     </thead>
                                     <tbody>
-                                           <?php foreach ($dues as $key => $due) :
-                                                $enc_id = Security::encrypt($due->id);
-                                                //$page = Security::encrypt("dues/dues-defines/manage");
-                                            ?>
-                                                <tr>
-                                                    <td class="text-center"><?php echo $key + 1; ?></td>
-                                                    <td><?php echo $due->block_id == 0 ? 'TÜM SİTE' : '' ; ?></td>
-                                                    <td><?php echo $due->due_name; ?></td>
-                                                    <td><?php echo $due->amount; ?> ₺</td>
-                                                    <td><?php echo date('d.m.Y', strtotime($due->start_date)); ?></td>
-                                                    <td><?php echo $due->period; ?> </td>
-                                                    <td>
-                                                        <?php echo Helper::getState($due->state)?>
-                                                    </td>
-                                                    <td>
+                                        <?php foreach ($dues as $key => $due) :
+                                            $enc_id = Security::encrypt($due->id);
+                                            //$page = Security::encrypt("dues/dues-defines/manage");
+                                        ?>
+                                            <tr>
+                                                <td class="text-center"><?php echo $key + 1; ?></td>
+                                                <td><?php echo $due->block_id == 0 ? 'TÜM SİTE' : ''; ?></td>
+                                                <td><?php echo $due->due_name; ?></td>
+                                                <td><?php echo $due->amount; ?> ₺</td>
+                                                <td><?php echo date('d.m.Y', strtotime($due->start_date)); ?></td>
+                                                <td><?php echo $due->period; ?> </td>
+                                                <td>
+                                                    <?php echo Helper::getState($due->state) ?>
+                                                </td>
+                                                <td>
                                                     <div class="hstack gap-2 ">
                                                         <a href="index?p=dues/dues-defines/detail&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-eye"></i>
@@ -86,9 +85,9 @@ $dues = $Dues->getDues();
                                                         </a>
                                                     </div>
                                                 </td>
-                                                    
-                                                </tr>
-                                            <?php endforeach; ?>
+
+                                            </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>

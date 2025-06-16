@@ -32,6 +32,7 @@ foreach ($blocks as $block) {
                         <label for="blokAdi" class="form-label fw-semibold">Blok Adı</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
+                            
                             <?php echo Form::Select2(
                                 'blok_id', 
                                 $blockOptions,

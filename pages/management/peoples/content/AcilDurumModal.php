@@ -37,7 +37,7 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
                            
                             <?php echo Form::Select2(
-                                'blok_ids', 
+                                'blok_id', 
                                 $blockOptions,
                                 2, 
                              ) ?>

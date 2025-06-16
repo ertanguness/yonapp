@@ -294,3 +294,43 @@ if ($_POST['action'] == 'onayli_tahsilat_sil') {
         'kalan_tutar' => Helper::formattedMoney($kalan_tutar) ?? 0
     ]);
 }
+
+///Tahsilat Kaydet
+if ($_POST['action'] == 'tahsilat-kaydet') {
+     $id = Security::decrypt($_POST['tahsilat_id']);
+     $tahsilat_tipi = $_POST['tahsilat_turu']; 
+     $tutar = Helper::formattedMoneyToNumber($_POST['tutar']);
+    //  $tahsilat_turu = $_POST['tahsilat_turu']; // Tahsilat tipi varsayılan olarak Nakit
+
+    try {
+        // $Tahsilat = $Tahsilat->find($id);
+        // if (!$due) {
+        //     Error::handlePDOException($e);
+        // }
+
+        $data = [
+            'id' => 0,
+            'kisi_id' =>11, // Kişi ID'si
+            'tahsilat_tipi' => $tahsilat_tipi, // Tahsilat tipi
+            'kasa_id' => Security::decrypt($_POST['kasa_id']), // Kasa ID'si
+            'tutar' => $tutar,
+            'islem_tarihi' =>Date::Ymd($_POST['islem_tarihi']), // İşlem tarihi
+            'aciklama' => $_POST['tahsilat_aciklama'] ?? '', // Açıklama
+        ];
+
+        // // Tahsilat kaydını oluştur
+         $Tahsilat->saveWithAttr($data);
+
+         $status = 'success';
+         $message = 'Tahsilat kaydı başarıyla oluşturuldu.';
+    } catch (PDOException $ex) {
+        $status = 'error';
+        $message = Error::handlePDOException($ex);
+    }
+
+  
+    echo json_encode([
+        'status' => $status,
+        'message' => $message,
+    ]);
+}

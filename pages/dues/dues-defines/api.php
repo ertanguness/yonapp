@@ -23,6 +23,7 @@ if($_POST["action"] == "save_dues"){
         "amount" => Helper::formattedMoneyToNumber($_POST["amount"]),
         "period" => $_POST["period"],
         "auto_renew" => isset($_POST["auto_renew"]) ? 1 : 0,
+        "day_based" => isset($_POST["day_based"]) ? 1 : 0,
         "penalty_rate" => $_POST["penalty_rate"],
         "state" => $_POST["state"],
         "description" => $_POST["description"],
@@ -33,7 +34,7 @@ if($_POST["action"] == "save_dues"){
 
     $res = [
         "status" => "success",
-        "message" => "Başarılı" 
+        "message" => "<strong>".$_POST["due_name"] . "</strong><br><br> başarıyla kaydedildi.", 
     ];
     echo json_encode($res);
 }

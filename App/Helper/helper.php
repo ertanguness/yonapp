@@ -72,20 +72,6 @@ class Helper
         'person' => 'Kişi Borçlandırma',
         'dairetipi' => 'Daire Tipine Göre',
     ];
-    // 1  => "Anne",
-    // 2  => "Baba",
-    // 3  => "Kardeş",
-    // 4  => "Eş",
-    // 5  => "Çocuk",
-    // 6  => "Dede",
-    // 7  => "Babaanne",
-    // 8  => "Anneanne",
-    // 9  => "Amca",
-    // 10 => "Dayı",
-    // 11 => "Teyze",
-    // 12 => "Hala",
-    // 13 => "Kuzen",
-    // 14 => "Diğer"
 
     const  RELATIONSHIP = [
         '1' => 'Anne',
@@ -131,6 +117,8 @@ class Helper
     // 109.852,25 şeklinde gelen değeri 109852.25 olarak döndürür
     public static function formattedMoneyToNumber($value)
     {
+        //içinde ₺ olabilir, onu kaldırır
+        $value = str_replace('₺', '', $value);
         return str_replace(['.', ','], ['', '.'], $value);
     }
 
@@ -487,5 +475,37 @@ class Helper
         }
 
         return null;
+    }
+
+
+    /**
+     * Gelen değerlerden gün bazında hesaplama yapar
+     * @param string $start_date Başlangıç tarihi
+     * @param string $end_date Bitiş tarihi
+     * @param string $param_date Parametre tarihi
+     * @param float $amount Tutar
+     */
+
+    public static function calculateDayBased($start_date, $end_date, $param_date, $amount)
+    {
+        $start = strtotime($start_date);
+        $end = strtotime($end_date);
+        $param = strtotime($param_date);
+
+        if ($param < $start || $param > $end) {
+            return $amount; // Parametre tarihi başlangıç ve bitiş tarihleri arasında değilse tutar döner
+        }
+
+        // Gün farkını hesapla
+        $days = ($end - $start) / (60 * 60 * 24);
+        if ($days <= 0) {
+            return 0; // Geçersiz gün farkı
+        }
+
+        // Gün bazında tutarı hesapla
+        $daily_amount = $amount / $days;
+        $param_days = ($param - $start) / (60 * 60 * 24);
+
+        return round($daily_amount * $param_days, 2); // İstenen tarihe göre tutarı döner
     }
 }

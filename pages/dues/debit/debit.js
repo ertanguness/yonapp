@@ -32,6 +32,7 @@ $(document).on("click", "#save_debit", function () {
     return;
   }
 
+  Pace.restart(); //Pace.js yükleme çubuğunu başlat
   fetch(url, {
     method: "POST",
     body: formData,
@@ -174,6 +175,43 @@ $(document).ready(function () {
         updateAlertMessage(
           "Kişiler listesinden seçtiğiniz kişilere borclandırma yapılacaktır."
         );
+
+
+        formData = new FormData();
+        //sitenin aktif kişilerini getir
+        formData.append("action", "get_people_by_site");
+
+        fetch(url, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status == "success") {
+              $("#hedef_kisi").empty();
+              $("#hedef_kisi").append(
+                $("<option disabled>Kişi Seçiniz</option>")
+              );
+              $.each(data.data, function (index, person) {
+                $("#hedef_kisi").append(
+                  $("<option></option>")
+                    .val(person.id)
+                    .text(person.adi_soyadi)
+                    .attr("data-block", person.block_id)
+                );
+              });
+              if ($.fn.select2 && $("#hedef_kisi").hasClass("select2-hidden-accessible")) {
+                $("#hedef_kisi").select2("destroy");
+            }
+            
+            $("#hedef_kisi").select2({
+                   minimumResultsForSearch: 0
+            });
+            }
+          });
+
+
+
         break;
 
       case "all":
@@ -191,7 +229,7 @@ $(document).ready(function () {
           hideBlokSec: false,
         });
         updateAlertMessage(
-          "Tüm Sakinler seçildiğinde, şu anda sitede oturan ev sahibi ve kiracılara borclandırma yapılacaktır."
+          "Tüm Sakinler seçildiğinde, şu anda sitede oturan <strong>aktif</strong> ev sahibi ve kiracılara borclandırma yapılacaktır."
         );
         break;
 

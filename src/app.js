@@ -191,6 +191,10 @@ function formatNumber(num) {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
 }
 
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 $(document).on("click", ".route-link", function () {
   var page = $(this).data("page");
   var link = "index?p=" + page;
