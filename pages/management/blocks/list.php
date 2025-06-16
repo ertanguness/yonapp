@@ -66,7 +66,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                                 <table class="table table-hover datatables" id="blocksList">
                                     <thead>
                                         <tr class="text-center align-middle">
-                                            <th>Sıra</th>
+                                            <th>#</th>
                                             <th>Site Adı</th>
                                             <th>Blok Adı</th>
                                             <th style="width: 100px;">B. Bölüm Sayısı</th>
@@ -79,7 +79,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                                         $i = 1;
                                         foreach ($Bloklar as $blok):
                                             $enc_id = Security::encrypt($blok->id);
-                                            $site = $Site->SiteAdi($blok->site_id);
+                                            $site = $Site->SiteBilgileri($blok->site_id);
 
                                         ?>
                                             <tr class="text-center">

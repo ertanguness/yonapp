@@ -7,6 +7,7 @@ $Sites = new SitelerModel();
 $cities = new Cities();
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+
 $site = $Sites->find($id  ?? null);
 
 ?>
@@ -68,7 +69,7 @@ $site = $Sites->find($id  ?? null);
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body">
                                     <div class="row mb-4 align-items-center">
-                                    <input type="hidden" name="sites_id" id="sites_id" value="<?php echo $id ; ?>">
+                                    <input type="hidden" name="sites_id" id="sites_id" value="<?php echo $_GET['id'] ?? 0; ?>">
 
                                         <div class="card-header p-0">
                                             <!-- Nav tabs -->

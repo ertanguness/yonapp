@@ -10,7 +10,7 @@ $Blocks = new BlockModel();
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 $blocks = $Blocks->find($id  ?? null);
 
-$site = $Siteler->SiteAdi($_SESSION['site_id'] ?? null);
+$site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
 ?>
 
 <div class="page-header">

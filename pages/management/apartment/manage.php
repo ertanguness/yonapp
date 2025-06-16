@@ -1,5 +1,9 @@
+<?php
+use App\Helper\Security;
 
+$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 
+?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -58,7 +62,7 @@
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
-                                    <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $id ; ?>">
+                                    <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $_GET['id'] ?? 0; ?>">
 
                                         <?php
                                             require_once 'pages/management/apartment/content/ApartmentInformation.php';

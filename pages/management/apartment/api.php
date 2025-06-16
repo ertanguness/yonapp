@@ -16,15 +16,18 @@ if ($_POST["action"] == "save_apartment") {
     $daire_kodu = $_POST["daire_kodu"] ?? null;
 
 
-    if ($Apartment->DaireVarmi($site_id, $block_id, $daire_no)) {
-        $existing_apartment = $daire_no;
-    }
-    if (!empty($existing_apartment)) {
-        echo json_encode([
-            "status" => "error",
-            "message" => $existing_apartment ." numaralı daire ilgili blokta zaten kayıtlı: "  
-        ]);
-        exit;
+    // Sadece yeni kayıt (id 0 veya boş) ise daire var mı kontrolü yap
+    if (empty($id) || $id == 0) {
+        if ($Apartment->DaireVarmi($site_id, $block_id, $daire_no)) {
+            $existing_apartment = $daire_no;
+        }
+        if (!empty($existing_apartment)) {
+            echo json_encode([
+                "status" => "error",
+                "message" => $existing_apartment ." numaralı daire ilgili blokta zaten kayıtlı: "  
+            ]);
+            exit;
+        }
     }
     if ($Apartment->DaireKoduVarMi($site_id, $block_id, $daire_kodu)) {
         $mevcut_kod = $daire_kodu;

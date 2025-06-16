@@ -10,29 +10,43 @@ $(document).on("click", "#save_sites", function () {
 
   var validator = $("#sitesForm").validate({
     rules: {
-      sites_name: {
-        required: true,
-      },
-      il: {
-        required: true,
-      },
-      
-      adres: {
-        required: true,
-      },
+      sites_name: { required: true,},
+      il: { required: true,},
+      ilce: { required: true, },
+      adres: { required: true, },
     },
     messages: {
-      sites_name: {
-        required: "Lütfen site adını giriniz",
-      },
-      il: {
-        required: "Lütfen il seçiniz",
-      },
-     
-      adres: {
-        required: "Lütfen adres giriniz",
-      },
+      sites_name: { required: "Lütfen site adını giriniz", },
+      il: { required: "Lütfen il seçiniz",},
+      ilce: { required: "Lütfen ilçe seçiniz", },
+      adres: {required: "Lütfen adres giriniz", },
     },
+    highlight: function(element) {
+      // input-group varsa, tüm input-group'u işaretle
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        $group.addClass('is-invalid');
+      } else {
+        $(element).addClass('is-invalid');
+      }
+    },
+    unhighlight: function(element) {
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        $group.removeClass('is-invalid');
+      } else {
+        $(element).removeClass('is-invalid');
+      }
+      $(element).next('.error').remove();
+    },
+    errorPlacement: function(error, element) {
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        error.insertAfter($group);
+      } else {
+        error.insertAfter(element);
+      }
+    }
   });
   if (!validator.form()) {
     return;
@@ -82,6 +96,8 @@ $(document).on("click", ".delete-Siteler", function () {
           .then((response) => response.json())
           .then((data) => {
             if (data.status == "success") {
+            console.log("Çözümlenmiş ID:", data.decrypted_id);
+
               let table = $("#SitelerList").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(

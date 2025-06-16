@@ -53,7 +53,7 @@ $blocks = $Block->SiteBloklari($site_id);
                         <label for="kisiSec" class="form-label fw-semibold">Kişi Seç</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <select id="kisiSec" class="form-select select2 w-100 kisiSec" name="kisiSec">
+                            <select id="kisi_id" class="form-select select2 w-100 kisiSec" name="kisi_id">
                                 <option value="">Kişi Seçiniz</option>
                             </select>
                         </div>

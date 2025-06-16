@@ -29,7 +29,7 @@ protected $table = "siteler";
 
   
 
-    public function SiteAdi($id)
+    public function SiteBilgileri($id)
     {
         $query = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
         $query->execute([$id]);

@@ -22,7 +22,7 @@ class BloklarModel extends Model
     }
     public function BlokVarmi($site_id, $block_name)
     {
-        $query = $this->db->prepare("SELECT COUNT(*) FROM blocks WHERE site_id = ? AND block_name = ?");
+        $query = $this->db->prepare("SELECT COUNT(*) FROM $this->table  WHERE site_id = ? AND blok_adi = ?");
         $query->execute([$site_id, $block_name]);
         return $query->fetchColumn() > 0;
     }

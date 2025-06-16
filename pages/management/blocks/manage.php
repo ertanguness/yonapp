@@ -1,15 +1,16 @@
 <?php
-use Model\BlockModel;
+use Model\BloklarModel;
 use App\Helper\Security;
 use Model\SitelerModel;
 
 $Siteler = new SitelerModel();
-$Blocks = new BlockModel();
+$Blocks = new BloklarModel();
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
-$blocks = $Blocks->find($id  ?? null);
+$blok = $Blocks->find($id  ?? null);
 
-$site = $Siteler->SiteAdi($_SESSION['site_id'] ?? null);
+$site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
+
 ?>
 
 <div class="page-header">
@@ -70,9 +71,14 @@ $site = $Siteler->SiteAdi($_SESSION['site_id'] ?? null);
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
-                                    <input type="hidden" name="blok_id" id="blok_id" value="<?php echo $id ; ?>">
+                                    <input type="hidden" name="blok_id" id="blok_id" value="<?php echo $_GET['id'] ?? 0; ?>">
                                         <?php
-                                            require_once 'pages/management/blocks/content/BlocksNumberPage.php';
+                                            if (!empty($id) && $id != 0) {
+                                                require_once 'pages/management/blocks/content/BlokDuzenle.php';
+                                            } else {
+                                                require_once 'pages/management/blocks/content/BlocksNumberPage.php';
+                                            }
+
                                         ?>
                                     </div>
                                 </div>

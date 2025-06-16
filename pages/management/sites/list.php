@@ -66,7 +66,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                                 <table class="table table-hover datatables" id="SitelerList">
                                     <thead>
                                         <tr class="text-center">
-                                            <th>Sıra</th>
+                                            <th>#</th>
                                             <th>Site Adı</th>
                                             <th>Blok Sayısı</th>
                                             <th>Bağımsız Bölüm Sayısı</th>
@@ -96,10 +96,10 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                                                 <td><?php echo $Siteler->tam_adres; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="index?p=management/Siteler/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="index?p=management/Siteler/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);" data-name="<?php echo $Siteler->site_adi?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-Siteler" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $Siteler->site_adi; ?>">

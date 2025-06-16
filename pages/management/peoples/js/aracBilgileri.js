@@ -35,6 +35,32 @@ $(document).on("click", "#AracEkle", function () {
         required: "Lütfen araç plakası giriniz",
         plakaKontrol: "Geçerli bir plaka giriniz (örn: 34 ABC 123 veya DE 1234 XYZ)"
       }
+    },
+    highlight: function(element) {
+      // input-group varsa, tüm input-group'u işaretle
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        $group.addClass('is-invalid');
+      } else {
+        $(element).addClass('is-invalid');
+      }
+    },
+    unhighlight: function(element) {
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        $group.removeClass('is-invalid');
+      } else {
+        $(element).removeClass('is-invalid');
+      }
+      $(element).next('.error').remove();
+    },
+    errorPlacement: function(error, element) {
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        error.insertAfter($group);
+      } else {
+        error.insertAfter(element);
+      }
     }
   });
   

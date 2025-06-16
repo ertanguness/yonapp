@@ -89,4 +89,17 @@ class DairelerModel extends Model
         $sql->execute([$daire_id]);
         return $sql->fetch(PDO::FETCH_OBJ)->daire_kodu ?? '';
     }
+
+    /**
+     * site_id ve id alanlarına göre daire bilgilerini getirir
+     * @param int $site_id
+     * @param int $id
+     * @return object|null
+     */
+    public function DaireBilgisi($site_id, $id)
+    {
+        $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE site_id = ? AND id = ?");
+        $query->execute([$site_id, $id]);
+        return $query->fetch(PDO::FETCH_OBJ) ?: null;
+    }
 }
