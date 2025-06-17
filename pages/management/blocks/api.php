@@ -11,15 +11,18 @@ $Blocks = new BloklarModel();
 if ($_POST["action"] == "save_blocks") {
     $id = Security::decrypt($_POST["id"]);
     $site_id = $_POST["site_id"];
-    $blocksNumber = $_POST["blocksNumber"];
+   // $blocksNumber = $_POST["blocksNumber"];
     $block_names = $_POST["block_names"] ?? [];
     $apartment_counts = $_POST["apartment_counts"] ?? [];
 
     $existing_blocks = [];
 
-    foreach ($block_names as $key => $block_name) {
-        if ($Blocks->BlokVarmi($site_id, $block_name)) {
-            $existing_blocks[] = $block_name;
+    // Eğer $id 0 veya boş değilse, bu kısmı atla
+    if (empty($id) || $id == 0) {
+        foreach ($block_names as $key => $block_name) {
+            if ($Blocks->BlokVarmi($site_id, $block_name)) {
+                $existing_blocks[] = $block_name;
+            }
         }
     }
 
@@ -33,6 +36,7 @@ if ($_POST["action"] == "save_blocks") {
 
     foreach ($block_names as $key => $block_name) {
         $Blocks->saveWithAttr([
+            "id" => $id,
             "site_id" => $site_id,
             "blok_adi" => $block_name,
             "daire_sayisi" => $apartment_counts[$key] ?? 0,

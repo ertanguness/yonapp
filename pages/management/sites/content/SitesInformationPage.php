@@ -6,7 +6,7 @@
             <div class="col-lg-4">
                 <div class="input-group">
                     <div class="input-group-text"><i class="feather-home"></i></div>
-                    <input type="text" class="form-control" id="sites_name" name="sites_name" placeholder="Site Adı yazınız" required value="<?php echo $company->firm_name ?? ''; ?>">
+                    <input type="text" class="form-control" id="sites_name" name="sites_name" placeholder="Site Adı yazınız" value="<?php echo $site->site_adi ?? ''; ?>">
                 </div>
             </div>
 
@@ -30,7 +30,7 @@
             <div class="col-lg-4">
                 <div class="input-group">
                     <div class="input-group-text"><i class="feather-phone"></i></div>
-                    <input type="text" class="form-control" id="phone" name="phone" placeholder="0xxx xxx xx xx" value="<?php echo $company->phone ?? ''; ?>"
+                    <input type="text" class="form-control" id="phone" name="phone" placeholder="0xxx xxx xx xx" value="<?php echo $site->telefon ?? ''; ?>"
                         pattern="0[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}"
                         maxlength="14"
                         oninput="this.value = this.value
@@ -49,7 +49,7 @@
             <div class="col-lg-4">
                 <div class="input-group flex-nowrap w-100">
                     <div class="input-group-text"><i class="feather-map-pin"></i></div>
-                    <?php echo $cities->citySelect("il"); ?>
+                    <?php echo $cities->citySelect("il", $site->il ?? null); ?>
                 </div>
             </div>
 
@@ -76,7 +76,7 @@
             <div class="col-lg-10">
                 <div class="input-group">
                     <div class="input-group-text"><i class="feather-map"></i></div>
-                    <textarea class="form-control" id="adres" name="adres" cols="30" rows="3" placeholder="Site Adresini yazınız" required><?php echo $company->adres ?? ''; ?></textarea>
+                    <textarea class="form-control" id="adres" name="adres" cols="30" rows="3" placeholder="Site Adresini yazınız" required><?php echo $site->tam_adres ?? ''; ?></textarea>
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
             <div class="col-lg-10">
                 <div class="input-group">
                     <div class="input-group-text"><i class="feather-type"></i></div>
-                    <textarea class="form-control" id="description" name="description" cols="30" rows="5" placeholder="Site ile ilgili açıklama yazabilirsiniz"><?php echo $company->description ?? ''; ?></textarea>
+                    <textarea class="form-control" id="description" name="description" cols="30" rows="5" placeholder="Site ile ilgili açıklama yazabilirsiniz"><?php echo $site->aciklama ?? ''; ?></textarea>
                 </div>
             </div>
         </div>
@@ -206,8 +206,8 @@
             document.getElementById('selectedLogoPreview').style.backgroundPosition = 'center';
         });
     </script>
-    
-    
+
+
     <script>
         $(document).ready(function() {
             $('#il').change(function() {
@@ -228,5 +228,26 @@
                     $('#ilce').html('<option value="">İlçe Seçiniz</option>');
                 }
             });
+        });
+    </script>
+    <!-- il ilçe düzenlemede seçili gelip diğer il ve ilçe seçimi için aktif olması  -->
+    <script>
+        $(document).ready(function() {
+            var selectedIl = '<?= $site->il ?? '' ?>';
+            var selectedIlce = '<?= $site->ilce ?? '' ?>';
+
+            if (selectedIl) {
+                $.ajax({
+                    type: 'POST',
+                    url: 'api/il-ilce.php',
+                    data: {
+                        city_id: selectedIl,
+                        selected_ilce: selectedIlce
+                    },
+                    success: function(html) {
+                        $('#ilce').html(html);
+                    }
+                });
+            }
         });
     </script>

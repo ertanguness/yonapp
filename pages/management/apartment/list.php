@@ -105,7 +105,7 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
 
                                                 <td>
                                                     <div class="hstack gap-1">
-                                                        <a href="index?p=management/apartments/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                        <a href="index?p=management/apartment/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=management/apartment/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">

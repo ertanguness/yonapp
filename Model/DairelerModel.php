@@ -90,11 +90,22 @@ class DairelerModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ)->daire_kodu ?? '';
     }
 
+    /**
+     * site_id ve id alanlarına göre daire bilgilerini getirir
+     * @param int $site_id
+     * @param int $id
+     * @return object|null
+     */
+    public function DaireBilgisi($site_id, $id)
+    {
+        $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE site_id = ? AND id = ?");
+        $query->execute([$site_id, $id]);
+        return $query->fetch(PDO::FETCH_OBJ) ?: null;
 
     /**Daire tipine göre daireleri getirir
      * @param int $daire_tipi_id
      * @return array
-     */
+    */}
     public function DaireTipineGoreDaireler($daire_tipi_id)
     {
         $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE daire_tipi = ? ORDER BY blok_id ASC, daire_no ASC");

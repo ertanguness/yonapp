@@ -24,7 +24,7 @@ if (isset($_POST["action"]) && $_POST["action"] == "AracEkle") {
 
     $data = [
         "id"               => $id,
-        "kisi_id"          => $_POST["kisiSec"],
+        "kisi_id"          => $_POST["kisi_id"],
         "plaka"            => $_POST["modalAracPlaka"],
         "marka_model"      => $_POST["modalAracMarka"]
         

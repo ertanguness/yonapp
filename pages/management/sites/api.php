@@ -10,8 +10,7 @@ $Siteler = new SitelerModel();
 
 if ($_POST["action"] == "save_sites") {
     $id = Security::decrypt($_POST["id"]);
-
-    $data = [
+        $data = [
         "id" => $id,
         "user_id" => $_SESSION["user"]->id,
         "site_adi" => $_POST["sites_name"],
@@ -28,7 +27,10 @@ if ($_POST["action"] == "save_sites") {
 
     $res = [
         "status" => "success",
-        "message" => "Başarılı"
+        "message" => "Başarılı",
+        "decrypted_id" => $id // çözümlenmiş ID’yi cevaba ekle
+        
+
     ];
     echo json_encode($res);
 }

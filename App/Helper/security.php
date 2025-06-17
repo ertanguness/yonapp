@@ -136,7 +136,4 @@ public static function decrypt($data)
 
     return openssl_decrypt($encrypted_data, $method, $key, OPENSSL_RAW_DATA, $iv, $tag);
 }
-
-
-
 }

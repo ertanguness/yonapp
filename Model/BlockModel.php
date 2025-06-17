@@ -32,4 +32,10 @@ class BlockModel extends Model
         $query->execute([$site_id, $block_name]);
         return $query->fetchColumn() > 0;
     }
+    public function blokSayisi($site_id)
+    {
+        $sql = $this->db->prepare("SELECT COUNT(*) FROM {$this->table} WHERE site_id = ?");
+        $sql->execute([$site_id]);
+        return (int)$sql->fetchColumn();
+    }
 }

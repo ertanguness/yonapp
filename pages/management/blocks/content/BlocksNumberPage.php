@@ -7,7 +7,7 @@
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-home"></i></div>
                 <input type="text" class="form-control" name="siteId" id="siteId" placeholder="Site ismi çekilecek" readonly value="<?php echo $site->site_adi ?? ''; ?>">
-            <input type="hidden" name="site_id" id="site_id" value="<?php echo $site->id ?? ''; ?>">
+                <input type="hidden" name="site_id" id="site_id" value="<?php echo $site->id ?? ''; ?>">
             </div>
         </div>
 
@@ -17,7 +17,7 @@
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-trello"></i></div>
-                <input type="number" class="form-control" name="blocksNumber" id="blocksNumber" placeholder="Blok Sayısı Giriniz" min="1" required step="1" required onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="<?php echo $blocks->apartment_number ?? ''; ?>">
+                <input type="number" class="form-control" name="blocksNumber" id="blocksNumber" placeholder="Blok Sayısı Giriniz" min="1" required step="1" required onkeypress="return event.charCode >= 48 && event.charCode <= 57">
             </div>
         </div>
     </div>

@@ -44,7 +44,36 @@ $(document).on("click", "#AcilDurumEkle", function () {
       },      
       yakinlik: { required: "Lütfen yakınlık derecesini seçiniz" }
     },
+<<<<<<< HEAD
+    highlight: function(element) {
+      // input-group varsa, tüm input-group'u işaretle
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        $group.addClass('is-invalid');
+      } else {
+        $(element).addClass('is-invalid');
+      }
+    },
+    unhighlight: function(element) {
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        $group.removeClass('is-invalid');
+      } else {
+        $(element).removeClass('is-invalid');
+      }
+      $(element).next('.error').remove();
+    },
+    errorPlacement: function(error, element) {
+      var $group = $(element).closest('.input-group');
+      if ($group.length) {
+        error.insertAfter($group);
+      } else {
+        error.insertAfter(element);
+      }
+    }
+=======
     
+>>>>>>> f466d084495342ce96acacf631a9c504023f8a43
   });
   
   if (!validator.form()) {
