@@ -24,7 +24,7 @@ class Financial
         $select = '<select name="' . $name . '" class="form-select select2 w-100" id="' . $name . '" style="min-width:200px;width:100%" ' . $disabled . '>';
         
         foreach ($results as $row) { // $results üzerinde döngü
-            $selected = $id == $row->id ? ' selected' : ''; // Eğer id varsa seçili yap
+            $selected = ($id == $row->id || (empty($id) && $row->varsayilan_mi == 1)) ? ' selected' : ''; // Eğer id eşitse veya id boşsa ve varsayılan kasa ise seçili yap
             $select .= '<option value="' . Security::encrypt($row->id) . '"' . $selected . '>' . htmlspecialchars($row->kasa_adi) . '</option>'; // Kasa adını güvenli şekilde ekle
         }
         

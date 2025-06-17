@@ -129,7 +129,7 @@ class Auths extends Model
     //Kullanıcının firm_id'si ve sessiondaki firmayı karşılaştır, eğer farklı ise false döner
     public function checkFirmReturn()
     {
-        if ($_SESSION['user']->firm_id != $_SESSION['firm_id']) {
+        if ($_SESSION['user']->firm_id != $_SESSION['site_id']) {
             $res = [
                 "status" => "error",
                 "message" => "Yetkiniz yok"
@@ -151,5 +151,25 @@ class Auths extends Model
             exit;
         }
         return true;
+    }
+
+
+    /**
+     * Kullanıcının yetkilerini kontrol eder ve eğer yetkisi yoksa alert mesajı döner.
+     * Bu fonksiyon, kullanıcıya yetki eksikliği hakkında bilgi vermek için kullanılır.
+     * @param string $auth_name Kontrol edilecek yetki adı
+     * @return void
+     */
+    public function checkPermissionAlert($auth_name){
+        if (!$this->Authorize($auth_name)) {
+            echo "
+            <div class='alert alert-dismissible p-4 mt-3 alert-soft-warning-message' role='alert'>
+                <p class='mb-0'>
+                    <strong>UYARI:</strong> Bu işlemi gerçekleştirmek için yetkiniz bulunmamaktadır.
+                </p>
+            </div>
+            ";
+            exit;
+        }
     }
 }

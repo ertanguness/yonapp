@@ -1,11 +1,11 @@
 let url = "pages/dues/payment/api.php";
+
 $(document).on("click", "#tahsilatKaydet", function () {
   var form = $("#tahsilatForm");
   var tahsilatTuru = $("#tahsilat_turu option:selected").text();
   var formData = new FormData(form[0]);
-  
-  formData.append("tahsilat_turu", tahsilatTuru); // Form verilerine tahsilat türünü ekle
 
+  formData.append("tahsilat_turu", tahsilatTuru); // Form verilerine tahsilat türünü ekle
 
   addCustomValidationValidValue();
   form.validate({
@@ -44,7 +44,6 @@ $(document).on("click", "#tahsilatKaydet", function () {
     return false;
   }
 
-
   formData.append("action", "tahsilat-kaydet"); // Form verilerine action ekle
 
   Pace.restart(); // Pace.js yükleme çubuğunu başlat
@@ -54,13 +53,16 @@ $(document).on("click", "#tahsilatKaydet", function () {
   })
     .then((response) => response.json())
     .then((data) => {
-        //console.log(data); // Konsola gelen veriyi yazdır
-      let title = data.success ? "Başarılı" : "Hata";
+      console.log(data.tableRow); // Konsola gelen veriyi yazdır
+  
+      $(row.node()).html(data.tableRow);
+      let title = data.status ? "Başarılı" : "Hata";
+
       Swal.fire({
-        icon: data.success ? "success" : "error",
+        icon: data.status,
         title: title,
         text: data.message,
-      })
+      });
     })
     .catch((error) => {
       console.error("Error:", error);

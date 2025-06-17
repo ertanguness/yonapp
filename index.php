@@ -11,7 +11,7 @@ ob_start();
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
     if (!isset($_GET["p"])) {
-        $returnUrl = urlencode("/index?p=home/list");
+        $returnUrl = urlencode("/index?p=home");
     }
     header("Location: sign-in.php?returnUrl={$returnUrl}");
     exit();
@@ -138,7 +138,7 @@ $menu_name = $menus->getMenusByLink($active_page);
             <div class="main-content">
                 <div class="row"> -->
             <?php
-            $page = isset($_GET["p"]) ? $_GET["p"] : "home/list";
+            $page = isset($_GET["p"]) ? $_GET["p"] : "home";
                 // echo "user token" . $user->session_token;
                 // echo "session token : ".$_SESSION['csrf_token'];
             ; ?>
@@ -151,7 +151,7 @@ $menu_name = $menus->getMenusByLink($active_page);
 
                 include "pages/404.php";
             } else (
-                    include "pages/home/list.php"
+                    include "pages/home.php"
                 );
             ?>
             <!-- </div>

@@ -2,6 +2,9 @@
 
 namespace Model;
 
+use App\Helper\Security;
+use App\Helper\Helper;
+
 use Model\BloklarModel;
 use Model\Model;
 use PDO;
@@ -9,9 +12,9 @@ use PDO;
 class KisilerModel extends Model
 {
     protected $table = 'kisiler';
-    protected $siteaktifkisiler = 'site_aktif_kisiler'; // Bu değişken kullanılmıyor, kaldırılabilir
+    protected $siteaktifkisiler = 'site_aktif_kisiler'; 
 
-    protected $kisilerborcozet = 'view_kisi_borc_ozet'; // Bu değişken kullanılmıyor, kaldırılabilir
+    protected $kisilerborcozet = 'view_kisi_borc_ozet'; 
 
     public function __construct()
     {
@@ -242,5 +245,60 @@ class KisilerModel extends Model
         $query = $this->db->prepare("SELECT id, adi_soyadi FROM kisiler WHERE daire_id = :daire_id");
         $query->execute(['daire_id' => $daire_id]);
         return $query->fetchAll(PDO::FETCH_OBJ);
+    }
+
+
+
+    /**
+     * Tahsilat kaydı yapıldıktan sonra anlık olarak satırdaki veriyi güncellemek için kullanılır
+     * @param int $kisi_id
+     * @return string
+     */
+
+    public function TableRow($kisi_id)
+    {
+
+
+    //     <th class="wd-30 no-sorting" style="width: 40px;">
+    //     Sıra
+    //   </th>
+    //   <th>Daire Adı</th>
+    //   <th>Ad Soyad</th>
+    //   <th class="text-end" style="width:11%">Borç Tutarı</th>
+    //   <th class="text-end" style="width:11%">Ödenen</th>
+    //   <th class="text-end" style="width:11%">BAKİYE</th>
+    //   <th>İşlem</th>
+
+        $sql = $this->db->prepare("SELECT * FROM $this->kisilerborcozet WHERE kisi_id = ?");
+        $sql->execute([$kisi_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+
+        return '
+        
+        <td>' . 1 . '</td>
+        <td>' . $result->daire_kodu . '</td>
+        <td>' . $result->adi_soyadi . '</td>
+            <td class="text-end">
+                <i class="feather-trending-down fw-bold text-danger"></i>
+                ' . Helper::formattedMoney($result->toplam_borc) . '
+            </td>
+            <td class="text-end">' . Helper::formattedMoney($result->toplam_tahsilat) . '</td>
+            <td class="text-end">' . Helper::formattedMoney($result->bakiye) . '</td>
+            <td>
+                <div class="hstack gap-2">
+                    <a href="javascript:void(0);" 
+                    data-id= "' . Security::encrypt($kisi_id) . '"
+                    class="avatar-text avatar-md kisi-borc-detay" title="Görüntüle">
+                        <i class="feather-eye"></i>
+                    </a>
+                    <a href="javascript:void(0);" 
+                    data-id="' . Security::encrypt($kisi_id) . '"
+                    data-kisi-id="' . Security::encrypt($result->kisi_id) . '"
+                    class="avatar-text avatar-md tahsilat-gir" title="Düzenle">
+                        <i class="bi bi-credit-card-2-front"></i>
+                    </a>
+                </div>
+            </td>
+        ';
     }
 }

@@ -1,6 +1,7 @@
 <?php
 require_once '../../../vendor/autoload.php';
 
+use App\Helper\Date;
 use App\Helper\Security;
 use App\Helper\Helper;
 
@@ -122,7 +123,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlari($id);
                             </div>
                             <div class="mt-2 mt-md-0 text-md-end mg-l-60 ms-md-0">
                                 <a href="javascript:void(0);" class="fw-bold d-block"><?php echo Helper::formattedMoney($borc->tutar); ?></a>
-                                <span class="fs-12 text-muted"><?php echo "Son Ödeme : " . $borc->bitis_tarihi; ?></span>
+                                <span class="fs-12 text-muted"><?php echo "Son Ödeme : " . Date::dmY($borc->bitis_tarihi); ?></span>
                             </div>
                         </div>
                         <hr class="border-dashed my-3">
@@ -176,7 +177,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlari($id);
                                 </div>
                                 <div class="mt-2 mt-md-0 text-md-end mg-l-60 ms-md-0">
                                     <a href="javascript:void(0);" class="fw-bold d-block"><?php echo Helper::formattedMoney($tahsilat->tutar); ?></a>
-                                    <span class="fs-12 text-muted"><?php echo "Ödeme Tarihi : " . $tahsilat->islem_tarihi; ?></span>
+                                    <span class="fs-12 text-muted"><?php echo "Ödeme Tarihi : " . Date::dmY($tahsilat->islem_tarihi); ?></span>
                                 </div>
                             </div>
                             <hr class="border-dashed my-3">

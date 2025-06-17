@@ -180,17 +180,18 @@ class BorclandirmaDetayModel extends Model
     public function KisiFinansalDurum($kisi_id)
     {
         $sql = $this->db->prepare("
-       SELECT 
-    (SELECT COALESCE(SUM(tutar), 0) FROM $this->table WHERE kisi_id = :kisi_id) AS toplam_borc,
-    (SELECT COALESCE(SUM(tutar), 0) FROM tahsilatlar WHERE kisi_id = :kisi_id) AS toplam_odeme,
-    (SELECT COALESCE(SUM(tutar), 0) FROM tahsilatlar WHERE kisi_id = :kisi_id) - 
-    (SELECT COALESCE(SUM(tutar), 0) FROM $this->table WHERE kisi_id = :kisi_id) AS bakiye;
-    ");
+                            SELECT 
+                                (SELECT COALESCE(SUM(tutar), 0) FROM $this->table WHERE kisi_id = :kisi_id) AS toplam_borc,
+                                (SELECT COALESCE(SUM(tutar), 0) FROM tahsilatlar WHERE kisi_id = :kisi_id) AS toplam_odeme,
+                                (SELECT COALESCE(SUM(tutar), 0) FROM tahsilatlar WHERE kisi_id = :kisi_id) - 
+                                (SELECT COALESCE(SUM(tutar), 0) FROM $this->table WHERE kisi_id = :kisi_id) AS bakiye;
+                            ");
         $sql->execute([
             ':kisi_id' => $kisi_id
         ]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
+
 
   
 

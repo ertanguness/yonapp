@@ -23,7 +23,8 @@ if (
     $page == 'dues/debit/detail' || $page == 'dues/payment/list' || $page == 'dues/debit/list' ||
     $page == "management/peoples/list" || $page == "management/peoples/manage" ||
     $page == 'management/blocks/list' || $page == 'management/apartment/list' ||
-    $page == 'defines/apartment-type/list'
+    $page == 'defines/apartment-type/list' ||
+    $page == 'dues/payment/tahsilat_onay'
 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
