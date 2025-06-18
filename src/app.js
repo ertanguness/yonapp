@@ -515,3 +515,4 @@ function addCustomValidationValidValue() {
     "Lütfen geçerli bir değer girin"
   );
 }
+

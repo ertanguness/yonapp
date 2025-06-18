@@ -1,6 +1,8 @@
 <?php
 
 //Model sayfaya dahil edilir
+
+use App\Helper\Security;
 use Model\MenuModel;
 use Model\Auths;
 
@@ -32,7 +34,7 @@ $Auths = new Auths();
                     // Aktif sayfa alınır
                     $active_page = $_GET['p'] ?? '';
 
-                   // echo '<script>console.log("Aktif Sayfa: ' . $active_page . '");</script>';
+                    // echo '<script>console.log("Aktif Sayfa: ' . $active_page . '");</script>';
 
                     // Menü isimleri Model altındaki Menus.php sayfası ile tablodan getirilir
                     $top_menus = $menus->getMenus();
@@ -83,7 +85,7 @@ $Auths = new Auths();
                                 $show = '';
                             }
                         }
-                        ?>
+                    ?>
 
                         <!-- Menü oluşturulur -->
                         <li class="nxl-item <?php echo $active . " " . $show; ?>">
@@ -112,16 +114,18 @@ $Auths = new Auths();
                                         $active_link = $active_page == $sub_menu->page_link ? 'active-link' : '';
                                         // Menu altında göstermek istemiyorsak veritabanındaki isMenu alanı 0 yapılır
                                         if ($sub_menu->isMenu > 0) { ?>
-                                            <li class="nxl-item <?php echo $active ?>"><a
-                                                    href="index?p=<?php echo $sub_menu->page_link; ?>"
+                                            <li class="nxl-item <?php echo $active ?>">
+                                                <!-- Menüyü şifrele -->
+                                                <a href="index?p=<?php echo $sub_menu->page_link; ?>"
                                                     class="nxl-link <?php echo $active_link; ?>"><?php echo $sub_menu->page_name; ?></a>
                                             </li>
-                                        <?php }
+                                    <?php }
                                     } ?>
                                 </ul>
                             <?php } else { ?>
                                 <!-- Eğer alt menü yoksa, ana menüye doğrudan link ekle -->
-                                <a href="index?p=<?php echo $menu->page_link; ?>" class="nxl-link <?php echo $active; ?>">
+                                <!-- Menüyü şifrele -->
+                                <a href="index?p=<?php echo ($menu->page_link); ?>" class="nxl-link <?php echo $active; ?>">
                                     <span class="nxl-micon"><i class="<?php echo $menu->icon; ?>"></i></span>
                                     <span class="nxl-mtext"><?php echo $menu->page_name; ?></span>
                                 </a>

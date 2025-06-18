@@ -21,12 +21,6 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// require_once "Database/db.php";
-// require_once "Model/menus.php";
-// require_once "Model/UserModel.php";
-// require_once 'Model/Auths.php';
-// require_once 'App/Helper/security.php';
-// require_once "configs/functions.php";
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Helper\Security;
@@ -38,6 +32,7 @@ $menus = new MenuModel();
 $User = new UserModel();
 $perm = new Auths();
 $user = $User->find($_SESSION['user']->id) ?? null;
+
 
 if (!$user) {
     $log_id = $_SESSION["log_id"];
@@ -62,64 +57,17 @@ if ($user->user_type == 1) {
         exit();
     }
 }
+$page = isset($_GET["p"]) ? ($_GET["p"]) : "home";
+$active_page = $page;
+$menu_name = $menus->getMenusByLink($page)->page_name ?? 'home';
 
-$active_page = isset($_GET["p"]) ? $_GET["p"] : "home";
-$menu_name = $menus->getMenusByLink($active_page);
+
 ?>
 <!DOCTYPE html>
-<html lang="zxx" >
+<html >
 
 <?php $title = 'YonApp - Apartman / Site Yönetim Sistemi' ?>
 <?php include_once './partials/head.php' ?>
-
-<!-- Datatables başlangıç istediğimiz tablonun classına datatables yazmak yeterli aktif olması için -->
-
-<!-- 
-<script>
-    function initializeDataTables() {
-        $(".datatables").each(function() {
-            if (!$.fn.DataTable.isDataTable(this)) {
-                $(this).DataTable({
-                    language: {
-                        url: "assets/js/tr.json" // Türkçe dil dosyasının yolu
-                    },
-                    columnDefs: [
-                        { targets: "_all", className: "text-center" }, // Tüm sütun başlıklarını ve içeriklerini ortala
-                        { targets: "_all", render: function(data, type, row) {
-                            return `<div style="display: flex; justify-content: center; align-items: center;">${data}</div>`;
-                        }} // Sembol içeren hücreleri de ortala
-                    ]
-                });
-            }
-        });
-    }
-
-    // Sayfa yüklendiğinde çalıştır
-    $(document).ready(function() {
-        initializeDataTables();
-    });
-
-    // Yeni DOM elemanları eklendiğinde DataTables başlat
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            mutation.addedNodes.forEach(function(node) {
-                if ($(node).find(".datatables").length) {
-                    initializeDataTables();
-                }
-            });
-        });
-    });
-
-    // Tüm sayfa (body veya belirli bir alan) gözlemleniyor
-    // observer.observe(document.body, {
-    //     childList: true,
-    //     subtree: true
-    // });
-</script>  -->
-
-
-
-<!-- datatables bitiş -->
 
 <body>
     <!-- Left sidebar -->
@@ -132,30 +80,14 @@ $menu_name = $menus->getMenusByLink($active_page);
     <!--! ================================================================ !-->
     <main class="nxl-container">
         <div class="nxl-content">
-            <?php //include './partials/page-header.php' 
-            ?>
-            <!-- 
-            <div class="main-content">
-                <div class="row"> -->
             <?php
-            $page = isset($_GET["p"]) ? $_GET["p"] : "home";
-                // echo "user token" . $user->session_token;
-                // echo "session token : ".$_SESSION['csrf_token'];
-            ; ?>
-
-            <?php
-
-            if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
+            if (file_exists("pages/{$page}.php")) {
                 include "pages/{$page}.php";
-            } else if (!file_exists("pages/{$page}.php")) {
-
+            } else {
                 include "pages/404.php";
-            } else (
-                    include "pages/home.php"
-                );
+            }
+
             ?>
-            <!-- </div>
-            </div> -->
             <!-- [ Main Content ] end -->
         </div>
         <!--<< Footer Section Start >>-->
@@ -166,12 +98,12 @@ $menu_name = $menus->getMenusByLink($active_page);
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
     <!--<< Footer Section Start >>-->
-     <?php include_once './partials/theme-customizer.php' ?> 
+    <?php include_once './partials/theme-customizer.php' ?>
     <!--<< All JS Plugins >>-->
     <?php include_once './partials/homepage-script.php'; ?>
 
     <?php include_once "./partials/vendor-scripts.php" ?>
- 
+
 
 
 </body>

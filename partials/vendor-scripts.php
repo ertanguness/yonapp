@@ -24,7 +24,8 @@ if (
     $page == "management/peoples/list" || $page == "management/peoples/manage" ||
     $page == 'management/blocks/list' || $page == 'management/apartment/list' ||
     $page == 'defines/apartment-type/list' ||
-    $page == 'dues/payment/tahsilat_onay'
+    $page == 'dues/payment/tahsilat_onay' ||
+    $page == "finans-yonetimi/kasa/list"
 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->

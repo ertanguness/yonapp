@@ -1,11 +1,11 @@
 <?php
 
-use Model\BlockModel;
+use Model\BloklarModel;
 use App\Helper\Security;
 use Model\SitelerModel;
 
 $Siteler = new SitelerModel();
-$Blocks = new BlockModel();
+$Blocks = new BloklarModel();
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 $blocks = $Blocks->find($id  ?? null);

@@ -1,17 +1,25 @@
 let url = "/pages/dues/debit/api.php";
 
 //Borçlandırma kaydet
-$(document).on("click", "#save_debit", function () {
+$(document).on("click", "#save_debit", function (e) {
   var form = $("#debitForm");
+  e.preventDefault();
+  var button = $(this);
+
+  // Butonu devre dışı bırak ve yükleme göstergesi ekle
+  button
+    .prop("disabled", true)
+    .html('<i class="fas fa-spinner fa-spin"></i> İşleniyor...');
+
   var formData = new FormData(form[0]);
 
   formData.append("action", "borclandir");
   formData.append("id", $("#borc_id").val());
   formData.append("borc_adi", $("#borc_baslik option:selected").text());
 
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ", " + pair[1]);
-  }
+  // for (let pair of formData.entries()) {
+  //   console.log(pair[0] + ", " + pair[1]);
+  // }
 
   addCustomValidationMethods(); //validNumber methodu için
   var validator = $("#debitForm").validate({
@@ -32,24 +40,27 @@ $(document).on("click", "#save_debit", function () {
     return;
   }
 
-  Pace.restart(); //Pace.js yükleme çubuğunu başlat
-  fetch(url, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => {
-      return response.json();
+  Pace.track(() => {
+    fetch(url, {
+      method: "POST",
+      body: formData,
     })
-    .then((data) => {
-      console.log(data);
-      var title = data.status == "success" ? "Başarılı" : "Hata";
-      swal.fire({
-        title: title,
-        text: data.message,
-        icon: data.status,
-        confirmButtonText: "Tamam",
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        // Butonu tekrar aktif et
+        button.prop("disabled", false).html( '<i class="feather-save  me-2"></i>Kaydet');
+
+        var title = data.status == "success" ? "Başarılı" : "Hata";
+        swal.fire({
+          title: title,
+          text: data.message,
+          icon: data.status,
+          confirmButtonText: "Tamam",
+        });
       });
-    });
+  });
 });
 
 //List sayfasından borçlandırma silmek için
@@ -176,7 +187,6 @@ $(document).ready(function () {
           "Kişiler listesinden seçtiğiniz kişilere borclandırma yapılacaktır."
         );
 
-
         formData = new FormData();
         //sitenin aktif kişilerini getir
         formData.append("action", "get_people_by_site");
@@ -200,17 +210,18 @@ $(document).ready(function () {
                     .attr("data-block", person.block_id)
                 );
               });
-              if ($.fn.select2 && $("#hedef_kisi").hasClass("select2-hidden-accessible")) {
+              if (
+                $.fn.select2 &&
+                $("#hedef_kisi").hasClass("select2-hidden-accessible")
+              ) {
                 $("#hedef_kisi").select2("destroy");
-            }
-            
-            $("#hedef_kisi").select2({
-                   minimumResultsForSearch: 0
-            });
+              }
+
+              $("#hedef_kisi").select2({
+                minimumResultsForSearch: 0,
+              });
             }
           });
-
-
 
         break;
 
@@ -253,7 +264,9 @@ $(document).ready(function () {
           hideBlokSec: true,
           blokSecLabel: "Daire Tipi Seç:",
         });
-        updateAlertMessage("Daire tiplerine göre borclandırma yapılacaktır.(Dükkan,3+1, 2+1, vb.)");
+        updateAlertMessage(
+          "Daire tiplerine göre borclandırma yapılacaktır.(Dükkan,3+1, 2+1, vb.)"
+        );
         //Define tablosundan daire tiplerini getir
         var formData = new FormData();
         formData.append("action", "get_apartment_types");
@@ -266,18 +279,17 @@ $(document).ready(function () {
             if (data.status == "success") {
               $("#apartment_type").empty();
               $("#apartment_type").append(
-                 $("<option disabled>Daire Tipi seçiniz</option>")
+                $("<option disabled>Daire Tipi seçiniz</option>")
               );
               $.each(data.data, function (index, type) {
                 $("#apartment_type").append(
                   $("<option></option>").val(type.id).text(type.define_name)
                 );
               });
-             // Select2'yi başlat ve arama kutusunu etkinleştir
-             $("#apartment_type").select2({
-              minimumResultsForSearch: 0,
-          });
-             
+              // Select2'yi başlat ve arama kutusunu etkinleştir
+              $("#apartment_type").select2({
+                minimumResultsForSearch: 0,
+              });
             }
           });
 
@@ -429,4 +441,59 @@ function getPeoplesByBlock(blockId) {
         });
       }
     });
+}
+
+/**
+ * Form gönderimini işler ve kullanıcı etkileşimini engeller
+ * @param {string|HTMLElement} element - Buton veya form elementi
+ * @param {Function} fetchCall - fetch işlemini döndüren fonksiyon
+ * @param {Object} [swalOptions={}] - SweetAlert için ekstra seçenekler
+ */
+async function handleFormWithLock(element, fetchCall, swalOptions = {}) {
+  const el =
+    typeof element === "string" ? document.querySelector(element) : element;
+  if (!el) return;
+
+  // Elementi kilitle
+  el.disabled = true;
+  const originalHtml = el.innerHTML;
+  el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+
+  // Overlay oluştur
+  const overlay = document.createElement("div");
+  overlay.className = "form-overlay";
+  document.body.appendChild(overlay);
+
+  try {
+    // Pace.js ile takip et
+    const data = await Pace.track(async () => {
+      return await fetchCall();
+    });
+
+    // Başarılı yanıt
+    Swal.fire({
+      title: data.status === "success" ? "Başarılı" : "Hata",
+      text: data.message,
+      icon: data.status,
+      confirmButtonText: "Tamam",
+      ...swalOptions,
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    Swal.fire({
+      title: "Hata",
+      text: error.message || "Bir hata oluştu",
+      icon: "error",
+      confirmButtonText: "Tamam",
+      ...swalOptions,
+    });
+    throw error;
+  } finally {
+    // Kilidi kaldır
+    el.disabled = false;
+    el.innerHTML = originalHtml;
+    document.body.removeChild(overlay);
+  }
 }

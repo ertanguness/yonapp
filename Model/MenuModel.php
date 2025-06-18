@@ -20,7 +20,7 @@ class MenuModel extends Model
 
     public function getMenusByLink($page_link)
     {
-        $sql = $this->db->prepare("SELECT id,page_name FROM menu where page_link = ?");
+        $sql = $this->db->prepare("SELECT id,page_name,s_lug FROM menu where page_link = ?");
         $sql->execute([$page_link]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }   
