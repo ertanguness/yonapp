@@ -68,12 +68,13 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
-                            <div class="table-responsive">
+
+                            <div class="table-responsive m-3">
                                 <table class="table table-hover datatables" id="tahsilatTable">
                                     <thead>
                                         <tr>
                                             <th class="wd-30 no-sorting" style="width: 40px;">
-                                              Sıra
+                                                Sıra
                                             </th>
                                             <th>Daire Adı</th>
                                             <th>Ad Soyad</th>
@@ -96,7 +97,9 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
 
                                                 <td><?php echo $index + 1 ?></td>
                                                 <td><?= $Daire->DaireKodu($kisi->daire_id) ?> </td>
-                                                <td><?= $kisi->adi_soyadi ?></td>
+                                                <td><?= $kisi->adi_soyadi ?>
+
+                                                </td>
                                                 <td class="text-end">
                                                     <i class="feather-trending-down fw-bold text-danger"></i>
 
@@ -111,9 +114,9 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                                                             <i class="feather-eye"></i>
                                                         </a>
 
-                                                        <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>" 
-                                                                    title="Tahsilat Gir" 
-                                                                    data-kisi-id="<?php echo Security::encrypt($kisi->kisi_id) ?>"
+                                                        <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
+                                                            title="Tahsilat Gir"
+                                                            data-kisi-id="<?php echo Security::encrypt($kisi->kisi_id) ?>"
                                                             class="avatar-text avatar-md tahsilat-gir">
                                                             <i class="bi bi-credit-card-2-front"></i>
                                                         </a>
@@ -165,8 +168,11 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
     $(document).on('click', '.kisi-borc-detay', function() {
         var id = $(this).data('id');
         kisiId = $(this).data('id');
+        table = $('#tahsilatTable').DataTable();
+        row = table.row($(this).closest('tr'));
 
-        $.get("pages/dues/payment/detail.php", {
+    
+        $.get("pages/dues/payment/tahsilat-detay.php", {
             id: id,
             kisi_id: kisiId
         }, function(data) {
@@ -180,7 +186,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
     $(document).on('click', '.tahsilat-gir', function() {
         kisiId = $(this).data('kisi-id');
         table = $('#tahsilatTable').DataTable();
-        row = table.row($(this).closest('tr')); 
+        row = table.row($(this).closest('tr'));
 
         $.get("pages/dues/payment/tahsilat_gir_modal.php", {
             kisi_id: kisiId

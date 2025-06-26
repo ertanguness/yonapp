@@ -342,3 +342,50 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
         'tableRow' => $tableRow ?? 'tablo satırı eklenemedi',
     ]);
 }
+
+
+//Tahsilat sil(modaldan)
+if ($_POST['action'] == 'tahsilat-sil') {
+    $id =($_POST['id']);
+     try {    
+        $tahsilat = $Tahsilat->find($id, true); // ID'yi şifreli olarak al
+        if (!$tahsilat) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Tahsilat kaydı bulunamadı.'
+            ]);
+            exit();
+        }
+        //Güncel finansal durumu getirmek için kişi ID'sini al
+           $kisi_id = $tahsilat->kisi_id;
+
+        // Tahsilat kaydını sil
+         $Tahsilat->delete($id);
+
+        //Finansal Durumu Getir
+        $finansalDurum = $BorcDetay->KisiFinansalDurum($kisi_id);
+        $borc = Helper::formattedMoney($finansalDurum->toplam_borc ?? 0);
+        $odeme = Helper::formattedMoney($finansalDurum->toplam_odeme ?? 0);
+        $bakiye = Helper::formattedMoney($finansalDurum->bakiye ?? 0);
+
+        $tableRow = $Kisi->TableRow($kisi_id) ;
+
+
+    //     // Başarılı mesajı
+         $status = 'success';
+         $message = 'Tahsilat kaydı başarıyla silindi.';
+     } catch (Exception $e) {
+        $status = 'error';
+        $message = Error::handlePDOException($e);
+     }
+
+    $res = [
+        'status' => $status,
+        'message' => $message ,
+        'borc' => $borc ?? '0,00',
+        'odeme' => $odeme ?? '0,00',
+        'bakiye' => $bakiye ?? '0,00',
+        'tableRow' => $tableRow ,
+    ];
+    echo json_encode($res);
+}

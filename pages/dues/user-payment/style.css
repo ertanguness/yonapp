@@ -1,0 +1,180 @@
+:root {
+    --primary: #6366f1;
+    --primary-light: #e0e7ff;
+    --text: #374151;
+    --text-light: #6b7280;
+    --bg: #f9fafb;
+    --white: #ffffff;
+    --border: #e5e7eb;
+    --hover-bg: #f3f4f6;
+    --radius: 4px;
+}
+
+
+
+body {
+    padding-bottom: 80px; /* Mobil menü için alt boşluk */
+}
+
+/* Tab Navigation Container */
+.tab-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Tab Navigation */
+.tab-nav {
+    display: flex;
+    list-style: none;
+    gap: 4px;
+    background-color: var(--white);
+    border-radius: var(--radius);
+    padding: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.tab-nav li {
+    flex: 1;
+    text-align: center;
+}
+
+.tab-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 4px;
+    text-decoration: none;
+    color: var(--text-light);
+    font-weight: 500;
+    border-radius: var(--radius);
+    transition: all 0.3s ease;
+}
+
+.tab-nav a i {
+    margin-bottom: 6px;
+    font-size: 22px;
+}
+
+.tab-nav a span {
+    font-size: 12px;
+}
+
+.tab-nav a:hover {
+    background-color: var(--hover-bg);
+}
+
+.tab-nav .active a {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    background-color: var(--white);
+    padding: 24px;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tab Content Styles */
+.tab-content h2 {
+    margin-bottom: 16px;
+    color: var(--primary);
+}
+
+.tab-content p {
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* Mobile Bottom Navigation */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 70px;
+    }
+    
+    .tab-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        margin-bottom: 0;
+        padding: 8px 4px;
+        z-index: 1000;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        gap: 0;
+    }
+    .tab-content{
+        height: 100% !important;
+    }
+    
+    .tab-nav a {
+        padding: 6px 2px;
+    }
+    
+    .tab-nav a i {
+        font-size: 26px;
+        margin-bottom: 4px;
+    }
+    
+    .tab-nav a span {
+        font-size: 10px;
+    } 
+    
+    .tab-container {
+        padding-bottom: 10px;
+        height: 100vh !important;
+    }
+    
+    /* Diğer elementleri gizleme */
+    header, footer {
+        display: none !important;
+    }
+    
+    .page-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+    }
+    
+    .main-content {
+        padding-top: 0px !important;
+        margin: 0 !important;
+    }
+    .custom-card-action{
+        padding: 0 !important;
+    }
+
+    .nxl-content{
+        padding: 0 !important;
+    margin: 0 !important;
+    }
+    .nxl-container {
+        top : 70px !important;
+    }
+    .nxl-container .nxl-content .main-content {
+            padding:0px !important;
+            top : 70px !important;
+            min-height: calc(100vh - 40px);
+        }
+    @media (max-width: 575.98px) {
+        .nxl-container .nxl-content .main-content {
+            padding:0px !important;
+            top : 70px !important;
+        }
+    }
+}

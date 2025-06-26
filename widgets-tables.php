@@ -737,7 +737,7 @@
                                                 </td>
                                                 <td>
                                                     <a href="javascript:void(0);">CEO's private party <span class="fs-12 fw-normal text-muted">(20/02/2023)</span> </a>
-                                                    <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+                                                    <p class="fs-12 text-muted text-truncate-1-line">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
                                                     <div class="tickets-list-action d-flex align-items-center gap-3">
                                                         <a href="javascript:void(0);">View</a>
                                                         <span>|</span>

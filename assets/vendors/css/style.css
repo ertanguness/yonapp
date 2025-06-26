@@ -323,7 +323,6 @@ table thead tr:first-child th {
 } 
 
 
-
 .dataTables_wrapper .row:last-child {
   border-top: none !important; /* Son satırın üst sınırını kaldır */
 }
