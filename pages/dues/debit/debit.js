@@ -1,4 +1,4 @@
-let url = "/pages/dues/debit/api.php";
+let url = "pages/dues/debit/api.php";
 
 //Borçlandırma kaydet
 $(document).on("click", "#save_debit", function (e) {

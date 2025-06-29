@@ -9,7 +9,7 @@ require_once 'configs/require.php';
 // require_once 'App/Helper/date.php';
 // require_once 'Model/LoginLogsModel.php';
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once  'vendor/autoload.php';
 
 
 

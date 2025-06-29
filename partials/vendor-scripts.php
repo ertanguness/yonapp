@@ -57,7 +57,7 @@ if ($page == 'users/auths/auths') {
 // Dues Tanımlama sayfası
 if (
     $page == 'dues/dues-defines/manage' ||   $page == 'dues/dues-defines/list') {
-        echo '<script src="/pages/dues/dues-defines/dues.js"></script>';
+        echo '<script src="pages/dues/dues-defines/dues.js"></script>';
     }
 
 //*************DUES******************************** */
@@ -66,7 +66,7 @@ if (
 // Site Tanımlama sayfası
 if (
     $page == 'management/sites/manage' ||   $page == 'management/sites/list') {
-        echo '<script src="/pages/management/sites/sites.js"></script>';
+        echo '<script src="pages/management/sites/sites.js"></script>';
     }
 
 //*************SITES******************************** */
@@ -78,7 +78,7 @@ if (
     $page == 'dues/debit/manage' ||
     $page == 'dues/debit/list'
 ) { ?>
-    <script src="/pages/dues/debit/debit.js"></script>
+    <script src="pages/dues/debit/debit.js"></script>
 
 <?php }
 //*************DEBIT******************************** */
@@ -88,23 +88,23 @@ if (
 if ($page == 'management/blocks/manage' ||   
     $page == 'management/blocks/list' || 
     $page == 'management/sites/manage') {
-        echo '<script src="/pages/management/blocks/blocks.js"></script>';
+        echo '<script src="pages/management/blocks/blocks.js"></script>';
     }
 //*************BLOCKS******************************** */
 
 //*************APARTMENT******************************** */
 if (
     $page == 'management/apartment/manage' ||   $page == 'management/apartment/list') {
-        echo '<script src="/pages/management/apartment/apartment.js"></script>';
+        echo '<script src="pages/management/apartment/apartment.js"></script>';
     }
    //*************APARTMENT******************************** */
 
    //*************PEOPLES******************************** */
 if (
     $page == 'management/peoples/manage' ||   $page == 'management/peoples/list') {
-        echo '<script src="/pages/management/peoples/js/kisiBilgileri.js"></script>';
-        echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
-        echo '<script src="/pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
+        echo '<script src="pages/management/peoples/js/kisiBilgileri.js"></script>';
+        echo '<script src="pages/management/peoples/js/aracBilgileri.js"></script>';
+        echo '<script src="pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
 
 
     }
@@ -115,28 +115,28 @@ if (
 
 if (
     $page == 'defines/apartment-type/manage' ||   $page == 'defines/apartment-type/list') {
-        echo '<script src="/pages/defines/apartment-type/apartment-type.js"></script>';
+        echo '<script src="pages/defines/apartment-type/apartment-type.js"></script>';
     }
 //*************define APARTMENT TYPES******************************** */
 
 
 if ($page == 'finans-yonetimi/kasa/duzenle' || $page == 'finans-yonetimi/kasa/list') {
-    echo '<script src="/pages/finans-yonetimi/kasa/js/kasa.js"></script>';
+    echo '<script src="pages/finans-yonetimi/kasa/js/kasa.js"></script>';
 }
 
 //Payment upload from excel
 if ($page == 'dues/payment/upload-from-xls') {
     echo '<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mini.min.js"></script>';
-    echo '<script src="/pages/dues/payment/js/upload.js"></script>';
+    echo '<script src="pages/dues/payment/js/upload.js"></script>';
 
 }
 if ($page == 'dues/payment/tahsilat_onay') {
-    echo '<script src="/pages/dues/payment/js/tahsilat-onay.js"></script>';
+    echo '<script src="pages/dues/payment/js/tahsilat-onay.js"></script>';
 
 }
 
 if($page == 'dues/payment/list') {
-    echo '<script src="/pages/dues/payment/js/tahsilat-gir.js"></script>';
+    echo '<script src="pages/dues/payment/js/tahsilat-gir.js"></script>';
 }
 
 

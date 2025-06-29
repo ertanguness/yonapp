@@ -179,7 +179,7 @@ $progress_color = "rgb($red, $green, 0)"; // Dinamik renk
     $("#islenenTahsilatlarTable").DataTable({
         "dom": 'tip',
         "language": {
-            url: "/assets/js/tr.json",
+            url: "assets/js/tr.json",
         }
     });
 </script>

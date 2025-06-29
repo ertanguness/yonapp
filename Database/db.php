@@ -16,6 +16,7 @@ class Db {
         // $this->db = new PDO("mysql:host=localhost;dbname=mbeyazil_puantoryeni;charset=utf8", "mbeyazil_root", "5M0c?HZK}-Ak");
 
          $this->db = new PDO("mysql:host=localhost;dbname=yonapp", "root", "");
+         //$this->db = new PDO("mysql:host=localhost;dbname=mbeyazil_yonapp", "mbeyazil_root", "5M0c?HZK}-Ak");
         //$this->db = new PDO("mysql:host=localhost;port=3307;dbname=yonapp_docker", "root", "1234");
 
     }
