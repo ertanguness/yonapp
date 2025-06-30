@@ -23,7 +23,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
             <h5 class="m-b-10">Site Borç Listesi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Borç Listesi</li>
         </ul>
     </div>

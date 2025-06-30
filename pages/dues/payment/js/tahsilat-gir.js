@@ -1,11 +1,11 @@
 let url = "pages/dues/payment/api.php";
+
 $(document).on("click", "#tahsilatKaydet", function () {
   var form = $("#tahsilatForm");
   var tahsilatTuru = $("#tahsilat_turu option:selected").text();
   var formData = new FormData(form[0]);
-  
-  formData.append("tahsilat_turu", tahsilatTuru); // Form verilerine tahsilat türünü ekle
 
+  formData.append("tahsilat_turu", tahsilatTuru); // Form verilerine tahsilat türünü ekle
 
   addCustomValidationValidValue();
   form.validate({
@@ -44,7 +44,6 @@ $(document).on("click", "#tahsilatKaydet", function () {
     return false;
   }
 
-
   formData.append("action", "tahsilat-kaydet"); // Form verilerine action ekle
 
   Pace.restart(); // Pace.js yükleme çubuğunu başlat
@@ -54,13 +53,16 @@ $(document).on("click", "#tahsilatKaydet", function () {
   })
     .then((response) => response.json())
     .then((data) => {
-        //console.log(data); // Konsola gelen veriyi yazdır
-      let title = data.success ? "Başarılı" : "Hata";
+      console.log(data.tableRow); // Konsola gelen veriyi yazdır
+
+      $(row.node()).html(data.tableRow);
+      let title = data.status ? "Başarılı" : "Hata";
+
       Swal.fire({
-        icon: data.success ? "success" : "error",
+        icon: data.status,
         title: title,
         text: data.message,
-      })
+      });
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -68,6 +70,48 @@ $(document).on("click", "#tahsilatKaydet", function () {
         icon: "error",
         title: "Hata",
         text: url + " adresine istek atılırken bir hata oluştu.",
+      });
+    });
+});
+
+$(document).on("click", ".tahsilat-sil", function () {
+  var id = $(this).data("id");
+  var formData = new FormData();
+
+  formData.append("id", id);
+  formData.append("action", "tahsilat-sil"); // Form verilerine action ekle
+  Pace.restart(); // Pace.js yükleme çubuğunu başlat
+
+  fetch(url, {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      //butonun olduğu satırı sil
+      let tRow = $(this).closest("tr"); // Butonun bulunduğu satırı bul
+      tRow.remove(); // Satırı kaldır
+      
+      $(".borc-etiket").text(data.borc); // Borç etiketini güncelle
+      $(".tahsilat-etiket").text(data.odeme); // Tahsilat etiketini güncelle
+      $(".bakiye-etiket").text(data.bakiye); // Bakiye etiketini güncelle
+
+      $(row.node()).html(data.tableRow);
+
+      let title = data.status == "succes" ? "Başarılı" : "Hata";
+
+      Swal.fire({
+        icon: data.status,
+        title: title,
+        text: data.message,
+      });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Hata",
+        text: error.message || "Bir hata oluştu.",
       });
     });
 });

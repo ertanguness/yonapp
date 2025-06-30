@@ -188,14 +188,14 @@ if ($_POST['action'] == 'payment_file_upload') {
 // Tahsilat onaylama işlemi
 if ($_POST['action'] == 'tahsilat_onayla') {
     $id = Security::decrypt($_POST['id']);
-    $tutar = Helper::formattedMoneyToNumber($_POST['islenecek_tutar'] );
+    $tutar = Helper::formattedMoneyToNumber($_POST['islenecek_tutar']);
     $tahsilat_turu = $_POST['tahsilat_turu']; // Tahsilat tipi varsayılan olarak Nakit
-    $islenen_tahsilatlar= 0;
+    $islenen_tahsilatlar = 0;
 
 
     $tahsilat = $TahsilatOnay->find($id);
 
-    $tahsilat_tutari =$tahsilat->tutar ?? 0;
+    $tahsilat_tutari = $tahsilat->tutar ?? 0;
     $islenen_tutar = $TahsilatOnay->OnaylanmisTahsilatToplami($id) ?? 0;
     $kalan_tutar = $tahsilat_tutari - $islenen_tutar;
 
@@ -208,7 +208,7 @@ if ($_POST['action'] == 'tahsilat_onayla') {
             echo json_encode([
                 'status' => 'error',
                 'message' => 'Tahsilat tutarı kalan tutardan büyük olamaz. Kalan tutar: ' . Helper::formattedMoney($kalan_tutar)
-                
+
             ]);
             exit;
         }
@@ -231,7 +231,7 @@ if ($_POST['action'] == 'tahsilat_onayla') {
         // Tahsilat kaydını oluştur
         $lastInsertId = $Tahsilat->saveWithAttr($data);
 
-        $islenen_tahsilatlar = $TahsilatOnay->OnaylanmisTahsilatToplami($onay->id) ;
+        $islenen_tahsilatlar = $TahsilatOnay->OnaylanmisTahsilatToplami($onay->id);
         $kalan_tutar = $onay->tutar - $islenen_tahsilatlar;
 
 
@@ -253,7 +253,7 @@ if ($_POST['action'] == 'tahsilat_onayla') {
 
     $res = [
         'status' => $status,
-        'message' => $message ,
+        'message' => $message,
         "islenen_tahsilatlar" => Helper::formattedMoney($islenen_tahsilatlar),
         "kalan_tutar" => Helper::formattedMoney($kalan_tutar),
     ];
@@ -272,15 +272,15 @@ if ($_POST['action'] == 'onayli_tahsilat_sil') {
 
         // Tahsilat kaydını sil
         $Tahsilat->delete($_POST['id']);
-        
+
         //İşlenmiş tahsilatların toplamını al
         $tahsilat_tutar = $TahsilatOnay->find($tahsilat->tahsilat_onay_id)->tutar ?? 0;
-        $islenen_tutar = $TahsilatOnay->OnaylanmisTahsilatToplami( $tahsilat->tahsilat_onay_id) ;
+        $islenen_tutar = $TahsilatOnay->OnaylanmisTahsilatToplami($tahsilat->tahsilat_onay_id);
         $kalan_tutar = $tahsilat_tutar - $islenen_tutar;
 
         // Başarılı mesajı
         $status = 'success';
-        $message = 'Tahsilat kaydı başarıyla silindi.' ;
+        $message = 'Tahsilat kaydı başarıyla silindi.';
         $islenen_tahsilatlar = $islenen_tutar;
     } catch (Exception $e) {
         $status = 'error';
@@ -297,9 +297,14 @@ if ($_POST['action'] == 'onayli_tahsilat_sil') {
 
 ///Tahsilat Kaydet
 if ($_POST['action'] == 'tahsilat-kaydet') {
-     $id = Security::decrypt($_POST['tahsilat_id']);
-     $tahsilat_tipi = $_POST['tahsilat_turu']; 
-     $tutar = Helper::formattedMoneyToNumber($_POST['tutar']);
+    $id = Security::decrypt($_POST['tahsilat_id']);
+    $tahsilat_tipi = $_POST['tahsilat_turu'];
+    
+    $kisi_id = Security::decrypt($_POST['kisi_id']); // Kişi ID'si
+    $kisi = $Kisi->find($kisi_id);
+    $daire_id = $kisi->daire_id ?? 0; // Kişinin daire ID'si
+    
+    $tutar = Helper::formattedMoneyToNumber($_POST['tutar']);
     //  $tahsilat_turu = $_POST['tahsilat_turu']; // Tahsilat tipi varsayılan olarak Nakit
 
     try {
@@ -310,27 +315,77 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
 
         $data = [
             'id' => 0,
-            'kisi_id' =>11, // Kişi ID'si
+            'kisi_id' => $kisi_id , // Kişi ID'si
+            'daire_id' => $daire_id, // Daire ID'si
             'tahsilat_tipi' => $tahsilat_tipi, // Tahsilat tipi
             'kasa_id' => Security::decrypt($_POST['kasa_id']), // Kasa ID'si
             'tutar' => $tutar,
-            'islem_tarihi' =>Date::Ymd($_POST['islem_tarihi']), // İşlem tarihi
+            'islem_tarihi' => Date::YmdHIS($_POST['islem_tarihi']), // İşlem tarihi
             'aciklama' => $_POST['tahsilat_aciklama'] ?? '', // Açıklama
         ];
 
         // // Tahsilat kaydını oluştur
-         $Tahsilat->saveWithAttr($data);
+        $Tahsilat->saveWithAttr($data);
 
-         $status = 'success';
-         $message = 'Tahsilat kaydı başarıyla oluşturuldu.';
+        $status = 'success';
+        $message = 'Tahsilat kaydı başarıyla oluşturuldu.';
+        $tableRow = $Kisi->TableRow($kisi_id) ;
     } catch (PDOException $ex) {
         $status = 'error';
         $message = Error::handlePDOException($ex);
     }
 
-  
+
     echo json_encode([
         'status' => $status,
         'message' => $message,
+        'tableRow' => $tableRow ?? 'tablo satırı eklenemedi',
     ]);
+}
+
+
+//Tahsilat sil(modaldan)
+if ($_POST['action'] == 'tahsilat-sil') {
+    $id =($_POST['id']);
+     try {    
+        $tahsilat = $Tahsilat->find($id, true); // ID'yi şifreli olarak al
+        if (!$tahsilat) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Tahsilat kaydı bulunamadı.'
+            ]);
+            exit();
+        }
+        //Güncel finansal durumu getirmek için kişi ID'sini al
+           $kisi_id = $tahsilat->kisi_id;
+
+        // Tahsilat kaydını sil
+         $Tahsilat->delete($id);
+
+        //Finansal Durumu Getir
+        $finansalDurum = $BorcDetay->KisiFinansalDurum($kisi_id);
+        $borc = Helper::formattedMoney($finansalDurum->toplam_borc ?? 0);
+        $odeme = Helper::formattedMoney($finansalDurum->toplam_odeme ?? 0);
+        $bakiye = Helper::formattedMoney($finansalDurum->bakiye ?? 0);
+
+        $tableRow = $Kisi->TableRow($kisi_id) ;
+
+
+    //     // Başarılı mesajı
+         $status = 'success';
+         $message = 'Tahsilat kaydı başarıyla silindi.';
+     } catch (Exception $e) {
+        $status = 'error';
+        $message = Error::handlePDOException($e);
+     }
+
+    $res = [
+        'status' => $status,
+        'message' => $message ,
+        'borc' => $borc ?? '0,00',
+        'odeme' => $odeme ?? '0,00',
+        'bakiye' => $bakiye ?? '0,00',
+        'tableRow' => $tableRow ,
+    ];
+    echo json_encode($res);
 }

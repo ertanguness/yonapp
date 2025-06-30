@@ -2986,7 +2986,7 @@ CREATE TABLE IF NOT EXISTS `menu` (
 -- yonapp.menu: ~56 rows (yaklaşık) tablosu için veriler indiriliyor
 DELETE FROM `menu`;
 INSERT INTO `menu` (`id`, `page_name`, `page_link`, `icon`, `parent_id`, `isActive`, `isMenu`, `index_no`, `is_authorize`) VALUES
-	(1, 'Anasayfa', 'home/list', 'feather-airplay', 0, 1, 1, 1, 1),
+	(1, 'Anasayfa', 'home', 'feather-airplay', 0, 1, 1, 1, 1),
 	(17, 'Kullanıcı Yönetimi', 'users/list', 'feather-user-plus', 0, 1, 1, 9, 1),
 	(19, 'Kullanıcı EkleGüncelle', 'users/manage', '0', 17, 1, 0, NULL, 1),
 	(21, 'Kullanıcı Listesi', 'users/list', '', 17, 1, 1, NULL, 1),

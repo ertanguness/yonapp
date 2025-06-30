@@ -36,12 +36,21 @@ class Model extends Db
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function find($id)
+    public function find($id, $encrypt = false)
     {
+        if ($encrypt) {
+            $id = Security::decrypt($id);
+        }
+
+        if (!$id) {
+            return false;
+        }
+
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE $this->primaryKey = ?");
         $sql->execute(array($id));
-        return $sql->fetch(PDO::FETCH_OBJ) ?? null;
+        return $sql->fetch(PDO::FETCH_OBJ) ?? false;
     }
+   
 
     public function save()
     {

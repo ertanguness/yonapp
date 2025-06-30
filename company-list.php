@@ -15,7 +15,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
     if (!isset($_GET["p"])) {
-        $returnUrl = urlencode("/index?p=home/list");
+        $returnUrl = urlencode("index?p=home");
     }
     header("Location: sign-in?returnUrl={$returnUrl}");
    exit();
@@ -44,14 +44,14 @@ $mySites = $Site->Sitelerim(); // Kullanıcının sitelerini getir
 
 if (count($mySites) == 1) {
     $_SESSION['site_id'] = $mySites[0]->id;
-    header('Location: /index?p=home/list');
+    header('Location: index?p=home');
     exit();
 }
 
 // Seçim sonrası yönlendirme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
     $_SESSION['site_id'] = $_POST['site_id'];
-    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : '/index?p=home/list';
+    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'index?p=home';
     header("Location: $redirectUri");
     exit();
 }

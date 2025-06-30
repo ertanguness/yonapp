@@ -1,6 +1,7 @@
 <?php
 require_once '../../../vendor/autoload.php';
 
+use App\Helper\Date;
 use App\Helper\Security;
 use App\Helper\Helper;
 use Model\TahsilatModel;
@@ -19,7 +20,7 @@ $tahsilat = $TahsilatOnay->find($id);
 $islenen_tahsilatlar = $Tahsilat->IslenenTahsilatlar($id);
 $islenen_toplam_tahsilat = $TahsilatOnay->OnaylanmisTahsilatToplami($id);
 $tahsilat_tamanlanma_orani =$tahsilat->tutar > 0 ? ($islenen_toplam_tahsilat / $tahsilat->tutar) * 100 : 0;
-$tahsilat_son_hareket = $Tahsilat->SonHareketTarihi($id);
+$tahsilat_son_hareket = Date::dmY($Tahsilat->SonHareketTarihi($id));
 
 $red = max(255 - (2.55 * $tahsilat_tamanlanma_orani), 0); // Kırmızı değeri azalır
 $green = min(2.55 * $tahsilat_tamanlanma_orani, 200); // Yeşil değeri artar
@@ -178,7 +179,7 @@ $progress_color = "rgb($red, $green, 0)"; // Dinamik renk
     $("#islenenTahsilatlarTable").DataTable({
         "dom": 'tip',
         "language": {
-            url: "/assets/js/tr.json",
+            url: "assets/js/tr.json",
         }
     });
 </script>

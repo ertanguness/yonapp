@@ -1,5 +1,5 @@
 <?php
-require_once "App/Helper/security.php";
+require_once "App/Helper/Security.php";
 
 use App\Helper\Security;
 

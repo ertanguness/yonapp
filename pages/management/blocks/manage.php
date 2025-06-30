@@ -4,10 +4,10 @@ use App\Helper\Security;
 use Model\SitelerModel;
 
 $Siteler = new SitelerModel();
-$Blocks = new BloklarModel();
+$Bloklar = new BloklarModel();
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
-$blok = $Blocks->find($id  ?? null);
+$blok = $Bloklar->find($id  ?? null);
 
 $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
 

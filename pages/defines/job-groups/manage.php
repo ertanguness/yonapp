@@ -27,7 +27,7 @@ $pageTitle = $id > 0 ? "İş Grubu Güncelleme" : "Yeni İş Grubu Tanımlama";
             <h5 class="m-b-10">Tanımlamalar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
             <li class="breadcrumb-item">İş Grubu Tanımlama</li>
         </ul>
     </div>
