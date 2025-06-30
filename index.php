@@ -43,12 +43,12 @@ if (!$user) {
 
 $_SESSION["user"] = $user;
 
-if ($_SESSION["user"]->parent_id != 0) {
-    $email = $_SESSION['user']->email ?? null;
-    $site_id = $_SESSION['site_id'];
-    $user = $User->getUserByEmailAndFirm($email, $site_id);
-    $_SESSION['user'] = $user;
-}
+// if ($_SESSION["user"]->parent_id != 0) {
+//     $email = $_SESSION['user']->email ?? null;
+//     $site_id = $_SESSION['site_id'];
+//     $user = $User->getUserByEmailAndFirm($email, $site_id);
+//     $_SESSION['user'] = $user;
+// }
 
 if ($user->user_type == 1) {
     $diff = 15 - date_diff(date_create($user->created_at), date_create(date("Y-m-d")))->format("%a");
@@ -59,7 +59,7 @@ if ($user->user_type == 1) {
 }
 $page = isset($_GET["p"]) ? ($_GET["p"]) : "home";
 $active_page = $page;
-$menu_name = $menus->getMenusByLink($page)->page_name ?? 'home';
+//$menu_name = $menus->getMenusByLink($page)->page_name ?? 'home';
 
 
 ?>

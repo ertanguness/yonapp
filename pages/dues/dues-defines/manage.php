@@ -2,9 +2,11 @@
 
 use App\Helper\Helper;
 use App\Helper\Security;
+use App\Helper\BlokHelper;
 use Model\DueModel;
 
 $Dues = new DueModel();
+$BlokHelper = new BlokHelper();
 
 // Yeni eklemelerde 0 olarak gönderilmesi gerekir
 $id = Security::decrypt($_GET['id'] ?? 0) ?? 0;
@@ -114,17 +116,9 @@ $due = $Dues->find($id ?? null);
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
-                                    <select class="form-control select2 w-100" name="block_id" id="block_id" required>
-                                        <option value="genel"
-                                            <?php echo (isset($aidatData) && $aidatData->block == 'genel') ? 'selected' : ''; ?>>
-                                            Tüm Site</option>
-                                        <option value="A Blok"
-                                            <?php echo (isset($aidatData) && $aidatData->block == 'A Blok') ? 'selected' : ''; ?>>
-                                            A Blok</option>
-                                        <option value="B Blok"
-                                            <?php echo (isset($aidatData) && $aidatData->block == 'B Blok') ? 'selected' : ''; ?>>
-                                            B Blok</option>
-                                    </select>
+                                    <?php echo $BlokHelper->blokSelect("block_id") ?>
+                                    
+                                    
                                 </div>
                             </div>
 

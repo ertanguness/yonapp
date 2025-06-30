@@ -26,7 +26,7 @@ $roleAuths = $roleAuthsObj->getAuthsByRoleId($id); //Güncelleme yapılacak
 $auth_id = Security::encrypt($roleAuths->id) ?? 0;
 
 //Yetki kontrolü yapılır
-$perm->checkAuthorize("transaction_permissions");
+//$perm->checkAuthorize("transaction_permissions");
 
 ?>
 <div class="page-header">

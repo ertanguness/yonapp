@@ -7,8 +7,8 @@ require_once "App/Helper/security.php";
 use App\Helper\Security;
 
 $roleObj = new Roles();
-$roles = $roleObj->getRolesByFirm($firm_id);
-$perm->checkAuthorize("permission_groups");
+//$roles = $roleObj->getRolesByFirm($firm_id);
+//$perm->checkAuthorize("permission_groups");
 
 
 ?>

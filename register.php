@@ -3,24 +3,39 @@
 
 <?php
 include './partials/head.php';
-require_once 'Database/require.php';
-require_once 'Model/UserModel.php';
-require_once 'Model/RolesModel.php';
-require_once 'Model/Auths.php';
-require_once 'Model/RoleAuthsModel.php';
-require_once 'Model/Company.php';
-require_once 'App/Helper/security.php';
+
+
+require_once "vendor/autoload.php";
 
 use Database\Db;
 use App\Helper\Security;
+use Model\CompanyModel;
+use Model\AuthsModel;
+use Model\UserModel;
+use Model\UserRolesModel;
+use Model\UserRolePermissionsModel;
 
 $db = new Db();
 $User = new UserModel();
-$company = new Company();
-$Roles = new Roles();
-$Auths = new Auths();
-$RoleAuths = new RoleAuthsModel();
+$Company = new CompanyModel();
+$Auths = new AuthsModel();
+$UserRoles = new UserRolesModel();
+$UserRolePermissionsModel = new UserRolePermissionsModel();
 
+  function alertdanger($message)
+{
+    echo '<div class="alert alert-danger bg-white text-start font-weight-600" role="alert">
+            <div class="d-flex">
+                <div>
+                    <img src="assets/images/icons/ikaz2.png " alt="ikaz" style="width: 36px; height: 36px;">                    
+                </div>
+                    <div style="margin-left: 10px;">
+                        <h4 class="alert-title">Hata!</h4>
+                    <div class="text-secondary">' . $message . '</div>
+                </div>
+            </div>
+        </div>';
+}
 
 
 ?>
@@ -36,6 +51,67 @@ $RoleAuths = new RoleAuthsModel();
     });
     feather.replace();
 </script>
+<!-- <head> içine CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<style>
+    .auth-hero-side {
+        position: relative;
+        /* ... */
+    }
+.auth-cover-wrapper .auth-cover-content-inner .auth-cover-content-wrapper .auth-img {
+    width: 500px;
+    margin: 40px auto !important;
+}
+    /* Swiper Konteyneri */
+    .testimonial-swiper {
+        position: absolute;
+        bottom: 8%;
+        left: 10%;
+        right: 10%;
+        z-index: 10;
+        text-align: center;
+        color: #334155;
+        padding-bottom: 30px;
+    }
+    .auth-hero-side{
+        margin-top: 100px !important;
+
+    }
+
+    .testimonial-swiper .quote-icon {
+        font-size: 4rem;
+        font-family: 'Source Sans Pro', serif;
+        color: #4f46e5;
+        line-height: 1;
+        opacity: 0.3;
+    }
+
+    .testimonial-swiper h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: -1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .testimonial-swiper p {
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    /* Swiper pagination noktalarını özelleştirme */
+    .swiper-pagination-bullet {
+        background-color: rgba(79, 70, 229, 0.5);
+        opacity: 1;
+    }
+
+    .swiper-pagination-bullet-active {
+        background-color: #4f46e5;
+    }
+</style>
+
+
 
 <body>
     <!--! ================================================================ !-->
@@ -46,22 +122,52 @@ $RoleAuths = new RoleAuthsModel();
             <div class="auth-cover-content-wrapper">
                 <div class="auth-img">
                     <img src="assets/images/auth/auth-cover-register-bg.svg" alt="" class="img-fluid">
+
+                </div>
+                <div class="auth-hero-side">
+
+                    <!-- YENİ SWIPER SLIDER ALANI -->
+                    <div class="swiper testimonial-swiper">
+                        <div class="swiper-wrapper">
+                            <!-- Slide 1 -->
+                            <div class="swiper-slide">
+                                <div class="quote-icon">“</div>
+                                <h2>Topluluğunuzu akıllıca yönetin</h2>
+                                <p>Tüm işlemlerinizi kolayca takip edin. YonApp ile kontrol artık parmaklarınızın ucunda!</p>
+                            </div>
+                            <!-- Slide 2 -->
+                            <div class="swiper-slide">
+                                <div class="quote-icon">“</div>
+                                <h2>Finansal şeffaflık sağlayın</h2>
+                                <p>Aidat ve gider takibini kolaylaştırın, tüm sakinlerinizle anında paylaşın.</p>
+                            </div>
+                            <!-- Slide 3 -->
+                            <div class="swiper-slide">
+                                <div class="quote-icon">“</div>
+                                <h2>İletişimde kalın, güçlü kalın</h2>
+                                <p>Duyuru ve anketlerle topluluğunuzla her an bağlantıda olun.</p>
+                            </div>
+                        </div>
+                        <!-- Navigasyon Noktaları -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+
                 </div>
             </div>
+
         </div>
         <div class="auth-cover-sidebar-inner">
             <div class="auth-cover-card-wrapper">
                 <div class="auth-cover-card p-sm-5 ">
-                    <div class="wd-50 mb-5 sm-wd-50 mx-lg-4">
-                        <img src="assets/images/yonapp-logo.jpg" style="width: 600%; height: auto; ">
+                    <div class="text-center mb-5">
+                        <img src="assets/images/logo/logo.svg" style="max-width: 50%; height: auto;">
                     </div>
-                    <h4 class="fs-16 fw-bold mb-3 text-center"> Apartman & Site Yönetiminde Yeni Dönem!</h4>
-                    <h2 class="fs-20 fw-bolder mb-4 text-center">Hesap Oluştur</h2>
+                    <h2 class="fs-20 fw-bolder mb-4">Hesap Oluştur</h2>
 
                     <?php
 
                     if (isset($_POST['action']) && $_POST['action'] == 'saveUser') {
-                        $recaptchaSecret = '6LfHuWYqAAAAAI4GfJIXZxpeoQGKDFN-Tr24766z';
+                        $recaptchaSecret = '6LccCHIrAAAAAEhE7A4bG0F6BfLICHpXSpyYd0dX';
                         $recaptchaResponse = $_POST['g-recaptcha-response'];
 
                         // reCAPTCHA doğrulama isteği
@@ -167,7 +273,7 @@ $RoleAuths = new RoleAuthsModel();
                                     "role_id" => Security::decrypt($lastInsertRoleId),
                                     "auth_ids" => $auths
                                 ];
-                                $RoleAuths->saveWithAttr($data);
+                                $UserRoles->saveWithAttr($data);
 
 
                                 //kaydedilen firma ve role kullanıcıya atanır
@@ -276,7 +382,7 @@ $RoleAuths = new RoleAuthsModel();
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#modal-scrollable" tabindex="-1" style="margin-left: 10px;"> Üyelik Sözleşmesi ve Kişisel Verilerin İşlenmesine İlişkin Aydınlatma ve Rıza Metni</a>'ni okudum ve kabul ediyorum.
                             </div>
                         </div>
-                        <div class="g-recaptcha mb-4" data-sitekey="6LfHuWYqAAAAAMPWjmbVJVLDRi7_IAeY0of0REAk" data-callback="enableSubmitButton"></div>
+                        <div class="g-recaptcha mb-4" data-sitekey="6LccCHIrAAAAAPAHXK-F68VYd1x_HYA40dZNblVM" data-callback="enableSubmitButton"></div>
                         <div class="mt-5">
                             <p class="text-muted text-center">Tüm alanlar doldurulduğunda aktif olur!</p>
                             <button type="submit" id="submitButton" class="btn btn-lg btn-primary w-100" disabled>Hesap Oluştur</button>
@@ -451,6 +557,36 @@ $RoleAuths = new RoleAuthsModel();
     <?php include './partials/theme-customizer.php' ?>
     <!--<< All JS Plugins >>-->
     <?php include './partials/script.php' ?>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const swiper = new Swiper('.testimonial-swiper', {
+                // Döngüsel olmasını sağlar
+                loop: true,
+
+                // Otomatik oynatma
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false, // Kullanıcı etkileşiminden sonra durmasın
+                },
+
+                // Geçiş efekti (fade daha şık durur)
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                },
+
+                // Navigasyon noktaları
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+            });
+        });
+    </script>
+
 </body>
 
 </html>

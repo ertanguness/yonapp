@@ -5,7 +5,6 @@ require_once '../../../vendor/autoload.php';
 use App\Helper\Security;
 use App\Helper\Date;
 use App\Helper\Helper;
-
 use App\Helper\Financial;
 use App\Helper\Aidat;
 use Model\DairelerModel;
@@ -21,7 +20,7 @@ $Kisiler = new KisilerModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $Auths = new Auths();
 
-//$Auths->checkPermissionAlert('asdfsa');
+$Auths->checkPermissionAlert('tahsilat_ekle_sil');
 
 $enc_id = Security::decrypt($_GET["id"] ?? 0);
 $kisi_id = $_GET["kisi_id"] ?? 0;

@@ -1,22 +1,24 @@
 <?php
-require_once "Model/UserModel.php";
-require_once "App/Helper/security.php";
-
+use Model\UserModel;
 use App\Helper\Security;
-$userObj = new UserModel();
+use App\Helper\UserHelper;
+
+
+$User = new UserModel();
+$UserHelper = new UserHelper();
 
 //Sayfa başlarında eklenecek alanlar
-$perm->checkAuthorize("user_add_update");
+//$perm->checkAuthorize("user_add_update");
 $id = isset($_GET["id"]) ? Security::decrypt($_GET['id']) : 0;
 $new_id = isset($_GET["id"]) ? $_GET['id'] : 0;
 
 //Eğer url'den id yazılmışsa veya id boş ise projeler sayfasına gider
 if($id == null && isset($_GET['id'])) {
-    header("Location: /index.php?p=users/list");
+    header("Location: /index.php?p=kullanici/list");
     exit;
 }
-$user = $userObj->find($id);
-$Auths->checkFirm();
+$user = $User->find($id);
+//$Auths->checkFirm();
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -38,11 +40,11 @@ $Auths->checkFirm();
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
               
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="users/list">
+                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="kullanici/list">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>
-                <button type="button" class="btn btn-primary" id="kullanici_kaydet">
+                <button type="button" class="btn btn-primary" id="userSaveBtn">
                     <i class="feather-save  me-2"></i>
                     Kaydet
                 </button>
@@ -69,7 +71,6 @@ $Auths->checkFirm();
                 <div class="col-12">
                     <div class="card">
                     <form action="" id="userForm">
-                            <input type="hidden" id="user_id" value="<?php echo $new_id ?>">
                             <div class="tab-content">
                                 <div class="tab-pane active show" id="tabs-home-3" role="tabpanel">
                                     <?php include_once "content/0-home.php"; ?>

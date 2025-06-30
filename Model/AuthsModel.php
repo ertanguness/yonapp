@@ -7,7 +7,7 @@ use Model\Model;
 use PDO;
 
 
-class Auths extends Model
+class AuthsModel extends Model
 {
     protected $table = "auths";
     public function __construct()

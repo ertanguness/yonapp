@@ -1,7 +1,10 @@
 <?php
+namespace App\Helper;
+
 require_once "Database/db.php";
 
 use Database\Db;
+use PDO;
 
 
 class UserHelper extends Db
@@ -88,9 +91,9 @@ class UserHelper extends Db
 
     public function userRoles($name = "user_roles", $id = null)
     {
-        $firm_id = $_SESSION["firm_id"];
-        $query = $this->db->prepare("SELECT * FROM userroles where firm_id = ? "); // Tüm sütunları seç
-        $query->execute([$firm_id]);
+        $ownerID = $_SESSION["owner_id"];
+        $query = $this->db->prepare("SELECT * FROM user_roles where owner_id = ? "); // Tüm sütunları seç
+        $query->execute([$ownerID]);
         $results = $query->fetchAll(PDO::FETCH_OBJ); // Tüm sonuçları al
 
         // Benzersiz bir ID oluşturmak için uniqid() kullanılıyor.
@@ -100,7 +103,7 @@ class UserHelper extends Db
         foreach ($results as $row) { // $results üzerinde döngü
             // Kullanıcıdan gelen $selectedId ile karşılaştırma yapılıyor.
             $selected = $id == $row->id ? ' selected' : ''; // Eğer id varsa seçili yap
-            $select .= '<option value="' . $row->id . '"'  . $selected . '>' . $row->roleName . '</option>';
+            $select .= '<option value="' . Security::encrypt($row->id) . '"'  . $selected . '>' . $row->role_name . '</option>';
         }
         $select .= '</select>';
         return $select;

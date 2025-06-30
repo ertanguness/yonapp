@@ -6,7 +6,7 @@ namespace Model;
 use Model\Model;
 use PDO;
 
-class Company extends Model
+class CompanyModel extends Model
 {
     protected $table = 'companies';
     public function __construct()

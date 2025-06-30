@@ -1,17 +1,20 @@
 <?php
-// require_once "App/Helper/helper.php";
-// require_once "Model/UserModel.php";
-// require_once "App/Helper/security.php";
 
-
-use Model\UserModel;
 use App\Helper\Security;
-use App\Helper\Helper;
+use Model\UserModel;
 
 $User = new UserModel();
-$users = $User->getUsers();
+
+$type = isset($_GET["type"]) ? $_GET["type"] : 0;
+if ($type > 0) {
+    $users = $User->getUsers($type);
+} elseif ($type == 0) {
+    $users = $User->getUsers();
+}
 
 ?>
+
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -36,9 +39,9 @@ $users = $User->getUsers();
                 require_once 'pages/components/download.php'
                 ?>
 
-                <a href="#" class="btn btn-primary route-link" data-page="users/manage">
+                <a href="#" class="btn btn-primary route-link" data-page="kullanici/duzenle">
                     <i class="feather-plus me-2"></i>
-                    <span>Yeni İşlem</span>
+                    <span>Yeni Kullanıcı</span>
                 </a>
             </div>
         </div>
@@ -88,7 +91,7 @@ $users = $User->getUsers();
                                         ?>
                                             <tr>
                                                 <td class="text-center"><?php echo $i; ?></td>
-                                                <td><?php echo $User->roleName($user->user_roles ?? ''); ?></td>
+                                                <td><?php echo $User->roleName($user->roles ?? ''); ?></td>
                                                 <td><?php echo $user->full_name; ?></td>
                                                 <td><?php echo $user->email; ?></td>
                                                 <td class="text-start"><?php echo $user->phone; ?></td>
@@ -103,13 +106,17 @@ $users = $User->getUsers();
                                                 <td><?php echo $user->status; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md  route-link" data-page="users/manage&id=<?php echo $id ?>">
+                                                        <a href="javascript:void(0);"
+                                                            class="avatar-text avatar-md  route-link"
+                                                            data-page="kullanici/duzenle&id=<?php echo $id ?>">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <?php if ($user->is_main_user != 1) { ?>
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md delete_user" data-id="<?php echo $id?>">
-                                                            <i class="feather-trash-2"></i>
-                                                        </a>
+                                                            <a href="javascript:void(0);"
+                                                                class="avatar-text avatar-md delete_user"
+                                                                data-id="<?php echo $id ?>">
+                                                                <i class="feather-trash-2"></i>
+                                                            </a>
                                                         <?php } ?>
                                                     </div>
                                                 </td>

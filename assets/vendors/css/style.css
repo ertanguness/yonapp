@@ -337,3 +337,11 @@ table thead tr:first-child th {
   z-index: 9998;
   cursor: wait;
 }
+
+.border-radius-10 {
+  border-radius: 10px;
+}
+
+.border-radius-12 {
+  border-radius: 12px;
+}

@@ -12,8 +12,8 @@ if (
     $page == 'dues/dues-defines/list' ||
     $page == 'offers/list' ||
     $page == 'reports/list' ||
-    $page == 'users/list' ||
-    $page == 'users/roles/list' ||
+    $page == 'kullanici/list' ||
+    $page == 'kullanici-gruplari/list' ||
     $page == 'persons/list' ||
     $page == 'persons/manage' ||
 
@@ -43,8 +43,13 @@ if ($page == 'users/list' || $page == 'users/manage') {
 }
 
 // Kullanıcı rolü ekleme ve düzenleme sayfası
-if ($page == 'users/roles/list' || $page == 'users/roles/manage') {
-    echo '<script src="./src/users/roles.js"></script>';
+if ($page == 'kullanici-gruplari/duzenle' ) {
+    echo '<script src="pages/kullanici-gruplari/js/duzenle.js"></script>';
+}
+
+//Kullanıcı ekleme ve düzenleme sayfası
+if ($page ==  'kullanici/duzenle') {
+    echo '<script src="pages/kullanici/js/user.js"></script>';
 }
 
 //Role Yetkileri ekleme ve düzenleme sayfası
@@ -105,8 +110,6 @@ if (
         echo '<script src="pages/management/peoples/js/kisiBilgileri.js"></script>';
         echo '<script src="pages/management/peoples/js/aracBilgileri.js"></script>';
         echo '<script src="pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
-
-
     }
    //*************PEOPLES******************************** */
  
@@ -167,6 +170,7 @@ if ($page == 'home') {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="./assets/js/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script src="./assets/js/select2/js/select2.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script> -->

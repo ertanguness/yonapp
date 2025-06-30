@@ -1,65 +1,91 @@
 <?php
-namespace Model;
 
+namespace Model;
 
 use Model\Model;
 use PDO;
 
+use App\Helper\Security;
+
 class UserModel extends Model
 {
     protected $table = 'users';
+
     public function __construct()
     {
         parent::__construct($this->table);
     }
 
 
-
-    public function allByFirms($firm_id)
-    {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE firm_id = :firm_id");
-        $sql->execute(['firm_id' => $firm_id]);
-        return $sql->fetchAll(PDO::FETCH_OBJ);
-    }
-    public function getUserByEmailandPassword($email, $password)
-    {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email = ? AND password = ?");
-        $sql->execute(array($email, $password));
-        return $sql->fetch(PDO::FETCH_OBJ);
-    }
-
-    // is there a user with this email and firm_id
-    public function getUserByEmailandFirm($email, $firm_id)
-    {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email = ? AND firm_id = ?");
-        $sql->execute(array($email, $firm_id));
-        return $sql->fetch(PDO::FETCH_OBJ);
-    }
-
-
-    public function getUser($id)
-    {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
-        $sql->execute(array($id));
-        return $sql->fetch(PDO::FETCH_OBJ);
-    }
-
     public function getUserByEmail($email)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email = ? ");
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email = ?");
         $sql->execute(array($email));
-        return $sql->fetch(PDO::FETCH_OBJ);
+        return $sql->fetch(PDO::FETCH_OBJ) ?? null;
     }
 
-    function getUsersByFirm($firm_id)
+    //Kullanıcı adı vey emailden kullanıcı kontrolü yapılır,true veya false döner
+    public function checkUser($username)
     {
-        $user_id = $_SESSION["user"]->id;
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE (firm_id = ? or id = ?) and parent_id != 0");
-        $sql->execute(array($firm_id, $user_id));
-        return $sql->fetchAll(PDO::FETCH_OBJ);
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email_adresi = ? OR user_name = ?");
+        $sql->execute(array($username, $username));
+        return $sql->fetch(PDO::FETCH_OBJ) ?? null;
     }
 
 
+    /**
+     * Kullanıcıları listelemek için gerekli verileri getirir.
+     * Kayıt esnasında oluşturulan ana kullanıcı listelenmez
+     * @param int $owner_id Verinin sahibi ID'si(Session ID'si gibi)
+     * @return array
+    */
+    public function getUsers($type = null): array
+    {
+        $ownerID = $_SESSION["owner_id"];
+        $params = [
+            'owner_id' => $ownerID,
+            'main_user' => 0
+        ];
+
+        $sql = "SELECT * FROM $this->table u 
+                WHERE owner_id = :owner_id 
+                AND is_main_user = :main_user";
+
+        if ($type !== null) {
+            $sql .= " AND roles = :roles";
+            $params['roles'] = Security::decrypt($type);
+        }
+
+        $sql .= " ORDER BY id DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_OBJ) ?? [];
+    }
+
+
+    /** 
+     * Kullanıcı id'sinden kullanıcının role id'sini döndürür.
+     * @param int $userId Kullanıcı ID'si
+     * @return int|null Kullanıcı rol ID'si veya null
+     * @throws \Exception
+     */
+    public function getUserRoleID(int $userId): ?int
+    {
+        $sql = $this->db->prepare("SELECT roles FROM $this->table WHERE id = ?");
+        $sql->execute([$userId]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+
+        if ($result) {
+            return (int)$result->roles;
+        }
+
+        return null; // Kullanıcı rolü bulunamadıysa null döner
+    }
+
+
+    
     //Kullanıcı girişinde bir token oluştur ve kullanıcıya kaydet
     public function setToken($id, $token)
     {
@@ -83,25 +109,14 @@ class UserModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ);
     }
 
-
-
-
     public function roleName($id)
     {
-        $sql = $this->db->prepare("SELECT * FROM userroles WHERE id = ?");
+        $sql = $this->db->prepare("SELECT * FROM user_roles WHERE id = ?");
         $sql->execute(array($id));
         $result = $sql->fetch(PDO::FETCH_OBJ);
-        return $result->roleName ?? "Bilinmiyor";
+        return $result->role_name ;
     }
-
-    //Email adresi ve Firma İd'si ile kullanıcıyı getirir
-    public function getUserByEmailAndFirmId($email, $firm_id)
-    {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email = ? AND firm_id = ?");
-        $sql->execute([$email, $firm_id]);
-        return $sql->fetch(PDO::FETCH_OBJ);
-    }
-
+    
     public function isEmailExists($email)
     {
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email = ?");
@@ -167,4 +182,65 @@ class UserModel extends Model
         $sql->execute([$user_id]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
+
+
+    /**
+ * Belirtilen ID'ye sahip kullanıcıyı HTML tablo satırı olarak döndürür.
+ *
+ * @param int $id Kullanıcı ID'si
+ * @return string HTML <tr> satırı
+ */public function renderUserTableRow(int $id, $isNew = false): string
+{
+    $user = $this->find($id);
+
+    if (!$user) {
+        return '';
+    }
+
+    // Güvenli veri
+    $enc_id    = htmlspecialchars(Security::encrypt($user->id), ENT_QUOTES, 'UTF-8');
+    $userName  = htmlspecialchars($user->user_name, ENT_QUOTES, 'UTF-8');
+    $fullName  = htmlspecialchars($user->adi_soyadi, ENT_QUOTES, 'UTF-8');
+    $title     = htmlspecialchars($user->unvani, ENT_QUOTES, 'UTF-8');
+    $email     = htmlspecialchars($user->email_adresi, ENT_QUOTES, 'UTF-8');
+    $phone     = htmlspecialchars($user->telefon, ENT_QUOTES, 'UTF-8');
+    $createdAt = htmlspecialchars($user->created_at, ENT_QUOTES, 'UTF-8');
+
+    ob_start(); // 🔁 Output Buffer başlat
+    ?>
+    <?php if ($isNew ): ?>
+    <tr data-id="<?= $enc_id ?>">
+    <?php endif; ?>
+        <td class="text-center">1</td>
+        <td><?= $userName ?></td>
+        <td><?= $fullName ?></td>
+        <td class="text-center"><?= $title ?></td>
+        <td class="text-center"><?= $email ?></td>
+        <td class="text-center"><?= $phone ?></td>
+        <td><?= $createdAt ?></td>
+        <td class="text-center" style="width:5%">
+            <div class="flex-shrink-0">
+                <div class="dropdown align-self-start icon-demo-content">
+                    <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bx bx-list-ul font-size-24 text-dark"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="javascript:void(0)" class="dropdown-item kullanici-duzenle" data-id="<?= $enc_id ?>">
+                            <span class="mdi mdi-account-edit font-size-18"></span> Düzenle
+                        </a>
+                        <a href="#" class="dropdown-item kullanici-sil" data-id="<?= $enc_id ?>" data-name="<?= $fullName ?>">
+                            <span class="mdi mdi-delete font-size-18"></span> Sil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    <?php if ($isNew): ?>
+    </tr>
+    <?php endif; ?>
+    <?php
+    return ob_get_clean(); // 🔚 HTML'yi döndür
+}
+
+
 }
