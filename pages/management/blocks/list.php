@@ -66,7 +66,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                                 <table class="table table-hover datatables" id="blocksList">
                                     <thead>
                                         <tr class="text-center align-middle">
-                                            <th>Sıra</th>
+                                            <th>#</th>
                                             <th>Site Adı</th>
                                             <th>Blok Adı</th>
                                             <th style="width: 100px;">B. Bölüm Sayısı</th>
@@ -94,9 +94,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                                                 <td style="min-width: 250px;"><?php echo !empty($blok->aciklama) ? htmlspecialchars($blok->aciklama) : '-'; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2">
-                                                        <a href="index?p=management/blocks/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
-                                                            <i class="feather-eye"></i>
-                                                        </a>
+                                                      
                                                         <a href="index?p=management/blocks/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>

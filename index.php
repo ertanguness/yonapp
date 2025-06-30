@@ -64,7 +64,7 @@ $active_page = $page;
 
 ?>
 <!DOCTYPE html>
-<html >
+<html lang="zxx" >
 
 <?php $title = 'YonApp - Apartman / Site Yönetim Sistemi' ?>
 <?php include_once './partials/head.php' ?>
@@ -81,12 +81,21 @@ $active_page = $page;
     <main class="nxl-container">
         <div class="nxl-content">
             <?php
-            if (file_exists("pages/{$page}.php")) {
-                include "pages/{$page}.php";
-            } else {
-                include "pages/404.php";
-            }
+            $page = isset($_GET["p"]) ? $_GET["p"] : "home/list";
+                // echo "user token" . $user->session_token;
+                // echo "session token : ".$_SESSION['csrf_token'];
+            ; ?>
 
+            <?php
+
+            if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
+                include "pages/{$page}.php";
+            } else if (!file_exists("pages/{$page}.php")) {
+
+                include "pages/404.php";
+            } else (
+                    include "pages/home/list.php"
+                );
             ?>
             <!-- [ Main Content ] end -->
         </div>
@@ -98,7 +107,7 @@ $active_page = $page;
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
     <!--<< Footer Section Start >>-->
-    <?php //include_once './partials/theme-customizer.php' ?>
+     <?php include_once './partials/theme-customizer.php' ?> 
     <!--<< All JS Plugins >>-->
     <?php include_once './partials/homepage-script.php'; ?>
 

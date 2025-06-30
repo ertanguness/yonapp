@@ -24,19 +24,20 @@ if ($_POST["action"] == "save_apartment") {
         if (!empty($existing_apartment)) {
             echo json_encode([
                 "status" => "error",
-                "message" => $existing_apartment ." numaralı daire ilgili blokta zaten kayıtlı: "  
+                "message" => $existing_apartment . " numaralı daire ilgili blokta zaten kayıtlı: "
             ]);
             exit;
         }
     }
-    if ($Apartment->DaireKoduVarMi($site_id, $block_id, $daire_kodu)) {
+    if ($Apartment->DaireKoduVarMi($site_id, $block_id, $daire_kodu, $id)) {
         $mevcut_kod = $daire_kodu;
     }
+    
 
     if (!empty($mevcut_kod)) {
         echo json_encode([
             "status" => "error",
-            "message" => $mevcut_kod ." kod önceden oluşturulmuş lütfen oluşturmak istediğini kodu giriniz:  "  
+            "message" => $mevcut_kod . " kod önceden oluşturulmuş lütfen oluşturmak istediğini kodu giriniz:  "
         ]);
         exit;
     }
@@ -47,7 +48,7 @@ if ($_POST["action"] == "save_apartment") {
         "blok_id" => $block_id,
         "kat" => $_POST["floor"],
         "daire_no" => $daire_no,
-        "daire_kodu" => $daire_kodu,
+        "daire_kodu" => (empty($id) || $id == 0) ? $daire_kodu : ($mevcut_kod ?? $daire_kodu),
         "daire_tipi" => $_POST["apartment_type"],
         "brut_alan" => $_POST["grossArea"],
         "net_alan" => $_POST["netArea"],

@@ -4,19 +4,14 @@ use App\Helper\Security;
 use Model\KisilerModel;
 use Model\BloklarModel;
 use Model\DairelerModel;
+use App\Helper\Helper;
+
 
 $Kisiler = new KisilerModel();
 $Bloklar = new BloklarModel();
 $Daireler = new DairelerModel();
 $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
 
-$ikametTuru = [
-    '1' => 'Kat Maliki',
-    '2' => 'Kiracı',
-    '3' => 'Çalışan',
-    '4' => 'Misafir',
-    '5' => 'Mirasçı'
-];
 
 ?>
 <div class="page-header">
@@ -104,13 +99,14 @@ $ikametTuru = [
                                             $daire_no = is_object($daire) ? htmlspecialchars($daire->daire_no) : '-';
                                             $adi_soyadi = isset($row->adi_soyadi) ? htmlspecialchars($row->adi_soyadi) : '-';
                                             $telefon = isset($row->telefon) ? htmlspecialchars($row->telefon) : '-';
-                                            $ikamet_turu = isset($ikametTuru[$row->uyelik_tipi]) ? $ikametTuru[$row->uyelik_tipi] : '-';
+                                            $ikametTuruList = Helper::ikametTuru;
+                                            $ikamet_turu = isset($ikametTuruList[$row->uyelik_tipi]) ? $ikametTuruList[$row->uyelik_tipi] : '-';
                                             $plaka = !empty($row->plaka_listesi)
                                                 ? nl2br(htmlspecialchars_decode($row->plaka_listesi))
                                                 : '-';
                                         ?>
                                             <tr class="text-center">
-                                                <td><?php echo $i; ?></td>
+                                                <td><?php echo $row->id; ?></td>
                                                 <td><?php echo $blok->blok_adi; ?></td>
                                                 <td><?php echo $daire_no; ?></td>
                                                 <td><?php echo $adi_soyadi; ?></td>
@@ -119,7 +115,7 @@ $ikametTuru = [
                                                 <td><?php echo $ikamet_turu; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2">
-                                                        <a href="index?p=management/peoples/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Görüntüle">
+                                                        <a href="javascript:void(0);" class="avatar-text avatar-md opensiteSakiniDetay" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=management/peoples/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Düzenle">
@@ -144,4 +140,36 @@ $ikametTuru = [
             </div>
         </div>
     </div>
+    <div id="siteSakiniDetay" class="offcanvas ..."></div>
+
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.opensiteSakiniDetay');
+            if (target) {
+                const id = target.getAttribute('data-id');
+                Pace.restart(); // varsa
+
+                fetch('pages/management/peoples/content/siteSakiniDetay.php?id=' + id)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('siteSakiniDetay').innerHTML = html;
+                        const canvasElement = document.getElementById('siteSakiniDetayOffcanvas');
+
+                        if (canvasElement) {
+                            const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
+                            offcanvasInstance.show();
+                        } else {
+                            alert('Detay paneli yüklenemedi. Lütfen tekrar deneyin.');
+                            console.error("Offcanvas elementi bulunamadı.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Detay yüklenemedi:', error);
+                        alert('Bir hata oluştu.');
+                    });
+            }
+        });
+    });
+</script>

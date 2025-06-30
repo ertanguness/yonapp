@@ -1,13 +1,9 @@
-
-
+$(document).ready(function () {
   $(document).on("change", ".daireNo", function () {
     const $daireSelect = $(this);
     const daireID = $daireSelect.val();
 
-
-    const $container = $daireSelect.closest(
-      "form, .modal, .card, .content-wrapper"
-    );
+    const $container = $daireSelect.closest("form, .modal, .card, .content-wrapper");
     const $kisiSec = $container.find(".kisiSec");
 
     $kisiSec.html('<option value="">Yükleniyor...</option>');
@@ -26,7 +22,6 @@
       },
       dataType: "json",
       success: function (response) {
-
         let options = '<option value="">Kişi Seçiniz</option>';
 
         if (Array.isArray(response) && response.length > 0) {
@@ -44,3 +39,4 @@
       },
     });
   });
+});

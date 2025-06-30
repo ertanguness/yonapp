@@ -81,7 +81,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             <td><?php echo $i++; ?></td>
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
-                                                    <?php echo $Kisiler->KisiAdi($detay->kisi_id) ?>
+                                                    <?php echo $Kisiler->KisiBilgileri($detay->kisi_id) ?>
                                                 </div>
                                             </td>
                                             <td>

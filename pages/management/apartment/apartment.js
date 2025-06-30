@@ -116,7 +116,7 @@ $(document).on("click", ".delete-apartment", function () {
           .then((response) => response.json())
           .then((data) => {
             if (data.status == "success") {
-              let table = $("#apartmentList").DataTable();
+              let table = $("#apartmentsList").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",

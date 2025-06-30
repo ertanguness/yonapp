@@ -10,7 +10,8 @@ $Kisiler = new KisilerModel();
 $Bloklar = new BloklarModel();
 $Daireler = new DairelerModel();
 
-$kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac');
+// $id burada dışarıdan gelen kişi ID'si null ise, tüm araçları listeleyecek , $id varsa o araca ait bilgileri getirecek
+$kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac', $id ?? null);
 ?>
 <div class="table-responsive">
     <table class="table table-hover datatables" id="aracList">
@@ -41,7 +42,7 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac');
 
             ?>
                 <tr data-id="<?php echo $enc_id; ?>" class="text-center">
-                    <td><?= $i++; ?></td>
+                    <td class="sira-no"><?= $i++; ?></td>
                     <td><?= htmlspecialchars($blok->blok_adi ?? '-') ?></td>
                     <td><?= is_object($daire) ? htmlspecialchars($daire->daire_no) : '-' ?></td>
                     <td><?= htmlspecialchars($row->adi_soyadi ?? '-') ?></td>
@@ -50,12 +51,14 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac');
                     <td><?= htmlspecialchars($row->marka_model ?? '-') ?></td>
                     <td>
                         <div class="hstack gap-2">
-                            <a href="index?p=management/peoples/manage&id=<?= $enc_id ?>" class="avatar-text avatar-md" title="Görüntüle">
-                                <i class="feather-eye"></i>
-                            </a>
-                            <a href="index?p=management/peoples/manage&id=<?= $enc_id ?>" class="avatar-text avatar-md" title="Düzenle">
+                            <a href="javascript:void(0);"
+                                class="avatar-text avatar-md edit-car"
+                                title="Düzenle"
+                                data-id="<?= $enc_id ?>">
                                 <i class="feather-edit"></i>
                             </a>
+
+
                             <a href="javascript:void(0);" data-name="<?php echo $row->plaka; ?>" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md delete-car" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $row->plaka; ?>">
                                 <i class="feather-trash-2"></i>
                             </a>
@@ -67,3 +70,29 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac');
 
     </table>
 </div>
+<script>
+    document.addEventListener('click', function(e) {
+        const editBtn = e.target.closest('.edit-car');
+
+        if (editBtn) {
+            e.preventDefault();
+            Pace.restart();
+
+            const encId = editBtn.getAttribute('data-id');
+
+            fetch('pages/management/peoples/content/AracModal.php?id=' + encodeURIComponent(encId))
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalContainer').innerHTML = html;
+
+                    const aracModal = new bootstrap.Modal(document.getElementById('aracEkleModal'));
+                    aracModal.show();
+
+                    $(".select2").select2({
+                        dropdownParent: $('#aracEkleModal'),
+                    });
+                })
+                .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
+        }
+    });
+</script>
