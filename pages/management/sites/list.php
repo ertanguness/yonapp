@@ -6,11 +6,13 @@ use Model\BloklarModel;
 
 $Bloklar = new BloklarModel();
 $Siteler = new SitelerModel();
+
 $Sitem = $Siteler->Sitelerim();
 
 $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 
 ?>
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -55,7 +57,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
     $text = "Sitelerinizi görüntüleyip ekleme, düzenleme, silme ve yeni site tanımlama işlemlerinizi  yapabilirsiniz.";
     require_once 'pages/components/alert.php'
     ?>
-    <div class="row">
+    <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -96,13 +98,13 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                                                 <td><?php echo $Siteler->tam_adres; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                        <a href="javascript:void(0);" class="avatar-text avatar-md openSiteDetay" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=management/sites/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" data-name="<?php echo $Siteler->site_adi?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-Siteler" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $Siteler->site_adi; ?>">
+                                                        <a href="javascript:void(0);" data-name="<?php echo $Siteler->site_adi ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-Siteler" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $Siteler->site_adi; ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>
@@ -120,4 +122,31 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
             </div>
         </div>
     </div>
+    <div id="siteDetay" class="offcanvas ..."></div>
+
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.openSiteDetay');
+            if (target) {
+                const id = target.getAttribute('data-id');
+                Pace.restart(); // varsa
+
+                fetch('pages/management/sites/content/siteDetay.php?id=' + id)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('siteDetay').innerHTML = html;
+
+                        const canvasElement = document.getElementById('siteDetayOffcanvas');
+                        const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
+                        offcanvasInstance.show();
+                    })
+                    .catch(error => {
+                        console.error('Detay yüklenemedi:', error);
+                        alert('Bir hata oluştu.');
+                    });
+            }
+        });
+    });
+</script>

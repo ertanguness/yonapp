@@ -15,11 +15,9 @@ class Db {
 
         // $this->db = new PDO("mysql:host=localhost;dbname=mbeyazil_puantoryeni;charset=utf8", "mbeyazil_root", "5M0c?HZK}-Ak");
 
-        $this->db = new PDO("mysql:host=localhost;dbname=yonapp", "root", "");
-
+         $this->db = new PDO("mysql:host=localhost;dbname=yonapp", "root", "");
+       // $this->db = new PDO("mysql:host=100.115.132.68;port=3307;dbname=yonapp_docker", "root", "1234");
     }
-
-
 
      // $db özelliğine dışarıdan erişim sağlayan metod
 
@@ -28,8 +26,6 @@ class Db {
         return $this->db;
 
     }
-
-
 
     public function disconnect() {
 

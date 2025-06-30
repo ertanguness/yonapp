@@ -112,19 +112,30 @@ class KisilerModel extends Model
     /**************************************************************************************************** */
     /***Kişi ID'sinden Kişi Adını Getirir
      * @param int $id Kişinin ID'si.
-     * @return string|null Kişinin adı veya bulunamazsa null döner.
+     * @return object|null Kişi bilgilerini içeren nesne veya bulunamazsa null döner.
      */
-    public function KisiAdi($id)
+
+    public function KisiBilgileri($id)
     {
-        $sql = $this->db->prepare("SELECT adi_soyadi FROM $this->table WHERE id = ?");
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
         $sql->execute([$id]);
-        $result = $sql->fetch(PDO::FETCH_OBJ);
-        return $result ? $result->adi_soyadi : null;
+        return $sql->fetch(PDO::FETCH_OBJ); // sadece tek bir kayıt döndürür
     }
+
     //----------------------------------------------------------------------------------------------------\\
 
 
-
+    /**
+     * Siteye ait toplam kişi sayısını döndürür.
+     * @param int $site_id Sitenin ID'si.
+     * @return int Kişi sayısı.
+     */
+    public function sitedekiKisiSayisi($site_id)
+    {
+        $sql = $this->db->prepare("SELECT COUNT(*) FROM $this->table WHERE blok_id IN (SELECT id FROM bloklar WHERE site_id = ?)");
+        $sql->execute([$site_id]);
+        return (int)$sql->fetchColumn();
+    }
 
     /**************************************************************************************************** */
     /**Daire id'si ve uyelik_tipi'nden şu anda aktif olan kiracıyı veya ev sahibini bul
@@ -174,7 +185,7 @@ class KisilerModel extends Model
     }
 
 
-    public function SiteKisileriJoin($site_id, $filter = null)
+    public function SiteKisileriJoin($site_id, $filter = null, $kisi_id = null)
     {
         if (!$site_id) return [];
 
@@ -192,10 +203,11 @@ class KisilerModel extends Model
                 INNER JOIN acil_durum_kisileri acil ON kisiler.id = acil.kisi_id
                 WHERE bloklar.site_id = :site_id
             ");
+                $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
                 break;
 
             case 'arac':
-                $stmt = $this->db->prepare("
+                $sql = "
                 SELECT 
                     kisiler.*, 
                     arac.id AS arac_id,
@@ -205,30 +217,37 @@ class KisilerModel extends Model
                 INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
                 INNER JOIN araclar arac ON kisiler.id = arac.kisi_id
                 WHERE bloklar.site_id = :site_id
-            ");
+            ";
+
+                if ($kisi_id) {
+                    $sql .= " AND kisiler.id = :kisi_id";
+                }
+
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
+
+                if ($kisi_id) {
+                    $stmt->bindParam(':kisi_id', $kisi_id, PDO::PARAM_INT);
+                }
                 break;
 
             default:
                 $stmt = $this->db->prepare("
-            SELECT 
-                kisiler.*,
-                GROUP_CONCAT(arac.plaka SEPARATOR '<br>') AS plaka_listesi
-            FROM kisiler
-            INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
-            LEFT JOIN araclar arac ON kisiler.id = arac.kisi_id
-            WHERE bloklar.site_id = :site_id
-            GROUP BY kisiler.id
-        ");
+                SELECT 
+                    kisiler.*,
+                    GROUP_CONCAT(arac.plaka SEPARATOR '<br>') AS plaka_listesi
+                FROM kisiler
+                INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
+                LEFT JOIN araclar arac ON kisiler.id = arac.kisi_id
+                WHERE bloklar.site_id = :site_id
+                GROUP BY kisiler.id
+            ");
+                $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
         }
 
-        $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
         $stmt->execute();
-
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-
-
-
 
     public function KisiVarmi($kimlikNo)
     {
@@ -239,7 +258,7 @@ class KisilerModel extends Model
     // Bloğun kişilerini getir
     public function DaireKisileri($daire_id)
     {
-        $query = $this->db->prepare("SELECT id, adi_soyadi FROM kisiler WHERE daire_id = :daire_id");
+        $query = $this->db->prepare("SELECT * FROM kisiler WHERE daire_id = :daire_id");
         $query->execute(['daire_id' => $daire_id]);
         return $query->fetchAll(PDO::FETCH_OBJ);
     }

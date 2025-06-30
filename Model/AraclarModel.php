@@ -18,48 +18,60 @@ class AraclarModel extends Model
     {
         parent::__construct($this->table);
     }
-    
-    public function aracEkleTableRow($id)
+
+    public function aracEkleTableRow($id, $sira = null)
     {
         $Bloklar = new BloklarModel();
-        $Kisiler= new KisilerModel();
+        $Kisiler = new KisilerModel();
         $Daireler = new DairelerModel();
-
+    
         $data = $this->find($id);
         $enc_id = \App\Helper\Security::encrypt($data->id);
-        
+    
         $kisi = $Kisiler->getPersonById($data->kisi_id);
         $daire = $Daireler->DaireAdi($kisi->daire_id ?? null);
         $blok = $Bloklar->Blok($kisi->blok_id ?? null);
-
-        return '<tr id="islem_' . $data->id . '" data-id="' . $enc_id . '">
-            <td>' . $data->id . '</td>
-            <td>' . ($blok->blok_adi ?: '-') . '</td>        
-            <td>' . (is_object($daire) && isset($daire->daire_no) ? $daire->daire_no : '-') . '</td>
-            <td>' . ($kisi->adi_soyadi ?: '-') . '</td>
-            <td>' . ($kisi->telefon ?: '-') . '</td>
-            <td>' . ($data->plaka ?: '-') . '</td>
-            <td>' . ($data->marka_model ?: '-') . '</td>
+    
+        $siraNumarasi = $sira ?? '#';
+    
+        return '<tr data-id="' . $enc_id . '" class="text-center">
+            <td class="sira-no">' . $siraNumarasi . '</td>
+            <td>' . htmlspecialchars($blok->blok_adi ?? '-') . '</td>
+            <td>' . (is_object($daire) && isset($daire->daire_no) ? htmlspecialchars($daire->daire_no) : '-') . '</td>
+            <td>' . htmlspecialchars($kisi->adi_soyadi ?? '-') . '</td>
+            <td>' . htmlspecialchars($kisi->telefon ?? '-') . '</td>
+            <td>' . htmlspecialchars($data->plaka ?? '-') . '</td>
+            <td>' . htmlspecialchars($data->marka_model ?? '-') . '</td>
             <td>
                 <div class="hstack gap-2">
-                    <a href="index?p=management/peoples/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Görüntüle">
-                        <i class="feather-eye"></i>
-                    </a>
-                    <a href="index?p=management/peoples/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Düzenle">
+                    <a href="javascript:void(0);" class="avatar-text avatar-md edit-car" title="Düzenle" data-id="' . $enc_id . '">
                         <i class="feather-edit"></i>
                     </a>
-                    <a href="javascript:void(0);" data-name="<?php echo $data->plaka; ?>" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md delete-car" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $data->plaka; ?>">
+                    <a href="javascript:void(0);" class="avatar-text avatar-md delete-car" data-id="' . $enc_id . '" data-name="' . htmlspecialchars($data->plaka) . '">
                         <i class="feather-trash-2"></i>
                     </a>
                 </div>
             </td>
         </tr>';
     }
+    
+
     public function AracVarmi($plaka)
     {
         $query = $this->db->prepare("SELECT COUNT(*) FROM $this->table WHERE plaka = ?");
         $query->execute([$plaka]);
         return $query->fetchColumn() > 0;
-    }   
-    
+    }
+    public function AracBilgileri($id)
+    {
+        $query = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
+        $query->execute([$id]);
+        return $query->fetch(PDO::FETCH_OBJ);
+    }
+    public function KisiAracBilgileri($kisi_id)
+    {
+        $query = $this->db->prepare("SELECT * FROM $this->table WHERE kisi_id = ?");
+        $query->execute([$kisi_id]);
+        return $query->fetchAll(PDO::FETCH_OBJ);
+    }
 }

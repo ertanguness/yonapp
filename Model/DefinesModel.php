@@ -16,12 +16,13 @@ class DefinesModel extends Model
         parent::__construct($this->table);
     }
 
-    public function getDefinesByType($type)
+    public function daireTipiGetir($site_id, $type)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE site_id = ? and type_id = ?");
-        $sql->execute([$this->site_id, $type]);
-        return $sql->fetchAll(PDO::FETCH_OBJ);
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE site_id = ? and id = ?");
+        $sql->execute([$site_id, $type]);
+        return $sql->fetch(PDO::FETCH_OBJ); // sadece bir satır bekleniyorsa
     }
+    
     
     
 

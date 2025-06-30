@@ -5,17 +5,22 @@ $site_id = $_SESSION['site_id'] ?? 0;
 
 use Model\BloklarModel;
 use App\Helper\Security;
-use App\Helper\Form;
-use App\Helper\Helper;
+use Model\KisilerModel;
+use Model\AraclarModel;
+use Model\DairelerModel;
+
+$Daireler= new DairelerModel();
+$Araclar = new AraclarModel();
+$Kisiler = new KisilerModel();
+$Block = new BloklarModel();
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 
-$Block = new BloklarModel();
-$blocks = $Block->SiteBloklari($site_id);
-$blockOptions = [];
-foreach ($blocks as $block) {
-    $blockOptions[$block->id] = $block->blok_adi;
-}
+$araclar = $Araclar->AracBilgileri($id);
+$kisiBilgileri = $Kisiler->KisiBilgileri($araclar->kisi_id ?? null);
+$blocks = $Block->SiteBloklari(site_id: $site_id);
+$daireKisileri= $Kisiler->DaireKisileri($kisiBilgileri->daire_id ?? null);
+$daireler = $Daireler->BlokDaireleri($kisiBilgileri->blok_id ?? 0);
 
 ?>
 <div class="modal fade" id="aracEkleModal" tabindex="-1" data-bs-keyboard="false" role="dialog">
@@ -27,18 +32,20 @@ foreach ($blocks as $block) {
             </div>
             <div class="modal-body">
                 <form id="aracEkleForm">
-                <input type="hidden" name="arac_id" id="arac_id" value="<?php echo $id; ?>">
+                    <input type="hidden" name="arac_id" id="arac_id" value="<?php echo $_GET['id'] ?? 0; ?>">
                     <div class="mb-3">
                         <label for="blokAdi" class="form-label fw-semibold">Blok Adı</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
-                            
-                            <?php echo Form::Select2(
-                                'blok_id', 
-                                $blockOptions,
-                                1, 
-                             ) ?>
-
+                            <select class="form-select select2 w-100 blokAdi" name="blok_id">
+                                <option value="">Blok Seçiniz</option>
+                                <?php foreach ($blocks as $block): ?>
+                                    <option value="<?= htmlspecialchars($block->id) ?>"
+                                        <?= (isset($kisiBilgileri->blok_id) && $kisiBilgileri->blok_id == $block->id) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($block->blok_adi) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
 
@@ -47,8 +54,15 @@ foreach ($blocks as $block) {
                         <label for="daireNo" class="form-label fw-semibold">Daire No</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-door-closed"></i></span>
-                            <select id="daireNo" class="form-select select2 w-100 daireNo" name="daire_id">
+                            <select class="form-select select2 w-100 daireNo" name="daire_id">
                                 <option value="">Daire Seçiniz</option>
+                                <?php if (!empty($daireler)) : ?>
+                                    <?php foreach ($daireler as $daire): ?>
+                                        <option value="<?= $daire->id ?>" <?= ($kisiBilgileri->daire_id == $daire->id) ? 'selected' : '' ?>>
+                                            <?= $daire->daire_no ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>
@@ -60,6 +74,13 @@ foreach ($blocks as $block) {
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                             <select id="kisi_id" class="form-select select2 w-100 kisiSec" name="kisi_id">
                                 <option value="">Kişi Seçiniz</option>
+                                <?php if (!empty($daireKisileri)) : ?>
+                                    <?php foreach ($daireKisileri as $kisi): ?>
+                                        <option value="<?= $kisi->id ?>" <?= (isset($kisiBilgileri->id) && $kisiBilgileri->id == $kisi->id) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($kisi->adi_soyadi) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>
@@ -70,7 +91,7 @@ foreach ($blocks as $block) {
                         <label for="modalAracPlaka" class="form-label fw-semibold">Araç Plakası</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-car"></i></span>
-                            <input type="text" id="modalAracPlaka" name="modalAracPlaka" class="form-control" placeholder="Plaka giriniz">
+                            <input type="text" id="modalAracPlaka" name="modalAracPlaka" class="form-control" placeholder="Plaka giriniz" value="<?php echo $araclar->plaka ?? ''; ?>">
                         </div>
                     </div>
 
@@ -79,7 +100,7 @@ foreach ($blocks as $block) {
                         <label for="modalAracMarka" class="form-label fw-semibold">Araç Markası / Modeli</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-car-side"></i></span>
-                            <input type="text" id="modalAracMarka" name="modalAracMarka" class="form-control" placeholder="Marka giriniz">
+                            <input type="text" id="modalAracMarka" name="modalAracMarka" class="form-control" placeholder="Marka giriniz" value="<?php echo $araclar->marka_model ?? ''; ?>">
                         </div>
                     </div>
                 </form>
@@ -91,5 +112,3 @@ foreach ($blocks as $block) {
         </div>
     </div>
 </div>
-
-

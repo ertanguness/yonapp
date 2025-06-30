@@ -12,8 +12,8 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
     // Sadece rakam girilmesine izin ver
     this.value = this.value.replace(/\D/g, "");
     // Maksimum 10 karaktere sınırla
-    if (this.value.length > 10) {
-      this.value = this.value.slice(0, 10);
+    if (this.value.length > 11) {
+      this.value = this.value.slice(0, 11);
     }
   });
 
@@ -34,8 +34,8 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
       phoneNumber: { 
         required: true,
         digits: true,
-        minlength: 10,
-        maxlength: 10
+        minlength: 11,
+        maxlength: 11
       },
       entryDate: { required: true },
     },
@@ -55,8 +55,8 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
       phoneNumber: { 
         required: "Lütfen telefon numarası giriniz",
         digits: "Telefon numarası sadece rakamlardan oluşmalıdır",
-        minlength: "Telefon numarası 10 haneli olmalıdır",
-        maxlength: "Telefon numarası 10 haneli olmalıdır"
+        minlength: "Telefon numarası 11 haneli olmalıdır",
+        maxlength: "Telefon numarası 11 haneli olmalıdır"
       },
       entryDate: { required: "Lütfen giriş tarihi giriniz" },
     },

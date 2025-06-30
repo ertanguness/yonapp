@@ -74,7 +74,7 @@ $progress_color = "rgb($red, $green, 0)"; // Dinamik renk
                                             <i class="feather-user"></i>
                                         </div>
                                         <span
-                                            class="text-truncate-1-line"><?php echo $Kisi->KisiAdi($tahsilat->kisi_id); ?></span>
+                                            class="text-truncate-1-line"><?php echo $Kisi->KisiBilgileri($tahsilat->kisi_id); ?></span>
                                     </div>
                                     <div class="hstack gap-2 text-muted mb-3">
                                         <div class="avatar-text avatar-sm">

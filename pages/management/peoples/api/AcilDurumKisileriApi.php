@@ -1,26 +1,27 @@
 <?php
 session_start();
 require_once '../../../../vendor/autoload.php';
-$site_id = $_SESSION["site_id"];
 
 use App\Helper\Security;
 use Model\AcilDurumKisileriModel;
 
+$site_id = $_SESSION["site_id"];
 $AcilDurumKisi = new AcilDurumKisileriModel();
 
-$telefon=$_POST["emergencyPhone"] ?? '';
+$telefon = $_POST["emergencyPhone"] ?? '';
+$action = $_POST["action"] ?? '';
 
-
-if (!empty($telefon) && $AcilDurumKisi->AcilDurumKisiVarmi($telefon)) {
-    echo json_encode([
-        "status" => "error",
-        "message" => $telefon . " telefon numarası ile kayıt önceden yapılmıştır. Lütfen farklı telefon giriniz."
-    ]);
-    exit;
-}
-
-if (isset($_POST["action"]) && $_POST["action"] == "AcilDurumEkle") {
+if ($action === "AcilDurumEkle") {
     $id = Security::decrypt($_POST["id"]);
+    $isUpdate = !empty($id) || $id !== 0;
+
+    if (!$isUpdate && !empty($telefon) && $AcilDurumKisi->AcilDurumKisiVarmi($telefon)) {
+        echo json_encode([
+            "status" => "error",
+            "message" => $telefon . " telefon numarası ile kayıt önceden yapılmıştır. Lütfen farklı telefon giriniz."
+        ]);
+        exit;
+    }
 
     $data = [
         "id"               => $id,
@@ -31,24 +32,37 @@ if (isset($_POST["action"]) && $_POST["action"] == "AcilDurumEkle") {
     ];
 
     $lastInsertId = $AcilDurumKisi->saveWithAttr($data);
-if (!$lastInsertId) {
+
+    if (!$lastInsertId && $isUpdate) {
+        $lastInsertId = $id;
+    }
+
+    if (!$lastInsertId) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Kişi kaydedilemedi."
+        ]);
+        exit;
+    }
+    // Yeni veya güncellenmiş satırı tabloya döndür
+    if ($isUpdate) {
+        $realId = $lastInsertId;
+        $sira = $_POST["sira_no"] ?? null;
+        $acilDurumKisiEkle = $AcilDurumKisi->acilDurumKisiEkleTableRow($realId, $sira);
+    } else {
+        $realId = Security::decrypt($lastInsertId);
+        $acilDurumKisiEkle = $AcilDurumKisi->acilDurumKisiEkleTableRow($realId); // sira null => #
+    }
+
+    $acilDurumKisiEkle = $AcilDurumKisi->acilDurumKisiEkleTableRow($realId);
+
     echo json_encode([
-        "status" => "error",
-        "message" => "Kişi kaydedilemedi."
-    ]);
-    exit;
-}
-
-$realId = Security::decrypt($lastInsertId); // Şifre çözülüyor
-$yeniAcilDurumKisiEkle = $AcilDurumKisi->acilDurumKisiEkleTableRow($realId); // Sayısal ID ile çalışılıyor
-
-    $res = [
         "status" => "success",
         "message" => "Başarılı",
         "id" => $realId,
-        "yeniAcilDurumKisiEkle" => $yeniAcilDurumKisiEkle
-    ];
-    echo json_encode($res);
+        "acilDurumKisiEkle" => $acilDurumKisiEkle
+    ]);
+    exit;
 }
 
 if (isset($_POST["action"]) && $_POST["action"] == "delete_acilDurumKisi") {

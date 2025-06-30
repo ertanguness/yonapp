@@ -148,30 +148,38 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', function (e) {
         if (e.target && e.target.id === 'ekle_araba') {
+            Pace.restart();
             fetch('pages/management/peoples/content/AracModal.php')
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('modalContainer').innerHTML = html;
                     let aracModal = new bootstrap.Modal(document.getElementById('aracEkleModal'));
                     aracModal.show();
+                    $(".select2").select2( {
+                        dropdownParent: $('#aracEkleModal'),
+                    } );
                 })
                 .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
         }
+      
         if (e.target && e.target.id === 'ekle_acildurum') {
+            Pace.restart();
             fetch('pages/management/peoples/content/AcilDurumModal.php')
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('modalContainer').innerHTML = html;
                     let acilDurumModal = new bootstrap.Modal(document.getElementById('acilDurumEkleModal'));
                     acilDurumModal.show();
+                    $(".select2").select2( {
+                        dropdownParent: $('#acilDurumEkleModal'),
+                    } );
                 })
                 .catch(error => console.error('Acil Durum Modal yüklenirken hata oluştu:', error));
         }
     });
 });
 </script>
-<script src="src/daire-kisi.js"></script>
-<script src="src/blok-daire.js"></script>
+
 <!-- Araç ve acil durum sekmesinin butonla aktif edilmesi -->
 <script> 
     document.addEventListener("DOMContentLoaded", function () {
@@ -197,7 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
         tabTrigger.show();
     }
 });
-
 </script>
+<script src="src/blok-daire.js"></script>
+<script src="src/daire-kisi.js"></script>
 
 

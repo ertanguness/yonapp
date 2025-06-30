@@ -5,17 +5,24 @@ $site_id = $_SESSION['site_id'] ?? 0;
 
 use Model\BloklarModel;
 use App\Helper\Security;
-use App\Helper\Helper;
+use Model\AcilDurumKisileriModel;
+use Model\KisilerModel;
+use Model\DairelerModel;
 use App\Helper\Form;
+use App\Helper\Helper;
 
+$Daireler= new DairelerModel();
+$AcilDurumKisi = new AcilDurumKisileriModel();
+$Kisiler = new KisilerModel();
 $Block = new BloklarModel();
 
-$blocks = $Block->SiteBloklari($site_id);
-$blockOptions = [];
-foreach ($blocks as $block) {
-    $blockOptions[$block->id] = $block->blok_adi;
-}
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+
+$acilKisi = $AcilDurumKisi->AcilDurumKisiBilgileri($id);
+$kisiBilgileri = $Kisiler->KisiBilgileri($acilKisi->kisi_id ?? null);
+$blocks = $Block->SiteBloklari(site_id: $site_id);
+$daireKisileri= $Kisiler->DaireKisileri($kisiBilgileri->daire_id ?? null);
+$daireler = $Daireler->BlokDaireleri($kisiBilgileri->blok_id ?? 0);
 
 
 
@@ -29,29 +36,37 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
             </div>
             <div class="modal-body">
                 <form id="acilDurumKisileriEkleForm">
-                <input type="hidden" name="acil_kisi_id" id="acil_kisi_id" value="<?php echo $id; ?>">
+                <input type="hidden" name="acil_kisi_id" id="acil_kisi_id" value="<?php echo $_GET['id'] ?? 0; ?>">
                     <!-- Blok Seçimi -->
                     <div class="mb-3">
                         <label for="blokAdi" class="form-label fw-semibold">Blok Seçimi</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
-                           
-                            <?php echo Form::Select2(
-                                'blok_id', 
-                                $blockOptions,
-                                2, 
-                             ) ?>
-
-                             
+                            <select class="form-select select2 w-100 blokAdi" name="blok_id">
+                                <option value="">Blok Seçiniz</option>
+                                <?php foreach ($blocks as $block): ?>
+                                    <option value="<?= htmlspecialchars($block->id) ?>"
+                                        <?= (isset($kisiBilgileri->blok_id) && $kisiBilgileri->blok_id == $block->id) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($block->blok_adi) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>                
                         </div>
                     </div>
                     <!-- Daire No -->
                     <div class="mb-3">
                         <label for="daireNo" class="form-label fw-semibold">Daire No</label>
-                        <div class="input-group">
+                        <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-door-closed"></i></span>
-                            <select id="daireNo" class="form-select daireNo" name="daire_id">
+                            <select class="form-select select2 w-100 daireNo" name="daire_id">
                                 <option value="">Daire Seçiniz</option>
+                                <?php if (!empty($daireler)) : ?>
+                                    <?php foreach ($daireler as $daire): ?>
+                                        <option value="<?= $daire->id ?>" <?= ($kisiBilgileri->daire_id == $daire->id) ? 'selected' : '' ?>>
+                                            <?= $daire->daire_no ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>
@@ -60,8 +75,15 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
                         <label for="kisiSec" class="form-label fw-semibold">Kişi Seç</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <select id="kisiSec" class="form-select select2 w-100 kisiSec" name="kisi_id">
+                            <select id="kisi_id" class="form-select select2 w-100 kisiSec" name="kisi_id">
                                 <option value="">Kişi Seçiniz</option>
+                                <?php if (!empty($daireKisileri)) : ?>
+                                    <?php foreach ($daireKisileri as $kisi): ?>
+                                        <option value="<?= $kisi->id ?>" <?= (isset($kisiBilgileri->id) && $kisiBilgileri->id == $kisi->id) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($kisi->adi_soyadi) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>
@@ -69,14 +91,14 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
                         <label for="acilDurumKisi" class="form-label fw-semibold">Acil Durumda Ulaşılacak Kişi Adı:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-user-shield"></i></span>
-                            <input type="text" id="acilDurumKisi" name="acilDurumKisi" class="form-control" placeholder="Acil Durum Kişisi Giriniz">
+                            <input type="text" id="acilDurumKisi" name="acilDurumKisi" class="form-control" placeholder="Acil Durum Kişisi Giriniz" value="<?php echo $acilKisi->adi_soyadi ?? ''; ?>">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="acilDurumKisiTelefon" class="form-label fw-semibold">Acil Durumda Ulaşılacak Telefon Numarası:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                            <input type="text" id="acilDurumKisiTelefon" name="acilDurumKisiTelefon" class="form-control" placeholder="Telefon Numarası Giriniz">
+                            <input type="text" id="acilDurumKisiTelefon" name="acilDurumKisiTelefon" class="form-control" placeholder="Telefon Numarası Giriniz" value="<?php echo $acilKisi->telefon ?? ''; ?>">
                         </div>
                     </div>
 
@@ -84,12 +106,12 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
                         <label for="yakinlik" class="form-label fw-semibold">Yakınlık Derecesi:</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
-                            
                             <?php echo Form::Select2(
                                 'yakinlik', 
-                                Helper::RELATIONSHIP,
-                                1, 
-                             ) ?>
+                                ["" => "Lütfen Yakınlık Durumunu Seçiniz"] + Helper::RELATIONSHIP,
+                                isset($acilKisi->yakinlik) ? $acilKisi->yakinlik : ""
+                            ) ?>
+                           
                         </div>
                     </div>
 

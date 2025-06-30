@@ -1,4 +1,5 @@
 let table;
+let row;
 $(document).ready(function () {
   if ($(".datatables").length > 0) {
     table = $(".datatables").DataTable({

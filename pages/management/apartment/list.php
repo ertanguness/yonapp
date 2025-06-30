@@ -3,11 +3,14 @@
 use App\Helper\Security;
 use Model\DairelerModel;
 use Model\BloklarModel;
+use Model\KisilerModel;
 
 $Apartment = new DairelerModel();
 $Block = new BloklarModel();
+$Kisiler = new KisilerModel();
 
 $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
+
 ?>
 
 <div class="page-header">
@@ -89,8 +92,28 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
                                                     </a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($apartment->daire_no); ?></td>
-                                                <td>Kişilerden gelecek </td>
-                                                <td>Kişilerden gelecek </td>
+                                                <td>
+                                                    <?php
+                                                    // Kat Maliki (uyelik_tipi = 1)
+                                                    $malik = $Kisiler->AktifKisiByDaireId($apartment->id, 1);
+                                                    if ($malik && isset($malik->adi_soyadi)) {
+                                                        echo htmlspecialchars($malik->adi_soyadi);
+                                                    } else {
+                                                        echo '-';
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    // Kiracı (uyelik_tipi = 2)
+                                                    $kiraci = $Kisiler->AktifKisiByDaireId($apartment->id, 2);
+                                                    if ($kiraci && isset($kiraci->adi_soyadi)) {
+                                                        echo htmlspecialchars($kiraci->adi_soyadi);
+                                                    } else {
+                                                        echo '-';
+                                                    }
+                                                    ?>
+                                                </td>
                                                 <td>
                                                     <?php if ($apartment->aktif_mi == 1): ?>
                                                         <span class="text-success">
@@ -105,7 +128,7 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
 
                                                 <td>
                                                     <div class="hstack gap-1">
-                                                        <a href="index?p=management/apartment/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                    <a href="javascript:void(0);" class="avatar-text avatar-md openDaireDetay" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=management/apartment/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
@@ -130,4 +153,30 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
             </div>
         </div>
     </div>
+    <div id="daireDetay" class="offcanvas ..."></div>
+
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.openDaireDetay');
+            if (target) {
+                const id = target.getAttribute('data-id');
+                Pace.restart(); // varsa
+
+                fetch('pages/management/apartment/content/daireDetay.php?id=' + id)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('daireDetay').innerHTML = html;
+                        const canvasElement = document.getElementById('daireDetayOffcanvas');
+                        const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
+                        offcanvasInstance.show();
+                    })
+                    .catch(error => {
+                        console.error('Detay yüklenemedi:', error);
+                        alert('Bir hata oluştu.');
+                    });
+            }
+        });
+    });
+</script>

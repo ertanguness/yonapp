@@ -11,7 +11,7 @@ ob_start();
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
     if (!isset($_GET["p"])) {
-        $returnUrl = urlencode("/index?p=home/list");
+        $returnUrl = urlencode("/index?p=home");
     }
     header("Location: sign-in.php?returnUrl={$returnUrl}");
     exit();
@@ -67,7 +67,7 @@ $active_page = isset($_GET["p"]) ? $_GET["p"] : "home";
 $menu_name = $menus->getMenusByLink($active_page);
 ?>
 <!DOCTYPE html>
-<html lang="zxx" >
+<html lang="zxx">
 
 <?php $title = 'YonApp - Apartman / Site Yönetim Sistemi' ?>
 <?php include_once './partials/head.php' ?>
@@ -138,21 +138,21 @@ $menu_name = $menus->getMenusByLink($active_page);
             <div class="main-content">
                 <div class="row"> -->
             <?php
-            $page = isset($_GET["p"]) ? $_GET["p"] : "home/list";
-                // echo "user token" . $user->session_token;
-                // echo "session token : ".$_SESSION['csrf_token'];
-            ; ?>
+            $page = isset($_GET["p"]) ? $_GET["p"] : "home";
 
-            <?php
+            // // PANEL İÇİN İSTİSNALI YÖNLENDİRME manuel giriş için 
+            // if ($page === "panel/panel") {
+            //     header("Location: /yonapp/pages/panel/panel.php");
+            //     exit;
+            // }
 
             if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
                 include "pages/{$page}.php";
             } else if (!file_exists("pages/{$page}.php")) {
-
                 include "pages/404.php";
-            } else (
-                    include "pages/home/list.php"
-                );
+            } else {
+                include "pages/home.php";
+            }
             ?>
             <!-- </div>
             </div> -->
@@ -166,12 +166,12 @@ $menu_name = $menus->getMenusByLink($active_page);
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
     <!--<< Footer Section Start >>-->
-     <?php include_once './partials/theme-customizer.php' ?> 
+    <?php include_once './partials/theme-customizer.php' ?>
     <!--<< All JS Plugins >>-->
     <?php include_once './partials/homepage-script.php'; ?>
 
     <?php include_once "./partials/vendor-scripts.php" ?>
- 
+
 
 
 </body>

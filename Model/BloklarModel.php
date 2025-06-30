@@ -64,4 +64,6 @@ class BloklarModel extends Model
         $result = $sql->fetch(PDO::FETCH_OBJ);
         return $result ? $result->blok_adi : null; // Eğer sonuç varsa blok adını döndür, yoksa null döndür
     }
+  
+    
 }

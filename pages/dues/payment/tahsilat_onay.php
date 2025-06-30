@@ -96,7 +96,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'] 
                                             <td>
                                                 <a href="javascript:void(0);"><?php echo $Daire->DaireKodu($onay->daire_id); ?><span
                                                         class="fs-12 fw-normal text-muted">
-                                                        / <?= $Kisi->KisiAdi($onay->kisi_id) ?> /
+                                                        / <?= $Kisi->KisiBilgileri($onay->kisi_id) ?> /
                                                         <?php echo $onay->islem_tarihi; ?></span> </a>
                                                 <p class="fs-12 text-muted mt-2 text-truncate-1-line tasks-sort-desc">
                                                     <?php echo $onay->aciklama ?></p>

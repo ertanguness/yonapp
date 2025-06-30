@@ -90,7 +90,13 @@ class Helper
         '14' => 'Diğer'
     ];
 
-
+    public const ikametTuru = [
+        '1' => 'Kat Maliki',
+        '2' => 'Kiracı',
+        '3' => 'Çalışan',
+        '4' => 'Misafir',
+        '5' => 'Mirasçı'
+    ];
 
     const DAIRE_TYPE = [];
 

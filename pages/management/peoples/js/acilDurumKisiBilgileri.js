@@ -44,36 +44,7 @@ $(document).on("click", "#AcilDurumEkle", function () {
       },      
       yakinlik: { required: "Lütfen yakınlık derecesini seçiniz" }
     },
-<<<<<<< HEAD
-    highlight: function(element) {
-      // input-group varsa, tüm input-group'u işaretle
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        $group.addClass('is-invalid');
-      } else {
-        $(element).addClass('is-invalid');
-      }
-    },
-    unhighlight: function(element) {
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        $group.removeClass('is-invalid');
-      } else {
-        $(element).removeClass('is-invalid');
-      }
-      $(element).next('.error').remove();
-    },
-    errorPlacement: function(error, element) {
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        error.insertAfter($group);
-      } else {
-        error.insertAfter(element);
-      }
-    }
-=======
     
->>>>>>> f466d084495342ce96acacf631a9c504023f8a43
   });
   
   if (!validator.form()) {
@@ -88,20 +59,28 @@ $(document).on("click", "#AcilDurumEkle", function () {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
-      if (data.status == "success") {
+      if (data.status === "success") {
         let table = $("#acilDurumKisileriList").DataTable();
-        table.row.add($(data.yeniAcilDurumKisiEkle)).draw(false);
-       
-       
-        //Eğer işlem başarılı ve güncelleme ise tablodaki veriyi güncelle
-        // let rownode = table.$(tr[data-id="${islem_id}"])[0];
-        // //console.log(rownode);
-        // if (rownode) {
-        //   table.row(rownode).remove().draw();
-        //   table.row.add($(data.son_kayit)).draw(false);
-        // }
-        
+        let existingRow = table.row('[data-id="' + $("#acil_kisi_id").val() + '"]');
+      
+        let currentSira = null;
+        if (existingRow.length > 0) {
+          currentSira = existingRow.node().querySelector(".sira-no")?.textContent;
+          existingRow.remove().draw(false);
+        }
+      
+        // Arac güncelleme ise sira_no gönder
+        formData.append("sira_no", currentSira);
+      
+        // Yeni satırı ekle
+        let newRow = $(data.acilDurumKisiEkle);
+        table.row.add(newRow).draw(false);
+      
+        // Modalı kapat
+        $("#acilDurumEkleModal").modal("hide");
+      
+        // Sıra numaralarını güncelle
+        updateRowNumbers();
       }
       var title = data.status == "success" ? "Başarılı" : "Hata";
       swal.fire({
@@ -110,6 +89,10 @@ $(document).on("click", "#AcilDurumEkle", function () {
         icon: data.status,
         confirmButtonText: "Tamam",
       });
+    })
+    .catch((error) => {
+      console.error("Kayıt sırasında hata:", error);
+      Swal.fire("Hata", "Kayıt sırasında bir hata oluştu.", "error");
     });
 });
 
@@ -151,3 +134,8 @@ $(document).on("click", ".delete-acilDurumKisi", function () {
       }
     });
 });
+function updateRowNumbers() {
+  $("#acilDurumKisileriList tbody tr").each(function (index) {
+    $(this).find(".sira-no").text(index + 1);
+  });
+}

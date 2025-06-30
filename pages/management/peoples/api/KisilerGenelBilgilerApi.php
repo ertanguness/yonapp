@@ -22,15 +22,18 @@ if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
     $girisTarihi     = Date::Ymd($_POST["entryDate"] ?? null);
     $cikisTarihi     = Date::Ymd($_POST["exitDate"] ?? null);
 
-    if ($Kisiler->KisiVarmi( $kimlikNo)) {
-        $kayitli_kisi= $kimlikNo;
-    }
-    if (!empty($kayitli_kisi)) {
-        echo json_encode([
-            "status" => "error",
-            "message" => $kayitli_kisi . " kimlik numarası ile kayıt önceden yapılmıştır. Lütfen farklı bir kimlik numarası giriniz."
-        ]);
-        exit;
+    // Sadece yeni kayıt eklenirken kimlik numarası kontrolü yap
+    if (empty($id) || $id == 0) {
+        if ($Kisiler->KisiVarmi($kimlikNo)) {
+            $kayitli_kisi = $kimlikNo;
+        }
+        if (!empty($kayitli_kisi)) {
+            echo json_encode([
+                "status" => "error",
+                "message" => $kayitli_kisi . " kimlik numarası ile kayıt önceden yapılmıştır. Lütfen farklı bir kimlik numarası giriniz."
+            ]);
+            exit;
+        }
     }
     // Tarih kontrolleri
     if (!empty($cikisTarihi)) {
@@ -60,8 +63,8 @@ if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
 
     $data = [
         "id"               => $id,
-        "blok_id"          => $_POST["blokAdi"],
-        "daire_id"         => $_POST["daireNo"],
+        "blok_id"          => $_POST["blok_id"],
+        "daire_id"         => $_POST["daire_id"],
         "kimlik_no"        => $kimlikNo,
         "adi_soyadi"       => $_POST["fullName"],
         "dogum_tarihi"     => $dogumTarihi,
