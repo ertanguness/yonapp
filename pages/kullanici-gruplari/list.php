@@ -32,9 +32,9 @@ $usergroups = $UserGroups->getUserGroups();
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php //if ($Auths->hasPermission('permission_group_add_update')) { ?>
-                <a href="#" class="btn btn-primary route-link" data-page="users/roles/manage">
+                <a href="#" class="btn btn-primary route-link" data-page="kullanici-gruplari/duzenle">
                     <i class="feather-plus me-2"></i>
-                    <span>Yeni İşlem</span>
+                    <span>Yeni Grup</span>
                 </a>
                 <?php //} ?>
             </div>
@@ -94,7 +94,7 @@ $usergroups = $UserGroups->getUserGroups();
                                                     <?php //if ($Auths->hasPermission('transaction_permissions')) { ?>
                                                     <a href="javascript:void(0);" title="Yetkileri Düzenle"
                                                         class="avatar-text avatar-md  route-link"
-                                                        data-page="kullanici-gruplari/duzenle&id=<?php echo $id ?>">
+                                                        data-page="kullanici-gruplari/yetkiler&id=<?php echo $id ?>">
                                                         <i class="feather-unlock"></i>
                                                     </a>
                                             

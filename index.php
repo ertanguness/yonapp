@@ -26,11 +26,11 @@ require_once __DIR__ . '/vendor/autoload.php';
 use App\Helper\Security;
 use Model\UserModel;
 use Model\MenuModel;
-use Model\Auths;
+use Model\AuthsModel;
 
 $menus = new MenuModel();
 $User = new UserModel();
-$perm = new Auths();
+$perm = new AuthsModel();
 $user = $User->find($_SESSION['user']->id) ?? null;
 
 

@@ -1,34 +1,13 @@
-<style>
-<?php require_once "style.css";
-?>
-</style>
-
-<?php
-
-use App\Helper\Security;
-use Model\UserRolesModel;
-
-$UserRoles = new UserRolesModel();
 
 
-$role_id = Security::decrypt($_GET['id']) ?? 0;
-$role = $UserRoles->find($role_id);
-
-?>
-
-
-<?php
-$maintitle = "Ana Sayfa";
-$title = "Yetki Yönetimi ". ($role ? " - ( " . $role->role_name . " )" : "");
-?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
-            <h5 class="m-b-10">Yetkiler</h5>
+            <h5 class="m-b-10">Yetki Yönetimi</h5>
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
-            <li class="breadcrumb-item">Yetkileri Düzenle</li>
+            <li class="breadcrumb-item">Yetki Grubu Ekle</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
@@ -36,30 +15,19 @@ $title = "Yetki Yönetimi ". ($role ? " - ( " . $role->role_name . " )" : "");
             <div class="d-flex d-md-none">
                 <a href="javascript:void(0)" class="page-header-right-close-toggle">
                     <i class="feather-arrow-left me-2"></i>
-                    <span>Back</span>
+                    <span>Geri</span>
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-
-                <div class="d-flex gap-2">
-                    <a href="index?p=kullanici-gruplari/list" class="btn btn-outline-secondary">
-                        <i class="feather-arrow-left font-size-16 align-middle me-2"></i> Listeye Dön
-                    </a>
-                    <button id="resetChanges" class="btn btn-outline-danger">
-                        <i class="feather-x-square font-size-16 align-middle me-2"></i> Sıfırla
-                    </button>
-                    <button id="selectAllPermissions" class="btn btn-outline-primary">
-                        <i class="feather-check-circle font-size-16 align-middle me-2"></i> Tümünü Seç
-                    </button>
-                
-                    <a href="#" id="savePermissions" class="btn btn-primary route-link" data-page="kullanici/duzenle">
-                        <i class="feather-plus me-2"></i>
-                        <span>Kaydet</span>
-                    </a>
-
-                </div>
+                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="kullanici-gruplari/list">
+                    <i class="feather-arrow-left me-2"></i>
+                    Listeye Dön
+                </button>
+                <button type="button" class="btn btn-primary" id="kasa_kaydet">
+                    <i class="feather-save  me-2"></i>
+                    Kaydet
+                </button>
             </div>
-
         </div>
         <div class="d-md-none d-flex align-items-center">
             <a href="javascript:void(0)" class="page-header-right-open-toggle">
@@ -68,91 +36,117 @@ $title = "Yetki Yönetimi ". ($role ? " - ( " . $role->role_name . " )" : "");
         </div>
     </div>
 </div>
+
 <div class="main-content">
+<?php
+    $title = 'Kasa Listesi!';
+    $text = 'Tanımlı kasalarınızı görüntüleyebilir, yeni kasa ekleyebilir veya düzenleyebilirsiniz. Gelir/Gider işlemleri için varsayılan kasayı unutmayın!';
+    require_once 'pages/components/alert.php';
+    ?>
     <div class="row">
-        <input type="text" id="user_id" name="user_id" value="<?php echo $_GET['id'] ?? 0 ?>" hidden>
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <!-- Kaydetme Alanı -->
-                    <div class="me-auto">
-                        <span id="selectedCount" class="text-muted badge badge-count">0</span>
-                        <span class="text-muted ms-2">yetki seçildi</span>
-                        <span class="text-muted ms-3 d-none d-sm-inline">(<span id="requiredCount">0</span>
-                            zorunlu)</span>
-                    </div>
-                    <div class="d-flex gap-2">
+        <div class="container-xl">
+            <div class="row row-deck row-cards">
+                <div class="col-12">
+                    <div class="card">
+                        <form action="" id="kasaForm">
+                            <div class="card-body custom-card-action p-0">
+                                <div class="card-body personal-info">
+                                    <div class="row mb-4 align-items-center">
+                                        <!-- Hidden Row -->
+                                        <div class="row d-none">
+                                            <div class="col-md-4">
+                                                <input type="text" name="id" class="form-control" value="<?= $bank->id ?? 0 ?>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" name="action" value="saveBank" class="form-control">
+                                            </div>
+                                        </div>
+                                        <!-- Hidden Row -->
 
-                        <button class="btn btn-sm btn-outline-primary" id="selectHighlighted">
-                            <i class="ti ti-check"></i> Arama Sonuçlarını Seç
-                        </button>
-                        <input type="text" class="form-control" id="permissionSearch"
-                            placeholder="Yetki veya grup adı ara...">
-                    </div>
+                                        <div class="col-lg-2">
+                                            <label class="fw-semibold">Banka Adı:</label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-credit-card"></i></div>
+                                                <input type="text" class="form-control" name="bank_name" value="<?= $bank->bank_name ?? '' ?>">
+                                            </div>
+                                        </div>
 
-
-                </div>
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                        <div class="col-md-10">
-
-                            <div class="filter-chips mb-2 mb-md-0 d-flex flex-wrap gap-1" id="filterChips">
-
-                            </div>
-                        </div>
-                        <div class="col-md-2 d-flex justify-content-end">
-
-                            <div class="align-items-center gap-1">
-
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="showTreeView">
-                                    <label class="form-check-label" for="showTreeView">Ağaç Görünümü</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Yetki Grupları (Kart Görünümü) -->
-                    <div id="cardViewContainer">
-
-                        <div id="permissionContainer" class="mb-4">
-                            <!-- Dinamik olarak yüklenecek -->
-                        </div>
-
-                        <!-- Yükleme Skeleton -->
-                        <div id="loadingSkeleton" style="display: none;">
-                            <div class="permission-group loading mb-3">
-                                <div class="group-header placeholder-glow">
-                                    <div class="d-flex align-items-center w-100">
-                                        <div class="permission-icon placeholder me-3"></div>
-                                        <div class="flex-grow-1"><span class="placeholder col-6"></span></div>
-                                        <span class="placeholder col-2"></span>
+                                        <div class="col-lg-2">
+                                            <label class="fw-semibold">IBAN:</label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-hash"></i></div>
+                                                <input type="text" class="form-control" name="iban" id="iban" value="<?= $bank->iban ?? 'TR' ?>" maxlength="32" placeholder="IBAN giriniz">
+                                                </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="permission-group loading mb-3">
-                                <div class="group-header placeholder-glow">
-                                    <div class="d-flex align-items-center w-100">
-                                        <div class="permission-icon placeholder me-3"></div>
-                                        <div class="flex-grow-1"><span class="placeholder col-7"></span></div>
-                                        <span class="placeholder col-2"></span>
+
+                                    <div class="row mb-4 align-items-center">
+                                        <div class="col-lg-2">
+                                            <label class="fw-semibold">Şube Adı:</label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-map-pin"></i></div>
+                                                <input type="text" class="form-control" name="branch_name" value="<?= $bank->branch_name ?? '' ?>">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <label class="fw-semibold">Şube Kodu:</label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-hash"></i></div>
+                                                <input type="text" class="form-control" name="branch_code" value="<?= $bank->branch_code ?? '' ?>">
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    <div class="row mb-4 align-items-center">
+                                        <div class="col-lg-2">
+                                            <label class="fw-semibold">Hesap Sahibi:</label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-user"></i></div>
+                                                <input type="text" class="form-control" name="account_owner" value="<?= $bank->account_owner ?? '' ?>">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <label class="fw-semibold">Hesap Numarası:</label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-hash"></i></div>
+                                                <input type="text" class="form-control" name="account_number" value="<?= $bank->account_number ?? '' ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-4 align-items-center">
+                                        <div class="col-lg-2">
+                                            <label class="fw-semibold">Açıklama:</label>
+                                        </div>
+                                        <div class="col-lg-10">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-info"></i></div>
+                                                <textarea class="form-control" name="description" rows="3"><?= $bank->description ?? '' ?></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
-
-                    <!-- Ağaç Görünümü -->
-                    <div id="treeViewContainer" class="permission-tree mb-4" style="display: none;">
-                        <!-- Ağaç yapısı buraya yüklenecek -->
-                    </div>
-
-                    <div class="toast-container"></div>
-
-
                 </div>
             </div>
         </div>
     </div>
 </div>
+
