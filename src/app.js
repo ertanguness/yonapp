@@ -365,6 +365,8 @@ function getTowns(cityId, targetElement) {
   formData.append("city_id", cityId);
   formData.append("action", "getTowns");
 
+
+  console.log("Fetching towns for city ID:", cityId);
   fetch("api/il-ilce.php", {
     method: "POST",
     body: formData,

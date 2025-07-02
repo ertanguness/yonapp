@@ -1,6 +1,6 @@
 <?php
-require_once '../Database/require.php';
-require_once '../App/Helper/cities.php';
+require_once __DIR__ . '/../configs/bootstrap.php';
+
 
 use App\Helper\Cities;
 
