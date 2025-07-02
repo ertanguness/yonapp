@@ -12,6 +12,12 @@ $Kisiler = new KisilerModel();
 $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
 
 ?>
+<style>
+  #daireDetayOffcanvas {
+    z-index: 1060 !important;
+  }
+</style>
+
 
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">

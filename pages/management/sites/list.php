@@ -12,6 +12,12 @@ $Sitem = $Siteler->Sitelerim();
 $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 
 ?>
+<style>
+  #siteDetayOffcanvas {
+    z-index: 1060 !important;
+  }
+</style>
+
 
 <div class="page-header">
 
@@ -138,31 +144,35 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
             </div>
         </div>
     </div>
-    <div id="siteDetay" class="offcanvas ..."></div>
+    <div id="siteDetay"></div>
 
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.addEventListener('click', function(e) {
-            const target = e.target.closest('.openSiteDetay');
-            if (target) {
-                const id = target.getAttribute('data-id');
-                Pace.restart(); // varsa
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (e) {
+        const target = e.target.closest('.openSiteDetay');
+        if (target) {
+            const id = target.getAttribute('data-id');
+            Pace.restart?.();
 
-                fetch('pages/management/sites/content/siteDetay.php?id=' + id)
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('siteDetay').innerHTML = html;
+            fetch('pages/management/sites/content/siteDetay.php?id=' + id)
+                .then(response => response.text())
+                .then(html => {
+                    const container = document.getElementById('siteDetay');
+                    container.innerHTML = html;
 
-                        const canvasElement = document.getElementById('siteDetayOffcanvas');
-                        const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
-                        offcanvasInstance.show();
-                    })
-                    .catch(error => {
-                        console.error('Detay yüklenemedi:', error);
-                        alert('Bir hata oluştu.');
-                    });
-            }
-        });
+                    // DOM'a yeni offcanvas eklendikten sonra bul
+                    const canvasElement = document.getElementById('siteDetayOffcanvas');
+                    const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
+
+                    // Bootstrap offcanvas'ı JS üzerinden başlat => backdrop otomatik oluşur
+                    offcanvasInstance.show();
+                })
+                .catch(error => {
+                    console.error('Detay yüklenemedi:', error);
+                    alert('Bir hata oluştu.');
+                });
+        }
     });
+});
 </script>

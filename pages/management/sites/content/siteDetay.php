@@ -30,7 +30,7 @@ $il = $cities->getCityName($site->il ?? null);
 $ilce = $cities->getTownName($site->ilce ?? null);
 ?>
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="siteDetayOffcanvas" data-bs-backdrop="false">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="siteDetayOffcanvas" data-bs-backdrop="true">
     <div class="offcanvas-header ht-80 px-4 border-bottom border-gray-5">
         <div>
             <h2 class="fs-20 fw-bold text-truncate-1-line"><?= htmlspecialchars($site->site_adi) ?></h2>
