@@ -2,19 +2,29 @@
 
 
 namespace App\Helper;
-use Database\Db;
 use App\Helper\Security;
 use PDO;
 
 
-class Aidat extends Db
+class Aidat 
 {
     protected $table = 'dues';
+
+       /**
+     * Aktif PDO veritabanı bağlantısını tutar.
+     * @var PDO
+     */
+    private PDO $db;
+
+    /**
+     * Sınıf oluşturulduğunda, merkezi veritabanı bağlantısını alır.
+     */
     public function __construct()
     {
-        parent::__construct();
+        // bootstrap.php'de tanımladığımız global yardımcı fonksiyonu çağırıyoruz.
+        $this->db = \getDbConnection();
     }
-    
+  
     public function AidatTuruSelect($name = 'dues', $id = null)
     {
         $query = $this->db->prepare('SELECT * FROM dues where site_id = ?');  // Tüm sütunları seç

@@ -1,14 +1,17 @@
 <?php
 
+use App\InterFaces\LoggerInterface;
 use Model\Model;
 use PDO;
 
 class UserModel extends Model
 {
     protected $table = 'users';
+    private LoggerInterface $logger;
     public function __construct()
     {
         parent::__construct($this->table);
+        $this->logger = $GLOBALS['logger'] ;
     }
 
 

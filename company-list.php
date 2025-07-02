@@ -1,15 +1,12 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-session_start();
+
+require_once __DIR__ . '/configs/bootstrap.php';
+
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 header("Expires: 0");
-ob_start();
 
-
-require_once __DIR__ . '/vendor/autoload.php';
 
 
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {

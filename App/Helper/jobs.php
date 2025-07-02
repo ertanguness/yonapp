@@ -1,10 +1,31 @@
 <?php 
-require_once "Database/db.php";
 
-use Database\Db;
+namespace App\Helper;
 
-class Jobs extends Db
+use PDO;
+use PDOException;
+
+
+
+class Jobs 
 {
+
+
+         /**
+     * Aktif PDO veritabanı bağlantısını tutar.
+     * @var PDO
+     */
+    private PDO $db;
+
+    /**
+     * Sınıf oluşturulduğunda, merkezi veritabanı bağlantısını alır.
+     */
+    public function __construct()
+    {
+        // bootstrap.php'de tanımladığımız global yardımcı fonksiyonu çağırıyoruz.
+        $this->db = \getDbConnection();
+    }
+
     public function jobGroupsSelect($name = "job_groups", $id = null)
     {
         try {
