@@ -39,7 +39,8 @@ $site_adi = $site ? $site->site_adi : null;
     $title = "Kişi Yükleme";
     $text = "*Bu sayfada Excel dosyasından toplu olarak daire kişi bilgilerini yükleyebilirsiniz. ";
     $text .= "<br>*Lütfen aşağıdaki örnek şablona uygun bir dosya kullanınız.";
-    $text .=  "<br>*Dosyada olması gereken alanlar: Tarih*, Tutar*,Daire Kodu,Ödeyen(Ev Sahibi,Kiracı), Ödeme Türü,<strong>Açıklama(Daire Kodundan Eşleşme Yapılacak)*</strong>, Referans Numarası";
+    $text .=  "<br>*Dosyada olması gereken alanlar: Blok*, Daire*,Tc Kimlik No,Adı Soyadı*,Telefon*,İyelik Türü(Ev Sahibi,Kiracı),Satın Alma Tarihi(Ev Sahibi İse),
+    Giriş Tarihi,Cinsiyet, Doğum Tarihi, Eposta Adresi";
     $text .= "<br><strong></strong> <a href='files\payment-upload-from-xls.xlsx' target='_blank'>Örnek Excel Dosyası İndir</a>";
     require_once 'pages/components/alert.php';
     ?>
@@ -84,8 +85,11 @@ $site_adi = $site ? $site->site_adi : null;
                                     <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="block_name" class="form-label">Blok Adı</label>
-                                            <?php echo ($blokHelper->blokSelect("block_id",false)) ?>
+                                            <?php echo ($blokHelper->blokSelect("blok_id",false)) ?>
                                         </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                    <a href="#" id="sablon-indir-linki">Örnek Excel Dosyası İndir</a>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -110,3 +114,32 @@ $site_adi = $site ? $site->site_adi : null;
         </div>
     </div>
 </div>
+
+<script>
+
+    // Sayfanızdaki bir script bloğuna ekleyin
+const blokSelect = document.getElementById('blok_id');
+const downloadLink = document.getElementById('sablon-indir-linki');
+
+function updateDownloadLink() {
+    const blokId = blokSelect.value;
+
+    if ( blokId) {
+        // Tüm bloklar için indirme linki
+        downloadLink.href = `/pages/management/peoples/download-template.php?&blok_id=${blokId}`;
+        downloadLink.style.display = 'block'; // Linki görünür yap
+    } else if (siteId && !blokId) {
+         // Sadece site seçiliyse, o sitenin TÜM daireleri için
+       //# downloadLink.href = `download-template.php?site_id=${siteId}`;
+        downloadLink.style.display = 'block';
+    } else {
+        downloadLink.style.display = 'none'; // Seçim yoksa linki gizle
+    }
+}
+
+// Select kutuları değiştiğinde fonksiyonu çağır
+blokSelect.addEventListener('change', updateDownloadLink);
+
+// Sayfa yüklendiğinde ilk durumu ayarla
+updateDownloadLink();
+</script>

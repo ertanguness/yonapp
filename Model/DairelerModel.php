@@ -125,6 +125,27 @@ class DairelerModel extends Model
         $query->execute([$daire_tipi_id]);
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
+
+
+    public function getDairelerForTemplate(int $siteId, ?int $blokId = null): array
+{
+    $sql = "SELECT d.daire_kodu FROM daireler d
+            JOIN bloklar b ON d.blok_id = b.id
+            WHERE b.site_id = ?";
+    
+    $params = [$siteId];
+
+    if ($blokId !== null) {
+        $sql .= " AND d.blok_id = ?";
+        $params[] = $blokId;
+    }
+    
+    $sql .= " ORDER BY d.id ASC";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
   
 
     
