@@ -21,32 +21,7 @@ $(document).on("click", "#save_sites", function () {
       ilce: { required: "Lütfen ilçe seçiniz", },
       adres: {required: "Lütfen adres giriniz", },
     },
-    highlight: function(element) {
-      // input-group varsa, tüm input-group'u işaretle
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        $group.addClass('is-invalid');
-      } else {
-        $(element).addClass('is-invalid');
-      }
-    },
-    unhighlight: function(element) {
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        $group.removeClass('is-invalid');
-      } else {
-        $(element).removeClass('is-invalid');
-      }
-      $(element).next('.error').remove();
-    },
-    errorPlacement: function(error, element) {
-      var $group = $(element).closest('.input-group');
-      if ($group.length) {
-        error.insertAfter($group);
-      } else {
-        error.insertAfter(element);
-      }
-    }
+    
   });
   if (!validator.form()) {
     return;
@@ -69,6 +44,12 @@ $(document).on("click", "#save_sites", function () {
       });
     });
 });
+
+$(document).on("change", ".select2", function () {
+  $(this).valid(); // Trigger validation for the changed select2 element
+});
+
+
 
 $(document).on("click", ".delete-Siteler", function () {
   let id = $(this).data("id");
@@ -96,7 +77,8 @@ $(document).on("click", ".delete-Siteler", function () {
           .then((response) => response.json())
           .then((data) => {
             if (data.status == "success") {
-            console.log("Çözümlenmiş ID:", data.decrypted_id);
+           // console.log("Çözümlenmiş ID:", data.decrypted_id);
+           //window.location.reload(); // Sayfayı yeniden yükle
 
               let table = $("#SitelerList").DataTable();
               table.row(buttonElement.closest("tr")).remove().draw(false);
@@ -105,7 +87,7 @@ $(document).on("click", ".delete-Siteler", function () {
                 `${sitesName} sitesi  tanımı başarıyla silindi.`,
                 "success"
               );
-            }
+             }
           });
       }
     });

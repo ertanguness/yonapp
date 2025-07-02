@@ -3,3 +3,20 @@
 [2025-07-02 13:33:28] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
 [2025-07-02 14:43:48] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
 [2025-07-02 14:55:25] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-02 15:18:52] [INFO] Bir site kaydı silindi. {"deleted_site_id":null,"deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:19:17] [INFO] Bir site kaydı silindi. {"deleted_site_id":{},"deleted_by_user_id":null,"user_email":null,"ip_address":"::1"}
+[2025-07-02 15:19:40] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-02 15:19:45] [INFO] Bir site kaydı silindi. {"deleted_site_id":null,"deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:19:58] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-02 15:21:21] [INFO] Bir site kaydı silindi. {"deleted_site_id":null,"deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:21:58] [INFO] Bir site kaydı silindi. {"deleted_site_id":"QDpX5KsTGbFyQ7qSooogZEAKfnDxKq2jVb4BX3Ft","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:22:50] [INFO] Bir site kaydı silindi. {"deleted_site_id":"ehv5-jdy2gUQt3PJqDhosGXxjgEUM0_Y_BsZSQ2u","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:23:19] [INFO] Bir site kaydı silindi. {"deleted_site_id":"ArOznBb90YlPPfFyZka1w19k3vPrsVkdCLhssH4m","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:23:40] [INFO] Bir site kaydı silindi. {"deleted_site_id":"APELdbiT1g3btA3pSrWSL9x5kLP7WxcJWU-xbuDB","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:24:10] [INFO] Bir site kaydı silindi. {"deleted_site_id":"NymOkdy0Tupi3P6xEl63o2u449iI5JYnX53Lv07H","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:42:31] [INFO] Bir site kaydı silindi. {"deleted_site_id":"c1ILtw7e1nSdZIqESrJN5yUOwIwDm8ASI0rx9a7o","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:44:23] [INFO] Bir site kaydı silindi. {"deleted_site_id":"ghds748qAWZtBWLPMRLcveoas9fj7ThYQzE0ItGX","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:44:33] [INFO] Bir site kaydı silindi. {"deleted_site_id":"uaIkL1qqc9_HiLm9YLAQSk4PhGfA5W5bNRMfTCCM","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:45:35] [INFO] Bir site kaydı silindi. {"deleted_site_id":"11","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:45:45] [INFO] Bir site kaydı silindi. {"deleted_site_id":"10","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 15:46:58] [INFO] Bir site kaydı silindi. {"deleted_site_id":"3","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}

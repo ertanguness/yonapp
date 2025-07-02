@@ -211,22 +211,25 @@
     <script>
         $(document).ready(function() {
             $('#il').change(function() {
-                var cityID = $(this).val();
 
-                if (cityID) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'api/il-ilce.php',
-                        data: {
-                            city_id: cityID
-                        },
-                        success: function(html) {
-                            $('#ilce').html(html);
-                        }
-                    });
-                } else {
-                    $('#ilce').html('<option value="">İlçe Seçiniz</option>');
-                }
+                getTowns("il", "ilce");
+                // var cityID = $(this).val();
+                
+
+                // if (cityID) {
+                //     $.ajax({
+                //         type: 'POST',
+                //         url: '/api/il-ilce.php',
+                //         data: {
+                //             city_id: cityID
+                //         },
+                //         success: function(html) {
+                //             $('#ilce').html(html);
+                //         }
+                //     });
+                // } else {
+                //     $('#ilce').html('<option value="">İlçe Seçiniz</option>');
+                // }
             });
         });
     </script>

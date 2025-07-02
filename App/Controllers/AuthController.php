@@ -77,6 +77,24 @@ class AuthController
 
 
 
+    /*Kullanıcı bilgilerini alır.
+     * @return object|null Kullanıcı nesnesi veya null
+     */
+    public static function user(): ?object
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Eğer oturumda kullanıcı bilgisi varsa, onu döndür
+        if (isset($_SESSION['user'])) {
+            return $_SESSION['user'];
+        }
+
+        // Oturumda kullanıcı bilgisi yoksa null döndür
+        return null;
+    }
+
     //================================================================
     // STATİK YARDIMCI METOTLAR (Uygulama Geneli Servisler)
     //================================================================
