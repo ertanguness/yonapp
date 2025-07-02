@@ -112,6 +112,11 @@ if (
         echo '<script src="pages/management/peoples/js/aracBilgileri.js"></script>';
         echo '<script src="pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
     }
+
+
+if ($page == 'management/peoples/upload-from-xls') {
+    echo '<script src="pages/management/peoples/js/upload-from-xls.js"></script>';
+}
    //*************PEOPLES******************************** */
  
 //*************Define APARTMENT TYPES******************************** */

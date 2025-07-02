@@ -57,7 +57,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 <div class="main-content">
     <?php
     // --- TEK SATIRDA FLASH MESAJLARI GÖSTERME ---
-    include __DIR__ . '../../../../partials/_flash_messages.php';
+    //include __DIR__ . '../../../../partials/_flash_messages.php';
     ?>
     <?php
     $title = "Siteler Listesi!";

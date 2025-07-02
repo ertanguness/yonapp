@@ -43,6 +43,7 @@
     <!--! BEGIN: Custom CSS-->
     <link rel="stylesheet" type="text/css" href="assets/css/theme.min.css" />
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="assets/vendors/css/tooltip.css" />
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/flatpickr.min.css" />
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">

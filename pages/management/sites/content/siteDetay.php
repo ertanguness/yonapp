@@ -1,5 +1,6 @@
 <?php
-require_once '../../../../vendor/autoload.php';
+require_once dirname(__DIR__,levels: 4) . '/configs/bootstrap.php';
+
 
 use App\Helper\Security;
 use Model\SitelerModel;
@@ -87,7 +88,7 @@ $ilce = $cities->getTownName($site->ilce ?? null);
         </div>
         <div class="mb-3 d-flex">
             <div style="width: 130px; font-weight: 600;">Adres:</div>
-            <div style="white-space: pre-line;"><?= htmlspecialchars($site->tam_adres) ?></div>
+            <div style="white-space: pre-line;"><?= htmlspecialchars($site->tam_adres ?? '') ?></div>
         </div>
         <div class="mb-3 d-flex">
             <div style="width: 130px; font-weight: 600;">Açıklama:</div>

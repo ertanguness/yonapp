@@ -1,0 +1,150 @@
+
+.container {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+/* ============================================= */
+/*          MODERN TOOLTIP STİLLERİ              */
+/* ============================================= */
+
+/* Ana tooltip konteyneri */
+.has-tooltip {
+    position: relative; /* Bu, ::before ve ::after'ın buna göre konumlanması için kritik */
+    cursor: pointer;
+}
+
+/* Tooltip'in metin kutusu (::before) ve oku (::after) */
+.has-tooltip::before,
+.has-tooltip::after {
+    /* Başlangıç durumu: görünmez ve etkileşime kapalı */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    
+    /* Pürüzsüz geçiş efekti */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Yumuşak bir ease-out efekti */
+    
+    /* z-index ile diğer elemanların üzerinde kalmasını sağla */
+    z-index: 10;
+}
+
+/* Metin kutusunun stili (::before) */
+.has-tooltip::before {
+    /* Tooltip metnini 'data-tooltip' attribute'ünden al */
+    content: attr(data-tooltip);
+    
+    position: absolute;
+    background-color: #2c3e50; /* Koyu, şık bir arka plan */
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    white-space: nowrap; /* Metnin tek satırda kalmasını sağlar (uzun metinler için aşağıda düzenleme var) */
+    text-align: center;
+    font-weight: 500 !important; /* Yazı tipi kalınlığı */
+    text-transform: capitalize; /* İlk harfleri büyük yapar */
+    
+    /* Uzun metinler için maksimum genişlik */
+    max-width: 820px ;
+     white-space: normal; /*Uzun metinlerin alt satıra geçmesine izin ver */
+}
+
+/* Ok'un stili (::after) */
+.has-tooltip::after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+}
+
+/* Hover (üzerine gelme) durumu */
+.has-tooltip:hover::before,
+.has-tooltip:hover::after {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/* --- YÖN VE KONUM AYARLARI --- */
+
+/* Varsayılan: Yukarıda (Tooltip Top) */
+.has-tooltip::before {
+    bottom: calc(100% + 8px); /* Elemanın %100 üstünde + 8px boşluk */
+    left: 50%;
+    transform: translateX(-50%);
+}
+.has-tooltip::after {
+    bottom: 100%; /* Ok, elemanın tam üstünde */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-color: #2c3e50 transparent transparent transparent; /* Sadece üst kenarlığa renk vererek ok oluştur */
+}
+.has-tooltip:hover::before {
+    transform: translateX(-50%) translateY(-5px); /* Yukarı doğru hafifçe kayarak belir */
+}
+.has-tooltip:hover::after {
+    transform: translateX(-50%) translateY(-5px);
+}
+
+
+/* Konum: Aşağıda (Tooltip Bottom) */
+.has-tooltip.tooltip-bottom::before {
+    top: calc(100% + 8px);
+    bottom: auto; /* Varsayılanı sıfırla */
+}
+.has-tooltip.tooltip-bottom::after {
+    top: 100%;
+    bottom: auto;
+    border-color: transparent transparent #2c3e50 transparent; /* Ok aşağıyı göstersin */
+}
+.has-tooltip.tooltip-bottom:hover::before,
+.has-tooltip.tooltip-bottom:hover::after {
+    transform: translateX(-50%) translateY(5px); /* Aşağı doğru kayarak belir */
+}
+
+
+/* Konum: Sağda (Tooltip Right) */
+.has-tooltip.tooltip-right::before {
+    left: calc(100% + 8px);
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+}
+.has-tooltip.tooltip-right::after {
+    left: 100%;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    border-color: transparent #2c3e50 transparent transparent; /* Ok sağı göstersin */
+}
+.has-tooltip.tooltip-right:hover::before,
+.has-tooltip.tooltip-right:hover::after {
+    transform: translateY(-50%) translateX(5px); /* Sağa doğru kayarak belir */
+}
+
+
+/* Konum: Solda (Tooltip Left) */
+.has-tooltip.tooltip-left::before {
+    right: calc(100% + 8px);
+    left: auto;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+}
+.has-tooltip.tooltip-left::after {
+    right: 100%;
+    left: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    border-color: transparent transparent transparent #2c3e50; /* Ok solu göstersin */
+}
+.has-tooltip.tooltip-left:hover::before,
+.has-tooltip.tooltip-left:hover::after {
+    transform: translateY(-50%) translateX(-5px); /* Sola doğru kayarak belir */
+}

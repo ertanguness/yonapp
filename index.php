@@ -62,6 +62,7 @@ if (!file_exists($pagePath)) {
 
     <main class="nxl-container">
         <div class="nxl-content">
+           
             <?php include $viewToInclude; // Sayfayı dahil et ?>
         </div>
         <?php include './partials/footer.php'; ?>

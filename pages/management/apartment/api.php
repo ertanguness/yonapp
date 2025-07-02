@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once '../../../vendor/autoload.php';
+require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
+
+
 $site_id = $_SESSION["site_id"];
 
 use Model\DairelerModel;
@@ -60,7 +61,7 @@ if ($_POST["action"] == "save_apartment") {
 
     $res = [
         "status" => "success",
-        "message" => "Başarılı"
+        "message" => "Başarılı! Daire başarıyla kaydedildi.",
     ];
     echo json_encode($res);
 }

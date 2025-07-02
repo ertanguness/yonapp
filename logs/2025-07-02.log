@@ -20,3 +20,6 @@
 [2025-07-02 15:45:35] [INFO] Bir site kaydı silindi. {"deleted_site_id":"11","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
 [2025-07-02 15:45:45] [INFO] Bir site kaydı silindi. {"deleted_site_id":"10","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
 [2025-07-02 15:46:58] [INFO] Bir site kaydı silindi. {"deleted_site_id":"3","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 16:24:24] [INFO] Bir site kaydı silindi. {"deleted_site_id":"2","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-02 17:50:11] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-07-02 17:51:20] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}

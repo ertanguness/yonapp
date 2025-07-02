@@ -1,6 +1,6 @@
 <?php
-session_start();
-require_once '../../../../vendor/autoload.php';
+require_once dirname(__DIR__ ,levels: 4). '/configs/bootstrap.php';
+
 
 use App\Helper\Security;
 use Model\AraclarModel;

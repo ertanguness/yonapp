@@ -12,8 +12,9 @@ $Bloklar = new BloklarModel();
 $Daireler = new DairelerModel();
 $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
 
-
 ?>
+
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -36,19 +37,17 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                 <?php
                 require_once 'pages/components/download.php'
                 ?>
-                <a href="index?p=management/peoples/manage&tab=car" class="btn btn-outline-secondary">
-                    <i class="feather-truck me-2"></i>
-                    <span>Araç Bilgisi Ekle</span>
+           
+                <a href="index?p=management/peoples/upload-from-xls" 
+                data-tooltip="Kişileri Excelden Yükle"
+                class="btn btn-icon has-tooltip tooltip-bottom">
+                    <i class="feather-upload"></i>
                 </a>
 
-                <a href="index?p=management/peoples/manage&tab=emergency" class="btn btn-outline-danger">
-                    <i class="feather-alert-triangle me-2"></i>
-                    <span>Acil Durum Ekle</span>
-                </a>
-
-
-                <a href="#" class="btn btn-primary route-link" data-page="management/peoples/manage">
-                    <i class="feather-plus me-2"></i>
+                <a href="#" class="btn btn-primary route-link" 
+                
+                data-page="management/peoples/manage">
+                    <i class="feather-plus"></i>
                     <span>Yeni Kişi Ekle</span>
                 </a>
             </div>

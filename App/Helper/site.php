@@ -17,6 +17,18 @@ class Site extends Db{
         $this->SiteModel = new SitelerModel();
     }
 
+    /*Session'da site_id varsa, o siteyi döndürür. 
+    *@return array|null
+    */
+    public function getCurrentSite()
+    {
+        if (isset($_SESSION['site_id']) && !empty($_SESSION['site_id'])) {
+            $siteId = ($_SESSION['site_id']);
+            return $this->SiteModel->find($siteId);
+        }
+        return null; // Eğer site_id yoksa null döndür
+    }
+
 
     
     

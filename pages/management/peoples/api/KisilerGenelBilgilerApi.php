@@ -1,6 +1,6 @@
 <?php
-session_start();
-require_once '../../../../vendor/autoload.php';
+require_once dirname(__DIR__ ,levels: 4). '/configs/bootstrap.php';
+
 $site_id = $_SESSION["site_id"];
 
 use App\Helper\Security;
@@ -81,7 +81,7 @@ if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
 
     $res = [
         "status" => "success",
-        "message" => "Başarılı"
+        "message" => "Başarılı! Kişi başarıyla kaydedildi.",
     ];
     echo json_encode($res);
 }

@@ -210,7 +210,6 @@ class AuthController
 
         // Loglama ve Token işlemleri
         $userModel->setToken($user->id, $_SESSION['csrf_token']);
-        $_SESSION["log_id"] = $userModel->loginLog($user->id);
 
         $logger->info("Kullanıcı başarıyla giriş yaptı.", [
             'user_id' => $user->id,
