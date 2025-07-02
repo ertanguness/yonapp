@@ -1,4 +1,5 @@
-                            <input type="hidden" class="form-control" id="user_id" name="user_id" value="<?php echo $_GET["id"] ?? 0 ?>">
+                            <input type="hidden" class="form-control" id="user_id" name="user_id"
+                                value="<?php echo $_GET["id"] ?? 0 ?>">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
@@ -71,3 +72,5 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>

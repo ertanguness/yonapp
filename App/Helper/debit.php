@@ -2,19 +2,29 @@
 
 namespace App\Helper;
 
-use Database\Db;
+
 use App\Helper\Security;
 use Model\PeoplesModel;
 use PDO;
 
-class Debit extends Db
+class Debit 
 {
     protected $table = 'debit';
+        /**
+     * Aktif PDO veritabanı bağlantısını tutar.
+     * @var PDO
+     */
+    private PDO $db;
+
+    /**
+     * Sınıf oluşturulduğunda, merkezi veritabanı bağlantısını alır.
+     */
     public function __construct()
     {
-        parent::__construct();
+        // bootstrap.php'de tanımladığımız global yardımcı fonksiyonu çağırıyoruz.
+        $this->db = \getDbConnection();
     }
-    
+
   
     public function getPeopleSelect($name = 'target_person', $id = null)
     {

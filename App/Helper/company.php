@@ -6,13 +6,25 @@ use Model\MyFirmModel;
 
 class CompanyHelper extends Db
 {
+
     protected $table = 'companies';
     protected $MyFirmModel = null;
+        /**
+     * Aktif PDO veritabanı bağlantısını tutar.
+     * @var PDO
+     */
+    private PDO $db;
+
+    /**
+     * Sınıf oluşturulduğunda, merkezi veritabanı bağlantısını alır.
+     */
     public function __construct()
     {
-        parent::__construct();
+        // bootstrap.php'de tanımladığımız global yardımcı fonksiyonu çağırıyoruz.
+        $this->db = \getDbConnection();
         $this->MyFirmModel = new MyFirmModel();
     }
+ 
     public function getCompanySelect($name = 'companies', $id = null)
     {
         $firm_id = $_SESSION['user']->id;

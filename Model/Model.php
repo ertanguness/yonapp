@@ -3,22 +3,24 @@
 
 namespace Model;
 
-use Database\Db;
 use App\Helper\Security;
 use PDO;
 
 
-class Model extends Db
+class Model 
 {
     protected $table;
     protected $primaryKey = 'id';
     protected $attributes = [];
     protected $isNew = true;
 
+    protected $db;
+
+
     public function __construct($table = null)
     {
-        parent::__construct();  // Eğer bir üst sınıf varsa ve yapıcı metodu önemliyse
         $this->table = $table ?: $this->getTableName();
+        $this->db = \getDbConnection();
     }
 
     protected function getTableName()

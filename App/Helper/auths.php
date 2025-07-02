@@ -1,12 +1,24 @@
 <?php
 
-!defined("ROOT") ? define("ROOT", $_SERVER["DOCUMENT_ROOT"]) : null;
-require_once ROOT. "/Database/db.php";
 
-use Database\Db;
-
-class Authorize extends Db
+class Authorize 
 {
+
+     /**
+     * Aktif PDO veritabanı bağlantısını tutar.
+     * @var PDO
+     */
+    private PDO $db;
+
+    /**
+     * Sınıf oluşturulduğunda, merkezi veritabanı bağlantısını alır.
+     */
+    public function __construct()
+    {
+        // bootstrap.php'de tanımladığımız global yardımcı fonksiyonu çağırıyoruz.
+        $this->db = \getDbConnection();
+    }
+
     protected $table = "userauths";
     public function getAuth($authname = null)
     {

@@ -1,14 +1,25 @@
 <?php
 namespace App\Helper;
-
-require_once "Database/db.php";
-
-use Database\Db;
 use PDO;
 
-
-class UserHelper extends Db
+class UserHelper 
 {
+
+     /**
+     * Aktif PDO veritabanı bağlantısını tutar.
+     * @var PDO
+     */
+    private PDO $db;
+
+    /**
+     * Sınıf oluşturulduğunda, merkezi veritabanı bağlantısını alır.
+     */
+    public function __construct()
+    {
+        // bootstrap.php'de tanımladığımız global yardımcı fonksiyonu çağırıyoruz.
+        $this->db = \getDbConnection();
+    }
+
 
     public function userSelect($name = "users")
     {

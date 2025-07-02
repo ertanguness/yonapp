@@ -2,11 +2,27 @@
 
 namespace App\Helper;
 
-use Database\Db;
 use PDO;
 
-class Cities extends Db
+class Cities
 {
+
+    /**
+     * Aktif PDO veritabanı bağlantısını tutar.
+     * @var PDO
+     */
+    private PDO $db;
+
+    /**
+     * Sınıf oluşturulduğunda, merkezi veritabanı bağlantısını alır.
+     */
+    public function __construct()
+    {
+        // bootstrap.php'de tanımladığımız global yardımcı fonksiyonu çağırıyoruz.
+        $this->db = \getDbConnection();
+    }
+
+    
     public function citySelect($name = 'city', $id = null)
     {
 

@@ -14,6 +14,9 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 ?>
 
 <div class="page-header">
+
+  
+
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
             <h5 class="m-b-10">Yönetim</h5>
@@ -53,11 +56,16 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 
 <div class="main-content">
     <?php
+    // --- TEK SATIRDA FLASH MESAJLARI GÖSTERME ---
+    include __DIR__ . '../../../../partials/_flash_messages.php';
+    ?>
+    <?php
     $title = "Siteler Listesi!";
     $text = "Sitelerinizi görüntüleyip ekleme, düzenleme, silme ve yeni site tanımlama işlemlerinizi  yapabilirsiniz.";
     require_once 'pages/components/alert.php'
     ?>
     <div class="row mb-5">
+   
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -98,13 +106,21 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                                                 <td><?php echo $Siteler->tam_adres; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md openSiteDetay" data-id="<?= $enc_id ?>">
+                                                        <a href="javascript:void(0);"
+                                                            class="avatar-text avatar-md openSiteDetay"
+                                                            data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id; ?>"
+                                                            class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" data-name="<?php echo $Siteler->site_adi ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-Siteler" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $Siteler->site_adi; ?>">
+                                                        <a href="javascript:void(0);"
+                                                            data-name="<?php echo $Siteler->site_adi ?>"
+                                                            data-id="<?php echo $enc_id ?>"
+                                                            class="avatar-text avatar-md delete-Siteler"
+                                                            data-id="<?php echo $enc_id; ?>"
+                                                            data-name="<?php echo $Siteler->site_adi; ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>

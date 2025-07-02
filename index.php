@@ -1,120 +1,81 @@
 <?php
+/**
+ * UYGULAMA GİRİŞ NOKTASI (ENTRY POINT)
+ * Tüm web istekleri bu dosyadan geçer.
+ */
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-session_start();
+// 1. Adım: Uygulamanın motorunu çalıştır.
+// Bu dosya session'ı başlatır, autoloader'ı yükler, servisleri (logger vb.) kurar.
+require_once __DIR__ . '/configs/bootstrap.php';
 
-define("ROOT", __DIR__);
-date_default_timezone_set('Europe/Istanbul');
+// 2. Adım: Kimlik doğrulama kontrolü.
+// Bu fonksiyon, kullanıcı giriş yapmamışsa login sayfasına yönlendirir.
+// (Bu fonksiyonu kendiniz oluşturabilirsiniz)
 
-ob_start();
-if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
-    $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
-    if (!isset($_GET["p"])) {
-        $returnUrl = urlencode("/index?p=home");
-    }
-    header("Location: sign-in.php?returnUrl={$returnUrl}");
-    exit();
-}
+use App\Controllers\AuthController;
+$authController = new AuthController();
 
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+//giriş ve demo süresi kontrolü
+$authController->checkAuthentication();
 
-require_once __DIR__ . '/vendor/autoload.php';
+// 3. Adım: Yönlendiriciyi (Router) çağır.
+// Router, gelen URL'i analiz eder ve ilgili Controller'ı ve metodu belirler.
+// $router = new App\Core\Router();
+// $router->dispatch();
 
-use App\Helper\Security;
-use Model\UserModel;
-use Model\MenuModel;
-use Model\AuthsModel;
+// Not: Yukarıdaki gibi bir yapı, projenizin "Front Controller" tasarım desenini
+// uyguladığı anlamına gelir ve modern PHP'nin temelidir.
 
-$menus = new MenuModel();
-$User = new UserModel();
-$perm = new AuthsModel();
-$user = $User->find($_SESSION['user']->id) ?? null;
+// Şimdilik, mevcut yapınızı daha güvenli hale getirelim:
 
+use Model\UserModel; // ve diğerleri
+
+// Gerekli verileri bir Controller'dan alıyor gibi düşünelim.
+// Bu kodlar normalde bir BaseController veya AppController içinde olurdu.
+$userModel = new UserModel();
+$user = $userModel->find($_SESSION['user']->id);
 
 if (!$user) {
-    $log_id = $_SESSION["log_id"];
-    $Users->logoutLog($log_id);
-    header("Location: sign-in.php");
-    exit();
+    // Auth servisi ile çıkış yap
+    // App\Services\AuthService::logout();
+}
+$_SESSION['user'] = $user; // Session'ı taze veri ile güncelle
+
+
+// Görünüm (View) için gerekli değişkenleri hazırla
+$page = $_GET['p'] ?? 'home/list';
+$page = preg_replace('/[^a-zA-Z0-9\/\-]/', '', $page); // Güvenlik!
+$pagePath = __DIR__ . "/pages/{$page}.php";
+$viewToInclude = file_exists($pagePath) ? $pagePath : __DIR__ . "/pages/404.php";
+if (!file_exists($pagePath)) {
+    http_response_code(404);
 }
 
-$_SESSION["user"] = $user;
-
-// if ($_SESSION["user"]->parent_id != 0) {
-//     $email = $_SESSION['user']->email ?? null;
-//     $site_id = $_SESSION['site_id'];
-//     $user = $User->getUserByEmailAndFirm($email, $site_id);
-//     $_SESSION['user'] = $user;
-// }
-
-if ($user->user_type == 1) {
-    $diff = 15 - date_diff(date_create($user->created_at), date_create(date("Y-m-d")))->format("%a");
-    if ($diff <= 0) {
-        header("Location: sign-in.php");
-        exit();
-    }
-}
-$page = isset($_GET["p"]) ? ($_GET["p"]) : "home";
-$active_page = $page;
-//$menu_name = $menus->getMenusByLink($page)->page_name ?? 'home';
-
-
+// ------------------- ARTIK HTML BAŞLAYABİLİR -------------------
 ?>
 <!DOCTYPE html>
-<html lang="zxx" >
-
-<?php $title = 'YonApp - Apartman / Site Yönetim Sistemi' ?>
-<?php include_once './partials/head.php' ?>
-
+<html lang="tr">
+    <?php include './partials/head.php'; ?>
 <body>
-    <!-- Left sidebar -->
-    <?php include './partials/left-sidebar.php' ?>
+    <?php include './partials/left-sidebar.php'; ?>
+    <?php include './partials/header.php'; ?>
 
-    <!-- Header Section Start -->
-    <?php include './partials/header.php' ?>
-    <!--! ================================================================ !-->
-    <!--! [Start] Main Content !-->
-    <!--! ================================================================ !-->
     <main class="nxl-container">
         <div class="nxl-content">
-            <?php
-            $page = isset($_GET["p"]) ? $_GET["p"] : "home/list";
-                // echo "user token" . $user->session_token;
-                // echo "session token : ".$_SESSION['csrf_token'];
-            ; ?>
-
-            <?php
-
-            if (isset($_GET["p"]) && file_exists("pages/{$page}.php")) {
-                include "pages/{$page}.php";
-            } else if (!file_exists("pages/{$page}.php")) {
-
-                include "pages/404.php";
-            } else (
-                    include "pages/home/list.php"
-                );
-            ?>
-            <!-- [ Main Content ] end -->
+            <?php include $viewToInclude; // Sayfayı dahil et ?>
         </div>
-        <!--<< Footer Section Start >>-->
-        <?php include_once './partials/footer.php' ?>
-
+        <?php include './partials/footer.php'; ?>
     </main>
-    <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
     <!--<< Footer Section Start >>-->
-     <?php include_once './partials/theme-customizer.php' ?> 
+    <?php include_once './partials/theme-customizer.php' ?> 
     <!--<< All JS Plugins >>-->
     <?php include_once './partials/homepage-script.php'; ?>
 
     <?php include_once "./partials/vendor-scripts.php" ?>
 
-
-
 </body>
-
 </html>
