@@ -12,9 +12,9 @@ use PDO;
 class KisilerModel extends Model
 {
     protected $table = 'kisiler';
-    protected $siteaktifkisiler = 'site_aktif_kisiler'; 
+    protected $siteaktifkisiler = 'site_aktif_kisiler';
 
-    protected $kisilerborcozet = 'view_kisi_borc_ozet'; 
+    protected $kisilerborcozet = 'view_kisi_borc_ozet';
 
     public function __construct()
     {
@@ -194,7 +194,7 @@ class KisilerModel extends Model
 
         switch ($filter) {
             case 'acil':
-                $stmt = $this->db->prepare("
+                $sql = "
                 SELECT 
                     kisiler.*, 
                     acil.id AS acil_id,
@@ -205,8 +205,17 @@ class KisilerModel extends Model
                 INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
                 INNER JOIN acil_durum_kisileri acil ON kisiler.id = acil.kisi_id
                 WHERE bloklar.site_id = :site_id
-            ");
+            ";
+
+                if ($kisi_id) {
+                    $sql .= " AND kisiler.id = :kisi_id";
+                }
+                $stmt = $this->db->prepare($sql);
                 $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
+
+                if ($kisi_id) {
+                    $stmt->bindParam(':kisi_id', $kisi_id, PDO::PARAM_INT);
+                }
                 break;
 
             case 'arac':
@@ -278,15 +287,15 @@ class KisilerModel extends Model
     {
 
 
-    //     <th class="wd-30 no-sorting" style="width: 40px;">
-    //     Sıra
-    //   </th>
-    //   <th>Daire Adı</th>
-    //   <th>Ad Soyad</th>
-    //   <th class="text-end" style="width:11%">Borç Tutarı</th>
-    //   <th class="text-end" style="width:11%">Ödenen</th>
-    //   <th class="text-end" style="width:11%">BAKİYE</th>
-    //   <th>İşlem</th>
+        //     <th class="wd-30 no-sorting" style="width: 40px;">
+        //     Sıra
+        //   </th>
+        //   <th>Daire Adı</th>
+        //   <th>Ad Soyad</th>
+        //   <th class="text-end" style="width:11%">Borç Tutarı</th>
+        //   <th class="text-end" style="width:11%">Ödenen</th>
+        //   <th class="text-end" style="width:11%">BAKİYE</th>
+        //   <th>İşlem</th>
 
         $sql = $this->db->prepare("SELECT * FROM $this->kisilerborcozet WHERE kisi_id = ?");
         $sql->execute([$kisi_id]);

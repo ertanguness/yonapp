@@ -24,9 +24,9 @@ if (!$site) {
 
 $blokSayisi = $Bloklar->SitedekiBloksayisi($id);
 $daireSayisi = $Bloklar->SitedekiDaireSayisi($id);
-$kisiler= $Kisiler->sitedekiKisiSayisi($id);
-$il= $cities->getCityName($site->il ?? null);
-$ilce= $cities->getTownName( $site->ilce ?? null);
+$kisiler = $Kisiler->sitedekiKisiSayisi($id);
+$il = $cities->getCityName($site->il ?? null);
+$ilce = $cities->getTownName($site->ilce ?? null);
 ?>
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="siteDetayOffcanvas" data-bs-backdrop="false">
@@ -60,7 +60,7 @@ $ilce= $cities->getTownName( $site->ilce ?? null);
             <div><?= htmlspecialchars($site->telefon) ?></div>
         </div>
 
-       
+
         <div class="mb-3 d-flex">
             <div style="width: 130px; font-weight: 600;">Email:</div>
             <div><?= htmlspecialchars($site->email ?? '-') ?></div>
@@ -69,11 +69,11 @@ $ilce= $cities->getTownName( $site->ilce ?? null);
         <div class="mb-3 d-flex">
             <div style="width: 130px; font-weight: 600;">Web Sitesi:</div>
             <div>
-            <?php if (!empty($site->web_sitesi)): ?>
-                <a href="<?= htmlspecialchars($site->web_sitesi) ?>" target="_blank"><?= htmlspecialchars($site->web_sitesi) ?></a>
-            <?php else: ?>
-                -
-            <?php endif; ?>
+                <?php if (!empty($site->web_sitesi)): ?>
+                    <a href="<?= htmlspecialchars($site->web_sitesi) ?>" target="_blank"><?= htmlspecialchars($site->web_sitesi) ?></a>
+                <?php else: ?>
+                    -
+                <?php endif; ?>
             </div>
         </div>
         <div class="mb-3 d-flex">
@@ -107,12 +107,7 @@ $ilce= $cities->getTownName( $site->ilce ?? null);
     </div>
 
     <div class="px-4 gap-2 d-flex align-items-center ht-80 border border-end-0 border-gray-2">
-        <a href="index?p=management/sites/manage&id=<?= Security::encrypt($site->id) ?>" class="btn btn-primary w-50">Düzenle</a>
         <a href="javascript:void(0);" class="btn btn-danger w-50" data-bs-dismiss="offcanvas">Kapat</a>
+        <a href="index?p=management/sites/manage&id=<?= Security::encrypt($site->id) ?>" class="btn btn-primary w-50">Düzenle</a>
     </div>
 </div>
-
-
-
-
-
