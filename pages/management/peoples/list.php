@@ -13,7 +13,11 @@ $Daireler = new DairelerModel();
 $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
 
 ?>
-
+<style>
+  #siteSakiniDetayOffcanvas {
+    z-index: 1060 !important;
+  }
+</style>
 
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
