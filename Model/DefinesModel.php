@@ -16,6 +16,8 @@ class DefinesModel extends Model
         parent::__construct($this->table);
     }
 
+
+    
     public function daireTipiGetir($site_id, $type)
     {
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE site_id = ? and id = ?");
@@ -43,15 +45,42 @@ class DefinesModel extends Model
         ]);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+
+    /* Belirli bir site ve tip için tanımları getirir.
+     * @param int $siteId
+     * @param int $type
+     * @return array
+     */
     public function getDefinesTypes($siteId, $type) {
         $sql = "SELECT * FROM defines WHERE site_id = :site_id AND type = :type ORDER BY define_name ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':site_id', $siteId, PDO::PARAM_INT);
         $stmt->bindParam(':type', $type, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
    
+
+    /**
+     * Gelen Daire tipinden id'yi döndürürür.
+     * @param mixed $site_id
+     * @param mixed $type
+     * @return int|null
+     */
+    public function getApartmentTypeIdByName($site_id,$type, $name)
+    {
+        $sql = $this->db->prepare("SELECT id FROM defines 
+                                          WHERE site_id = ? AND type = ? AND define_name = ? 
+                                          LIMIT 1");
+        $sql->execute([
+            $site_id,
+            $type,
+            $name
+        ]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        
+        return $result ? (int)$result->id : null; // Eğer sonuç varsa ID'yi döndür, yoksa null döndür
+    }
 
 
 

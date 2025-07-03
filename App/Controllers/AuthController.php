@@ -107,14 +107,34 @@ class AuthController
      */
     public static function checkAuthentication(): void
     {
+
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
-        
+
+        $logger = \getLogger();
+           
         // 1. Adım: Kullanıcı giriş yapmış mı?
         if (!isset($_SESSION['user'])) {
+            // Kullanıcı giriş yapmamışsa veya oturum süresi dolmuşsa, logla ve yönlendir.
+            $logger->error("Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı.", [
+                'ip' => $_SERVER['REMOTE_ADDR'],
+                'requested_url' => $_SERVER['REQUEST_URI']
+            ]);
+            FlashMessageService::add(
+                'error',
+                'Giriş Gerekli',
+                'Bu sayfayı görüntülemek için lütfen giriş yapın.',
+                'ikaz2.png'
+            );
+            session_destroy(); // Oturumu temizle
+            session_unset(); // Tüm session değişkenlerini temizle
+
             $returnUrl = urlencode($_SERVER['REQUEST_URI']);
-            header("Location: /sign-in.php?returnUrl={$returnUrl}");
+            header("Location: sign-in.php?returnUrl={$returnUrl}");
             exit();
         }
+
+        //Sesion süresi dolmuş mu?
+
 
         // 2. Adım: Kullanıcı verisini al
         $user = $_SESSION['user'];

@@ -1,4 +1,4 @@
-let url = "pages/dues/payment/api.php";
+let url = "pages/management/apartment/api.php";
 document
   .getElementById("payment_file")
   .addEventListener("change", function (event) {
@@ -49,8 +49,7 @@ document
         } else {
         
             $(".alert-description").html(`
-                Yüklenen dosyada bulunan satır sayısı: <strong>${satir_sayisi}</strong>
-                 Toplam tutar: <strong>${toplam_tutar.toFixed(2)}</strong>
+                Yüklenen dosyada bulunan daire sayısı: <strong>${satir_sayisi}
               `);
 
           $(".upload-info").removeClass("d-none").hide().fadeIn(400);
@@ -65,6 +64,7 @@ document
 $(document).on("click", "#upload_payment_file", function (e) {
   e.preventDefault();
   const fileInput = document.getElementById("payment_file");
+  const loadingOverlay = document.getElementById('loading-overlay');
   if (!fileInput.files.length) {
     swal.fire({
       title: "Hata",
@@ -74,10 +74,11 @@ $(document).on("click", "#upload_payment_file", function (e) {
     });
     return;
   }
-
+  loadingOverlay.style.display = 'flex'; // CSS'te flex kullandığımız için 'flex' yapıyoruz
+  //return false; // Formun gönderilmesini engelle
   const formData = new FormData();
-  formData.append("action", "payment_file_upload");
-  formData.append("payment_file", fileInput.files[0]);
+  formData.append("action", "excel_upload_apartment");
+  formData.append("excelFile", fileInput.files[0]);
 
   Pace.restart(); // Pace yükleme çubuğunu başlat
   fetch(url, {
@@ -96,10 +97,12 @@ $(document).on("click", "#upload_payment_file", function (e) {
       });
       if (data.status === "success") {
         fileInput.value = ""; // Dosya girişini temizle
+        loadingOverlay.style.display = 'none'; // Yükleme overlay'ini gizle
       }
     })
     .catch((error) => {
       console.error("Error:", error);
+      loadingOverlay.style.display = 'none'; // Yükleme overlay'ini gizle
       swal.fire({
         title: "Hata",
         text: "Dosya yüklenirken bir hata oluştu.",
@@ -113,8 +116,5 @@ $(document).on('click', '#clear_payment_file', function() {
         .html('Yüklenen dosya bilgileri temizlendi. Lütfen yeni bir dosya yükleyin.').fadeIn(400);
 
 });
-
-
-
 
 

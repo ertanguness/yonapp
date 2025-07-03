@@ -28,4 +28,7 @@ class ApartmentModel extends Model
         $query->execute([$site_id, $block_id, $daire_no]);
         return $query->fetchColumn() > 0;
     }
+
+
+
 }

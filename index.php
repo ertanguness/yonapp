@@ -28,22 +28,22 @@ $authController->checkAuthentication();
 
 // Şimdilik, mevcut yapınızı daha güvenli hale getirelim:
 
-use Model\UserModel; // ve diğerleri
+// use Model\UserModel; // ve diğerleri
 
-// Gerekli verileri bir Controller'dan alıyor gibi düşünelim.
-// Bu kodlar normalde bir BaseController veya AppController içinde olurdu.
-$userModel = new UserModel();
-$user = $userModel->find($_SESSION['user']->id);
+// // Gerekli verileri bir Controller'dan alıyor gibi düşünelim.
+// // Bu kodlar normalde bir BaseController veya AppController içinde olurdu.
+// $userModel = new UserModel();
+// $user = $userModel->find($_SESSION['user']->id);
 
-if (!$user) {
-    // Auth servisi ile çıkış yap
-    // App\Services\AuthService::logout();
-}
-$_SESSION['user'] = $user; // Session'ı taze veri ile güncelle
+// if (!$user) {
+//     // Auth servisi ile çıkış yap
+//     // App\Services\AuthService::logout();
+// }
+// $_SESSION['user'] = $user; // Session'ı taze veri ile güncelle
 
 
 // Görünüm (View) için gerekli değişkenleri hazırla
-$page = $_GET['p'] ?? 'home/list';
+$page = $_GET['p'] ?? 'home';
 $page = preg_replace('/[^a-zA-Z0-9\/\-]/', '', $page); // Güvenlik!
 $pagePath = __DIR__ . "/pages/{$page}.php";
 $viewToInclude = file_exists($pagePath) ? $pagePath : __DIR__ . "/pages/404.php";
@@ -62,7 +62,6 @@ if (!file_exists($pagePath)) {
 
     <main class="nxl-container">
         <div class="nxl-content">
-           
             <?php include $viewToInclude; // Sayfayı dahil et ?>
         </div>
         <?php include './partials/footer.php'; ?>

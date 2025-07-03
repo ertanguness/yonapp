@@ -103,6 +103,10 @@ if (
     $page == 'management/apartment/manage' ||   $page == 'management/apartment/list') {
         echo '<script src="pages/management/apartment/apartment.js"></script>';
     }
+// Apartment upload from excel
+if ($page == 'management/apartment/upload-from-xls') {
+    echo '<script src="pages/management/apartment/js/upload-from-xls.js"></script>';
+}
    //*************APARTMENT******************************** */
 
    //*************PEOPLES******************************** */

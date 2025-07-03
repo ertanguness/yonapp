@@ -7,7 +7,7 @@ $site_id = $_SESSION["site_id"];
 use Model\DairelerModel;
 use App\Helper\Security;
 
-$Apartment = new DairelerModel();
+$daireModel = new DairelerModel();
 
 
 if ($_POST["action"] == "save_apartment") {
@@ -19,7 +19,7 @@ if ($_POST["action"] == "save_apartment") {
 
     // Sadece yeni kayıt (id 0 veya boş) ise daire var mı kontrolü yap
     if (empty($id) || $id == 0) {
-        if ($Apartment->DaireVarmi($site_id, $block_id, $daire_no)) {
+        if ($daireModel->DaireVarmi($site_id, $block_id, $daire_no)) {
             $existing_apartment = $daire_no;
         }
         if (!empty($existing_apartment)) {
@@ -30,7 +30,7 @@ if ($_POST["action"] == "save_apartment") {
             exit;
         }
     }
-    if ($Apartment->DaireKoduVarMi($site_id, $block_id, $daire_kodu, $id)) {
+    if ($daireModel->DaireKoduVarMi($site_id, $block_id, $daire_kodu, $id)) {
         $mevcut_kod = $daire_kodu;
     }
     
@@ -57,7 +57,7 @@ if ($_POST["action"] == "save_apartment") {
         "aktif_mi" => isset($_POST["status"]) ? 1 : 0
     ];
 
-    $lastInsertId = $Apartment->saveWithAttr($data);
+    $lastInsertId = $daireModel->saveWithAttr($data);
 
     $res = [
         "status" => "success",
@@ -67,11 +67,41 @@ if ($_POST["action"] == "save_apartment") {
 }
 
 if ($_POST["action"] == "delete_apartment") {
-    $Apartment->delete($_POST["id"]);
+    $daireModel->delete($_POST["id"]);
 
     $res = [
         "status" => "success",
         "message" => "Başarılı"
     ];
     echo json_encode($res);
+}
+
+
+//Excelden Yükleme işlemi
+if ($_POST["action"] == "excel_upload_apartment") {
+    $file = $_FILES['excelFile'];
+    $fileType = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if ($fileType !== 'xlsx' && $fileType !== 'xls') {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Lütfen geçerli bir Excel dosyası yükleyin."
+        ]);
+        exit;
+    }
+
+    $result = $daireModel->excelUpload($file['tmp_name'], $site_id);
+  
+    if ($result['status'] === 'success') {
+        echo json_encode([
+            "status" => "success",
+            "message" => $result['message'],
+            "data" => $result['data']
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "message" => $result['message']
+        ]);
+    }
 }
