@@ -353,5 +353,20 @@ class DairelerModel extends Model
 
     // *************************************************************************************** */
 
-    
+
+    /** Daire adından ve blok id ve site id'den daire id'sini döndürür
+     * @param string $daireAdi
+     * @param int $blokId
+     * @param int $siteId
+     * 
+     * @return int|null
+     */
+    public function findByApartmentNoandBlockId(string $daireAdi, int $blokId, int $siteId): ?int
+    {
+        $query = $this->db->prepare("SELECT id FROM {$this->table} WHERE daire_no = ? AND blok_id = ? AND site_id = ?");
+        $query->execute([$daireAdi, $blokId, $siteId]);
+        $result = $query->fetch(PDO::FETCH_OBJ);
+        
+        return $result ? (int)$result->id : null;  // Eğer sonuç varsa id'yi döndür, yoksa null döndür
+    }
 }

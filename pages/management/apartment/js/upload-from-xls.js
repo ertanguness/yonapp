@@ -97,8 +97,8 @@ $(document).on("click", "#upload_payment_file", function (e) {
       });
       if (data.status === "success") {
         fileInput.value = ""; // Dosya girişini temizle
-        loadingOverlay.style.display = 'none'; // Yükleme overlay'ini gizle
       }
+      loadingOverlay.style.display = 'none'; // Yükleme overlay'ini gizle
     })
     .catch((error) => {
       console.error("Error:", error);

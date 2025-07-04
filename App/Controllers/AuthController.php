@@ -119,14 +119,17 @@ class AuthController
                 'ip' => $_SERVER['REMOTE_ADDR'],
                 'requested_url' => $_SERVER['REQUEST_URI']
             ]);
+
+            session_destroy(); // Oturumu temizle
+            session_unset(); // Tüm session değişkenlerini temizle
+           
             FlashMessageService::add(
                 'error',
                 'Giriş Gerekli',
                 'Bu sayfayı görüntülemek için lütfen giriş yapın.',
                 'ikaz2.png'
             );
-            session_destroy(); // Oturumu temizle
-            session_unset(); // Tüm session değişkenlerini temizle
+         
 
             $returnUrl = urlencode($_SERVER['REQUEST_URI']);
             header("Location: sign-in.php?returnUrl={$returnUrl}");
@@ -239,6 +242,14 @@ class AuthController
 
         // E-posta gönderme (bu da statik bir metoda taşınabilir)
         self::sendLoginNotificationEmail($user);
+
+        //eğer site_id oturumda yoksa, siteyi seçmesi için company-list.php sayfasına yönlendir
+        if (!isset($_SESSION['site_id'])) {
+            // Site seçimi için company-list.php sayfasına yönlendir
+            header("Location: company-list.php");
+            exit();
+       
+        }
 
         $returnUrl = !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'company-list.php';
         header("Location: " . $returnUrl);

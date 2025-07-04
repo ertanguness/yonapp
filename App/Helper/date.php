@@ -3,6 +3,9 @@
 namespace App\Helper;
 
 use DateTime;
+use PhpOffice\PhpSpreadsheet\Shared\Date as PhpSpreadsheetDate;
+ 
+
 
 class Date
 {
@@ -255,5 +258,53 @@ class Date
         $date = date('Y-m-d', strtotime($date));
         $diff = strtotime($date) - strtotime($today);
         return floor($diff / (60 * 60 * 24));
+    }
+
+
+    
+
+    /**
+     * Excel'den gelen sayısal bir tarih değerini veya tarih metnini 'Y-m-d' formatına çevirir.
+     * @param mixed $dateValue Excel hücresinden gelen değer (sayı veya string olabilir).
+     * @return string|null Başarılı ise 'Y-m-d' formatında tarih, değilse null.
+     */
+    public static function convertExcelDate($dateValue): ?string
+    {
+        // Değer boşsa veya 0 ise null döndür.
+        if (empty($dateValue)) {
+            return null;
+        }
+
+        // 1. Durum: Değer sayısal ise (Excel'in varsayılan tarih formatı)
+        if (is_numeric($dateValue)) {
+            try {
+                // Excel tarih sayısını PHP DateTime nesnesine çevir
+                $dateTimeObject = PhpSpreadsheetDate::excelToDateTimeObject($dateValue);
+                // Veritabanı için Y-m-d formatına dönüştür
+                return $dateTimeObject->format('Y-m-d');
+            } catch (\Exception $e) {
+                // Eğer geçersiz bir sayı ise (örn: sadece '5') hata verebilir, bu durumu yakala.
+                return null;
+            }
+        }
+        
+        // 2. Durum: Değer metin ise (kullanıcı '25.12.2023' gibi manuel girmişse)
+        if (is_string($dateValue)) {
+             try {
+                // PHP'nin standart DateTime yapıcısı ile metni tarihe çevirmeyi dene.
+                // Bu, '2023-12-25', '25-12-2023' gibi birçok formatı anlar.
+                $dateTimeObject = new \DateTime(trim($dateValue));
+                return $dateTimeObject->format('Y-m-d');
+            } catch (\Exception $e) {
+                // Standart format değilse (örn: '25.12.2023'), createFromFormat dene.
+                $dt = \DateTime::createFromFormat('d.m.Y', trim($dateValue));
+                if ($dt) {
+                    return $dt->format('Y-m-d');
+                }
+                return null; // Hiçbir formata uymuyorsa null döndür.
+            }
+        }
+
+        return null; // Hiçbir koşula uymuyorsa.
     }
 }

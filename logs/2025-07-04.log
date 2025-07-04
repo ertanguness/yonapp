@@ -1,0 +1,40 @@
+[2025-07-04 00:50:56] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index?p=management\/peoples\/upload-from-xls"}
+[2025-07-04 00:51:27] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 00:53:01] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 00:56:56] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 00:57:21] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 00:57:47] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 00:58:03] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 00:58:22] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 01:02:10] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 01:05:51] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 01:10:40] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-07-04 01:10:43] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 10:55:23] [ERROR] Excel daire yükleme sırasında veritabanı hatası. {"error":"SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`yonapp`.`kisiler`, CONSTRAINT `kisiler_ibfk_1` FOREIGN KEY (`blok_id`) REFERENCES `bloklar` (`id`))"}
+[2025-07-04 10:56:45] [ERROR] Excel daire yükleme sırasında veritabanı hatası. {"error":"SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`yonapp`.`kisiler`, CONSTRAINT `kisiler_ibfk_1` FOREIGN KEY (`blok_id`) REFERENCES `bloklar` (`id`))"}
+[2025-07-04 10:57:16] [ERROR] Excel daire yükleme sırasında veritabanı hatası. {"error":"SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`yonapp`.`kisiler`, CONSTRAINT `kisiler_ibfk_1` FOREIGN KEY (`blok_id`) REFERENCES `bloklar` (`id`))"}
+[2025-07-04 10:57:58] [ERROR] Excel daire yükleme sırasında veritabanı hatası. {"error":"SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`yonapp`.`kisiler`, CONSTRAINT `kisiler_ibfk_1` FOREIGN KEY (`blok_id`) REFERENCES `bloklar` (`id`))"}
+[2025-07-04 10:59:27] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:08:20] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:13:24] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":0,"atlanan kayıt sayısı":1,"hatalı kayıt sayısı":0}
+[2025-07-04 11:13:43] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:15:46] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:17:08] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:25:06] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:26:44] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:27:19] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:28:54] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:29:24] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:40:15] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:41:55] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:44:43] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:48:43] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:49:41] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:50:57] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:51:35] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 11:52:44] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 12:03:38] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}
+[2025-07-04 12:04:06] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":0,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":1}
+[2025-07-04 12:04:43] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":0,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":1}
+[2025-07-04 12:06:29] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":0,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":1}
+[2025-07-04 12:07:49] [INFO] Excel daire yükleme tamamlandı. {"İşlenen kayıt sayısı":1,"atlanan kayıt sayısı":0,"hatalı kayıt sayısı":0}

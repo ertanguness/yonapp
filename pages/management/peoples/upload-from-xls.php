@@ -96,16 +96,16 @@ $site_adi = $site ? $site->site_adi : null;
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="payment_file" class="form-label">Excel Dosyası</label>
-                                    <input type="file" class="form-control" id="payment_file" name="payment_file"
+                                    <label for="peoples_file" class="form-label">Excel Dosyası</label>
+                                    <input type="file" class="form-control" id="peoples_file" name="peoples_file"
                                         accept=".xls,.xlsx" required>
                                 </div>
                                 <div class="d-flex justify-content-start">
                                     <!-- Temizle Butonu -->
-                                    <button type="reset" class="btn btn-secondary" id="clear_payment_file">
+                                    <button type="reset" class="btn btn-secondary" id="clear_peoples_file">
                                         <i class="feather-x me-2"></i>Temizle
                                     </button>
-                                    <button type="submit" class="btn btn-primary ms-2" id="upload_payment_file">
+                                    <button type="submit" class="btn btn-primary ms-2" id="upload_peoples_file">
                                         <i class="feather-upload me-2"></i>Yükle
                                     </button>
                                 </div>
@@ -117,6 +117,8 @@ $site_adi = $site ? $site->site_adi : null;
         </div>
     </div>
 </div>
+<?php include "pages/components/dottie-preloader.php" ?>
+
 <script>
 $(document).ready(function() {
 

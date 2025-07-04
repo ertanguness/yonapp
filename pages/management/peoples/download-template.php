@@ -47,10 +47,6 @@ $sheet->setCellValue('N1', 'Çıkış Tarihi');
 $sheet->setCellValue('O1', 'Aktiflik Durumu');
 
 
-$sheet->setCellValue('A2', ($blokId));
-
-$sheet->setCellValue('D1', 'IyelikTuru(Ev Sahibi/Kiracı)');
-// ... diğer başlıklar ...
 
 // Başlık satırını kalın yap
 $sheet->getStyle('A1:Z1')->getFont()->setBold(true);
