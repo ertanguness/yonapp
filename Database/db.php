@@ -36,7 +36,7 @@ class Db {
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Hataları exception olarak fırlat
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,       // Varsayılan fetch modunu obj yap
-            PDO::ATTR_EMULATE_PREPARES   => false,                  // Gerçek prepared statement'ları kullan
+    
         ];
 
         try {

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use App\Helper\Site;
 use App\Helper\BlokHelper;
@@ -35,6 +35,12 @@ $site_adi = $site ? $site->site_adi : null;
 </div>
 
 <div class="main-content">
+    <?php
+    // --- TEK SATIRDA FLASH MESAJLARI GÖSTERME ---
+    include_once  'partials/_flash_messages.php';
+    ?>
+
+
     <?php
     $title = "Kişi Yükleme";
     $text = "*Bu sayfada Excel dosyasından toplu olarak daire kişi bilgilerini yükleyebilirsiniz. ";
@@ -91,7 +97,8 @@ $site_adi = $site ? $site->site_adi : null;
                                     <div class="col-md-4">
                                         <label for="sablon-indir-linki" class="form-label">Örnek Excel Dosyası
                                             İndir</label>
-                                        <a href="pages/management/peoples/download-template.php" class="btn btn-outline-secondary" id="sablon-indir-linki">
+                                        <a href="pages/management/peoples/download-template.php"
+                                            class="btn btn-outline-secondary" id="sablon-indir-linki">
                                             <i class="feather-download me-2"></i>Örnek Excel Dosyası İndir</a>
                                     </div>
                                 </div>
@@ -120,22 +127,22 @@ $site_adi = $site ? $site->site_adi : null;
 <?php include "pages/components/dottie-preloader.php" ?>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
 
-    const downloadLink = document.getElementById('sablon-indir-linki');
-    $('#blok_id').change(function() {
-        const blokId = $(this).val();
-        const downloadUrl =""
-        if (blokId !== 'all') {
-            // Blok ID'sine göre dinamik olarak dosya indirme linkini oluştur
-            dowloadUrl = `pages/management/peoples/download-template.php?blok_id=${blokId}`;
-        } else {
-            // Eğer blok seçilmemişse, varsayılan bir link kullan
-            dowloadUrl = 'pages/management/peoples/download-template.php';
-        }
-        downloadLink.setAttribute('href', dowloadUrl);
+        const downloadLink = document.getElementById('sablon-indir-linki');
+        $('#blok_id').change(function() {
+            const blokId = $(this).val();
+            const downloadUrl = ""
+            if (blokId !== 'all') {
+                // Blok ID'sine göre dinamik olarak dosya indirme linkini oluştur
+                dowloadUrl = `pages/management/peoples/download-template.php?blok_id=${blokId}`;
+            } else {
+                // Eğer blok seçilmemişse, varsayılan bir link kullan
+                dowloadUrl = 'pages/management/peoples/download-template.php';
+            }
+            downloadLink.setAttribute('href', dowloadUrl);
 
 
+        })
     })
-})
 </script>

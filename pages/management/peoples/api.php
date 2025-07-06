@@ -7,6 +7,7 @@ $site_id = $_SESSION["site_id"];
 use Model\KisilerModel;
 use App\Helper\Security;
 use App\Services\ExcelHelper;
+use App\Services\FlashMessageService;
 
 
 $kisilerModel = new KisilerModel();
@@ -44,8 +45,11 @@ if ($_POST["action"] == "excel_upload_peoples") {
             // 2. Hata dosyasını oluştur ve URL'sini al
             $errorFileUrl = $excelHelper->createErrorFile($result['data']['error_rows'], $originalHeader);
         
+            FlashMessageService::add("error","Bilgi","Hatalı kayıtlar için bir Excel dosyası oluşturuldu. <a href='{$errorFileUrl}' target='_blank'>Dosyayı İndir</a>");
+
+
         } catch (Exception $e) {
-             // Loglama zaten helper sınıfı içinde yapılıyor.
+             // Loglama zaten helper sınıfı içinde yapılıyor.   
              // Burada ek bir loglama yapabilir veya sessiz kalabilirsiniz.
              error_log("Controller: Hata Excel'i işlenirken bir sorun oluştu: " . $e->getMessage());
         }

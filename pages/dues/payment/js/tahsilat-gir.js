@@ -1,5 +1,7 @@
 let url = "pages/dues/payment/api.php";
 
+$(function () {
+
 $(document).on("click", "#tahsilatKaydet", function () {
   var form = $("#tahsilatForm");
   var tahsilatTuru = $("#tahsilat_turu option:selected").text();
@@ -45,7 +47,9 @@ $(document).on("click", "#tahsilatKaydet", function () {
   }
 
   formData.append("action", "tahsilat-kaydet"); // Form verilerine action ekle
+  formData.append("borc_detay_ids", secilenBorcIdleri); // Form verilerine id ekle
 
+  
   Pace.restart(); // Pace.js yükleme çubuğunu başlat
   fetch(url, {
     method: "POST",
@@ -53,9 +57,21 @@ $(document).on("click", "#tahsilatKaydet", function () {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data.tableRow); // Konsola gelen veriyi yazdır
+      
+      var finansalDurum = data.finansalDurum;
+      //console.log(finansalDurum);
+      
+      //tablo satırnını 4.sütununa data.finansalDurum.toplam_borc değerini güncelle
+      row.cell(row.index(), 3).data(finansalDurum.toplam_borc).draw(false);
+      
+      //tablo satırnını 5.sütununa data.finansalDurum.toplam_odeme değerini güncelle
+      row.cell(row.index(), 4).data(finansalDurum.toplam_odeme).draw(false);
+      
+      //tablo satırnını 6.sütununa data.finansalDurum.bakiye değerini güncelle
+      row.cell(row.index(), 5).data(finansalDurum.bakiye).draw(false);
 
-      $(row.node()).html(data.tableRow);
+
+      
       let title = data.status ? "Başarılı" : "Hata";
 
       Swal.fire({
@@ -115,3 +131,5 @@ $(document).on("click", ".tahsilat-sil", function () {
       });
     });
 });
+
+}); // document ready end

@@ -40,6 +40,20 @@ class KisilerModel extends Model
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
+      //**************************************************************************************************** */
+    /**Siteye ait aktif tüm kişileri getirir.
+     * @param int $site_id Sitenin ID'si.
+     * @return array Aktif Kişileri içeren bir dizi döner.
+     */
+    public function SiteAktifKisileriBorclandirma($site_id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->siteaktifkisiler  
+                                          WHERE site_id = ? AND kisi_id IS NOT NULL 
+                                          ");
+        $sql->execute([$site_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
 
     /*Kolon adına göre 
     * @param string $column Kolon adı
@@ -427,7 +441,7 @@ class KisilerModel extends Model
                 $dogum_tarihi       = trim(Date::convertExcelDate($rowData['Doğum Tarihi (gg.aa.yyyy)']) ?? '');
                 $cinsiyet           = trim($rowData['Cinsiyet (E/K)'] ?? '');
                 $telefon            = trim($rowData['Telefon'] ?? '');
-                $eposta             = trim($rowData['Eposta'] ?? '');
+                $eposta             = $rowData['Eposta'] ?? null;
                 $adres              = trim($rowData['Adres'] ?? '');
                 $notlar             = trim($rowData['Notlar'] ?? '');
                 $satin_alma_tarihi  = trim(Date::convertExcelDate($rowData['Satin Alma Tarihi']) ?? '');
@@ -436,12 +450,29 @@ class KisilerModel extends Model
                 $aktif_mi           = trim($rowData['Aktiflik Durumu'] ?? '1'); // Varsayılan olarak aktif
     
 
+                  // Eğer zorunlu alanlar boşsa, hatayı kaydet ve sonraki satıra geç
+                  if (empty($blokAdi) || empty($daireNo)) {
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' =>  "Satır {$row->getRowIndex()}: 'Blok Adı' ve 'Daire No' zorunludur.",
+                        'data' => $rowData // SATIRIN TÜM VERİSİNİ EKLE
+                    ];
+
+                    $rows->next(); // Bir sonraki satıra geç
+                    continue;
+                }
+
                //Blok Adından blok ID'sini bul
                 $blokId = $blokModel->findBlokBySiteAndName($siteId, $blokAdi)->id ?? null;
 
                 // Eğer blok ID'si bulunamazsa, hata kaydet ve sonraki satıra geç
                 if (!$blokId) {
-                    $errorRows[] = "Satır {$row->getRowIndex()}: '{$blokAdi}' adında geçerli bir blok bulunamadı.";
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' =>  "Satır {$row->getRowIndex()}: '{$blokAdi}' adında geçerli bir blok bulunamadı.",
+                        'data' => $rowData // SATIRIN TÜM VERİSİNİ EKLE
+                    ];
+                 
                     $rows->next(); // Bir sonraki satıra geç
                     continue;
                 }
@@ -451,45 +482,28 @@ class KisilerModel extends Model
                 
                 // Eğer daire ID'si bulunamazsa, hata kaydet ve sonraki satıra geç
                 if (!$daire_id) {
-                    $errorRows[] = "Satır {$row->getRowIndex()}: '{$daireNo}' adında geçerli bir daire bulunamadı.";
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' =>  "Satır {$row->getRowIndex()}: '{$daireNo}' adında geçerli bir daire bulunamadı.",
+                        'data' => $rowData // SATIRIN TÜM VERİSİNİ EKLE
+                    ];
                     $rows->next(); // Bir sonraki satıra geç
                     continue;
                 }
         
-                // Eğer zorunlu alanlar boşsa, hatayı kaydet ve sonraki satıra geç
-                if (empty($blokAdi) || empty($daireNo)) {
-                    $errorRows[] = "Satır {$row->getRowIndex()}: 'Blok Adı' ve 'Daire No' zorunludur.";
-                    $rows->next(); // Bir sonraki satıra geç
-                    continue;
-                }
+              
     
                 // === 3. ANA MANTIK: TEK SORGULA, KARAR VER, İŞLEM YAP ===
-                $kisi = $this->findByColumn('kimlik_no', $kimlikNo);
+                //Daha sonra tc Kimlik numarasına göre sorgulama yapılacak
+                $kisi = null; // $this->findByColumn('kimlik_no', $kimlikNo) ?? null; // Kimlik numarasına göre kişiyi bul
     
                 if ($kisi) {
                     // Daire zaten var, atla.
                     $skippedCount++;
                 } else {
-                    // Daire yok, YENİ KAYIT OLUŞTURULACAK
+                    // Kişi yok, YENİ KAYIT OLUŞTURULACAK
                     
-                    // // Bloğu bul veya oluştur
-                    // $blok = $blokModel->findBlokBySiteAndName($siteId, $blokAdi);
-                    // if (!$blok) {
-                    //     $blokModel->saveWithAttr(['site_id' => $siteId, 'blok_adi' => $blokAdi]);
-                    //     $blokId = $this->db->lastInsertId();
-                    //     $logger->info("Excel: Yeni blok oluşturuldu.", ['blok_adi' => $blokAdi, 'site_id' => $siteId]);
-                    // } else {
-                    //     $blokId = $blok->id;
-                    // }
-    
-                    // // Daire tipi ID'sini bul
-                    // $daireTipiId = $definesModel->getApartmentTypeIdByName($siteId, DefinesHelper::TYPE_APARTMENT, $daireTipi);
-                    // if (!$daireTipiId && !empty($daireTipi)) { // Sadece daire tipi belirtilmişse hata ver
-                    //     $errorRows[] = "Satır {$row->getRowIndex()}: '{$daireTipi}' adında geçerli bir daire tipi bulunamadı.";
-                    //     $rows->next(); // Bir sonraki satıra geç
-                    //     continue;
-                    // }
-    
+                      
                     // Veritabanına eklenecek veriyi hazırla
                     $daireData = [
                         'site_id'           => $siteId,

@@ -88,18 +88,18 @@ $(document).on("click", "#upload_peoples_file", function (e) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data); // Konsola yanıtı yazdır
+     
+      // console.log(data); // Konsola yanıtı yazdır
       const title = data.status === "success" ? "Başarılı" : "Hata";
       swal.fire({
         title: title,
         html: data.message,
         icon: data.status,
         confirmButtonText: "Tamam",
+      }).then(() => {
+        window.location.reload(); // Sayfayı yeniden yükle
       });
-      if (data.status === "success") {
-        fileInput.value = ""; // Dosya girişini temizle
-      }
-      loadingOverlay.style.display = "none"; // Yükleme overlay'ini gizle
+
     })
     .catch((error) => {
       console.error("Error:", error);

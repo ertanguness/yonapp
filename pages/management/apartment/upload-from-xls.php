@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use App\Helper\Site;
 use App\Helper\BlokHelper;
@@ -35,6 +35,12 @@ $site_adi = $site ? $site->site_adi : null;
 </div>
 
 <div class="main-content">
+
+    <?php
+    // --- TEK SATIRDA FLASH MESAJLARI GÖSTERME ---
+    include_once  'partials/_flash_messages.php';
+    ?>
+
     <?php
     $title = "Daire Yükleme";
     $text = "*Bu sayfada Excel dosyasından toplu olarak daire bilgilerini yükleyebilirsiniz. ";

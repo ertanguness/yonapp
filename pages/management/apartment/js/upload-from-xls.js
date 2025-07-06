@@ -17,7 +17,6 @@ document
     } else {
       const reader = new FileReader();
       reader.onload = function (e) {
-        
         const workbook = XLSX.read(e.target.result, { type: "binary" });
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
@@ -32,7 +31,8 @@ document
         for (let row = range.s.r; row <= range.e.r; row++) {
           const cellAddress = XLSX.utils.encode_cell({ r: row, c: 1 }); // 1. sütun (B sütunu) için
           const cell = firstSheet[cellAddress];
-          if (cell && !isNaN(cell.v)) { // Check if the cell value is a valid number
+          if (cell && !isNaN(cell.v)) {
+            // Check if the cell value is a valid number
             toplam_tutar += parseFloat(cell.v);
           }
         }
@@ -47,8 +47,7 @@ document
           fileInput.value = ""; // Dosya girişini temizle
           return;
         } else {
-        
-            $(".alert-description").html(`
+          $(".alert-description").html(`
                 Yüklenen dosyada bulunan daire sayısı: <strong>${satir_sayisi}
               `);
 
@@ -64,7 +63,7 @@ document
 $(document).on("click", "#upload_payment_file", function (e) {
   e.preventDefault();
   const fileInput = document.getElementById("payment_file");
-  const loadingOverlay = document.getElementById('loading-overlay');
+  const loadingOverlay = document.getElementById("loading-overlay");
   if (!fileInput.files.length) {
     swal.fire({
       title: "Hata",
@@ -74,7 +73,7 @@ $(document).on("click", "#upload_payment_file", function (e) {
     });
     return;
   }
-  loadingOverlay.style.display = 'flex'; // CSS'te flex kullandığımız için 'flex' yapıyoruz
+  loadingOverlay.style.display = "flex"; // CSS'te flex kullandığımız için 'flex' yapıyoruz
   //return false; // Formun gönderilmesini engelle
   const formData = new FormData();
   formData.append("action", "excel_upload_apartment");
@@ -89,20 +88,21 @@ $(document).on("click", "#upload_payment_file", function (e) {
     .then((data) => {
       console.log(data); // Konsola yanıtı yazdır
       const title = data.status === "success" ? "Başarılı" : "Hata";
-      swal.fire({
-        title: title,
-        html: data.message,
-        icon: data.status,
-        confirmButtonText: "Tamam",
-      });
-      if (data.status === "success") {
-        fileInput.value = ""; // Dosya girişini temizle
-      }
-      loadingOverlay.style.display = 'none'; // Yükleme overlay'ini gizle
+      // console.log(data); // Konsola yanıtı yazdır
+      swal
+        .fire({
+          title: title,
+          html: data.message,
+          icon: data.status,
+          confirmButtonText: "Tamam",
+        })
+        .then(() => {
+          window.location.reload(); // Sayfayı yeniden yükle
+        });
     })
     .catch((error) => {
       console.error("Error:", error);
-      loadingOverlay.style.display = 'none'; // Yükleme overlay'ini gizle
+      loadingOverlay.style.display = "none"; // Yükleme overlay'ini gizle
       swal.fire({
         title: "Hata",
         text: "Dosya yüklenirken bir hata oluştu.",
@@ -111,10 +111,10 @@ $(document).on("click", "#upload_payment_file", function (e) {
       });
     });
 });
-$(document).on('click', '#clear_payment_file', function() {
-        $(".alert-description")
-        .html('Yüklenen dosya bilgileri temizlendi. Lütfen yeni bir dosya yükleyin.').fadeIn(400);
-
+$(document).on("click", "#clear_payment_file", function () {
+  $(".alert-description")
+    .html(
+      "Yüklenen dosya bilgileri temizlendi. Lütfen yeni bir dosya yükleyin."
+    )
+    .fadeIn(400);
 });
-
-

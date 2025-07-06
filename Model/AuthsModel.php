@@ -9,7 +9,7 @@ use PDO;
 
 class AuthsModel extends Model
 {
-    protected $table = "auths";
+    protected $table = "permissions";
     public function __construct()
     {
         parent::__construct($this->table);
@@ -61,7 +61,7 @@ class AuthsModel extends Model
 
 
         //role_auts tablosunda role_id ile sorgulanır,auth_ids içinde var mı yok mu kontrol edilir varsa true döner değilse false döner
-        $sql = $this->db->prepare("SELECT * FROM role_auths WHERE role_id = ? and FIND_IN_SET(?,auth_ids)");
+        $sql = $this->db->prepare("SELECT * FROM user_role_permissions WHERE role_id = ? and FIND_IN_SET(?,auth_ids)");
         $sql->execute([$role_id, $auth_id]);
         $result = $sql->fetch(PDO::FETCH_OBJ);
         if (!$result) {

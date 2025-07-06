@@ -145,7 +145,7 @@ class DairelerModel extends Model
         $params[] = $blokId;
     }
     
-    $sql .= " ORDER BY d.id ASC";
+    $sql .= " ORDER BY b.blok_adi,CAST(d.daire_no AS UNSIGNED) ASC";
 
     $stmt = $this->db->prepare($sql);
     $stmt->execute($params);
@@ -232,7 +232,12 @@ class DairelerModel extends Model
     
                 // Eğer zorunlu alanlar boşsa, hatayı kaydet ve sonraki satıra geç
                 if (empty($blokAdi) || empty($daireNo)) {
-                    $errorRows[] = "Satır {$row->getRowIndex()}: 'Blok Adı' ve 'Daire No' zorunludur.";
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' =>  "Satır {$row->getRowIndex()}: 'Blok Adı' ve 'Daire No' zorunludur.",
+                        'data' => $rowData // SATIRIN TÜM VERİSİNİ EKLE
+                    ];
+
                     $rows->next(); // Bir sonraki satıra geç
                     continue;
                 }
@@ -241,13 +246,24 @@ class DairelerModel extends Model
                 if (empty($daireKoduBenzersiz)) {
                     $daireKoduBenzersiz = (str_replace(" Blok","",$blokAdi) . 'D' . $daireNo); // slugify gibi bir helper fonksiyon kullanın
                 }
+
+                //Blok Adından blok id'sini al
+                $blokId = $blokModel->findBlokBySiteAndName($siteId, $blokAdi)->id;
                 
                 // === 3. ANA MANTIK: TEK SORGULA, KARAR VER, İŞLEM YAP ===
-                $daire = $this->findDaireByUniqueCode($daireKoduBenzersiz);
+                $daire = $this->findDaireByUniqueCode($daireKoduBenzersiz,$blokId);
     
                 if ($daire) {
                     // Daire zaten var, atla.
                     $skippedCount++;
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' =>  "Satır {$row->getRowIndex()}: 'Daire Kodu' '{$daireKoduBenzersiz}' zaten mevcut.",
+                        'data' => $rowData // SATIRIN TÜM VERİSİNİ EKLE
+                    ];
+
+                    $rows->next(); // Bir sonraki satıra geç
+                    continue;
                 } else {
                     // Daire yok, YENİ KAYIT OLUŞTURULACAK
                     
@@ -264,7 +280,12 @@ class DairelerModel extends Model
                     // Daire tipi ID'sini bul
                     $daireTipiId = $definesModel->getApartmentTypeIdByName($siteId, DefinesHelper::TYPE_APARTMENT, $daireTipi);
                     if (!$daireTipiId && !empty($daireTipi)) { // Sadece daire tipi belirtilmişse hata ver
-                        $errorRows[] = "Satır {$row->getRowIndex()}: '{$daireTipi}' adında geçerli bir daire tipi bulunamadı.";
+                        $errorRows[] = [
+                            'row_index' => $row->getRowIndex(),
+                            'error_message' =>   "Satır {$row->getRowIndex()}: '{$daireTipi}' adında geçerli bir daire tipi bulunamadı.",
+                            'data' => $rowData // SATIRIN TÜM VERİSİNİ EKLE
+                        ];
+                        
                         $rows->next(); // Bir sonraki satıra geç
                         continue;
                     }
@@ -343,10 +364,13 @@ class DairelerModel extends Model
      * @param string $uniqueCode
      * @return object|null
      */
-    public function findDaireByUniqueCode(string $uniqueCode): ?object
+    public function findDaireByUniqueCode(string $uniqueCode,$blok_id): ?object
     {
-        $stmt = $this->db->prepare("SELECT * FROM daireler WHERE daire_kodu = ? LIMIT 1");
-        $stmt->execute([$uniqueCode]);
+        $site_id = $_SESSION['site_id'] ?? 0;
+        $stmt = $this->db->prepare("SELECT * FROM daireler 
+                                           WHERE site_id = ? AND daire_kodu = ? AND blok_id = ?
+                                           LIMIT 1");
+        $stmt->execute([$site_id,$uniqueCode, $blok_id]);
         $result = $stmt->fetch(PDO::FETCH_OBJ);
         return $result ?: null;
     }

@@ -1,7 +1,6 @@
 <?php 
-session_start();
+require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
 
-require_once '../../../vendor/autoload.php';
 
 use App\Helper\Security;
 use App\Helper\Date;
@@ -12,12 +11,10 @@ $Due = new DueModel();
 
 if($_POST["action"] == "save_dues"){
     $id = Security::decrypt($_POST["id"]) ;
-    $user_id = $_SESSION["user"]->id;
+    //$user_id = $_SESSION["user"]->id;
 
     $data = [
         "id" => $id,
-        "user_id" => $user_id,
-       // "block_id" => $_POST["block_id"],
        'site_id' => $_SESSION['site_id'],
         "due_name" => $_POST["due_name"],
         "start_date" => Date::Ymd($_POST["start_date"]),

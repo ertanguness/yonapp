@@ -10,16 +10,10 @@ $Kisiler = new KisilerModel();
 $BorcDetay = new BorclandirmaDetayModel();
 
 
-
 $id = Security::decrypt($_GET['id']);
 
 
 $borc_detay = $BorcDetay->BorclandirmaDetay($id);
-
-
-// echo "<pre>";
-// print_r($id);
-// echo "</pre>";
 
 ?>
 
@@ -60,6 +54,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>
+                                            <th>Oturum Türü</th>
                                             <th>Kişi Adı</th>
                                             <th>Borç Adı</th>
                                             <th>Tutar</th>
@@ -81,7 +76,13 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             <td><?php echo $i++; ?></td>
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
-                                                    <?php echo $Kisiler->KisiBilgileri($detay->kisi_id) ?>
+                                                    <?php echo $detay->uyelik_tipi; ?>
+                                                </div>  
+                                            </td>
+
+                                            <td>
+                                                <div class="text-truncate" style="max-width: 200px;">
+                                                    <?php echo $detay->adi_soyadi ?>
                                                 </div>
                                             </td>
                                             <td>
@@ -91,7 +92,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             </td>
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
-                                                    <?php echo Helper::formattedMoney($detay->tutar); ?> 
+                                                    <?php echo Helper::formattedMoney($detay->tutar ?? 0); ?> 
                                                 </div>
                                             </td>
                                             <td><?php echo Date::dmY($detay->baslangic_tarihi); ?></td>

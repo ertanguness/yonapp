@@ -39,6 +39,12 @@ class DatabaseLogger implements LoggerInterface
     {
         $this->log('ERROR', $message, $context);
     }
+
+    public function warning(string $message, array $context = []): void
+    {
+        $this->log('WARNING', $message, $context);
+    }
+
     
     /**
      * Tüm loglama metotlarının kullandığı merkezi metot.

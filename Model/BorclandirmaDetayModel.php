@@ -32,16 +32,32 @@ class BorclandirmaDetayModel extends Model
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    
+
     //******************************************************************** */
 
     /**Borclandırma Detayını getirir
-    * @param int $borclandirma_id
-    * @return array
-    */
+     * @param int $borclandirma_id
+     * @return array
+     */
     public function BorclandirmaDetay($borclandirma_id)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE borclandirma_id = ? AND silinme_tarihi IS NULL");
+        $sql = $this->db->prepare("SELECT 
+                                            bd.id,
+                                            bd.borclandirma_id,
+                                            k.uyelik_tipi,
+                                            k.id,
+                                            k.adi_soyadi,
+                                            bd.borc_adi,
+                                            bd.tutar,
+                                            bd.baslangic_tarihi,
+                                            bd.son_odeme_tarihi as bitis_tarihi,
+                                            bd.ceza_orani,
+                                            bd.aciklama,
+                                            bd.blok_id,
+                                            bd.daire_id
+                                        FROM borclandirma_detayi bd
+                                        LEFT JOIN kisiler k ON k.id = bd.kisi_id
+                                        WHERE borclandirma_id = ? AND bd.silinme_tarihi IS NULL");
         $sql->execute([$borclandirma_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
@@ -52,7 +68,8 @@ class BorclandirmaDetayModel extends Model
      * @param int $borclandirma_id
      *  @return array
      */
-    public function BorclandirilmisBlokIsimleri($borclandirma_id){
+    public function BorclandirilmisBlokIsimleri($borclandirma_id)
+    {
         $Bloklar = new BloklarModel();
         $boclandirilmis_bloklar = $this->BorclandirilmisBloklar($borclandirma_id);
         $blokIsimleri = [];
@@ -64,8 +81,8 @@ class BorclandirmaDetayModel extends Model
     }
 
 
-    
-     //******************************************************************************
+
+    //******************************************************************************
     /**
      * Borçlandırılmış Daire Tiperini isimlerini getirir
      * @return array
@@ -90,8 +107,8 @@ class BorclandirmaDetayModel extends Model
         $daireler = $stmt->fetchAll(PDO::FETCH_OBJ);
         $daire_tipleri = [];
 
-        foreach($daireler as $daire){
-            $daire_tipleri[]= $daire->define_name;
+        foreach ($daireler as $daire) {
+            $daire_tipleri[] = $daire->define_name;
         };
         return implode(", ", $daire_tipleri);
     }
@@ -118,7 +135,7 @@ class BorclandirmaDetayModel extends Model
         $sql->execute([$kisi_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
-  
+
 
 
     /**
@@ -179,20 +196,56 @@ class BorclandirmaDetayModel extends Model
      */
     public function KisiFinansalDurum($kisi_id)
     {
+        // $this->table'ı doğrudan sorguya eklemek için
+        $borcTablosu = $this->table; 
+    
         $sql = $this->db->prepare("
-                            SELECT 
-                                (SELECT COALESCE(SUM(tutar), 0) FROM $this->table WHERE kisi_id = :kisi_id) AS toplam_borc,
-                                (SELECT COALESCE(SUM(tutar), 0) FROM tahsilatlar WHERE kisi_id = :kisi_id) AS toplam_odeme,
-                                (SELECT COALESCE(SUM(tutar), 0) FROM tahsilatlar WHERE kisi_id = :kisi_id) - 
-                                (SELECT COALESCE(SUM(tutar), 0) FROM $this->table WHERE kisi_id = :kisi_id) AS bakiye;
+                            SELECT
+                                borc.toplam_borc,
+                                odeme.toplam_odeme,
+                                odeme.toplam_odeme - borc.toplam_borc AS bakiye
+                            FROM
+                                (SELECT COALESCE(SUM(tutar), 0) AS toplam_borc FROM {$borcTablosu} WHERE kisi_id = :kisi_id_borc) AS borc,
+                                (SELECT COALESCE(SUM(tutar), 0) AS toplam_odeme FROM tahsilatlar WHERE kisi_id = :kisi_id_odeme) AS odeme;
                             ");
+        
         $sql->execute([
-            ':kisi_id' => $kisi_id
+            ':kisi_id_borc' => $kisi_id,
+            ':kisi_id_odeme' => $kisi_id
         ]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
 
+    // Model/BorcDetayModel.php
 
-  
+/**
+ * Verilen ID dizisine ait borçların toplam tutarını döndürür.
+ *
+ * @param array $idler Borç detay ID'lerini içeren dizi.
+ * @return float|false Toplam tutar veya hata durumunda false.
+ */
+public function getToplamTutarByIds(array $idler): float|false
+{
+    if (empty($idler)) {
+        return 0.0;
+    }
 
+    // IN sorgusu için placeholder'lar oluştur (?,?,?)
+    $placeholders = implode(',', array_fill(0, count($idler), '?'));
+
+    $sql = "SELECT SUM(tutar) as toplam FROM {$this->table} WHERE id IN ({$placeholders})";
+    
+    try {
+        $stmt = $this->db->prepare($sql);
+        // execute() metoduna ID dizisini doğrudan ver
+        $stmt->execute($idler);
+        // fetchColumn() tek bir sütunun değerini döndürür
+        $toplam = $stmt->fetchColumn();
+        return (float)$toplam; // Sonucu float'a çevirerek döndür
+    } catch (\PDOException $e) {
+        // Hata loglama
+        error_log("Toplam tutar alınırken hata: " . $e->getMessage());
+        return false;
+    }
+}
 }

@@ -78,13 +78,20 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
 }
 
 ?>
+<style>
+    .w-90 {
+        width: 90px !important;
+    }
+</style>
 <!--! ================================================================ !-->
 <!--! [Start] Navigation Manu !-->
 <!--! ================================================================ !-->
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">
-        <div class="m-header p-3">
+        <div class="m-header p-3 d-flex justify-content-center align-items-center">
             <!-- Logo... -->
+            <img src="assets/images/logo/logo.svg" alt="" class="logo logo-lg w-90 "  />
+            <img src="assets/images/logo/logo.svg" alt="" class="logo logo-sm" />
         </div>
         <div class="navbar-content">
             <ul class="nxl-navbar " id="side-menu">
