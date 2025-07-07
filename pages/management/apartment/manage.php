@@ -1,4 +1,5 @@
 <?php
+
 use App\Helper\Security;
 
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
@@ -62,11 +63,42 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
-                                    <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                                        <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $_GET['id'] ?? 0; ?>">
 
-                                        <?php
-                                            require_once 'pages/management/apartment/content/ApartmentInformation.php';
-                                        ?>
+                                        <div class="card-header p-0">
+                                            <!-- Nav tabs -->
+                                            <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
+                                                id="myTab" role="tablist">
+                                                <li class="nav-item flex-fill border-top" role="presentation">
+                                                    <a href="javascript:void(0);" class="nav-link"
+                                                        data-bs-toggle="tab" data-bs-target="#apartmentInfoTab"
+                                                        role="tab">Daire Bilgileri</a>
+                                                </li>
+                                                <?php if ($id && $id != 0): ?>
+                                                    <li class="nav-item flex-fill border-top" role="presentation">
+                                                        <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab"
+                                                            data-bs-target="#apartmentPeopleInfoTab" role="tab">Daire Kişi Bilgileri</a>
+                                                    </li>
+                                                <?php endif; ?>
+
+                                            </ul>
+                                        </div>
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade " id="apartmentInfoTab" role="tabpanel">
+                                                <?php
+                                                require_once 'pages/management/apartment/content/ApartmentInformation.php';
+                                                ?>
+                                            </div>
+                                            <?php if ($id && $id != 0): ?>
+                                                <div class="tab-pane fade" id="apartmentPeopleInfoTab" role="tabpanel">
+                                                    <?php
+                                                    require_once 'pages/management/apartment/content/ApartmentPeopleInformation.php';
+                                                    ?>
+                                                </div>
+                                            <?php endif; ?>
+
+
+                                        </div>
                                     </div>
                                 </div>
                         </form>
@@ -76,3 +108,29 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+
+        const tabMap = {
+            'general': '#apartmentInfoTab',
+            'peoples': '#apartmentPeopleInfoTab',
+        };
+
+        let activeTabSelector = '#apartmentInfoTab'; // default
+        if (tab && tabMap[tab]) {
+            activeTabSelector = tabMap[tab];
+        }
+
+        // İlgili sekmenin başlığını seçelim (nav-link)
+        const triggerEl = document.querySelector(`a[data-bs-target="${activeTabSelector}"]`);
+        if (triggerEl) {
+            // Bootstrap tab instance yarat ve göster
+            const tabTrigger = new bootstrap.Tab(triggerEl);
+            tabTrigger.show();
+        }
+    });
+</script>

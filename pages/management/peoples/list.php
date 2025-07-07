@@ -143,7 +143,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
             </div>
         </div>
     </div>
-    <div id="siteSakiniDetay" class="offcanvas ..."></div>
+    <div id="siteSakiniDetay"></div>
 
 </div>
 <script>

@@ -161,12 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const container = document.getElementById('siteDetay');
                     container.innerHTML = html;
 
-                    // DOM'a yeni offcanvas eklendikten sonra bul
-                    const canvasElement = document.getElementById('siteDetayOffcanvas');
-                    const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
-
-                    // Bootstrap offcanvas'ı JS üzerinden başlat => backdrop otomatik oluşur
-                    offcanvasInstance.show();
+                   
                 })
                 .catch(error => {
                     console.error('Detay yüklenemedi:', error);

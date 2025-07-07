@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__ ,levels: 4). '/configs/bootstrap.php';
+require_once dirname(__DIR__, levels: 4) . '/configs/bootstrap.php';
 
 
 use App\Helper\Security;
@@ -31,7 +31,7 @@ if (!$site) {
 }
 ?>
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="daireDetayOffcanvas" data-bs-backdrop="false">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="daireDetayOffcanvas" data-bs-backdrop="true">
     <div class="offcanvas-header ht-80 px-4 border-bottom border-gray-5">
         <div>
             <h2 class="fs-20 fw-bold text-truncate-1-line"><?= htmlspecialchars($site->site_adi) ?></h2>
@@ -56,10 +56,10 @@ if (!$site) {
 
     <div class="offcanvas-body px-4">
 
-    <div class="mb-3 d-flex">
+        <div class="mb-3 d-flex">
             <div style="width: 130px; font-weight: 600;">Kişiler:</div>
             <div>
-                
+
                 <?php
                 if (!empty($kisiler)) {
                     foreach ($kisiler as $kisi) {
@@ -75,7 +75,7 @@ if (!$site) {
                 } else {
                     echo '<div>Kişi bulunamadı.</div>';
                 }
-                
+
                 ?>
             </div>
         </div>
@@ -103,7 +103,7 @@ if (!$site) {
     </div>
 
     <div class="px-4 gap-2 d-flex align-items-center ht-80 border border-end-0 border-gray-2">
-        <a href="index?p=management/apartment/manage&id=<?= Security::encrypt($daire->id) ?>" class="btn btn-primary w-50">Düzenle</a>
         <a href="javascript:void(0);" class="btn btn-danger w-50" data-bs-dismiss="offcanvas">Kapat</a>
+        <a href="index?p=management/apartment/manage&id=<?= Security::encrypt($daire->id) ?>" class="btn btn-primary w-50">Düzenle</a>
     </div>
 </div>

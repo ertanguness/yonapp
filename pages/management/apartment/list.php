@@ -13,9 +13,9 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
 
 ?>
 <style>
-  #daireDetayOffcanvas {
-    z-index: 1060 !important;
-  }
+    #daireDetayOffcanvas {
+        z-index: 1060 !important;
+    }
 </style>
 
 
@@ -134,7 +134,7 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
 
                                                 <td>
                                                     <div class="hstack gap-1">
-                                                    <a href="javascript:void(0);" class="avatar-text avatar-md openDaireDetay" data-id="<?= $enc_id ?>">
+                                                        <a href="javascript:void(0);" class="avatar-text avatar-md openDaireDetay" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                         <a href="index?p=management/apartment/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
@@ -159,7 +159,7 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
             </div>
         </div>
     </div>
-    <div id="daireDetay" class="offcanvas ..."></div>
+    <div id="daireDetay" ></div>
 
 </div>
 <script>
@@ -174,8 +174,11 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('daireDetay').innerHTML = html;
+                        // DOM'a yeni offcanvas eklendikten sonra bul
                         const canvasElement = document.getElementById('daireDetayOffcanvas');
                         const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
+
+                        // Bootstrap offcanvas'ı JS üzerinden başlat => backdrop otomatik oluşur
                         offcanvasInstance.show();
                     })
                     .catch(error => {
