@@ -74,7 +74,10 @@ if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
         "eposta"           => $_POST["email"],
         "satin_alma_tarihi" => $satinAlmaTarihi,
         "giris_tarihi"     => $girisTarihi,
-        "cikis_tarihi"     => $cikisTarihi
+        "cikis_tarihi"     => $cikisTarihi,
+        "aktif_mi" => 1 , 
+        "kullanim_durumu" => isset($_POST["kullanim_durumu"]) ? 1 : 0
+
     ];
 
     $lastInsertId = $Kisiler->saveWithAttr($data);

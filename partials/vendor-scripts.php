@@ -182,7 +182,7 @@ if ($page == 'home') {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" defer></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
 
-<script src="./assets/js/select2/js/select2.min.js" defer></script>
+<script src="./assets/js/select2/js/select2.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script> -->
 
 <script src="./src/app.js" defer??></script>

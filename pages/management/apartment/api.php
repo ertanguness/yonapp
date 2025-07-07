@@ -56,7 +56,9 @@ if ($_POST["action"] == "save_apartment") {
         "brut_alan" => $_POST["grossArea"],
         "net_alan" => $_POST["netArea"],
         "arsa_payi" => $_POST["landShare"],
-        "aktif_mi" => isset($_POST["status"]) ? 1 : 0
+        "aktif_mi" => isset($_POST["status"]) ? 1 : 0,
+        "aciklama" => $_POST["aciklama"],
+
     ];
 
     $lastInsertId = $daireModel->saveWithAttr($data);

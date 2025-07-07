@@ -10,10 +10,9 @@ $Kisiler = new KisilerModel();
 $Bloklar = new BloklarModel();
 $Daireler = new DairelerModel();
 
-$kisi = $Kisiler->DaireKisileri($_SESSION['site_id'] ?? null);
+$kisi = $Kisiler->DaireKisileri($id ?? null);
 $daire = $daireModel->DaireBilgisi($site_id, $id ?? 0);
 $blocks = $Block->Blok($daire->blok_id ?? 0);
-
 ?>
 <div class="main-content">
 
@@ -45,7 +44,6 @@ $blocks = $Block->Blok($daire->blok_id ?? 0);
                                             <th>#</th>
                                             <th>Adı Soyadı</th>
                                             <th>Telefon</th>
-                                            <th>Araç Plakası</th>
                                             <th>İkamet Türü</th>
                                             <th>Kullanım Durumu</th>
                                             <th>Aktif/Pasif</th>
@@ -56,24 +54,25 @@ $blocks = $Block->Blok($daire->blok_id ?? 0);
                                         $i = 1;
                                         foreach ($kisi as $row):
                                             $daire = $Daireler->DaireAdi($row->daire_id ?? null);
-
                                             $enc_id = Security::encrypt($row->id);
                                             $adi_soyadi = isset($row->adi_soyadi) ? htmlspecialchars($row->adi_soyadi) : '-';
                                             $telefon = isset($row->telefon) ? htmlspecialchars($row->telefon) : '-';
                                             $ikametTuruList = Helper::ikametTuru;
                                             $ikamet_turu = isset($ikametTuruList[$row->uyelik_tipi]) ? $ikametTuruList[$row->uyelik_tipi] : '-';
-                                            $plaka = !empty($row->plaka_listesi)
-                                                ? nl2br(htmlspecialchars_decode($row->plaka_listesi))
-                                                : '-';
+                                            $aktif_pasif = $row->aktif_mi
+                                                ? '<span class="text-success"><i class="fa fa-check-circle"></i> Aktif</span>'
+                                                : '<span class="text-danger"><i class="fa fa-times-circle"></i> Pasif</span>';
+                                            $kullanim_durumu = $row->kullanim_durumu
+                                                ? '<span class="text-success"><i class="fa fa-user-check"></i> Kullanıyor</span>'
+                                                : '<span class="text-secondary"><i class="fa fa-user-times"></i> Kullanmıyor</span>';
                                         ?>
                                             <tr class="text-center">
                                                 <td><?php echo $row->id; ?></td>
                                                 <td><?php echo $adi_soyadi; ?></td>
                                                 <td><?php echo $telefon; ?></td>
-                                                <td><?php echo $plaka; ?></td>
                                                 <td><?php echo $ikamet_turu; ?></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td><?php echo $kullanim_durumu; ?></td>
+                                                <td><?php echo $aktif_pasif; ?></td>
                                             </tr>
                                         <?php
                                             $i++;
