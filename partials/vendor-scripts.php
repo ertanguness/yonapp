@@ -44,7 +44,7 @@ if ($page == 'users/list' || $page == 'users/manage') {
 }
 
 // Kullanıcı rolü ekleme ve düzenleme sayfası
-if ($page == 'kullanici-gruplari/duzenle' ) {
+if ($page == 'kullanici-gruplari/duzenle' || $page == 'kullanici-gruplari/yetkiler') {
     echo '<script src="pages/kullanici-gruplari/js/duzenle.js"></script>';
 }
 
@@ -103,6 +103,10 @@ if (
     $page == 'management/apartment/manage' ||   $page == 'management/apartment/list') {
         echo '<script src="pages/management/apartment/apartment.js"></script>';
     }
+// Apartment upload from excel
+if ($page == 'management/apartment/upload-from-xls') {
+    echo '<script src="pages/management/apartment/js/upload-from-xls.js"></script>';
+}
    //*************APARTMENT******************************** */
 
    //*************PEOPLES******************************** */
@@ -145,7 +149,7 @@ if ($page == 'dues/payment/tahsilat_onay') {
 }
 
 if($page == 'dues/payment/list') {
-    echo '<script src="pages/dues/payment/js/tahsilat-gir.js"></script>';
+    echo '<script src="pages/dues/payment/js/tahsilat-gir.js" defer></script>';
 }
 
 
@@ -169,16 +173,16 @@ if ($page == 'home') {
 <script src="./src/jquery.inputmask.js"></script>
 
 
-<script src="./assets/js/flatpickr.min.js"></script>
-<script src="./assets/js/flatpickr.tr.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+<script src="./assets/js/flatpickr.min.js" defer></script>
+<script src="./assets/js/flatpickr.tr.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" defer></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="./assets/js/jquery.validate.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+<script src="./assets/js/jquery.validate.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" defer></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
 
-<script src="./assets/js/select2/js/select2.min.js"></script>
+<script src="./assets/js/select2/js/select2.min.js" defer></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script> -->
 
 <script src="./src/app.js" defer??></script>

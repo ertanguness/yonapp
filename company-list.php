@@ -41,7 +41,9 @@ $mySites = $Site->Sitelerim(); // Kullanıcının sitelerini getir
 
 if (count($mySites) == 1) {
     $_SESSION['site_id'] = $mySites[0]->id;
-    header('Location: index?p=home');
+    // header('Location: index?p=home');
+    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'index?p=home';
+    header("Location: $redirectUri");
     exit();
 }
 

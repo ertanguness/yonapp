@@ -212,7 +212,6 @@
         $(document).ready(function() {
             $('#il').change(function() {
 
-                // getTowns("il", "ilce");
                 var cityID = $(this).val();
                 
 

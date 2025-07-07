@@ -2,7 +2,6 @@
 
 namespace Model;
 
-//Model klasoru altında bulunan BaseModel sınıfını dahil ediyoruz
 use Model\Model;
 use PDO;
 

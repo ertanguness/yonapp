@@ -4,6 +4,7 @@
 namespace Model;
 
 use App\Helper\Security;
+use Override;
 use PDO;
 
 
@@ -52,6 +53,25 @@ class Model
         $sql->execute(array($id));
         return $sql->fetch(PDO::FETCH_OBJ) ?? false;
     }
+
+
+    /** Finds records where a specific column matches a value.
+     * @param string $column The column to search in.
+     * @param mixed $value The value to match against the column.
+     */
+    public function findWhereIn($column, $values, $sorting ="column asc")
+    {
+        if (empty($values)) {
+            return [];
+        }
+
+        $placeholders = rtrim(str_repeat('?, ', count($values)), ', ');
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE $column IN ($placeholders) ORDER BY $sorting");
+        $sql->execute($values);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+    
+
    
 
     public function save()
@@ -118,6 +138,45 @@ class Model
         //     throw new Exception("Kayıt güncellenemedi.");
         // }
     }
+
+/**
+ * Bir kaydı ID'sine göre günceller.
+ * Bu metod, üst sınıftaki (parent) `update` metodunu override eder.
+ * Güncellemeden önce kaydın varlığını kontrol eder ve verileri hazırlar.
+ *
+ * @param int|string $id Güncellenecek kaydın şifrelenmiş veya normal ID'si
+ * @param array $data Güncellenecek verileri içeren anahtar-değer dizisi
+ * @return bool Güncelleme işleminin sonucu (genellikle true/false)
+ * @throws \Exception Kayıt bulunamazsa veya güncelleme başarısız olursa
+ */
+public function updateSingle($id, $data)
+{
+    // 1. ID'yi deşifre et (Eğer şifreli geliyorsa)
+   // $decryptedId = Security::decrypt($id);
+
+    // 2. Güncelleme öncesi kaydın varlığını kontrol et
+    // Bu, gereksiz veritabanı sorgularını önler ve hata yönetimini iyileştirir.
+    // find() metodunun zaten modelin niteliklerini ($this->attributes) doldurduğunu varsayıyoruz.
+    $record = $this->find($id);
+    if ($record === false) {
+        // Kayıt bulunamadıysa, bir istisna fırlatarak işlemi durdur.
+        throw new \Exception("Güncellenmek istenen kayıt bulunamadı. ID: " . $id);
+    }
+
+    // 3. Modelin niteliklerini (attributes) yeni güncelleme verileriyle birleştir/ayarla
+    // Gelen veriyi mevcut niteliklerin üzerine yazıyoruz.
+    $this->attributes = array_merge($this->attributes, $data);
+
+    // Birincil anahtarın doğru ayarlandığından emin olalım.
+    // find() bunu zaten yapmış olmalı, ama bu bir güvencedir.
+    $this->attributes[$this->primaryKey] = $id;
+
+    // 4. Üst sınıfın orijinal update metodunu çağırarak asıl veritabanı işlemini gerçekleştir
+    // DİKKAT: $this->update() yerine parent::update() kullanılmalıdır!
+    // parent::update() metodu, $this->attributes dizisindeki verileri kullanarak
+    // "UPDATE tablo SET ... WHERE id=..." sorgusunu çalıştıracaktır.
+    return $this->update(); 
+}
 
     public function reload()
     {

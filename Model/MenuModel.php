@@ -50,7 +50,7 @@ public function getHierarchicalMenuForRole(int $user_id): array
     {
         // Geliştirme sırasında cache'i temizlemek için bu satırı geçici olarak açabilirsiniz.
         // Production'da MUTLAKA kapalı olmalı!
-         $this->clearAllMenuCachesForCurrentTenant();
+         //$this->clearAllMenuCachesForCurrentTenant();
 
         if (empty($this->ownerSpecificCacheDir) || !is_dir($this->ownerSpecificCacheDir)) {
             // Cache dizini yoksa veya geçersizse, cache'lemeden devam et.
@@ -251,5 +251,78 @@ public function getHierarchicalMenuForRole(int $user_id): array
 
         //echo Helper::dd($structuredMenu);
         return $structuredMenu;
+    }
+
+    
+    /**
+     * Verilen bir menü linkine göre aktif menü ID'sini ve tüm üst menü (ata) ID'lerini bulur.
+     * Bu, isMenu=0 olan sayfaların da ana menülerini aktif yapmasını sağlar.
+     *
+     * @param string $menuLink Mevcut sayfanın menu_link değeri (örn: 'kullanici_duzenle')
+     * @return array|null ['active_id' => 15, 'ancestor_ids' => [10, 2]] gibi bir dizi veya null döner.
+     */
+    public function findActiveMenuInfoByLink(string $menuLink): ?array
+    {
+        if (empty($menuLink)) {
+            return null;
+        }
+
+        // 1. Link'e ait menü öğesini bul
+        $stmt = $this->db->prepare("SELECT id, parent_id, isMenu FROM {$this->table} WHERE menu_link = ? LIMIT 1");
+        $stmt->execute([$menuLink]);
+        $item = $stmt->fetch(PDO::FETCH_OBJ);
+
+        if (!$item) {
+            return null; // Link'e ait kayıt bulunamadı
+        }   
+
+        // 2. Vurgulanacak asıl menü öğesinin ID'sini belirle
+        // Eğer sayfa menüde gösteriliyorsa (isMenu=1), kendisi aktiftir.
+        // Eğer gösterilmiyorsa (isMenu=0), onun parent'ı aktiftir.
+        $highlightId = ($item->isMenu == 1) ? $item->id : $item->parent_id;
+
+        if (empty($highlightId)) {
+            return null; // Vurgulanacak bir menü yok
+        }
+        
+        // 3. Vurgulanacak menünün tüm üst (ata) menülerinin ID'lerini bul
+        $ancestorIds = $this->getAncestorIds($highlightId);
+
+        return [
+            'active_id' => (int) $highlightId,
+            'ancestor_ids' => $ancestorIds
+        ];
+    }
+
+    /**
+     * Verilen bir menü ID'sinin en tepeye kadar tüm üst menülerinin ID'lerini bir dizi olarak döndürür.
+     *
+     * @param int $startMenuId Başlangıç menü ID'si
+     * @return array Üst menülerin ID'lerini içeren dizi
+     */
+    public function getAncestorIds(int $startMenuId): array
+    {
+        $ancestors = [];
+        $currentId = $startMenuId;
+
+        // En fazla 10 seviye derinliğe kadar arama (sonsuz döngü önlemi)
+        for ($i = 0; $i < 10; $i++) {
+            if (empty($currentId)) {
+                break;
+            }
+
+            $stmt = $this->db->prepare("SELECT parent_id FROM {$this->table} WHERE id = ? LIMIT 1");
+            $stmt->execute([$currentId]);
+            $parentId = $stmt->fetchColumn();
+
+            if ($parentId && $parentId != 0) {
+                $ancestors[] = (int)$parentId;
+                $currentId = $parentId; // Bir sonraki tur için üst menünün ID'sini al
+            } else {
+                break; // Daha fazla üst menü yok
+            }
+        }
+
+        return $ancestors;
     }
 }

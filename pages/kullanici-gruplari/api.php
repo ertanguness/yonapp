@@ -1,8 +1,9 @@
 <?php
 
 
+require_once dirname(__DIR__ ,levels: 2). '/configs/bootstrap.php';
 
-require_once "../../vendor/autoload.php";
+
 
 use App\Helper\Helper;
 use Model\MenuModel;

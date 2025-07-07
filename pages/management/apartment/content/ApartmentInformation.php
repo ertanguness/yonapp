@@ -23,7 +23,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-key"></i></div>
-                <input type="text" class="form-control" id="daire_kodu" name="daire_kodu" placeholder="Daire Kodu" value="<?= htmlspecialchars($daire->daire_kodu ?? '') ?>" readonly>
+                <input type="text" class="form-control" id="daire_kodu" name="daire_kodu" placeholder="Daire Kodu"
+                    value="<?= htmlspecialchars($daire->daire_kodu ?? '') ?>" readonly>
             </div>
         </div>
     </div>
@@ -37,10 +38,10 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
                 <select class="form-select select2 w-100" id="blockName" name="blockName">
                     <option value="">Blok Seçiniz</option>
                     <?php foreach ($blocks as $block): ?>
-                        <option value="<?= htmlspecialchars($block->id) ?>"
-                            <?= (isset($daire->blok_id) && $daire->blok_id == $block->id) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($block->blok_adi) ?>
-                        </option>
+                    <option value="<?= htmlspecialchars($block->id) ?>"
+                        <?= (isset($daire->blok_id) && $daire->blok_id == $block->id) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($block->blok_adi) ?>
+                    </option>
                     <?php endforeach; ?>
                 </select>
 
@@ -52,7 +53,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-layers"></i></div>
-                <input type="text" class="form-control" id="floor" name="floor" placeholder="Kat Giriniz" value="<?php echo $daire->kat ?? ''; ?>">
+                <input type="text" class="form-control" id="floor" name="floor" placeholder="Kat Giriniz"
+                    value="<?php echo $daire->kat ?? ''; ?>">
             </div>
         </div>
     </div>
@@ -63,7 +65,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-hash"></i></div>
-                <input type="text" class="form-control" id="flatNumber" name="flatNumber" placeholder="Daire No Giriniz" value="<?php echo $daire->daire_no ?? ''; ?>">
+                <input type="text" class="form-control" id="flatNumber" name="flatNumber" placeholder="Daire No Giriniz"
+                    value="<?php echo $daire->daire_no ?? ''; ?>">
             </div>
         </div>
         <div class="col-lg-2">
@@ -75,10 +78,10 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
                 <select class="form-select select2 w-100" name="apartment_type" id="apartment_type">
                     <option value="">Daire Tipi Seçin</option>
                     <?php foreach ($apartmentTypes as $type): ?>
-                        <option value="<?= htmlspecialchars($type['id']) ?>"
-                            <?= (isset($daire->daire_tipi) && $daire->daire_tipi == $type['id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($type['define_name']) ?>
-                        </option>
+                    <option value="<?= htmlspecialchars($type->id) ?>"
+                        <?= (isset($daire->daire_tipi) && $daire->daire_tipi == $type->id) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($type->define_name) ?>
+                    </option>
                     <?php endforeach; ?>
                 </select>
 
@@ -92,7 +95,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-maximize"></i></div>
-                <input type="number" class="form-control" id="grossArea" name="grossArea" placeholder="Brüt Alan Giriniz" min="1" value="<?php echo $daire->brut_alan ?? ''; ?>">
+                <input type="number" class="form-control" id="grossArea" name="grossArea"
+                    placeholder="Brüt Alan Giriniz" min="1" value="<?php echo $daire->brut_alan ?? ''; ?>">
             </div>
         </div>
 
@@ -102,7 +106,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-minimize"></i></div>
-                <input type="number" class="form-control" id="netArea" name="netArea" placeholder="Net Alan Giriniz" min="1" value="<?php echo $daire->net_alan ?? ''; ?>">
+                <input type="number" class="form-control" id="netArea" name="netArea" placeholder="Net Alan Giriniz"
+                    min="1" value="<?php echo $daire->net_alan ?? ''; ?>">
             </div>
         </div>
     </div>
@@ -114,7 +119,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-map"></i></div>
-                <input type="number" class="form-control" id="landShare" name="landShare" placeholder="Arsa Payı Giriniz" min="1" value="<?php echo $daire->arsa_payi ?? ''; ?>">
+                <input type="number" class="form-control" id="landShare" name="landShare"
+                    placeholder="Arsa Payı Giriniz" min="1" value="<?php echo $daire->arsa_payi ?? ''; ?>">
             </div>
         </div>
 
@@ -123,16 +129,20 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         </div>
         <div class="col-lg-4">
             <div class="form-check form-switch d-flex align-items-center">
-                <input class="form-check-input" type="checkbox" id="status" name="status"
-                    style="transform: scale(2.0);"
+                <input class="form-check-input" type="checkbox" id="status" name="status" style="transform: scale(2.0);"
                     data-aktif="<?= isset($daire->aktif_mi) ? (int)$daire->aktif_mi : 0 ?>">
                 <label class="form-check-label ms-4" for="status"></label>
             </div>
         </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> c24b1b10a5921f22974d1bb70f1579af0e35a7a6
     </div>
 </div>
 <!-- Daire kodu oluşturma başlangıç -->
 <script>
+<<<<<<< HEAD
     document.addEventListener('DOMContentLoaded', function() {
         const blockSelect = document.getElementById('blockName');
         const flatNumberInput = document.getElementById('flatNumber');
@@ -162,12 +172,44 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
                 Swal.fire({
                     title: "Daire Kodu Değiştirilsin mi?",
                     html: `
+=======
+document.addEventListener('DOMContentLoaded', function() {
+    const blockSelect = document.getElementById('blockName');
+    const flatNumberInput = document.getElementById('flatNumber');
+    const hiddenCodeInput = document.getElementById('daire_kodu');
+    const statusCheckbox = document.getElementById('status');
+
+    function generateDaireKodu() {
+        const selectedOption = blockSelect.options[blockSelect.selectedIndex];
+        let blokAdi = selectedOption.text.trim();
+        const daireNo = flatNumberInput.value.trim();
+        const eskiKod = hiddenCodeInput.value.trim(); // mevcut kod
+
+        if (!blokAdi || !daireNo) {
+            return;
+        }
+
+        const blokIndex = blokAdi.toLowerCase().indexOf('blok');
+        if (blokIndex !== -1) {
+            blokAdi = blokAdi.substring(0, blokIndex);
+        }
+
+        const firstWord = blokAdi.trim().split(' ')[0];
+        const yeniKod = `${firstWord}D${daireNo}`.toUpperCase();
+
+        // Eski kodla yeni kod farklıysa kullanıcıya sor
+        if (eskiKod && eskiKod !== yeniKod) {
+            Swal.fire({
+                title: "Daire Kodu Değiştirilsin mi?",
+                html: `
+>>>>>>> c24b1b10a5921f22974d1bb70f1579af0e35a7a6
                 <div style="text-align:left;">
                     <p><strong>Mevcut Kodu:</strong> ${eskiKod}</p>
                     <p><strong>Yeni Önerilen Kod:</strong> ${yeniKod}</p>
                     <p>Yeni koda geçmek ister misiniz?</p>
                 </div>
             `,
+<<<<<<< HEAD
                     icon: "question",
                     showCancelButton: true,
                     confirmButtonText: "Evet, değiştir",
@@ -191,6 +233,31 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
             generateDaireKodu(); // sadece yeni kayıt için üret
         }
     });
+=======
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Evet, değiştir",
+                cancelButtonText: "Hayır, eski kalsın",
+            }).then(result => {
+                if (result.isConfirmed) {
+                    hiddenCodeInput.value = yeniKod; // yeni kodu kaydet
+                } else {
+                    hiddenCodeInput.value = eskiKod; // eski kodu tut
+                }
+            });
+        } else {
+            hiddenCodeInput.value = yeniKod; // zaten eşitse direk yaz
+        }
+    }
+
+
+    blockSelect.addEventListener('change', generateDaireKodu);
+    flatNumberInput.addEventListener('input', generateDaireKodu);
+    if (!hiddenCodeInput.value) {
+        generateDaireKodu(); // sadece yeni kayıt için üret
+    }
+});
+>>>>>>> c24b1b10a5921f22974d1bb70f1579af0e35a7a6
 </script>
 
 <!-- Daire kodu oluşturma bitiş -->

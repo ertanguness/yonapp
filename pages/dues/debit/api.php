@@ -1,6 +1,6 @@
 <?php
-session_start();
-require_once '../../../vendor/autoload.php';
+require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
+
 
 
 use App\Helper\Security;
@@ -11,20 +11,19 @@ use App\Helper\Error;
 
 use Model\BorclandirmaModel;
 use Model\BorclandirmaDetayModel;
-use Model\DueModel;
 use Model\BloklarModel;
 use Model\DairelerModel;
 use Model\KisilerModel;
 use Model\DefinesModel;
+use Model\DueModel;
 
 $Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
-$Due = new DueModel();
 $Bloklar = new BloklarModel();
 $Daire = new DairelerModel();
 $Kisiler = new KisilerModel();
 $Defines = new DefinesModel();
-
+$Due = new DueModel();
 
 
 /**BORÇLANDIRMA YAP */
@@ -34,6 +33,8 @@ if ($_POST["action"] == "borclandir") {
     $user_id = $_SESSION["user"]->id;
     $borclandirma_turu = $_POST["hedef_tipi"];
     $gun_bazli = isset($_POST["day_based"]) ? true : false; // Gün bazlı mı kontrolü
+
+    $logger = \getLogger();
 
     $data = [
         "id" => $id,
@@ -47,17 +48,18 @@ if ($_POST["action"] == "borclandir") {
         "hedef_tipi" => $borclandirma_turu,
     ];
 
-    $lastInsertId = $Borc->saveWithAttr($data) ?? $id;;
+    $lastInsertId = $Borc->saveWithAttr($data) ?? $_POST["id"];
 
     $data = [];
 
     $data = [
-        "id" => $id,
+        "id" => 0,
         "borclandirma_id" =>  Security::decrypt($lastInsertId),
         "borc_adi" => $_POST["borc_adi"],
         "tutar" => Helper::formattedMoneyToNumber($_POST["tutar"]),
         "baslangic_tarihi" => Date::Ymd($_POST["baslangic_tarihi"]),
         "bitis_tarihi" => Date::Ymd($_POST["bitis_tarihi"]),
+        "son_odeme_tarihi" => Date::Ymd($_POST["bitis_tarihi"]), 
         "ceza_orani" => $_POST["ceza_orani"],
         "aciklama" => $_POST["aciklama"],
         "hedef_tipi" => $borclandirma_turu,
@@ -67,11 +69,13 @@ if ($_POST["action"] == "borclandir") {
     if ($borclandirma_turu == "all") {
         //Tüm siteye borçlandırma yapılıyor
         //Sitenin tüm aktif kişilerini getir
-        $kisiler = $Kisiler->SiteAktifKisileri($site_id);
+        $kisiler = $Kisiler->SiteAktifKisileriBorclandirma($site_id);
         foreach ($kisiler as $kisi) {
             $data["aciklama"] = $kisi->giris_tarihi;
             $data["kisi_id"] = $kisi->kisi_id;
             $data["blok_id"] = $kisi->blok_id; // Blok ID'sini de ekliyoruz
+            $data["daire_id"] = $kisi->daire_id; // Daire ID'sini de ekliyoruz
+
 
             // Eğer gün bazlı borçlandırma ise, başlangıç ve bitiş tarihlerini gün bazlı olarak ayarlıyoruz
             if ($gun_bazli) {
@@ -83,6 +87,8 @@ if ($_POST["action"] == "borclandir") {
                 ); // Günlük tutar hesaplanıyor
             }
             $BorcDetay->saveWithAttr($data);
+
+            $logger->info("Borçlandırma yapıldı: " . json_encode($data));
         }
     } elseif ($borclandirma_turu == "block") {
         //Bloklara borçlandırma yapılıyor

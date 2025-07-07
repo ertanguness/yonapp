@@ -1,5 +1,6 @@
 <?php
-require_once '../../../vendor/autoload.php';
+require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
+
 
 use App\Helper\Date;
 use App\Helper\Security;
@@ -19,6 +20,8 @@ $Tahsilat = new TahsilatModel();
 
 $id = Security::decrypt($_GET['kisi_id']) ?? 0;
 $kisi = $Kisi->find($id);
+
+
 
 $finansalDurum = $BorcDetay->KisiFinansalDurum($id);
 $bakiye_color = $finansalDurum->bakiye < 0 ? 'text-danger' : 'text-success';

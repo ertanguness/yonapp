@@ -5,14 +5,12 @@ use App\Helper\Helper;
 use App\Helper\Security;
 use Model\BorclandirmaModel;
 use App\Helper\Debit;
-use Model\Auths;
 
-
+use App\Services\Gate;
 
 
 $DueHelper = new Aidat();
 $Borc = new BorclandirmaModel();
-$Auths = new Auths();
 
 //$Auths->checkAuthorize('dues/debit/manage');
 
@@ -37,6 +35,7 @@ $bitis_tarihi = Date::lastDay(
 
 
 <div class="page-header">
+ 
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
             <h5 class="m-b-10">Borç Ekle</h5>
@@ -49,10 +48,10 @@ $bitis_tarihi = Date::lastDay(
     <div class="page-header-right ms-auto">
         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-            <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="dues/debit/list">
+            <a href="index?p=dues/debit/list" type="button" class="btn btn-outline-secondary me-2" data-page="">
                 <i class="feather-arrow-left me-2"></i>
                 Listeye Dön
-            </button>
+</a>
             <button type="button" class="btn btn-primary" id="save_debit">
                 <i class="feather-save  me-2"></i>
                 Kaydet
@@ -62,6 +61,10 @@ $bitis_tarihi = Date::lastDay(
 </div>
 
 <div class="main-content">
+<?php 
+    
+    Gate::authorizeOrDie('debit_add');
+        ?>
     <?php
     /* $title = $pageTitle;
  if ($pageTitle === 'Borç Ekle') {
@@ -109,7 +112,7 @@ $bitis_tarihi = Date::lastDay(
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-file-invoice"></i></div>
-                                    <?php echo $DueHelper->AidatTuruSelect("borc_baslik") ?>
+                                    <?php echo $DueHelper->AidatTuruSelect("borc_baslik",$borc->borc_tipi_id ?? '') ?>
 
                                 </div>
                             </div>
@@ -151,6 +154,8 @@ $bitis_tarihi = Date::lastDay(
 
                             <div class="col-lg-2">
                                 <label for="ceza_orani" class="fw-semibold">Ceza Oranı (%):</label>
+                                <i class="bi bi-info-circle c-pointer text-primary"  
+                                data-toggle="tooltip" data-placement="top" title="Son Ödeme tarihinden itibaren günlük olarak hesaplanacak ceza oranı(%)"></i>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group">

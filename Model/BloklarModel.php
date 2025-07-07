@@ -64,6 +64,20 @@ class BloklarModel extends Model
         $result = $sql->fetch(PDO::FETCH_OBJ);
         return $result ? $result->blok_adi : null; // Eğer sonuç varsa blok adını döndür, yoksa null döndür
     }
+
+    /********************************************************************** */
+    /** Gelen Site id ve Blok adından blok var mı yok mu kontrol eder
+     * @param int $site_id
+     * @param string $blok_adi
+     * @return object|null
+     */
+    public function findBlokBySiteAndName($site_id, $blok_adi)
+    {
+        $sql = $this->db->prepare("SELECT * FROM {$this->table} WHERE site_id = ? AND blok_adi = ?");
+        $sql->execute([$site_id, $blok_adi]);
+        return $sql->fetch(PDO::FETCH_OBJ); // Eğer blok varsa döndür, yoksa null döndür
+    }
+
   
     
 }

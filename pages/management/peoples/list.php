@@ -45,7 +45,8 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                 <a href="index?p=management/peoples/upload-from-xls" 
                 data-tooltip="Kişileri Excelden Yükle"
                 class="btn btn-icon has-tooltip tooltip-bottom">
-                    <i class="feather-upload"></i>
+                    <i class="feather-upload me-2"></i>
+                    Excelden Yükle
                 </a>
 
                 <a href="#" class="btn btn-primary route-link" 

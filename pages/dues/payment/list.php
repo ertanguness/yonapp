@@ -9,6 +9,8 @@ use Model\KisilerModel;
 use Model\BorclandirmaDetayModel;
 use Model\TahsilatModel;
 
+use App\Services\Gate;
+
 $Blok = new BloklarModel();
 $Daire = new DairelerModel();
 $KisiModel = new KisilerModel();
@@ -76,7 +78,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                                             <th class="wd-30 no-sorting" style="width: 40px;">
                                                 Sıra
                                             </th>
-                                            <th>Daire Adı</th>
+                                            <th style="width:7%">Daire Kodu</th>
                                             <th>Ad Soyad</th>
                                             <th class="text-end" style="width:11%">Borç Tutarı</th>
                                             <th class="text-end" style="width:11%">Ödenen</th>
@@ -96,8 +98,16 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                                             <tr>
 
                                                 <td><?php echo $index + 1 ?></td>
-                                                <td><?= $Daire->DaireKodu($kisi->daire_id) ?> </td>
+                                                <td class="text-center"><?= $Daire->DaireKodu($kisi->daire_id) ?> </td>
+                                             
                                                 <td><?= $kisi->adi_soyadi ?>
+                                                <div>
+                                                    <?php 
+                                                        $uyelik_tipi = $kisi->uyelik_tipi;
+                                                        $badge_color = $uyelik_tipi == "Kiracı" ? "danger" : "teal"
+                                                    ?>
+                                                <a href="javascript:void(0)" class="badge text-<?= $badge_color ?> border border-dashed border-gray-500"><?= $uyelik_tipi ?></a>
+                                                </div>
 
                                                 </td>
                                                 <td class="text-end">
@@ -105,7 +115,8 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
 
                                                     <?= Helper::formattedMoney($kisi->toplam_borc)   ?>
                                                 </td>
-                                                <td class="text-end"><?= Helper::formattedMoney($kisi->toplam_tahsilat) ?></td>
+                                                <td class="text-end"><?= Helper::formattedMoney($kisi->toplam_tahsilat) ?>
+                                                </td>
                                                 <td class="text-end"><?= Helper::formattedMoney($kisi->bakiye) ?></td>
                                                 <td style="width:5%;">
                                                     <div class="hstack gap-2 ">
@@ -114,12 +125,14 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                                                             <i class="feather-eye"></i>
                                                         </a>
 
-                                                        <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                            title="Tahsilat Gir"
-                                                            data-kisi-id="<?php echo Security::encrypt($kisi->kisi_id) ?>"
-                                                            class="avatar-text avatar-md tahsilat-gir">
-                                                            <i class="bi bi-credit-card-2-front"></i>
-                                                        </a>
+                                                        <?php if (Gate::allows('tahsilat_ekle_sil')) {; ?>
+                                                            <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
+                                                                title="Tahsilat Gir"
+                                                                data-kisi-id="<?php echo Security::encrypt($kisi->kisi_id) ?>"
+                                                                class="avatar-text avatar-md tahsilat-gir">
+                                                                <i class="bi bi-credit-card-2-front"></i>
+                                                            </a>
+                                                        <?php } ?>
                                                     </div>
                                                 </td>
 
@@ -144,7 +157,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
     </div>
 </div>
 <div class="modal fade" id="tahsilatGir" tabindex="-1" data-bs-keyboard="false" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalTitleId">Tahsilat Ekle</h5>
@@ -162,16 +175,25 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
         </div>
     </div>
 </div>
+<style>
+    .borc-satiri.secili-satir {
+        background-color: #f0f9ff;
+        /* Açık mavi bir arkaplan */
+        border-left: 3px solid #0d6efd;
+        /* Sol tarafa mavi bir çizgi */
+    }
+</style>
 <script>
     var kisiId;
-    var row;
+    var secilenBorcIdleri = []; // Seçilen borç ID'lerini tutacak dizi
+
     $(document).on('click', '.kisi-borc-detay', function() {
         var id = $(this).data('id');
         kisiId = $(this).data('id');
         table = $('#tahsilatTable').DataTable();
         row = table.row($(this).closest('tr'));
 
-    
+
         $.get("pages/dues/payment/tahsilat-detay.php", {
             id: id,
             kisi_id: kisiId
@@ -187,6 +209,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
         kisiId = $(this).data('kisi-id');
         table = $('#tahsilatTable').DataTable();
         row = table.row($(this).closest('tr'));
+        secilenBorcIdleri = []; // Her yeni tahsilat girişinde seçilen borç ID'lerini sıfırla   
 
         $.get("pages/dues/payment/tahsilat_gir_modal.php", {
             kisi_id: kisiId
@@ -212,5 +235,94 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
         });
 
         // Modal'ı göster
+    });
+
+    $(document).ready(function() {
+
+
+
+        /**
+         * Sunucudan toplam tutarı getirir ve ekranı günceller.
+         */
+        function guncelleToplamTutar() {
+            // Eğer hiç borç seçilmemişse, sunucuya istek atmadan sıfırla.
+            if (secilenBorcIdleri.length === 0) {
+                $('#secilen-tahsilat-tutari').text('0.00');
+                $("#tutar").text('0.00');
+                return;
+            }
+
+            const formData = new FormData();
+            secilenBorcIdleri.forEach(id => {
+                formData.append('borc_idler[]', id);
+            });
+            formData.append('action', 'hesapla_toplam_tutar');
+
+            fetch(url, {
+                    method: "POST",
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toplam = parseFloat(data.toplam_tutar).toFixed(2);
+                        $('#secilen-tahsilat-tutari').text(toplam) + ' TL'; // Seçilen tahsilat tutarını güncelle
+                        $("#tutar").val(data.toplam_tutar); // Tahsilat gir modalındaki tutar alanını güncelle
+                        //console.log("Toplam tutar:", data);
+                    } else {
+                        console.error('Hata:', data.message);
+                        alert('Toplam tutar hesaplanırken bir hata oluştu.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        /**
+         * Butonun ve satırın görünümünü günceller.
+         * @param {jQuery} $button - Tıklanan buton nesnesi.
+         * @param {string} action - 'ekle' veya 'cikar'.
+         */
+        function guncelleArayuzu($button, action) {
+            const $satir = $button.closest('.borc-satiri');
+            if (action === 'ekle') {
+                $button.text('Çıkar').data('action', 'cikar').addClass('text-danger');
+                $satir.addClass('secili-satir'); // Arkaplanı değiştirmek için (CSS'te tanımlanmalı)
+            } else { // action === 'cikar'
+                $button.text('Ekle').data('action', 'ekle').removeClass('text-danger');
+                $satir.removeClass('secili-satir');
+            }
+        }
+
+        // "Ekle/Çıkar" butonuna tıklandığında çalışacak ana fonksiyon
+        $(document).on('click', '.tahsilat-islem-btn', function(e) {
+            e.preventDefault(); // a tag'inin varsayılan davranışını engelle
+
+            const $button = $(this);
+            const action = $button.data('action');
+            // Satırın kendisinden ID'yi alıyoruz
+            const borcId = $button.closest('.borc-satiri').data('borc-id');
+
+            if (action === 'ekle') {
+                // Eğer ID zaten dizide yoksa ekle (güvenlik önlemi)
+                if (!secilenBorcIdleri.includes(borcId)) {
+                    secilenBorcIdleri.push(borcId);
+                }
+                guncelleArayuzu($button, 'ekle');
+            } else { // action === 'cikar'
+                // ID'yi diziden çıkar
+                const index = secilenBorcIdleri.indexOf(borcId);
+                if (index > -1) {
+                    secilenBorcIdleri.splice(index, 1);
+                }
+                guncelleArayuzu($button, 'cikar');
+            }
+
+            // Diziyi güncelledikten sonra sunucudan yeni toplamı iste
+            guncelleToplamTutar();
+
+            // Konsolda güncel diziyi görebilirsiniz (hata ayıklama için)
+            console.log("Seçilen ID'ler:", secilenBorcIdleri);
+        });
+
     });
 </script>

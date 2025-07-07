@@ -42,6 +42,12 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
                 require_once 'pages/components/search.php';
                 require_once 'pages/components/download.php';
                 ?>
+                   <a href="index?p=management/apartment/upload-from-xls" 
+                data-tooltip="Daireleri Excelden Yükle"
+                class="btn btn-icon has-tooltip tooltip-bottom">
+                    <i class="feather-upload me-2"></i>
+                    Excelden Yükle
+                </a>
                 <a href="#" class="btn btn-primary route-link" data-page="management/apartment/manage">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Daire Ekle</span>

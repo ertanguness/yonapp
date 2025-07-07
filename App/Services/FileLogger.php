@@ -21,6 +21,12 @@ class FileLogger implements LoggerInterface
     {
         $this->log('ERROR', $message, $context);
     }
+
+    public function warning(string $message, array $context = []): void
+    {
+        $this->log('WARNING', $message, $context);
+    }
+
     
     public function log(string $level, string $message, array $context = []): void
     {

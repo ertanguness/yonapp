@@ -19,6 +19,14 @@ interface LoggerInterface{
     public function error(string $message, array $context = []): void;
 
     /**
+     * Uyarı seviyesinde log kaydı yapar.
+     * @param string $message  Uyarı mesajı.
+     * @param array  $context  Uyarının detayları, örneğin kullanıcı bilgileri.
+     */
+    public function warning(string $message, array $context = []): void;
+
+
+    /**
      * Diğer tüm log seviyeleri için genel bir metot.
      * info() ve error() metotları arka planda bunu çağırabilir.
      * @param string $level    'INFO', 'ERROR', 'DEBUG' gibi log seviyesi.

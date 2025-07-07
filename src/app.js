@@ -1,3 +1,4 @@
+
 let table;
 let row;
 $(document).ready(function () {
@@ -82,16 +83,6 @@ $(document).ready(function () {
           });
         });
 
-        // var state = table.state.loaded();
-        // if (state) {
-        //   $("input", table.table().header()).each(function (index) {
-        //     var searchValue = state.columns[index]?.search?.search || ""; // Arama değerini al
-        //     if (searchValue) {
-        //       console.log(index, searchValue);
-        //       $(this).val(searchValue);
-        //     }
-        //   });
-        // }
         var state = table.state.loaded();
 if (state) {
     // Tüm başlık inputlarını al
@@ -122,6 +113,8 @@ if (state) {
     });
   }
 });
+
+
 $("#exportExcel").on("click", function () {
   table.button(".buttons-excel").trigger();
 });
