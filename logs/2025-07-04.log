@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+[2025-07-04 13:57:15] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 13:58:02] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-07-04 13:58:10] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-04 13:58:27] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-07-04 13:58:34] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+=======
 [2025-07-04 00:50:56] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index?p=management\/peoples\/upload-from-xls"}
 [2025-07-04 00:51:27] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
 [2025-07-04 00:53:01] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
@@ -151,3 +158,4 @@
 [2025-07-04 23:39:07] [INFO] Borçlandırma yapıldı: {"id":0,"borclandirma_id":"62","borc_adi":"A\u0130DAT","tutar":"400.00","baslangic_tarihi":"20250101","bitis_tarihi":"20250131","ceza_orani":"0.00","aciklama":"2025-01-01","hedef_tipi":"all","kisi_id":312,"blok_id":13,"daire_id":5845} 
 [2025-07-04 23:39:07] [INFO] Borçlandırma yapıldı: {"id":0,"borclandirma_id":"62","borc_adi":"A\u0130DAT","tutar":"400.00","baslangic_tarihi":"20250101","bitis_tarihi":"20250131","ceza_orani":"0.00","aciklama":"2025-01-01","hedef_tipi":"all","kisi_id":313,"blok_id":13,"daire_id":5678} 
 [2025-07-04 23:39:07] [INFO] Borçlandırma yapıldı: {"id":0,"borclandirma_id":"62","borc_adi":"A\u0130DAT","tutar":"400.00","baslangic_tarihi":"20250101","bitis_tarihi":"20250131","ceza_orani":"0.00","aciklama":"2025-01-01","hedef_tipi":"all","kisi_id":314,"blok_id":13,"daire_id":5680} 
+>>>>>>> c24b1b10a5921f22974d1bb70f1579af0e35a7a6

@@ -8,7 +8,7 @@ use Override;
 use PDO;
 
 
-class Model 
+class Model
 {
     protected $table;
     protected $primaryKey = 'id';
@@ -59,7 +59,7 @@ class Model
      * @param string $column The column to search in.
      * @param mixed $value The value to match against the column.
      */
-    public function findWhereIn($column, $values, $sorting ="column asc")
+    public function findWhereIn($column, $values, $sorting = "column asc")
     {
         if (empty($values)) {
             return [];
@@ -70,9 +70,9 @@ class Model
         $sql->execute($values);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
-    
 
-   
+
+
 
     public function save()
     {
@@ -139,44 +139,44 @@ class Model
         // }
     }
 
-/**
- * Bir kaydı ID'sine göre günceller.
- * Bu metod, üst sınıftaki (parent) `update` metodunu override eder.
- * Güncellemeden önce kaydın varlığını kontrol eder ve verileri hazırlar.
- *
- * @param int|string $id Güncellenecek kaydın şifrelenmiş veya normal ID'si
- * @param array $data Güncellenecek verileri içeren anahtar-değer dizisi
- * @return bool Güncelleme işleminin sonucu (genellikle true/false)
- * @throws \Exception Kayıt bulunamazsa veya güncelleme başarısız olursa
- */
-public function updateSingle($id, $data)
-{
-    // 1. ID'yi deşifre et (Eğer şifreli geliyorsa)
-   // $decryptedId = Security::decrypt($id);
+    /**
+     * Bir kaydı ID'sine göre günceller.
+     * Bu metod, üst sınıftaki (parent) `update` metodunu override eder.
+     * Güncellemeden önce kaydın varlığını kontrol eder ve verileri hazırlar.
+     *
+     * @param int|string $id Güncellenecek kaydın şifrelenmiş veya normal ID'si
+     * @param array $data Güncellenecek verileri içeren anahtar-değer dizisi
+     * @return bool Güncelleme işleminin sonucu (genellikle true/false)
+     * @throws \Exception Kayıt bulunamazsa veya güncelleme başarısız olursa
+     */
+    public function updateSingle($id, $data)
+    {
+        // 1. ID'yi deşifre et (Eğer şifreli geliyorsa)
+        // $decryptedId = Security::decrypt($id);
 
-    // 2. Güncelleme öncesi kaydın varlığını kontrol et
-    // Bu, gereksiz veritabanı sorgularını önler ve hata yönetimini iyileştirir.
-    // find() metodunun zaten modelin niteliklerini ($this->attributes) doldurduğunu varsayıyoruz.
-    $record = $this->find($id);
-    if ($record === false) {
-        // Kayıt bulunamadıysa, bir istisna fırlatarak işlemi durdur.
-        throw new \Exception("Güncellenmek istenen kayıt bulunamadı. ID: " . $id);
+        // 2. Güncelleme öncesi kaydın varlığını kontrol et
+        // Bu, gereksiz veritabanı sorgularını önler ve hata yönetimini iyileştirir.
+        // find() metodunun zaten modelin niteliklerini ($this->attributes) doldurduğunu varsayıyoruz.
+        $record = $this->find($id);
+        if ($record === false) {
+            // Kayıt bulunamadıysa, bir istisna fırlatarak işlemi durdur.
+            throw new \Exception("Güncellenmek istenen kayıt bulunamadı. ID: " . $id);
+        }
+
+        // 3. Modelin niteliklerini (attributes) yeni güncelleme verileriyle birleştir/ayarla
+        // Gelen veriyi mevcut niteliklerin üzerine yazıyoruz.
+        $this->attributes = array_merge($this->attributes, $data);
+
+        // Birincil anahtarın doğru ayarlandığından emin olalım.
+        // find() bunu zaten yapmış olmalı, ama bu bir güvencedir.
+        $this->attributes[$this->primaryKey] = $id;
+
+        // 4. Üst sınıfın orijinal update metodunu çağırarak asıl veritabanı işlemini gerçekleştir
+        // DİKKAT: $this->update() yerine parent::update() kullanılmalıdır!
+        // parent::update() metodu, $this->attributes dizisindeki verileri kullanarak
+        // "UPDATE tablo SET ... WHERE id=..." sorgusunu çalıştıracaktır.
+        return $this->update();
     }
-
-    // 3. Modelin niteliklerini (attributes) yeni güncelleme verileriyle birleştir/ayarla
-    // Gelen veriyi mevcut niteliklerin üzerine yazıyoruz.
-    $this->attributes = array_merge($this->attributes, $data);
-
-    // Birincil anahtarın doğru ayarlandığından emin olalım.
-    // find() bunu zaten yapmış olmalı, ama bu bir güvencedir.
-    $this->attributes[$this->primaryKey] = $id;
-
-    // 4. Üst sınıfın orijinal update metodunu çağırarak asıl veritabanı işlemini gerçekleştir
-    // DİKKAT: $this->update() yerine parent::update() kullanılmalıdır!
-    // parent::update() metodu, $this->attributes dizisindeki verileri kullanarak
-    // "UPDATE tablo SET ... WHERE id=..." sorgusunu çalıştıracaktır.
-    return $this->update(); 
-}
 
     public function reload()
     {
@@ -210,6 +210,114 @@ public function updateSingle($id, $data)
         if ($sql->rowCount() === 0) {
             return new \Exception('Kayıt bulunamadı veya silinemedi.');
         }
+        return true;
+    }
+    // public function backupDelete($id)
+    // {
+    //     $id = Security::decrypt($id);
+
+    //     // 1. Kaydı bul
+    //     $stmt = $this->db->prepare("SELECT * FROM $this->table WHERE $this->primaryKey = ? LIMIT 1");
+    //     $stmt->execute([$id]);
+    //     $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    //     if (!$data) {
+    //         return new \Exception('Kayıt bulunamadı.');
+    //     }
+
+    //     // 2. Silinen kişilere kaydet
+    //     $sqlInsert = $this->db->prepare("
+    //     INSERT INTO silinen_kisiler (
+    //         site_id, blok_id, daire_id, kimlik_no, adi_soyadi, dogum_tarihi, cinsiyet,
+    //         uyelik_tipi, telefon, eposta, adres, notlar, satin_alma_tarihi, giris_tarihi,
+    //         cikis_tarihi, aktif_mi, kullanim_durumu, kayit_tarihi, guncelleme_tarihi,
+    //         silinme_tarihi
+    //     ) VALUES (
+    //         :site_id, :blok_id, :daire_id, :kimlik_no, :adi_soyadi, :dogum_tarihi, :cinsiyet,
+    //         :uyelik_tipi, :telefon, :eposta, :adres, :notlar, :satin_alma_tarihi, :giris_tarihi,
+    //         :cikis_tarihi, :aktif_mi, :kullanim_durumu, :kayit_tarihi, :guncelleme_tarihi,
+    //         NOW()
+    //     )
+    // ");
+
+    //     $sqlInsert->execute([
+    //         ':site_id'           => $data['site_id'] ?? null,
+    //         ':blok_id'           => $data['blok_id'] ?? null,
+    //         ':daire_id'          => $data['daire_id'] ?? null,
+    //         ':kimlik_no'         => $data['kimlik_no'] ?? null,
+    //         ':adi_soyadi'        => $data['adi_soyadi'] ?? null,
+    //         ':dogum_tarihi'      => $data['dogum_tarihi'] ?? null,
+    //         ':cinsiyet'          => $data['cinsiyet'] ?? null,
+    //         ':uyelik_tipi'       => $data['uyelik_tipi'] ?? null,
+    //         ':telefon'           => $data['telefon'] ?? null,
+    //         ':eposta'            => $data['eposta'] ?? null,
+    //         ':adres'             => $data['adres'] ?? null,
+    //         ':notlar'            => $data['notlar'] ?? null,
+    //         ':satin_alma_tarihi' => $data['satin_alma_tarihi'] ?? null,
+    //         ':giris_tarihi'      => $data['giris_tarihi'] ?? null,
+    //         ':cikis_tarihi'      => $data['cikis_tarihi'] ?? null,
+    //         ':aktif_mi'          => 0,
+    //         ':kullanim_durumu'   => $data['kullanim_durumu'] ?? null,
+    //         ':kayit_tarihi'      => $data['kayit_tarihi'] ?? null,
+    //         ':guncelleme_tarihi' => $data['guncelleme_tarihi'] ?? null
+    //     ]);
+
+    //     // 3. Ana tablodan sil
+    //     $sqlDelete = $this->db->prepare("DELETE FROM $this->table WHERE $this->primaryKey = ?");
+    //     $sqlDelete->execute([$id]);
+
+    //     if ($sqlDelete->rowCount() === 0) {
+    //         return new \Exception('Kayıt silinemedi.');
+    //     }
+
+    //     return true;
+    // }
+    public function backupDelete($id, $table, $primaryKey = 'id')
+    {
+        $id = Security::decrypt($id);
+        $backupTable = 'silinen_' . $table;
+        // 1. Kaydı al
+        $stmt = $this->db->prepare("SELECT * FROM $table WHERE $primaryKey = ? LIMIT 1");
+        $stmt->execute([$id]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data) {
+            return new \Exception('Kayıt bulunamadı.');
+        }
+        // 2. aktif_mi ve kullanim_durumu varsa sıfırla
+        if (array_key_exists('aktif_mi', $data)) {
+            $data['aktif_mi'] = 0;
+        }
+        if (array_key_exists('kullanim_durumu', $data)) {
+            $data['kullanim_durumu'] = 0;
+        }
+        // 3. silinme_tarihi yoksa ekle
+        if (!array_key_exists('silinme_tarihi', $data)) {
+            $data['silinme_tarihi'] = date('Y-m-d H:i:s');
+        }
+        // 4. Alanları ve değerleri hazırla
+        $columns = array_keys($data);
+        $placeholders = array_map(fn($col) => ':' . $col, $columns);
+        // 5. Sorguyu hazırla
+        $sql = "INSERT INTO $backupTable (" . implode(', ', $columns) . ")
+            VALUES (" . implode(', ', $placeholders) . ")";
+        $insertStmt = $this->db->prepare($sql);
+
+        // 6. Bind işlemi
+        foreach ($data as $key => $value) {
+            $insertStmt->bindValue(':' . $key, $value);
+        }
+
+        $insertStmt->execute();
+
+        // 7. Orijinal kaydı sil
+        $deleteStmt = $this->db->prepare("DELETE FROM $table WHERE $primaryKey = ?");
+        $deleteStmt->execute([$id]);
+
+        if ($deleteStmt->rowCount() === 0) {
+            return new \Exception('Kayıt silinemedi.');
+        }
+
         return true;
     }
 }

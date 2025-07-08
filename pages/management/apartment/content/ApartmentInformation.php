@@ -4,13 +4,9 @@ $site_id = $_SESSION['site_id'] ?? 0;
 use Model\BloklarModel;
 use Model\DefinesModel;
 use Model\DairelerModel;
-use App\Helper\Security;
-
 $Block = new BloklarModel();
 $daireModel = new DairelerModel();
 $definesModel = new DefinesModel();
-
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 
 $blocks = $Block->SiteBloklari($site_id);
 $daire = $daireModel->DaireBilgisi($site_id, $id ?? 0);
@@ -132,76 +128,88 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="form-check form-switch d-flex align-items-center">
                 <input class="form-check-input" type="checkbox" id="status" name="status" style="transform: scale(2.0);"
-                    data-aktif="<?= isset($daire->aktif_mi) ? (int)$daire->aktif_mi : 0 ?>">
+                    data-aktif="<?= isset($daire->aktif_mi) ? (int)$daire->aktif_mi : 0 ?>"
+                    <?= (!empty($daire->aktif_mi) && $daire->aktif_mi != 0) ? 'checked' : '' ?>>
                 <label class="form-check-label ms-4" for="status"></label>
+                <small id="kullanimDurumu" class="form-text text-muted">
+                Bağımsız bölümde aktif olarak kalan var mı ? yok mu? onu belirtir.</small>
             </div>
         </div>
 
     </div>
-</div>
-<!-- Daire kodu oluşturma başlangıç -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const blockSelect = document.getElementById('blockName');
-    const flatNumberInput = document.getElementById('flatNumber');
-    const hiddenCodeInput = document.getElementById('daire_kodu');
-    const statusCheckbox = document.getElementById('status');
 
-    function generateDaireKodu() {
-        const selectedOption = blockSelect.options[blockSelect.selectedIndex];
-        let blokAdi = selectedOption.text.trim();
-        const daireNo = flatNumberInput.value.trim();
-        const eskiKod = hiddenCodeInput.value.trim(); // mevcut kod
-
-        if (!blokAdi || !daireNo) {
-            return;
-        }
-
-        const blokIndex = blokAdi.toLowerCase().indexOf('blok');
-        if (blokIndex !== -1) {
-            blokAdi = blokAdi.substring(0, blokIndex);
-        }
-
-        const firstWord = blokAdi.trim().split(' ')[0];
-        const yeniKod = `${firstWord}D${daireNo}`.toUpperCase();
-
-        // Eski kodla yeni kod farklıysa kullanıcıya sor
-        if (eskiKod && eskiKod !== yeniKod) {
-            Swal.fire({
-                title: "Daire Kodu Değiştirilsin mi?",
-                html: `
-                <div style="text-align:left;">
-                    <p><strong>Mevcut Kodu:</strong> ${eskiKod}</p>
-                    <p><strong>Yeni Önerilen Kod:</strong> ${yeniKod}</p>
-                    <p>Yeni koda geçmek ister misiniz?</p>
+    <div class="row mb-4 align-items-center">
+            <div class="col-lg-2">
+                <label for="aciklama" class="fw-semibold">Açıklama: </label>
+            </div>
+            <div class="col-lg-10">
+                <div class="input-group">
+                    <div class="input-group-text"><i class="feather-type"></i></div>
+                    <textarea class="form-control" id="aciklama" name="aciklama" cols="30" rows="5" placeholder="Daire ile ilgili açıklama yazabilirsiniz"><?php echo $daire->aciklama ?? ''; ?></textarea>
                 </div>
-            `,
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonText: "Evet, değiştir",
-                cancelButtonText: "Hayır, eski kalsın",
-            }).then(result => {
-                if (result.isConfirmed) {
-                    hiddenCodeInput.value = yeniKod; // yeni kodu kaydet
-                } else {
-                    hiddenCodeInput.value = eskiKod; // eski kodu tut
-                }
-            });
-        } else {
-            hiddenCodeInput.value = yeniKod; // zaten eşitse direk yaz
+            </div>
+        </div>
+</div>
+
+<!-- Daire kodu oluşturma başlangıç -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const blockSelect = document.getElementById('blockName');
+        const flatNumberInput = document.getElementById('flatNumber');
+        const hiddenCodeInput = document.getElementById('daire_kodu');
+        const statusCheckbox = document.getElementById('status');
+
+        function generateDaireKodu() {
+            const selectedOption = blockSelect.options[blockSelect.selectedIndex];
+            let blokAdi = selectedOption.text.trim();
+            const daireNo = flatNumberInput.value.trim();
+            const eskiKod = hiddenCodeInput.value.trim(); // mevcut kod
+
+            if (!blokAdi || !daireNo) {
+                return;
+            }
+
+            const blokIndex = blokAdi.toLowerCase().indexOf('blok');
+            if (blokIndex !== -1) {
+                blokAdi = blokAdi.substring(0, blokIndex);
+            }
+
+            const firstWord = blokAdi.trim().split(' ')[0];
+            const yeniKod = `${firstWord}D${daireNo}`.toUpperCase();
+
+            // Eski kodla yeni kod farklıysa kullanıcıya sor
+            if (eskiKod && eskiKod !== yeniKod) {
+                Swal.fire({
+                    title: "Daire Kodu Değiştirilsin mi?",
+                    html: `<div style="text-align:left;">
+                        <p><strong>Mevcut Kodu:</strong> ${eskiKod}</p>
+                        <p><strong>Yeni Önerilen Kod:</strong> ${yeniKod}</p>
+                        <p>Yeni koda geçmek ister misiniz?</p>
+                    </div>`,
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Evet, değiştir",
+                    cancelButtonText: "Hayır, eski kalsın",
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        hiddenCodeInput.value = yeniKod; // yeni kodu kaydet
+                    } else {
+                        hiddenCodeInput.value = eskiKod; // eski kodu tut
+                    }
+                });
+            } else {
+                hiddenCodeInput.value = yeniKod; // zaten eşitse direk yaz
+            }
         }
-    }
 
-
-    blockSelect.addEventListener('change', generateDaireKodu);
-    flatNumberInput.addEventListener('input', generateDaireKodu);
-    if (!hiddenCodeInput.value) {
-        generateDaireKodu(); // sadece yeni kayıt için üret
-    }
-});
+        blockSelect.addEventListener('change', generateDaireKodu);
+        flatNumberInput.addEventListener('input', generateDaireKodu);
+        if (!hiddenCodeInput.value) {
+            generateDaireKodu(); // sadece yeni kayıt için üret
+        }
+    });
 </script>
-
-<!-- Daire kodu oluşturma bitiş -->
 <!--
 <script>
     document.getElementById("save_apartment").addEventListener("click", function(event) {

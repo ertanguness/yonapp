@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 [2025-07-07 23:24:42] [INFO] Gecikme zammı ödenecek: 104.67 TL, kalan gecikme zammı: 104.67 TL 
 [2025-07-07 23:25:34] [INFO] Tahsilat detay kaydı: {"id":0,"tahsilat_id":"NJyo3eT33H-c0q9tWtu_lnqyGZb4_nRTF2PYdKupIg%2A%2A","borc_detay_id":2429,"odenen_tutar":104.67,"aciklama":"Gecikme zamm\u0131 \u00f6demesi"} 
 [2025-07-07 23:26:07] [INFO] Tahsilat detay kaydı: {"id":0,"tahsilat_id":"908","borc_detay_id":2429,"odenen_tutar":104.67,"aciklama":"Gecikme zamm\u0131 \u00f6demesi"} 
+=======
+[2025-07-07 21:58:03] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-07 22:06:06] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-07-07 22:06:12] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+>>>>>>> 27fddca3e7657d8e15e1cecba944e09dcc695c43

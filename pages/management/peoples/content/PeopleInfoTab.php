@@ -199,8 +199,23 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
             </div>
         </div>
     </div>
+    <div class="row mb-4 align-items-center">
 
-
+        <div class="col-lg-2">
+            <label for="status" class="fw-semibold">Kullanım Durumu:</label>
+        </div>
+        <div class="col-lg-8">
+            <div class="form-check form-switch d-flex align-items-center">
+                <input class="form-check-input" type="checkbox" id="kullanim_durumu" name="kullanim_durumu" style="transform: scale(2.0);"
+                    data-kullanim="<?= isset($kisi->kullanim_durumu) ? (int)$kisi->kullanim_durumu : 0 ?>"
+                    <?= (!empty($kisi->kullanim_durumu) && $kisi->kullanim_durumu != 0) ? 'checked' : '' ?>>
+                <label class="form-check-label ms-4" for="status"></label>
+                <small id="kullanimDurumu" class="form-text text-muted">
+                Kişinin İlgili Bağımsız bölümü aktif olarak kullanıp kullanmama durumunu belirtir. </small>
+            </div>
+            
+        </div>
+    </div>
 </div>
 <!-- Konut sakin türüne göre satın alma tarihi aktif etme -->
 <script>

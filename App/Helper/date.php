@@ -20,7 +20,7 @@ class Date
     public static function Ymd($date, $format = 'Ymd')
     {
         if ($date == null) {
-            return '';
+            return null;
         }
         return date($format, strtotime($date));
     }

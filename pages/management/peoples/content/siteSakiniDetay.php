@@ -34,7 +34,7 @@ if (!empty($araclar) && is_array($araclar)) {
 $arac_plakalar = !empty($arac_placa_list) ? implode(', ', $arac_placa_list) : '🚫';
 ?>
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="siteSakiniDetayOffcanvas" data-bs-backdrop="false">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="siteSakiniDetayOffcanvas" data-bs-backdrop="true">
     <div class="offcanvas-header ht-80 px-4 border-bottom border-gray-5">
         <div>
             <h2 class="fs-20 fw-bold text-truncate-1-line">
