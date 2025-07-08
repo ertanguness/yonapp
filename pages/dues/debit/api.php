@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
+require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 
 
@@ -7,6 +7,7 @@ use App\Helper\Security;
 use App\Helper\Date;
 use App\Helper\Helper;
 use App\Helper\Error;
+use Database\Db;
 
 
 use Model\BorclandirmaModel;
@@ -25,6 +26,9 @@ $Kisiler = new KisilerModel();
 $Defines = new DefinesModel();
 $Due = new DueModel();
 
+// 1. Singleton Db nesnesini al
+$db = Db::getInstance();
+
 
 /**BORÇLANDIRMA YAP */
 if ($_POST["action"] == "borclandir") {
@@ -36,108 +40,124 @@ if ($_POST["action"] == "borclandir") {
 
     $logger = \getLogger();
 
-    $data = [
-        "id" => $id,
-        "site_id" => $site_id,
-        "borc_tipi_id" => Security::decrypt($_POST["borc_baslik"]),
-        "tutar" => Helper::formattedMoneyToNumber($_POST["tutar"]),
-        "baslangic_tarihi" => Date::Ymd($_POST["baslangic_tarihi"]),
-        "bitis_tarihi" => Date::Ymd($_POST["bitis_tarihi"]),
-        "ceza_orani" => $_POST["ceza_orani"],
-        "aciklama" => $_POST["aciklama"],
-        "hedef_tipi" => $borclandirma_turu,
-    ];
-
-    $lastInsertId = $Borc->saveWithAttr($data) ?? $_POST["id"];
-
-    $data = [];
-
-    $data = [
-        "id" => 0,
-        "borclandirma_id" =>  Security::decrypt($lastInsertId),
-        "borc_adi" => $_POST["borc_adi"],
-        "tutar" => Helper::formattedMoneyToNumber($_POST["tutar"]),
-        "baslangic_tarihi" => Date::Ymd($_POST["baslangic_tarihi"]),
-        "bitis_tarihi" => Date::Ymd($_POST["bitis_tarihi"]),
-        "son_odeme_tarihi" => Date::Ymd($_POST["bitis_tarihi"]), 
-        "ceza_orani" => $_POST["ceza_orani"],
-        "aciklama" => $_POST["aciklama"],
-        "hedef_tipi" => $borclandirma_turu,
-    ];
-
-    //Borçlandırma tipi kontrol ediliyor
-    if ($borclandirma_turu == "all") {
-        //Tüm siteye borçlandırma yapılıyor
-        //Sitenin tüm aktif kişilerini getir
-        $kisiler = $Kisiler->SiteAktifKisileriBorclandirma($site_id);
-        foreach ($kisiler as $kisi) {
-            $data["aciklama"] = $kisi->giris_tarihi;
-            $data["kisi_id"] = $kisi->kisi_id;
-            $data["blok_id"] = $kisi->blok_id; // Blok ID'sini de ekliyoruz
-            $data["daire_id"] = $kisi->daire_id; // Daire ID'sini de ekliyoruz
+    try {
+        $db->beginTransaction();
 
 
-            // Eğer gün bazlı borçlandırma ise, başlangıç ve bitiş tarihlerini gün bazlı olarak ayarlıyoruz
-            if ($gun_bazli) {
-                $data['tutar'] = Helper::calculateDayBased(
-                    Date::Ymd($_POST["baslangic_tarihi"]), 
-                    Date::Ymd($_POST["bitis_tarihi"]),
-                    $kisi->giris_tarihi,
-                    Helper::formattedMoneyToNumber($_POST["tutar"])
-                ); // Günlük tutar hesaplanıyor
+        $data = [
+            "id" => $id,
+            "site_id" => $site_id,
+            "borc_tipi_id" => Security::decrypt($_POST["borc_baslik"]),
+            "tutar" => Helper::formattedMoneyToNumber($_POST["tutar"]),
+            "baslangic_tarihi" => Date::Ymd($_POST["baslangic_tarihi"]),
+            "bitis_tarihi" => Date::Ymd($_POST["bitis_tarihi"]),
+            "ceza_orani" => $_POST["ceza_orani"],
+            "aciklama" => $_POST["aciklama"],
+            "hedef_tipi" => $borclandirma_turu,
+        ];
+
+        $lastInsertId = $Borc->saveWithAttr($data) ?? $_POST["id"];
+
+        $data = [];
+
+        $data = [
+            "id" => 0,
+            "borclandirma_id" =>  Security::decrypt($lastInsertId),
+            "borc_adi" => $_POST["borc_adi"],
+            "tutar" => Helper::formattedMoneyToNumber($_POST["tutar"]),
+            "kalan_borc" => Helper::formattedMoneyToNumber($_POST["tutar"]), // Başlangıçta kalan tutar, toplam tutara eşit
+            "baslangic_tarihi" => Date::Ymd($_POST["baslangic_tarihi"]),
+            "bitis_tarihi" => Date::Ymd($_POST["bitis_tarihi"]),
+            "son_odeme_tarihi" => Date::Ymd($_POST["bitis_tarihi"]),
+            "ceza_orani" => $_POST["ceza_orani"],
+            "aciklama" => $_POST["aciklama"],
+            "hedef_tipi" => $borclandirma_turu,
+        ];
+
+        //Borçlandırma tipi kontrol ediliyor
+        if ($borclandirma_turu == "all") {
+            //Tüm siteye borçlandırma yapılıyor
+            //Sitenin tüm aktif kişilerini getir
+            $kisiler = $Kisiler->SiteAktifKisileriBorclandirma($site_id);
+            foreach ($kisiler as $kisi) {
+                $data["kisi_id"] = $kisi->kisi_id;
+                $data["blok_id"] = $kisi->blok_id; // Blok ID'sini de ekliyoruz
+                $data["daire_id"] = $kisi->daire_id; // Daire ID'sini de ekliyoruz
+
+
+                // Eğer gün bazlı borçlandırma ise, başlangıç ve bitiş tarihlerini gün bazlı olarak ayarlıyoruz
+                if ($gun_bazli) {
+                    $data['tutar'] = Helper::calculateDayBased(
+                        Date::Ymd($_POST["baslangic_tarihi"]),
+                        Date::Ymd($_POST["bitis_tarihi"]),
+                        $kisi->giris_tarihi,
+                        Helper::formattedMoneyToNumber($_POST["tutar"])
+                    ); // Günlük tutar hesaplanıyor
+                }
+                $BorcDetay->saveWithAttr($data);
+
+                //$logger->info("Borçlandırma yapıldı: " . json_encode($data));
             }
-            $BorcDetay->saveWithAttr($data);
-
-            $logger->info("Borçlandırma yapıldı: " . json_encode($data));
-        }
-    } elseif ($borclandirma_turu == "block") {
-        //Bloklara borçlandırma yapılıyor
-        //Blogun aktif kişilerini getir
-        $kisiler = $Kisiler->BlokKisileri(Security::decrypt($_POST["block_id"]));
-        foreach ($kisiler as $kisi) {
-            $data["kisi_id"] = $kisi->id;
-            $data["blok_id"] = Security::decrypt($_POST["block_id"]);
-            $BorcDetay->saveWithAttr($data);
-        }
-    } elseif ($borclandirma_turu == "person") {
-        //Kişilere borçlandırma yapılıyor
-        $person_ids = $_POST["hedef_kisi"];
-        foreach ($person_ids as $person_id) {
-            $data["kisi_id"] = Security::decrypt($person_id);
-            $BorcDetay->saveWithAttr($data);
-        }
-    }else if($borclandirma_turu == 'dairetipi'){
-        //Daire tipine göre borçlandırma yapılıyor
-        $daire_tipleri = $_POST["apartment_type"];
-       
-        //Daire Tipi id'lerinde döngü yap
-        foreach($daire_tipleri as $daire_tipi_id){
-            $daire_tipi_id = Security::decrypt($daire_tipi_id);
-           
-            //Daireler tablosundan bu daire tipine sahip daireleri getir
-            $daireler = $Daire->DaireTipineGoreDaireler($daire_tipi_id);
-
-            foreach ($daireler as $daire) {
-                $data["kisi_id"] = $Kisiler->AktifKisiByDaire($daire->id)->id; // Daireye ait aktif kişinin ID'sini alıyoruz
-                $data["blok_id"] = $daire->blok_id; // Daireye ait blok ID'sini alıyoruz
-                $data["daire_id"] = $daire->id; // Daire ID'sini ekliyoruz
+        } elseif ($borclandirma_turu == "block") {
+            //Bloklara borçlandırma yapılıyor
+            //Blogun aktif kişilerini getir
+            $kisiler = $Kisiler->BlokKisileri(Security::decrypt($_POST["block_id"]));
+            foreach ($kisiler as $kisi) {
+                $data["kisi_id"] = $kisi->id;
+                $data["blok_id"] = Security::decrypt($_POST["block_id"]);
                 $BorcDetay->saveWithAttr($data);
             }
+        } elseif ($borclandirma_turu == "person") {
+            //Kişilere borçlandırma yapılıyor
+            $person_ids = $_POST["hedef_kisi"];
+            foreach ($person_ids as $person_id) {
+                $data["kisi_id"] = Security::decrypt($person_id);
+                $BorcDetay->saveWithAttr($data);
+            }
+        } else if ($borclandirma_turu == 'dairetipi') {
+            //Daire tipine göre borçlandırma yapılıyor
+            $daire_tipleri = $_POST["apartment_type"];
+
+            //Daire Tipi id'lerinde döngü yap
+            foreach ($daire_tipleri as $daire_tipi_id) {
+                $daire_tipi_id = Security::decrypt($daire_tipi_id);
+
+                //Daireler tablosundan bu daire tipine sahip daireleri getir
+                $daireler = $Daire->DaireTipineGoreDaireler($daire_tipi_id);
+
+                foreach ($daireler as $daire) {
+                    $data["kisi_id"] = $Kisiler->AktifKisiByDaire($daire->id)->id; // Daireye ait aktif kişinin ID'sini alıyoruz
+                    $data["blok_id"] = $daire->blok_id; // Daireye ait blok ID'sini alıyoruz
+                    $data["daire_id"] = $daire->id; // Daire ID'sini ekliyoruz
+                    $BorcDetay->saveWithAttr($data);
+                }
+            }
+
+            echo json_encode([
+                "status" => "success",
+                "message" => "Daire Tipine göre borçlandırma tamamlandı!",
+                "data" => $data
+            ]);
+            exit;
         }
 
-        echo json_encode([
+        $res = [
             "status" => "success",
-            "message" => "Daire Tipine göre borçlandırma tamamlandı!",
-            "data" => $data
-        ]);
-        exit;
+            "message" => "İşlem Başarı ile tamamlandı! " 
+        ];
+
+        $db->commit(); // İşlemi onayla
+        $logger->info("Borçlandırma işlemi başarıyla tamamlandı: " . json_encode($data));
+
+        echo json_encode($res);
+    } catch (PDOException $ex) {
+        $db->rollBack(); // Hata durumunda işlemi geri al
+        $logger->error("Borçlandırma işlemi sırasında hata oluştu: " . $ex->getMessage());
+        $status = "error";
+        $message = $ex->getMessage();
     }
 
-    $res = [
-        "status" => "success",
-        "message" => "İşlem Başarı ile tamamlandı! " . $gun_bazli, 
-    ];
-    echo json_encode($res);
+
 }
 
 if ($_POST["action"] == "delete_debit") {
@@ -245,4 +265,3 @@ if ($_POST["action"] == "get_apartment_types") {
 
     echo json_encode($res);
 }
-

@@ -98,16 +98,21 @@ class Gate
                   $customMessage = "Bu işlemi gerçekleştirmek veya bu sayfayı görüntülemek için gerekli yetkiye sahip değilsiniz.";
          
         };
-        echo "
-        <div class='alert alert-danger p-4 mt-3' role='alert'>
-            <h5 class='alert-heading'><i class='feather-slash me-2'></i>Yetkisiz Erişim</h5>
-            <p>
-            {$customMessage}
-            </p>
-            <hr>
-            <p class='mb-0'>Lütfen sistem yöneticinizle iletişime geçin.</p>
-        </div>
-        ";
+      
+        echo '<div class="p-5">
+                <div class="alert alert-dismissible mb-4 p-4 d-flex alert-soft-danger-message" role="alert">
+                    <div class="me-4 d-none d-md-block">
+                        <i class="feather feather-alert-triangle text-danger fs-1"></i>
+                    </div>
+                    <div>
+                        <p class="fw-bold mb-0 text-truncate-1-line">Yetkisiz Erişim</p>
+                        <p class="text-truncate-3-line mt-2 mb-4">
+                            '.$customMessage.'
+                        </p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>';
         
         // Betiğin daha fazla çalışmasını engelle.
         // Genellikle bir sayfanın altındaki footer veya diğer bileşenlerin

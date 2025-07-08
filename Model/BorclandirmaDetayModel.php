@@ -197,8 +197,8 @@ class BorclandirmaDetayModel extends Model
     public function KisiFinansalDurum($kisi_id)
     {
         // $this->table'ı doğrudan sorguya eklemek için
-        $borcTablosu = $this->table; 
-    
+        $borcTablosu = $this->table;
+
         $sql = $this->db->prepare("
                             SELECT
                                 borc.toplam_borc,
@@ -208,7 +208,7 @@ class BorclandirmaDetayModel extends Model
                                 (SELECT COALESCE(SUM(tutar), 0) AS toplam_borc FROM {$borcTablosu} WHERE kisi_id = :kisi_id_borc) AS borc,
                                 (SELECT COALESCE(SUM(tutar), 0) AS toplam_odeme FROM tahsilatlar WHERE kisi_id = :kisi_id_odeme) AS odeme;
                             ");
-        
+
         $sql->execute([
             ':kisi_id_borc' => $kisi_id,
             ':kisi_id_odeme' => $kisi_id
@@ -218,34 +218,95 @@ class BorclandirmaDetayModel extends Model
 
     // Model/BorcDetayModel.php
 
-/**
- * Verilen ID dizisine ait borçların toplam tutarını döndürür.
- *
- * @param array $idler Borç detay ID'lerini içeren dizi.
- * @return float|false Toplam tutar veya hata durumunda false.
- */
-public function getToplamTutarByIds(array $idler): float|false
-{
-    if (empty($idler)) {
-        return 0.0;
+    /**
+     * Verilen ID dizisine ait borçların toplam tutarını döndürür.
+     *
+     * @param array $idler Borç detay ID'lerini içeren dizi.
+     * @return float|false Toplam tutar veya hata durumunda false.
+     */
+    public function getToplamTutarByIds(array $idler): float|false
+    {
+        if (empty($idler)) {
+            return 0.0;
+        }
+
+        // IN sorgusu için placeholder'lar oluştur (?,?,?)
+        $placeholders = implode(',', array_fill(0, count($idler), '?'));
+
+        $sql = "SELECT SUM(tutar) as toplam FROM {$this->table} WHERE id IN ({$placeholders})";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            // execute() metoduna ID dizisini doğrudan ver
+            $stmt->execute($idler);
+            // fetchColumn() tek bir sütunun değerini döndürür
+            $toplam = $stmt->fetchColumn();
+            return (float)$toplam; // Sonucu float'a çevirerek döndür
+        } catch (\PDOException $e) {
+            // Hata loglama
+            error_log("Toplam tutar alınırken hata: " . $e->getMessage());
+            return false;
+        }
     }
 
-    // IN sorgusu için placeholder'lar oluştur (?,?,?)
-    $placeholders = implode(',', array_fill(0, count($idler), '?'));
+    /**
+     * Belirtilen bir kişiye ait, henüz tamamen ödenmemiş borçları getirir.
+     * Sadece anaparası 0'dan büyük olan borçları dikkate alır.
+     * Borçları, ödeme önceliğine göre (en eski son ödeme tarihli olan önce) sıralar.
+     *
+     * @param int $kisiId Borçları getirilecek kişinin ID'si.
+     * @return array Kişinin ödenmemiş borçlarının bir dizisi (nesne olarak).
+     */
+    public function getOdenmemisBorclarByKisi(int $kisiId): array
+    {
+        // SQL sorgumuzu hazırlıyoruz.
+        // 1. Sadece belirli bir kisi_id'ye ait olanları seçiyoruz.
+        // 2. Sadece anaparası (kalan_tutar) 0'dan büyük olanları seçiyoruz. 
+        //    (Kuruş farkları için 0.009 gibi küçük bir değerden büyük olması daha güvenli olabilir)
+        // 3. silinme_tarihi IS NULL koşulu ile soft-delete edilmiş borçları dışarıda bırakıyoruz.
+        // 4. ORDER BY ile borçları sıralıyoruz:
+        //    - Önce son_odeme_tarihi en eski olanlar (en acil borçlar).
+        //    - Eğer son ödeme tarihleri aynıysa, ID'si küçük olan (yani daha önce oluşturulmuş olan) önce gelir.
+        //      Bu, tutarlılık için önemlidir.
 
-    $sql = "SELECT SUM(tutar) as toplam FROM {$this->table} WHERE id IN ({$placeholders})";
-    
-    try {
-        $stmt = $this->db->prepare($sql);
-        // execute() metoduna ID dizisini doğrudan ver
-        $stmt->execute($idler);
-        // fetchColumn() tek bir sütunun değerini döndürür
-        $toplam = $stmt->fetchColumn();
-        return (float)$toplam; // Sonucu float'a çevirerek döndür
-    } catch (\PDOException $e) {
-        // Hata loglama
-        error_log("Toplam tutar alınırken hata: " . $e->getMessage());
-        return false;
+        $sql = "SELECT 
+                    id,
+                    borc_adi,
+                    kisi_id, -- Kişi ID'si, hangi kişiye ait olduğunu gösterir.
+                    kalan_borc,
+                    kalan_gecikme_zammi, -- Bu kolon da mevcutsa almak faydalı olabilir.
+                    son_odeme_tarihi,
+                    ceza_orani
+                FROM 
+                    borclandirma_detayi
+                WHERE 
+                    kisi_id = :kisi_id 
+                    AND kalan_borc > 0.00
+                    AND silinme_tarihi IS NULL
+                ORDER BY 
+                    son_odeme_tarihi ASC, id ASC";
+
+        try {
+            // Sorguyu hazırla
+            $stmt = $this->db->prepare($sql);
+
+            // Parametreleri bağla
+            $stmt->bindParam(':kisi_id', $kisiId, PDO::PARAM_INT);
+
+            // Sorguyu çalıştır
+            $stmt->execute();
+
+            // Tüm sonuçları nesne dizisi olarak döndür
+            return $stmt->fetchAll(PDO::FETCH_OBJ);
+        } catch (\PDOException $e) {
+            // Hata durumunda, hatayı loglayabilir ve boş bir dizi döndürebiliriz.
+            // Bu, uygulamanın çökmesini engeller.
+            // getLogger()->error("Ödenmemiş borçlar getirilirken veritabanı hatası: " . $e->getMessage());
+
+            // veya hatayı yukarıya fırlatabiliriz, bu daha iyi bir pratik olabilir
+            throw new \Exception("Ödenmemiş borçlar getirilirken bir veritabanı hatası oluştu.");
+
+            // return []; // Alternatif olarak boş dizi döndür
+        }
     }
-}
 }

@@ -47,6 +47,7 @@ $page = $_GET['p'] ?? 'home';
 $page = preg_replace('/[^a-zA-Z0-9\/\-]/', '', $page); // Güvenlik!
 $pagePath = __DIR__ . "/pages/{$page}.php";
 $viewToInclude = file_exists($pagePath) ? $pagePath : __DIR__ . "/pages/404.php";
+// echo "Yüklenen sayfa: " . ($page); // Debug için
 if (!file_exists($pagePath)) {
     http_response_code(404);
 }

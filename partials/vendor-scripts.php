@@ -24,9 +24,10 @@ if (
     $page == "management/peoples/list" || $page == "management/peoples/manage" ||
     $page == 'management/blocks/list' || $page == 'management/apartment/list' ||
     $page == 'defines/apartment-type/list' ||
-    $page == 'dues/payment/tahsilat_onay' ||
+    $page == 'dues/payment/tahsilat-onay' ||
     $page == "finans-yonetimi/kasa/list" ||
-    $page == 'management/sites/list'
+    $page == 'management/sites/list' ||
+    $page == "dues/collections/list"
 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -143,8 +144,8 @@ if ($page == 'dues/payment/upload-from-xls') {
     echo '<script src="pages/dues/payment/js/upload.js"></script>';
 
 }
-if ($page == 'dues/payment/tahsilat_onay') {
-    echo '<script src="pages/dues/payment/js/tahsilat-onay.js"></script>';
+if ($page == 'dues/payment/tahsilat-onay') {
+    echo '<script src="pages/dues/payment/js/tahsilat-onay.js" defer></script>';
 
 }
 
@@ -170,7 +171,7 @@ if ($page == 'home') {
 
 
 
-<script src="./src/jquery.inputmask.js"></script>
+<script src="./src/jquery.inputmask.js" defer></script>
 
 
 <script src="./assets/js/flatpickr.min.js" defer></script>
@@ -185,5 +186,5 @@ if ($page == 'home') {
 <script src="./assets/js/select2/js/select2.min.js" defer></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script> -->
 
-<script src="./src/app.js" defer??></script>
+<script src="./src/app.js" defer></script>
 <!--<< All JS Plugins >>-->

@@ -50,7 +50,7 @@ public function getHierarchicalMenuForRole(int $user_id): array
     {
         // Geliştirme sırasında cache'i temizlemek için bu satırı geçici olarak açabilirsiniz.
         // Production'da MUTLAKA kapalı olmalı!
-         //$this->clearAllMenuCachesForCurrentTenant();
+         $this->clearAllMenuCachesForCurrentTenant();
 
         if (empty($this->ownerSpecificCacheDir) || !is_dir($this->ownerSpecificCacheDir)) {
             // Cache dizini yoksa veya geçersizse, cache'lemeden devam et.

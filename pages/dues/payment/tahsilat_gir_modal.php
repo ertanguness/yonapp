@@ -10,6 +10,7 @@ use App\Helper\Aidat;
 use Model\DairelerModel;
 use Model\KisilerModel;
 use Model\BorclandirmaDetayModel;
+use Model\FinansalRaporModel;
 
 
 use App\Services\Gate;
@@ -19,13 +20,14 @@ $Aidat = new Aidat();
 $Daire = new DairelerModel();
 $Kisiler = new KisilerModel();
 $BorcDetay = new BorclandirmaDetayModel();
+$FinansalRapor = new FinansalRaporModel();
 
 $id = Security::decrypt($_GET['kisi_id']) ?? 0;
 
 
-$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
+//$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
 
-
+$kisi_guncel_borclar = $FinansalRapor->getKisiGuncelBorclar($id);
 
 
 Gate::authorizeOrDie('tahsilat_ekle_sil', 'Bu sayfayı görüntüleme yetkiniz yok!');
@@ -118,7 +120,7 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                     <div class="table-responsive tickets-items-wrapper">
                         <table class="table table-hover mb-0">
                             <tbody>
-                                <?php foreach ($borclandirmalar as $borc): ?>
+                                <?php foreach ($kisi_guncel_borclar as $borc): ?>
                                 <tr class="borc-satiri" data-borc-id="<?= Security::encrypt($borc->id)?>">
                                     <td style="width:4%;">
                                         <div class="avatar-text bg-gray-100">
@@ -130,7 +132,7 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                                     </td>
                                     <td>
                                         <a href="javascript:void(0);"><?php echo $borc->borc_adi ?> <span
-                                                class="fs-12 fw-normal text-muted"><?= " Son Ödeme : " . $borc->bitis_tarihi ?></span>
+                                                class="fs-12 fw-normal text-muted"><?= " Son Ödeme : " . $borc->son_odeme_tarihi ?></span>
                                         </a>
                                         <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
                                             <?php echo $borc->aciklama; ?>
@@ -144,9 +146,10 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                                     </td>
                                     <td class="text-end" style="width: 35%;">
                                         <a href="javascript:void(0);"
-                                            class="fw-bold d-block"><?php echo Helper::formattedMoney($borc->tutar); ?></a>
-                                        <span
-                                            class="fs-12 text-muted"><?php echo "Gecikme Zammı : 0,00 TL" ; ?></span>
+                                            class="fw-bold d-block"><?php echo Helper::formattedMoney($borc->kalan_anapara); ?></a>
+                                            <span class="fs-12 text-danger">
+                                                    <?php echo "G. Zammı : " . Helper::formattedMoney($borc->hesaplanan_gecikme_zammi); ?>
+                                                </span>
                                     </td>
                                 </tr>
                                 <?php endforeach ?>
@@ -159,7 +162,7 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
 
 
             <!-- Kayıt yok ise  -->
-            <?php if (empty($borclandirmalar)): ?>
+            <?php if (empty($kisi_guncel_borclar)): ?>
             <div class="text-center text-muted">
                 <p>Kayıt Bulunamadı!!!</p>
 

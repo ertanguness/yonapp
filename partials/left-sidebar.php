@@ -67,7 +67,7 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
             renderMenuItems($item->children, $activeMenuInfo);
             echo '</ul>';
         } else {
-            echo '<a href="index.php?p=' . htmlspecialchars($item->menu_link) . '" class="nxl-link">';
+            echo '<a href="index?p=' . htmlspecialchars($item->menu_link) . '" class="nxl-link">';
             echo '  <span class="nxl-micon"><i class="' . htmlspecialchars($item->icon) . '"></i></span>';
             echo '  <span class="nxl-mtext">' . htmlspecialchars($item->page_name) . '</span>';
             echo '</a>';
