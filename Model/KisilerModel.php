@@ -316,9 +316,12 @@ class KisilerModel extends Model
         $query->execute(['daire_id' => $daire_id]);
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
-
-
-
+    public function SilinenDaireKisileri($daire_id)
+    {
+        $query = $this->db->prepare("SELECT * FROM silinen_kisiler WHERE daire_id = :daire_id");
+        $query->execute(['daire_id' => $daire_id]);
+        return $query->fetchAll(PDO::FETCH_OBJ);
+    }
     /**
      * Tahsilat kaydı yapıldıktan sonra anlık olarak satırdaki veriyi güncellemek için kullanılır
      * @param int $kisi_id

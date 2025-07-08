@@ -33,6 +33,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
+
                 <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="management/peoples/list">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
@@ -120,84 +121,79 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
 
 <!-- Tab sekmesine göre Kaydet buton değişimi -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const saveButton = document.getElementById('savePeoples');
-    const tabLinks = document.querySelectorAll('.nav-link');
+    document.addEventListener('DOMContentLoaded', function() {
+        const saveButton = document.getElementById('savePeoples');
+        const tabLinks = document.querySelectorAll('.nav-link');
 
-    tabLinks.forEach(link => {
-        link.addEventListener('shown.bs.tab', function (event) {
-            const targetId = event.target.getAttribute('data-bs-target');
+        tabLinks.forEach(link => {
+            link.addEventListener('shown.bs.tab', function(event) {
+                const targetId = event.target.getAttribute('data-bs-target');
 
-            if (targetId === '#peopleInfoTab') {
-                saveButton.id = 'save_peoples';
-                saveButton.innerHTML = '<i class="feather-save me-2"></i>Kaydet';
-            } 
-            else if (targetId === '#peopleCarInfoTab') {
-                saveButton.id = 'ekle_araba';
-                saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
-            } 
-            else if (targetId === '#peoplesEmergencyInfoTab') {
-                saveButton.id = 'ekle_acildurum';
-                saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
+                if (targetId === '#peopleInfoTab') {
+                    saveButton.id = 'save_peoples';
+                    saveButton.innerHTML = '<i class="feather-save me-2"></i>Kaydet';
+                } else if (targetId === '#peopleCarInfoTab') {
+                    saveButton.id = 'ekle_araba';
+                    saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
+                } else if (targetId === '#peoplesEmergencyInfoTab') {
+                    saveButton.id = 'ekle_acildurum';
+                    saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
+                }
+            });
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'ekle_araba') {
+                fetch('pages/management/peoples/content/AracModal.php')
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalContainer').innerHTML = html;
+                        let aracModal = new bootstrap.Modal(document.getElementById('aracEkleModal'));
+                        aracModal.show();
+                    })
+                    .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
+            }
+            if (e.target && e.target.id === 'ekle_acildurum') {
+                fetch('pages/management/peoples/content/AcilDurumModal.php')
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalContainer').innerHTML = html;
+                        let acilDurumModal = new bootstrap.Modal(document.getElementById('acilDurumEkleModal'));
+                        acilDurumModal.show();
+                    })
+                    .catch(error => console.error('Acil Durum Modal yüklenirken hata oluştu:', error));
             }
         });
     });
-});
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.id === 'ekle_araba') {
-            fetch('pages/management/peoples/content/AracModal.php')
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('modalContainer').innerHTML = html;
-                    let aracModal = new bootstrap.Modal(document.getElementById('aracEkleModal'));
-                    aracModal.show();
-                })
-                .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
-        }
-        if (e.target && e.target.id === 'ekle_acildurum') {
-            fetch('pages/management/peoples/content/AcilDurumModal.php')
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('modalContainer').innerHTML = html;
-                    let acilDurumModal = new bootstrap.Modal(document.getElementById('acilDurumEkleModal'));
-                    acilDurumModal.show();
-                })
-                .catch(error => console.error('Acil Durum Modal yüklenirken hata oluştu:', error));
-        }
-    });
-});
 </script>
 <script src="src/daire-kisi.js"></script>
 <script src="src/blok-daire.js"></script>
 <!-- Araç ve acil durum sekmesinin butonla aktif edilmesi -->
-<script> 
-    document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tab = urlParams.get('tab');
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
 
-    const tabMap = {
-        'general': '#peopleInfoTab',
-        'car': '#peopleCarInfoTab',
-        'emergency': '#peoplesEmergencyInfoTab'
-    };
+        const tabMap = {
+            'general': '#peopleInfoTab',
+            'car': '#peopleCarInfoTab',
+            'emergency': '#peoplesEmergencyInfoTab'
+        };
 
-    let activeTabSelector = '#peopleInfoTab'; // default
-    if (tab && tabMap[tab]) {
-        activeTabSelector = tabMap[tab];
-    }
+        let activeTabSelector = '#peopleInfoTab'; // default
+        if (tab && tabMap[tab]) {
+            activeTabSelector = tabMap[tab];
+        }
 
-    // İlgili sekmenin başlığını seçelim (nav-link)
-    const triggerEl = document.querySelector(`a[data-bs-target="${activeTabSelector}"]`);
-    if (triggerEl) {
-        // Bootstrap tab instance yarat ve göster
-        const tabTrigger = new bootstrap.Tab(triggerEl);
-        tabTrigger.show();
-    }
-});
-
+        // İlgili sekmenin başlığını seçelim (nav-link)
+        const triggerEl = document.querySelector(`a[data-bs-target="${activeTabSelector}"]`);
+        if (triggerEl) {
+            // Bootstrap tab instance yarat ve göster
+            const tabTrigger = new bootstrap.Tab(triggerEl);
+            tabTrigger.show();
+        }
+    });
 </script>
-
-

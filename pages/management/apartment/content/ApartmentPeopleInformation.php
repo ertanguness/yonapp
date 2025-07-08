@@ -11,8 +11,10 @@ $Bloklar = new BloklarModel();
 $Daireler = new DairelerModel();
 
 $kisi = $Kisiler->DaireKisileri($id ?? null);
+$silinen_kisi = $Kisiler->SilinenDaireKisileri($id ?? null);
 $daire = $daireModel->DaireBilgisi($site_id, $id ?? 0);
 $blocks = $Block->Blok($daire->blok_id ?? 0);
+
 ?>
 <div class="main-content">
 
@@ -52,33 +54,60 @@ $blocks = $Block->Blok($daire->blok_id ?? 0);
                                     <tbody>
                                         <?php
                                         $i = 1;
-                                        foreach ($kisi as $row):
-                                            $daire = $Daireler->DaireAdi($row->daire_id ?? null);
-                                            $enc_id = Security::encrypt($row->id);
-                                            $adi_soyadi = isset($row->adi_soyadi) ? htmlspecialchars($row->adi_soyadi) : '-';
-                                            $telefon = isset($row->telefon) ? htmlspecialchars($row->telefon) : '-';
-                                            $ikametTuruList = Helper::ikametTuru;
-                                            $ikamet_turu = isset($ikametTuruList[$row->uyelik_tipi]) ? $ikametTuruList[$row->uyelik_tipi] : '-';
-                                            $aktif_pasif = $row->aktif_mi
-                                                ? '<span class="text-success"><i class="fa fa-check-circle"></i> Aktif</span>'
-                                                : '<span class="text-danger"><i class="fa fa-times-circle"></i> Pasif</span>';
-                                            $kullanim_durumu = $row->kullanim_durumu
-                                                ? '<span class="text-success"><i class="fa fa-user-check"></i> Kullanıyor</span>'
-                                                : '<span class="text-secondary"><i class="fa fa-user-times"></i> Kullanmıyor</span>';
+
+                                        $tumKisiler = [];
+
+                                        // Önce aktif olanları ekle
+                                        foreach ($kisi as $row) {
+                                            $row->satir_stil = ''; // normal satır
+                                            $tumKisiler[] = $row;
+                                        }
+
+                                        // Sonra silinmiş olanları ekle
+                                        if (!empty($silinen_kisi)) {
+                                           
+                                            foreach ($silinen_kisi as $row) {
+                                                $row->satir_stil = 'table-danger';
+                                                $tumKisiler[] = $row;
+                                            }
+                                        }
+
+                                        foreach ($tumKisiler as $row):
+                                            if (isset($row->is_header) && $row->is_header):
                                         ?>
-                                            <tr class="text-center">
-                                                <td><?php echo $row->id; ?></td>
-                                                <td><?php echo $adi_soyadi; ?></td>
-                                                <td><?php echo $telefon; ?></td>
-                                                <td><?php echo $ikamet_turu; ?></td>
-                                                <td><?php echo $kullanim_durumu; ?></td>
-                                                <td><?php echo $aktif_pasif; ?></td>
-                                            </tr>
+                                              
+                                            <?php
+                                            else:
+                                                $adi_soyadi = htmlspecialchars($row->adi_soyadi ?? '-');
+                                                $telefon = htmlspecialchars($row->telefon ?? '-');
+                                                $ikametTuruList = Helper::ikametTuru;
+                                                $ikamet_turu = isset($ikametTuruList[$row->uyelik_tipi]) ? $ikametTuruList[$row->uyelik_tipi] : '-';
+                                                $aktif_pasif = $row->aktif_mi
+                                                    ? '<span class="text-success"><i class="fa fa-check-circle"></i> Aktif</span>'
+                                                    : '<span class="text-danger"><i class="fa fa-times-circle"></i> Pasif</span>';
+                                                if (isset($row->satir_stil) && $row->satir_stil === 'table-danger') {
+                                                    $kullanim_durumu = '<span class="text-muted"><i class="fa fa-user-clock"></i> Eski Daire Sakini</span>';
+                                                } else {
+                                                    $kullanim_durumu = $row->kullanim_durumu
+                                                        ? '<span class="text-success"><i class="fa fa-user-check"></i> Kullanıyor</span>'
+                                                        : '<span class="text-secondary"><i class="fa fa-user-times"></i> Kullanmıyor</span>';
+                                                }
+                                            ?>
+                                                <tr class="text-center <?php echo $row->satir_stil ?? ''; ?>">
+                                                    <td><?php echo $i++; ?></td>
+                                                    <td><?php echo $adi_soyadi; ?></td>
+                                                    <td><?php echo $telefon; ?></td>
+                                                    <td><?php echo $ikamet_turu; ?></td>
+                                                    <td><?php echo $kullanim_durumu; ?></td>
+                                                    <td><?php echo $aktif_pasif; ?></td>
+                                                </tr>
                                         <?php
-                                            $i++;
+                                            endif;
                                         endforeach;
                                         ?>
                                     </tbody>
+
+
                                 </table>
                             </div>
                         </div>

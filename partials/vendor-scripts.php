@@ -173,8 +173,8 @@ if ($page == 'home') {
 <script src="./src/jquery.inputmask.js"></script>
 
 
-<script src="./assets/js/flatpickr.min.js" defer></script>
-<script src="./assets/js/flatpickr.tr.min.js" defer></script>
+<script src="./assets/js/flatpickr.min.js" ></script>
+<script src="./assets/js/flatpickr.tr.min.js" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" defer></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
