@@ -1,13 +1,11 @@
 <?php
 use Model\KasaModel;
+use App\Helper\Helper;
 
 $Kasa = new KasaModel();
 
-$kasalar = $Kasa->all();
 
-// echo '<pre>';
-// print_r($kasalar);
-// echo '</pre>';
+$kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
 
 ?>
 
@@ -56,7 +54,7 @@ $kasalar = $Kasa->all();
                                 <th>Şube Adı</th>
                                 <th>İban No</th>
                                 <th>Varsayılan mı?</th>
-                                <th>Bakiye</th>
+                                <th>Gelir-Gider</th>
                                 <th>Açıklama</th>
                                 <th class="text-center">İşlem</th>
                             </tr>
@@ -82,7 +80,29 @@ $kasalar = $Kasa->all();
                                     <span class="badge bg-secondary">Hayır</span>
                                     <?php endif; ?>
                                 </td>
-                                <td></td>
+                                <td>
+                                  
+                                        <div class="hstack gap-2 text-muted text-success mb-2">
+                                            <div class="avatar-text avatar-sm">
+                                                <i class="feather-trending-up"></i>
+                                            </div>
+                                            <span class="text-truncate-1-line"><?php echo Helper::formattedMoney($kasa->toplam_gelir) ?></span>
+                                        </div>
+                                
+                                        <div class="hstack gap-2 text-muted text-danger mb-2">
+                                            <div class="avatar-text avatar-sm">
+                                                <i class="feather-trending-down"></i>
+                                            </div>
+                                            <span class="text-truncate-1-line"><?php echo Helper::formattedMoney($kasa->toplam_gider) ?></span>
+                                        </div>
+                                        <div class="hstack gap-2 text-muted mb-2">
+                                            <div class="avatar-text avatar-sm">
+                                                <i class="feather-archive"></i>
+                                            </div>
+                                            <span class="text-truncate-1-line"><?php echo Helper::formattedMoney($kasa->bakiye) ?></span>
+                                        </div>
+                                 
+                                </td>
                                 <td><?= $kasa->aciklama ?: '-'; ?></td>
                                 <td>
                                     <div class="dropdown">
@@ -103,7 +123,7 @@ $kasalar = $Kasa->all();
                                                     <span>Transfer Yap</span>
                                                 </a>
                                             </li>
-   
+
                                             <li>
                                                 <a class="dropdown-item" href="javascript:void(0)">
                                                     <i class="feather feather-alert-octagon me-3"></i>
@@ -112,7 +132,8 @@ $kasalar = $Kasa->all();
                                             </li>
                                             <li class="dropdown-divider"></li>
                                             <li>
-                                                <a class="dropdown-item bg-danger text-white" id="kasa-sil" href="javascript:void(0)">
+                                                <a class="dropdown-item bg-danger text-white" id="kasa-sil"
+                                                    href="javascript:void(0)">
                                                     <i class="feather feather-trash-2 me-3"></i>
                                                     <span>Sil</span>
                                                 </a>

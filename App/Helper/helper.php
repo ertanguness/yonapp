@@ -125,6 +125,8 @@ class Helper
     {
         //içinde ₺ olabilir, onu kaldırır
         $value = str_replace('₺', '', $value);
+        $value = str_replace(' ', '', $value); // Boşlukları kaldırır
+        $value = str_replace('TL', '', $value); // TL'yi kaldırır
         return str_replace(['.', ','], ['', '.'], $value);
     }
 
@@ -324,9 +326,10 @@ class Helper
         return $types[$type];
     }
 
-    public static function targetTypeSelect($name = 'target_type', $selected = '0')
+    public static function targetTypeSelect($name = 'target_type', $selected = '0', $disabled = false)
     {
-        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" ' 
+        . ($disabled ? 'disabled' : '') . '>';
         foreach (self::TARGETTYPE as $key => $value) {
             $selectedAttr = $selected == $key ? 'selected' : '';
             $select .= "<option value='$key' $selectedAttr>$value</option>";

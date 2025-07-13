@@ -11,6 +11,8 @@ class BorclandirmaDetayModel extends Model
 {
     protected $table = "borclandirma_detayi";
 
+    protected $view_table = "view_borclandirma_detay_raporu"; // Görünüm tablosu, eğer varsa
+
     public function __construct()
     {
         parent::__construct($this->table);
@@ -41,26 +43,22 @@ class BorclandirmaDetayModel extends Model
      */
     public function BorclandirmaDetay($borclandirma_id)
     {
-        $sql = $this->db->prepare("SELECT 
-                                            bd.id,
-                                            bd.borclandirma_id,
-                                            k.uyelik_tipi,
-                                            k.id,
-                                            k.adi_soyadi,
-                                            bd.borc_adi,
-                                            bd.tutar,
-                                            bd.baslangic_tarihi,
-                                            bd.son_odeme_tarihi as bitis_tarihi,
-                                            bd.ceza_orani,
-                                            bd.aciklama,
-                                            bd.blok_id,
-                                            bd.daire_id
-                                        FROM borclandirma_detayi bd
-                                        LEFT JOIN kisiler k ON k.id = bd.kisi_id
-                                        WHERE borclandirma_id = ? AND bd.silinme_tarihi IS NULL");
+        $sql = $this->db->prepare("SELECT * FROM $this->view_table WHERE borclandirma_id = ? ");
         $sql->execute([$borclandirma_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+
+    /**Borçlandirma detayını id bazında getirir
+     * @param int $id
+     * @return object|null
+     */
+    public function BorclandirmaDetayByID($id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->view_table WHERE id = ? ");
+        $sql->execute([$id]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
+
 
 
     /**
@@ -309,4 +307,34 @@ class BorclandirmaDetayModel extends Model
             // return []; // Alternatif olarak boş dizi döndür
         }
     }
+
+        /** Kolonddaki değeri gelen değerle toplayarak artrırır
+     * @param int $id
+     * @param string $column
+     * @param float $amount
+     * @return bool
+     */
+    public function increaseColumnValue(int $id, string $column, float $amount): bool
+    {
+        $query = "UPDATE {$this->table} SET {$column} = {$column} + :amount WHERE id = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+
+
+    /*Borc İd'sine göre borçlandirilan kisi id'si gelir
+        * @param int $borc_id
+        * @return int|null
+        */
+    public function getKisiIdsByBorcId(int $borclandirma_id): ?int
+    {
+        $sql = $this->db->prepare("SELECT kisi_id FROM {$this->table} WHERE borclandirma_id = ?");
+        $sql->execute([$borclandirma_id]);
+        return ($result = $sql->fetch(PDO::FETCH_OBJ)) ? (int)$result->kisi_id : null;
+    }
+
+
 }

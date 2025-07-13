@@ -18,6 +18,8 @@ class KisilerModel extends Model
     protected $table = 'kisiler';
     protected $siteaktifkisiler = 'site_aktif_kisiler';
 
+    protected $view_site_aktif_evsahipleri = 'view_site_aktif_evsahipleri'; // Sadece ev sahiplerini içeren görünüm
+
     protected $kisilerborcozet = 'view_kisi_borc_ozet';
 
     public function __construct()
@@ -322,6 +324,23 @@ class KisilerModel extends Model
         $query->execute(['daire_id' => $daire_id]);
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
+    
+    
+        /*Sitenin aktif ev sahiplerini getirir
+     * @param int $site_id
+     * @return array
+     */
+    public function SiteAktifEvSahipleri($site_id)
+    {
+        $query = $this->db->prepare("SELECT * FROM $this->view_site_aktif_evsahipleri WHERE site_id = ? ");
+        $query->execute([$site_id]);
+        return $query->fetchAll(PDO::FETCH_OBJ);
+    }
+    
+    
+    
+    
+    
     /**
      * Tahsilat kaydı yapıldıktan sonra anlık olarak satırdaki veriyi güncellemek için kullanılır
      * @param int $kisi_id
@@ -364,6 +383,7 @@ class KisilerModel extends Model
             </td>
         ';
     }
+
 
 
 
@@ -577,6 +597,28 @@ class KisilerModel extends Model
 
     /* ***************************************************************************************/
  
+
+    /**Gelen id'leri içeren bir kisiler dizisi döner
+     * @param array $ids
+     * @return array
+     */
+    public function getKisilerByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        // ID'leri virgülle ayır ve sorguyu hazırla
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "SELECT * FROM $this->table WHERE id IN ($placeholders)";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($ids);
+        
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+    
+
 
 
 }

@@ -417,18 +417,7 @@ function previewImage(event) {
 
 //para birimi mask
 if ($(".money").length > 0) {
-  //1.234,52 şeklinden regex yaz
-  //$(".money").inputmask("9-a{1,3}9{1,3}"); //mask with dynamic syntax
-
-  // $(".money").inputmask("decimal", {
-  //   radixPoint: ",",
-  //   groupSeparator: ".",
-  //   digits: 2,
-  //   autoGroup: true,
-  //   rightAlign: false,
-  //   removeMaskOnSubmit: true,
-  // });
-
+ 
   $(document).on("focus", ".money", function () {
     $(this).inputmask("decimal", {
       radixPoint: ",",
@@ -448,13 +437,7 @@ if ($(".money").length > 0) {
     });
   });
 
-  //Para birimi olan alanlarda virgülü noktaya çevir
-  // $('.money').on('keyup', function () {
-  //   var value = $(this).val();
-  //   var value = value.replace(/,/g, '.');
-  //   $(this).val(value);
-  // });
-}
+ }
 
 $.validator.setDefaults({
   highlight: function(element) {
@@ -486,16 +469,19 @@ $.validator.setDefaults({
 });
 
 //Jquery validate ile yapılan doğrulamalarda para birimi formatı için
-function addCustomValidationMethods() {
+function addCustomValidationMethods(allowZero = false) {
   $.validator.addMethod(
     "validNumber",
     function (value, element) {
+      const numericValue = parseFloat(value.replace(",", "."));
       return (
         this.optional(element) ||
-        (/^[0-9.,]+$/.test(value) && parseFloat(value.replace(",", ".")) > 0)
+        (/^[0-9.,]+$/.test(value) && (allowZero ? numericValue >= 0 : numericValue > 0))
       );
     },
-    "Lütfen geçerli bir sayı girin ve 0'dan büyük bir değer girin"
+    allowZero
+      ? "Lütfen geçerli bir sayı girin ve 0 veya daha büyük bir değer girin"
+      : "Lütfen geçerli bir sayı girin ve 0'dan büyük bir değer girin"
   );
 }
 

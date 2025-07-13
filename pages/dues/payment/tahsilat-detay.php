@@ -30,7 +30,7 @@ $bakiye_color = $finansalDurum->bakiye < 0 ? 'text-danger' : 'text-success';
 
 //$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
 
-$kisi_guncel_borclar = $FinansalRapor->getKisiGuncelBorclar($id);
+$kisi_borclar = $FinansalRapor->getKisiBorclar($id);
 $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
 
 
@@ -192,7 +192,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                         <div class="table-responsive tickets-items-wrapper">
                             <table class="table table-hover mb-0">
                                 <tbody>
-                                    <?php foreach ($kisi_guncel_borclar as $borc): ?>
+                                    <?php foreach ($kisi_borclar as $borc): ?>
                                     <tr>
                                         <td style="width:4%;">
                                             <div class="avatar-text bg-gray-100">
@@ -223,7 +223,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                         <TD>
                                             <div class="mt-2 mt-md-0 text-md-end mg-l-60 ms-md-0">
                                                 <a href="javascript:void(0);" class="fw-bold d-block">
-                                                    <?php echo Helper::formattedMoney($borc->kalan_anapara); ?>
+                                                    <?php echo Helper::formattedMoney($borc->tutar); ?>
 
                                                 </a>
                                                 <span class="fs-12 text-danger">
@@ -242,7 +242,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
 
 
                 <!-- Kayıt yok ise  -->
-                <?php if (empty($borclandirmalar)): ?>
+                <?php if (empty($kisi_borclar)): ?>
                 <div class="text-center text-muted">
                     <p>Kayıt Bulunamadı!!!</p>
 

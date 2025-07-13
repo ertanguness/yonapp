@@ -27,7 +27,7 @@ if (
     $page == 'dues/payment/tahsilat-onay' ||
     $page == "finans-yonetimi/kasa/list" ||
     $page == 'management/sites/list' ||
-    $page == "dues/collections/list"
+    $page == "dues/collections/list" || $page == "dues/collections/detail" 
 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -83,7 +83,8 @@ if (
 // Debit Tanımlama sayfası
 if (
     $page == 'dues/debit/manage' ||
-    $page == 'dues/debit/list'
+    $page == 'dues/debit/list' ||
+    $page == 'dues/debit/single-manage' 
 ) { ?>
     <script src="pages/dues/debit/debit.js"></script>
 
@@ -165,8 +166,20 @@ if ($page == 'home') {
 }
 
 
+if($page == "home")
+{
+   echo '<script src="assets/vendors/js/daterangepicker.min.js"></script>';
+    echo '<script src="assets/vendors/js/circle-progress.min.js"></script>';
+	echo '<script src="assets/vendors/js/jquery.time-to.min.js "></script>';
+}
+
 
 ?>
+
+
+
+
+
 
 
 
@@ -177,14 +190,11 @@ if ($page == 'home') {
 <script src="./assets/js/flatpickr.min.js" ></script>
 <script src="./assets/js/flatpickr.tr.min.js" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" defer></script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 <script src="./assets/js/jquery.validate.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" defer></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
-
 <script src="./assets/js/select2/js/select2.min.js"></script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script> -->
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 <script src="./src/app.js" defer></script>
 <!--<< All JS Plugins >>-->

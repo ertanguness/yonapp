@@ -122,7 +122,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                                 </td>
                                                 <td class="text-end"><?= Helper::formattedMoney($borc->hesaplanan_gecikme_zammi) ?>
                                                 </td>
-                                                <td class="text-end"><?= Helper::formattedMoney($borc->toplam_borc) ?></td>
+                                                <td class="text-end"><?= Helper::formattedMoney($borc->toplam_kalan_borc) ?></td>
                                                 <td style="width:5%;">
                                                     <div class="hstack gap-2 ">
                                                         <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
@@ -260,6 +260,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 formData.append('borc_idler[]', id);
             });
             formData.append('action', 'hesapla_toplam_tutar');
+
 
             fetch(url, {
                     method: "POST",

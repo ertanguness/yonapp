@@ -1,6 +1,5 @@
 <?php
 
-use App\Helper\Form;
 use App\Helper\Date;
 use App\Helper\Aidat;
 use App\Helper\Helper;
@@ -9,50 +8,43 @@ use Model\KisilerModel;
 use Model\BorclandirmaModel;
 use Model\BorclandirmaDetayModel;
 use App\Helper\Debit;
+use App\Helper\Error;
+use App\Helper\Form;
 
 use App\Services\Gate;
-
-
-$DueHelper = new Aidat();
-$Borc = new BorclandirmaModel();
-$BorcDetay = new BorclandirmaDetayModel();
-
-$KisiModel = new KisilerModel();
-
-
-//$Auths->checkAuthorize('dues/debit/manage');
-
-$id = Security::decrypt(@$_GET["id"] ?? 0) ?? 0;
-$borc = $Borc->find($id) ?? null;
+use Random\Engine\Secure;
 
 $DebitHelper = new Debit();
-
-//içinde olduğumuz ayın ilk gününü alıyoruz
-$baslangic_tarihi = Date::firstDay(
-    Date::getMonth(),
-    Date::getYear()
-
-);
-//içinde olduğumuz ayın son gününü alıyoruz
-$bitis_tarihi = Date::lastDay(
-    Date::getMonth(),
-    Date::getYear()
-);
+$DueHelper = new Aidat();
+$KisiModel = new KisilerModel();
+$BorcModel = new BorclandirmaModel();
+$BorcDetayModel = new BorclandirmaDetayModel();
 
 
 
-//eğer güncelleme yapılıyorsa bazı select'leri disabled yap
-if (isset($borc->id) && $borc->id > 0) {
-    $disabled = 'disabled';
-} else {
-    $disabled = '';
-}
+$borc_id = Security::decrypt($_GET["id"] ?? 0) ?? 0;
+$borc_detay_id = Security::decrypt($_GET["borc_detay_id"] ?? 0) ?? 0;
+
+
+$borc = $BorcModel->find($borc_id);
+$borc_detay = $BorcDetayModel->BorclandirmaDetayByID($borc_id);
+
+// if (!$borc_detay) {
+//     header("Location: index?p=dues/debit/list");
+//     exit;
+// }
+
+// 
+$adi_soyadi = $borc_detay->adi_soyadi ?? '';
+$borc_adi = $borc_detay->borc_adi ?? '';
+
+
+
 
 $hedef_tipi = $borc->hedef_tipi ?? 'all'; // Hedef tipi, eğer borç detayında tanımlı değilse 'all' olarak varsayılır
 
 
 //Kişi borçlandırma yapılmışsa borçlandırma detayından kişi id'lerini al 
-
 switch ($hedef_tipi) {
     case 'all':
         //$hedef_kisi = $DebitHelper->getAllActiveUsers();
@@ -67,23 +59,36 @@ switch ($hedef_tipi) {
         $kisiListesi = $KisiModel->SiteAktifKisileri($_SESSION["site_id"]);
         $optionsForSelect = array_column($kisiListesi, 'adi_soyadi', 'kisi_id');
         
-        $seciliKisiler = $BorcDetay->getKisiIdsByBorcId($id); // Borç detayında tanımlı hedef kişiler
+        if ($borc_detay_id != 0) {
 
-        // Veri tek bir ID olsa bile, onu bir diziye koyun.
+            $seciliKisiler = $BorcDetayModel->getKisiIdsByBorcId($borc_id); // Borç detayında tanımlı hedef kişiler
 
-        // Eğer veriniz hiç olmayabilirse veya birden çok olabilirse, daha güvenli bir yapı:
-        $seciliKisiIdleri = [];
-        if (!empty($seciliKisiler)) {
-            $seciliKisiIdleri = [(string)$seciliKisiler];
+            // Veri tek bir ID olsa bile, onu bir diziye koyun.
+
+            // Eğer veriniz hiç olmayabilirse veya birden çok olabilirse, daha güvenli bir yapı:
+            $seciliKisiIdleri = [];
+            if (!empty($seciliKisiler)) {
+                $seciliKisiIdleri = [(string)$seciliKisiler];
+            }
         }
+        // echo "<pre>";
+        // print_r($kisiListesi);
+        // echo "</pre>";
 
-   
+
+
     default:
         $hedef_kisi = [];
 }
 
-?>
 
+
+
+
+
+
+Gate::authorizeOrDie('debit_add');
+?>
 
 <div class="page-header">
 
@@ -99,11 +104,12 @@ switch ($hedef_tipi) {
     <div class="page-header-right ms-auto">
         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-            <a href="index?p=dues/debit/list" type="button" class="btn btn-outline-secondary me-2" data-page="">
+            <a href="index?p=dues/debit/detail&id=<?php echo Security::encrypt($borc_id) ?>" type="button"
+                class="btn btn-outline-secondary me-2" data-page="">
                 <i class="feather-arrow-left me-2"></i>
                 Listeye Dön
             </a>
-            <button type="button" class="btn btn-primary" id="save_debit">
+            <button type="button" class="btn btn-primary" id="save_debit_single">
                 <i class="feather-save  me-2"></i>
                 Kaydet
             </button>
@@ -112,47 +118,46 @@ switch ($hedef_tipi) {
 </div>
 
 <div class="main-content">
-    <?php
 
-    Gate::authorizeOrDie('debit_add');
-    ?>
-    <?php
-    /* $title = $pageTitle;
- if ($pageTitle === 'Borç Ekle') {
-      $text = "Borç Ekleme sayfasındasınız. Bu sayfada yeni bir borç ekleyebilirsiniz.";
- } else {
-      $text = "Borç Güncelleme sayfasındasınız. Bu sayfada borç bilgilerini güncelleyebilirsiniz.";
- }
- require_once 'pages/components/alert.php'; */
-    ?>
+
     <div class="row">
         <div class="container-xl">
+            <div class="col-xxl-12 single-note-item all-category note-important note-tasks">
+                <div class="card card-body mb-4 stretch stretch-full">
+                    <span class="side-stick"></span>
+                    <h5 class="note-title text-truncate w-75 mb-1">
+                        <?php echo $adi_soyadi . " - " .  $borc_adi ?>
+                    </h5>
 
-            <div class="card">
-
-                <div class="row p-4">
-                    <div class="col-lg-12">
-
-                        <div class="alert alert-dismissible d-flex alert-soft-teal-message" role="alert">
-                            <div class="me-4 d-none d-md-block">
-                                <i class="feather feather-alert-octagon fs-1"></i>
+                    <div class="fs-12 mt-3">
+                        <div class="hstack gap-2 text-muted mb-2">
+                            <div class="avatar-text avatar-sm">
+                                <i class="feather-calendar"></i>
                             </div>
-                            <div>
-                                <p class="fw-bold mb-1 text-truncate-1-line alert-header">Borç Ekleme!</p>
-                                <p class="fs-12 fw-medium text-truncate-1-line alert-description">
-                                    Tüm Sakinler seçildiğinde, şu anda sitede oturan <strong>AKTİF</strong> ev sahibi ve
-                                    kiracılara
-                                    borclandırma yapılacaktır.
-
-                                </p>
-
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
+                            <span class="text-truncate-1-line">
+                                Dönemi :
+                                <strong><?php echo Date::dmY($borc_detay->baslangic_tarihi) . "  -  " .  Date::dmY($borc_detay->bitis_tarihi)  ?>
+                                </strong>
+                            </span>
+                        </div>
+                        <div class="hstack gap-2 text-muted mb-2">
+                            <div class="avatar-text avatar-sm">
+                                <i class="feather-list"></i>
                             </div>
+                            <span class="text-truncate-1-line">
+                                Yapılan borçlandırmanın tutarını ve açıklamasını düzenleyebilirsiniz.
+                            </span>
                         </div>
 
+
                     </div>
+
                 </div>
+
+
+            </div>
+            <div class="card">
+
                 <div class="card-body">
                     <form id="debitForm" action="" method="POST">
                         <input type="text" class="form-control d-none" name="borc_id" id="borc_id"
@@ -164,63 +169,33 @@ switch ($hedef_tipi) {
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-file-invoice"></i></div>
-                                    <?php echo $DueHelper->AidatTuruSelect("borc_baslik", $borc->borc_tipi_id ?? '', $disabled) ?>
+                                    <?php echo $DueHelper->AidatTuruSelect("borc_baslik", $borc->borc_tipi_id ?? '', "disabled") ?>
 
                                 </div>
                             </div>
 
                             <div class="col-lg-2">
-                                <label for="tutar" class="fw-semibold">Tutar (₺):</label>
+                                <label for="tutar" class="fw-semibold">Tutar (₺) / Ceza Oranı (%):</label>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-2">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-money-bill"></i></div>
                                     <input type="text" class="form-control money" name="tutar" id="tutar"
-                                        value="<?php echo  $borc->tutar ?? '0,00'; ?>" placeholder="Tutar giriniz"
-                                        required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4 align-items-center">
-                            <div class="col-lg-2">
-                                <label for="bitis_tarihi" class="fw-semibold">Dönemi:</label>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="input-group">
-                                    <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                                    <input type="text" class="form-control flatpickr" name="baslangic_tarihi"
-                                        id="baslangic_tarihi"
-                                        value="<?php echo Date::dmY($borc->baslangic_tarihi ?? $baslangic_tarihi); ?>"
-                                        autocomplete="off" required>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-
-                                <div class="input-group">
-                                    <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                                    <input type="text" class="form-control flatpickr" name="bitis_tarihi"
-                                        id="bitis_tarihi"
-                                        value="<?php echo Date::dmY($borc->bitis_tarihi ?? $bitis_tarihi); ?>"
-                                        autocomplete="off" required>
+                                        value="<?php echo Helper::formattedMoney($borc_detay->tutar ?? 0) ?? ''; ?>"
+                                        placeholder="Tutar giriniz" required>
                                 </div>
                             </div>
 
                             <div class="col-lg-2">
-                                <label for="ceza_orani" class="fw-semibold">Ceza Oranı (%):</label>
-                                <i class="bi bi-info-circle c-pointer text-primary" data-toggle="tooltip"
-                                    data-placement="top"
-                                    title="Son Ödeme tarihinden itibaren günlük olarak hesaplanacak ceza oranı(%)"></i>
-                            </div>
-                            <div class="col-lg-4">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-percentage"></i></div>
-                                    <input type="number" class="form-control"
-                                        value="<?php echo $borc->ceza_orani ?? 0; ?>" name="ceza_orani" id="ceza_orani"
-                                        placeholder="Ceza oranı" step="0.01" min="0">
+                                    <input type="number" class="form-control" name="ceza_orani" id="ceza_orani"
+                                        placeholder="Ceza oranı" step="0.01" min="0"
+                                        value="<?php echo $borc_detay->ceza_orani ?? ''; ?>">
                                 </div>
                             </div>
                         </div>
+
 
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
@@ -232,7 +207,7 @@ switch ($hedef_tipi) {
                                     <?php
 
                                     ?>
-                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all", $disabled); ?>
+                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all"); ?>
                                 </div>
                             </div>
                             <div class="col-lg-2 ">
@@ -244,7 +219,7 @@ switch ($hedef_tipi) {
                                     <select class="form-control select2-single" name="block_id" id="block_id" disabled>
                                         <option value="">Seçiniz</option>
                                         <?php foreach ($blocks as $block): ?>
-                                        <option value="<?= $block->id ?>"><?= $block->name ?></option>
+                                            <option value="<?= $block->id ?>"><?= $block->name ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -265,16 +240,16 @@ switch ($hedef_tipi) {
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-user-friends"></i></div>
                                     <!-- <select name="hedef_kisi[]" id="hedef_kisi" multiple class="form-control select2">
-                                        </select> -->
+                                    </select> -->
                                     <?php
-                                        echo Form::Select2Multiple(
-                                            'hedef_kisi[]',         // Form gönderildiğinde PHP'nin dizi olarak alması için name.
-                                            $optionsForSelect ?? [],           // SEÇENEKLER: Veritabanından gelen [id => Ad Soyad] dizisi.
-                                            $seciliKisiIdleri ?? [],      // SEÇİLİ OLANLAR: Seçili olacak kişi ID'lerini içeren bir DİZİ.
-                                            'form-select select2 w-100', // CSS Sınıfı
-                                            'hedef_kisi'            // JavaScript (Select2) için temiz bir ID.
-                                        );
-                                        ?>
+                                    echo Form::Select2Multiple(
+                                        'hedef_kisi[]',         // Form gönderildiğinde PHP'nin dizi olarak alması için name.
+                                        $optionsForSelect ?? [],           // SEÇENEKLER: Veritabanından gelen [id => Ad Soyad] dizisi.
+                                        $seciliKisiIdleri ?? [],      // SEÇİLİ OLANLAR: Seçili olacak kişi ID'lerini içeren bir DİZİ.
+                                        'form-select select2 w-100', // CSS Sınıfı
+                                        'hedef_kisi'            // JavaScript (Select2) için temiz bir ID.
+                                    );
+                                    ?>
 
                                 </div>
 
@@ -297,6 +272,7 @@ switch ($hedef_tipi) {
                                 </div>
                             </div>
                         </div>
+
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
                                 <label for="aciklama" class="fw-semibold">Açıklama:</label>
@@ -305,7 +281,7 @@ switch ($hedef_tipi) {
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-info-circle"></i></div>
                                     <textarea class="form-control" name="aciklama" id="aciklama" rows="3"
-                                        placeholder="Açıklama giriniz"><?php echo $borc->aciklama ?? ''; ?></textarea>
+                                        placeholder="Açıklama giriniz"><?php echo $borc_detay->aciklama ?? $borc->aciklama; ?></textarea>
                                 </div>
                             </div>
                         </div>

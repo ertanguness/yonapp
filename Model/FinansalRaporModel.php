@@ -8,7 +8,7 @@ use PDO;
 
 class FinansalRaporModel extends Model
 {
-    protected $table = "view_guncel_borclar";
+    protected $table = "view_borclandirma_detay_raporu";
 
     //view_kisiler_hesap_ozet
     protected $vw_hesap_ozet = "view_kisiler_hesap_ozet"; // Eğer view kullanıyorsanız, bu satırı ekleyebilirsiniz.
@@ -42,11 +42,11 @@ class FinansalRaporModel extends Model
     public function getGuncelBorclarGruplu($site_id)
     {
         $sql = $this->db->prepare("SELECT kisi_id,daire_kodu,adi_soyadi,uyelik_tipi, 
-                                    SUM(kalan_anapara) AS kalan_anapara,  
+                                    SUM(tutar) AS kalan_anapara,  
                                     SUM(hesaplanan_gecikme_zammi) AS hesaplanan_gecikme_zammi,
-                                    SUM(toplam_borc) AS toplam_borc 
+                                    SUM(toplam_kalan_borc) AS toplam_kalan_borc 
                                     FROM $this->table 
-                                    WHERE site_id = ? 
+                                    WHERE site_id = ?  and toplam_kalan_borc > 0
                                     GROUP BY kisi_id, daire_kodu, adi_soyadi, uyelik_tipi");
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
@@ -60,9 +60,43 @@ class FinansalRaporModel extends Model
      */
     public function getKisiGuncelBorclar($kisi_id)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE kisi_id = ? ");
+        $sql = $this->db->prepare("SELECT 
+                                            * 
+                                          FROM $this->table 
+                                          WHERE kisi_id = ? 
+                                          AND toplam_kalan_borc > 0");
         $sql->execute([$kisi_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /** Kişinin borçlarını getirir.
+     * @param int $kisi_id
+     * @return array
+     */
+    public function getKisiBorclar($kisi_id)
+    {
+        $sql = $this->db->prepare("SELECT * 
+                                          FROM $this->table 
+                                          WHERE kisi_id = ? ");
+        $sql->execute([$kisi_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+
+
+
+
+    /**Kisinin finansal durumunu getirir(Toplam Anapara Borç, Toplam Gecikme, Toplam Borç, Toplam Tahsilat, Toplam Kalan Borç)
+     * @param int $kisi_id
+     * @return object|null
+     */
+    public function KisiFinansalDurum($kisi_id)
+    {
+        $sql = $this->db->prepare("SELECT *
+                                          FROM $this->vw_hesap_ozet 
+                                          WHERE kisi_id = ? ");
+        $sql->execute([$kisi_id]);
+        return $sql->fetch(PDO::FETCH_OBJ);
     }
 
 
@@ -82,7 +116,7 @@ class FinansalRaporModel extends Model
         // IN sorgusu için placeholder'lar oluştur (?,?,?)
         $placeholders = implode(',', array_fill(0, count($idler), '?'));
 
-        $sql = "SELECT SUM(toplam_borc) as toplam FROM {$this->table} WHERE id IN ({$placeholders})";
+        $sql = "SELECT SUM(toplam_kalan_borc) as toplam FROM {$this->table} WHERE id IN ({$placeholders})";
 
         try {
             $stmt = $this->db->prepare($sql);
@@ -98,6 +132,24 @@ class FinansalRaporModel extends Model
         }
     }
 
+
+
+    
+    /** Finds records where a specific column matches a value.
+     * @param string $column The column to search in.
+     * @param mixed $value The value to match against the column.
+     */
+    public function findWhereIn($column, $values, $sorting = "column asc")
+    {
+        if (empty($values)) {
+            return [];
+        }
+
+        $placeholders = rtrim(str_repeat('?, ', count($values)), ', ');
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE $column IN ($placeholders) ORDER BY $sorting");
+        $sql->execute($values);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
 
 
 

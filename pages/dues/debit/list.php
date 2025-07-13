@@ -13,7 +13,7 @@ $BorcDetay = new BorclandirmaDetayModel();
 $Due = new DueModel();
 
 //borçlandırmaları getir
-$borclar = $Borc->all($site_id);
+$borclar = $Borc->getAll($site_id);
 
 
 
@@ -73,17 +73,27 @@ $borclar = $Borc->all($site_id);
                                         $i = 1;
                                         foreach ($borclar as $borc){
                                             $enc_id = Security::encrypt($borc->id);
+                                            //Ödenme yüzdesini hesapla
+                                            $odeme_yuzdesi = 0;
+                                            if ($borc->toplam_borc > 0) {
+                                                $odeme_yuzdesi = round(($borc->toplam_tahsilat / $borc->toplam_borc) * 100, 2);
+
+                                                
+                                            }
+                                          
+
+
 
                                         ?>
-                                            <tr class="">
-                                                <td><?php echo $i++; ?></td>
-                                                <td><?php echo $Due->getDueName($borc->borc_tipi_id); ?></td>
-                                                <td><?php echo $borc->tutar; ?></td>
-                                                <td><?php echo Date::dmY($borc->baslangic_tarihi); ?></td>
-                                                <td><?php echo Date::dmY($borc->bitis_tarihi); ?></td>
+                                        <tr class="">
+                                            <td><?php echo $i++; ?></td>
+                                            <td><?php echo $Due->getDueName($borc->borc_tipi_id); ?></td>
+                                            <td><?php echo $borc->tutar; ?></td>
+                                            <td><?php echo Date::dmY($borc->baslangic_tarihi); ?></td>
+                                            <td><?php echo Date::dmY($borc->bitis_tarihi); ?></td>
 
-                                                <td>
-                                                   <?php
+                                            <td>
+                                                <?php
                                                    $borc_tipi = $borc->hedef_tipi;
                                                    $borclandirma_tipi='';
                                                     $borclandirma_detay = '';
@@ -102,42 +112,72 @@ $borclar = $Borc->all($site_id);
                                                         $borclandirma_detay =  $BorcDetay->BorclandirilmisDaireTipleri($borc->id);
                                                     }
                                                    ?>
-                                                   <a href="javascript:void(0)" class="hstack gap-3 text-decoration-none text-dark text-left">
-                                                        <!-- <div class="avatar-image avatar-md bg-warning text-white">N</div> -->
-                                                        <div>
-                                                            <span class="text-truncate-1-line text-left"><?php echo $borclandirma_tipi ?></span>
-                                                            <small class="fs-12 fw-normal text-muted"><?php echo $borclandirma_detay; ?></small>
-                                                        </div>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <?php echo Helper::formattedMoney($BorcDetay->ToplamBorclandirmaTutar($borc->id)); ?>
-                                                </td>
-                                                <td>
-                                                </td>
-                                                <td>
-                                                    <div class="text-truncate" style="max-width: 200px;">
-                                                        <?php echo $borc->aciklama; ?>
+                                                <a href="javascript:void(0)"
+                                                    class="hstack gap-3 text-decoration-none text-dark text-left">
+                                                    <!-- <div class="avatar-image avatar-md bg-warning text-white">N</div> -->
+                                                    <div>
+                                                        <span
+                                                            class="text-truncate-1-line text-left"><?php echo $borclandirma_tipi ?></span>
+                                                        <small
+                                                            class="fs-12 fw-normal text-muted"><?php echo $borclandirma_detay; ?></small>
                                                     </div>
-                                                </td>
-                                                <td>
-                                                    <div class="hstack gap-2">
-                                                        <a href="index?p=dues/debit/detail&id=<?php echo $enc_id ?>" class="avatar-text avatar-md" title="Görüntüle">
-                                                            <i class="feather-eye"></i>
-                                                        </a>
-                                                        <a href="index?p=dues/debit/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md"
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <?php echo Helper::formattedMoney($borc->toplam_borc); ?>
+                                            </td>
+                                            <td>
+                                                <div class="text-truncate cursor-pointer" data-bs-toggle="tooltip"
+                                                    data-bs-trigger="hover" title=""
+                                                    data-bs-original-title="Tahsilat Detayları için tıklayın"
+                                                    style="max-width: 200px;">
 
-                                                        title="Düzenle">
-                                                            <i class="feather-edit"></i>
-                                                        </a>
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md delete-debit" title="Sil"
-                                                        data-id="<?php echo $enc_id; ?>" data-name="<?php echo $Due->getDueName($borc->borc_tipi_id); ?>"
-                                                        >
-                                                            <i class="feather-trash-2"></i>
-                                                        </a>
+                                                    <div class="mb-2">
+                                                        <div class="fs-14 fw-bold text-dark">
+                                                            <a href="index?p=dues/collections/detail&id=<?php echo $enc_id?>">
+                                                                <?php echo Helper::formattedMoney($borc->toplam_tahsilat); ?>
+                                                            </a>
+                                                        </div>
+                                                        <label
+                                                            class="fs-12 text-muted"><?php echo $odeme_yuzdesi ?>%</label>
                                                     </div>
-                                                </td>
-                                            </tr>
+
+
+                                                    <div class="progress ht-5">
+                                                        <div class="progress-bar bg-success" role="progressbar"
+                                                            style="width: <?php echo $odeme_yuzdesi ?>%"></div>
+                                                    </div>
+                                                </div>
+
+
+
+
+
+                                            </td>
+                                            <td>
+                                                <div class="text-truncate" style="max-width: 200px;">
+                                                    <?php echo $borc->aciklama; ?>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="hstack gap-2">
+                                                    <a href="index?p=dues/debit/detail&id=<?php echo $enc_id ?>"
+                                                        class="avatar-text avatar-md" title="Görüntüle">
+                                                        <i class="feather-eye"></i>
+                                                    </a>
+                                                    <a href="index?p=dues/debit/manage&id=<?php echo $enc_id; ?>"
+                                                        class="avatar-text avatar-md" title="Düzenle">
+                                                        <i class="feather-edit"></i>
+                                                    </a>
+                                                    <a href="javascript:void(0);"
+                                                        class="avatar-text avatar-md delete-debit" title="Sil"
+                                                        data-id="<?php echo $enc_id; ?>"
+                                                        data-name="<?php echo $Due->getDueName($borc->borc_tipi_id); ?>">
+                                                        <i class="feather-trash-2"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
                                         <?php } ; ?>
                                     </tbody>
                                 </table>
