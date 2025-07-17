@@ -14,7 +14,7 @@
    
 	<!-- <script src="assets/js/analytics-init.min.js"></script>	  -->
     <!--! BEGIN: Theme Customizer  !-->
-    <script src="assets/js/theme-customizer-init.min.js" defer></script>
+    <!-- <script src="assets/js/theme-customizer-init.min.js" defer></script> -->
     <!--! END: Theme Customizer !-->
 
     <!-- vendors.min.js {always must need to be top} -->

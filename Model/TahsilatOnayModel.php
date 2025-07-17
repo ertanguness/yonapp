@@ -21,8 +21,10 @@ class TahsilatOnayModel extends Model{
     
     public function BekleyenTahsilatlar($site_id)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table 
-                                            WHERE site_id = ? AND onay_durumu = 0");
+        $sql = $this->db->prepare("SELECT tao.*,k.adi_soyadi, d.daire_kodu FROM $this->table tao
+                                          LEFT JOIN kisiler k ON k.id = tao.kisi_id
+                                          LEFT JOIN daireler d ON d.id = tao.daire_id 
+                                          WHERE tao.site_id = ? AND tao.onay_durumu = 0");
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }

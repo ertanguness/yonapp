@@ -35,3 +35,27 @@
 [2025-07-13 23:37:37] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"637.00","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":687,"daire_id":182} 
 [2025-07-13 23:37:51] [INFO] Borçlandırma yapılıyor: ["866"] 
 [2025-07-13 23:37:51] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"544.11","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":866,"daire_id":5665} 
+[2025-07-13 23:41:42] [INFO] Borçlandırma yapılıyor: ["181"] 
+[2025-07-13 23:41:42] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"0.70","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:41:55] [INFO] Borçlandırma yapılıyor: ["7"] 
+[2025-07-13 23:41:55] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"770","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:42:07] [INFO] Borçlandırma yapılıyor: ["183"] 
+[2025-07-13 23:42:07] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"683.86","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:42:22] [INFO] Borçlandırma yapılıyor: ["9"] 
+[2025-07-13 23:42:22] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"666.01","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:43:37] [INFO] Borçlandırma yapılıyor: ["183"] 
+[2025-07-13 23:43:37] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"683.86","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:44:59] [INFO] Borçlandırma yapılıyor: ["183"] 
+[2025-07-13 23:44:59] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"683.86","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:45:07] [INFO] Borçlandırma yapılıyor: ["183"] 
+[2025-07-13 23:45:07] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"683.86","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:46:35] [INFO] Borçlandırma yapılıyor: ["697"] 
+[2025-07-13 23:46:35] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"19.80","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":697,"daire_id":5672} 
+[2025-07-13 23:48:53] [INFO] Borçlandırma yapılıyor: ["869"] 
+[2025-07-13 23:48:53] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"683.86","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":869,"daire_id":5845} 
+[2025-07-13 23:49:18] [INFO] Borçlandırma yapılıyor: ["695"] 
+[2025-07-13 23:49:18] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"666.01","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":695,"daire_id":5846} 
+[2025-07-13 23:49:40] [INFO] Borçlandırma yapılıyor: ["700"] 
+[2025-07-13 23:49:40] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"643.05","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":700,"daire_id":5675} 
+[2025-07-13 23:49:57] [INFO] Borçlandırma yapılıyor: ["704"] 
+[2025-07-13 23:49:57] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"1445","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":704,"daire_id":5679} 

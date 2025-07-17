@@ -1,6 +1,6 @@
-let url = "pages/dues/payment/api.php";
+let url = "pages/dues/debit/api.php";
 document
-  .getElementById("payment_file")
+  .getElementById("peoples_file")
   .addEventListener("change", function (event) {
     const fileInput = event.target;
     const file = fileInput.files[0];
@@ -17,7 +17,6 @@ document
     } else {
       const reader = new FileReader();
       reader.onload = function (e) {
-        
         const workbook = XLSX.read(e.target.result, { type: "binary" });
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
@@ -32,7 +31,8 @@ document
         for (let row = range.s.r; row <= range.e.r; row++) {
           const cellAddress = XLSX.utils.encode_cell({ r: row, c: 1 }); // 1. sütun (B sütunu) için
           const cell = firstSheet[cellAddress];
-          if (cell && !isNaN(cell.v)) { // Check if the cell value is a valid number
+          if (cell && !isNaN(cell.v)) {
+            // Check if the cell value is a valid number
             toplam_tutar += parseFloat(cell.v);
           }
         }
@@ -47,10 +47,8 @@ document
           fileInput.value = ""; // Dosya girişini temizle
           return;
         } else {
-        
-            $(".alert-description").html(`
-                Yüklenen dosyada bulunan satır sayısı: <strong>${satir_sayisi}</strong>
-                 Toplam tutar: <strong>${toplam_tutar.toFixed(2)}</strong>
+          $(".alert-description").html(`
+                Yüklenen dosyada bulunan satır sayısı: <strong>${satir_sayisi}
               `);
 
           $(".upload-info").removeClass("d-none").hide().fadeIn(400);
@@ -61,10 +59,10 @@ document
     }
   });
 
-/*Excelden Ödeme Yüklememek için*/
-$(document).on("click", "#upload_payment_file", function (e) {
+/*Excelden Yüklemek için*/
+$(document).on("click", "#upload_peoples_file", function (e) {
   e.preventDefault();
-  const fileInput = document.getElementById("payment_file");
+  const fileInput = document.getElementById("peoples_file");
   const loadingOverlay = document.getElementById("loading-overlay");
 
   if (!fileInput.files.length) {
@@ -78,11 +76,11 @@ $(document).on("click", "#upload_payment_file", function (e) {
   }
 
   const formData = new FormData();
-  formData.append("action", "payment_file_upload");
-  formData.append("payment_file", fileInput.files[0]);
+  formData.append("action", "excel_upload_debits");
+  formData.append("excelFile", fileInput.files[0]);
+  formData.append("borc_id", $("#borc_id").val()); // Borç ID'sini ekle
 
   loadingOverlay.style.display = "flex"; // CSS'te flex kullandığımız için 'flex' yapıyoruz
-
   Pace.restart(); // Pace yükleme çubuğunu başlat
   fetch(url, {
     method: "POST",
@@ -90,7 +88,8 @@ $(document).on("click", "#upload_payment_file", function (e) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data); // Konsola yanıtı yazdır
+     
+      // console.log(data); // Konsola yanıtı yazdır
       const title = data.status === "success" ? "Başarılı" : "Hata";
       swal.fire({
         title: title,
@@ -98,26 +97,30 @@ $(document).on("click", "#upload_payment_file", function (e) {
         icon: data.status,
         confirmButtonText: "Tamam",
       }).then(() => {
-        window.location.href = "index?p=dues/payment/tahsilat-onay"; // Başarılı ise yönlendir
+        window.location.reload(); // Sayfayı yeniden yükle
       });
-      
+
     })
     .catch((error) => {
       console.error("Error:", error);
+      loadingOverlay.style.display = "none"; // Yükleme overlay'ini gizle
+
       swal.fire({
         title: "Hata",
-        text: "Dosya yüklenirken bir hata oluştu.",
+        text: "Dosya yüklenirken bir hata oluştu.!!",
         icon: "error",
         confirmButtonText: "Tamam",
-      }).then(() => {
-        loadingOverlay.style.display = "none"; // Yükleme overlay'ini gizle
-      });
+      })
+      .then(()=>{
+        //window.location.reload(); // Sayfayı yeniden yükle
+      })
+      ;
     });
 });
-$(document).on('click', '#clear_payment_file', function() {
-        $(".alert-description")
-        .html('Yüklenen dosya bilgileri temizlendi. Lütfen yeni bir dosya yükleyin.').fadeIn(400);
-
+$(document).on("click", "#clear_peoples_file", function () {
+  $(".alert-description")
+    .html(
+      "Yüklenen dosya bilgileri temizlendi. Lütfen yeni bir dosya yükleyin."
+    )
+    .fadeIn(400);
 });
-
-

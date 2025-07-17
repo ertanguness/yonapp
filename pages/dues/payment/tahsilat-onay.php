@@ -92,13 +92,12 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                                             <tr class="bekleyen-tahsilat-satiri">
                                                 <td><?php echo $index + 1 ?></td>
                                                 <td>
-                                                    <span class="badge bg-light-secondary"><?php echo htmlspecialchars($onay->referans_no); ?></span>
+                                                    <span class="badge bg-light-secondary"><?php echo Security::escape($onay->referans_no ?? '#'); ?></span>
                                                 </td>
                                                 <td>
-                                                    <div class="fw-bold"><?php echo ($onay->daire_id); ?></div>
-                                                    <div class="text-muted fs-12"><?= ($onay->kisi_id) ?></div>
+                                                    <div class="fw-bold"><?php echo $onay->daire_kodu  . " | " . $onay->adi_soyadi; ?></div>
                                                     <div class="text-muted fs-12 mt-1">Ödeme Tarihi: <?php echo Date::dmY($onay->islem_tarihi); ?></div>
-                                                    <p class="fs-12 text-muted mt-2 fst-italic">"<?php echo htmlspecialchars($onay->aciklama) ?>"</p>
+                                                    <p class="fs-12 text-muted mt-1 fst-italic">"<?php echo htmlspecialchars($onay->aciklama) ?>"</p>
                                                 </td>
                                                 <td class="text-end fw-bold"><?= Helper::formattedMoney($tahsilat_tutari) ?></td>
                                                 <td class="text-end text-success"><?php echo Helper::formattedMoney($islenen_tutar) ?></td>
@@ -146,7 +145,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
 <!-- Sayfanızın alt kısmına, örneğin </body> etiketinden önce -->
 
 <template id="borc-eslestirme-sablonu">
-    <form class="borc-eslestirme-form" data-onay-id="{ONAY_ID}" >
+    <form class="borc-eslestirme-form" data-onay-id="{ONAY_ID}">
         <h6 class="mb-3">İşlenecek Tutarı Borçlara Dağıtın</h6>
 
         <!-- BORÇ LİSTESİ BURAYA EKLENECEK -->
@@ -179,9 +178,9 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
 
 <!-- Borç satırları için ayrı bir template de yapabiliriz, bu daha da modüler olur -->
 <template id="borc-satiri-sablonu">
-    <div class="form-check border-bottom py-2" >
-        <input class="form-check-input borc-checkbox"  type="checkbox" value="{BORC_DETAY_ID}" id="borc-{BORC_ID_UNIQUE}">
-        <label class="form-check-label d-flex justify-content-between w-100"  for="borc-{BORC_ID_UNIQUE}">
+    <div class="form-check border-bottom py-2">
+        <input class="form-check-input borc-checkbox" type="checkbox" value="{BORC_DETAY_ID}" id="borc-{BORC_ID_UNIQUE}">
+        <label class="form-check-label d-flex justify-content-between w-100" for="borc-{BORC_ID_UNIQUE}">
             <!-- Kişi id gizli inputa -->
             <input type="hidden" name="kisi_id" id="kisi_id" value="{KISI_ID}">
             <span>
@@ -211,65 +210,80 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
         }
 
 
-        // =======================================================
-        // 3. "BORÇLARI EŞLEŞTİR" BUTONUNA TIKLAMA OLAYI
-        // =======================================================
-        $('#tahsilatOnayTable tbody').on('click', 'button.borclari-goster-btn', function() {
-            const $button = $(this);
-            const tr = $button.closest('tr');
-            const row = table.row(tr); // DataTables API'si ile satırı al
+        // --- 1. MERKEZİ FONKSİYON: Bir satırın çocuk (child) bölümünü açar/kapatır ---
+    function toggleChildRow(mainRow) {
+        const $mainRow = $(mainRow); // jQuery nesnesi olduğundan emin ol
+        const $button = $mainRow.find('button.borclari-goster-btn');
+        const row = table.row($mainRow);
 
-            if (row.child.isShown()) {
-                // Alt satır zaten açıksa kapat
-                row.child.hide();
-                tr.removeClass('details-shown');
-                $button.html('<i class="feather-git-merge me-2"></i>Borçları Eşleştir').removeClass('btn-secondary').addClass('btn-primary');
-            } else {
-                // Alt satır kapalıysa aç ve AJAX isteği yap
-                $button.html('<i class="feather-x me-2"></i>Kapat').removeClass('btn-primary').addClass('btn-secondary');
+        if (row.child.isShown()) {
+            // --- KAPATMA İŞLEMİ ---
+            row.child.hide();
+            $mainRow.removeClass('details-shown');
+            $button.html('<i class="feather-git-merge me-2"></i>Borçları Eşleştir')
+                   .removeClass('btn-secondary')
+                   .addClass('btn-primary');
+        } else {
+            // --- AÇMA İŞLEMİ ---
+            $button.html('<i class="feather-x me-2"></i>Kapat')
+                   .removeClass('btn-primary')
+                   .addClass('btn-secondary');
 
-                // "Yükleniyor..." metnini child row içine göster
-                row.child('<div class="borc-listesi-wrapper p-3 text-center">Yükleniyor...</div>').show();
-                tr.addClass('details-shown');
+            row.child('<div class="borc-listesi-wrapper p-3 text-center">Yükleniyor...</div>').show();
+            $mainRow.addClass('details-shown');
 
-                const kisiId = $button.data('kisi-id');
-                // 'onayId'yi de butona data attribute olarak eklemek en temizi.
-                // Örnek: <button ... data-onay-id="<?php echo $onay->id; ?>">
-                const onayId = $button.data('onay-id');
+            const kisiId = $button.data('kisi-id');
+            const onayId = $button.data('onay-id');
 
-                $.ajax({
-                    url: url, // Bu 'url' değişkeni sayfanızda tanımlı olmalı
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        action: 'get_kisi_borclari',
-                        kisi_id: kisiId
-                    },
-                    success: function(response) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'get_kisi_borclari',
+                    kisi_id: kisiId
+                },
+                success: function(response) {
+                    if (row.child.isShown()) { // Kullanıcı beklerken kapatmamışsa içeriği bas
                         if (response.status === 'success') {
-                            // AJAX başarılıysa, render fonksiyonunu çağır ve dönen içeriği child row'a bas
-                            const content = renderBorclarFormu(response.data, tr, onayId);
+                            const content = renderBorclarFormu(response.data, $mainRow, onayId);
                             row.child(content).show();
                         } else {
                             row.child('<div class="alert alert-danger m-3">Hata: ' + response.message + '</div>').show();
                         }
-                    },
-                    error: function() {
+                    }
+                },
+                error: function() {
+                    if (row.child.isShown()) {
                         row.child('<div class="alert alert-danger m-3">Borçlar yüklenirken bir sunucu hatası oluştu.</div>').show();
                     }
-                });
-            }
-        });
+                }
+            });
+        }
+    }
 
-        // İptal butonu için event delegation (Bu kısım isteğe bağlı)
-        $('#tahsilatOnayTable tbody').on('click', '.iptal-btn', function() {
-            const tr = $(this).closest('tr.details-shown');
-            if (tr.length > 0) {
-                table.row(tr).child.hide();
-                tr.removeClass('details-shown');
-                tr.find('button.borclari-goster-btn').html('<i class="feather-git-merge me-2"></i>Borçları Eşleştir').removeClass('btn-secondary').addClass('btn-primary');
-            }
-        });
+    // --- 2. OLAY YÖNETİCİLERİ (EVENT HANDLERS) ---
+
+    // a) "Borçları Eşleştir / Kapat" butonuna tıklandığında
+    $('#tahsilatOnayTable tbody').on('click', 'button.borclari-goster-btn', function() {
+        const mainRow = $(this).closest('tr');
+        toggleChildRow(mainRow); // Merkezi fonksiyonu çağır
+    });
+
+    // b) Form içindeki "İptal" butonuna tıklandığında
+    $('#tahsilatOnayTable tbody').on('click', '.iptal-btn', function() {
+        // Önceki cevaptaki gibi, çocuk satırın bir önceki kardeşini (ana satırı) bul
+        const childRow = $(this).closest('tr');
+        const mainRow = childRow.prev('.dt-hasChild');
+
+        if (mainRow.length > 0) {
+            toggleChildRow(mainRow); // Yine aynı merkezi fonksiyonu çağır
+        } else {
+            console.error("Ana satır (.prev()) bulunamadı. DOM yapısını kontrol edin.");
+        }
+    });
+
+
     });
 
 
@@ -324,107 +338,109 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
         // Oluşturulan formu bir wrapper div içinde döndür. Bu, child row'un stilini korur.
         return $('<div class="borc-listesi-wrapper p-3 bg-light rounded"></div>').append($formClone);
     }
- 
+
     $(function() {
-    let guncellemeIstegi; // Sadece debounce için kullanılacak.
+        let guncellemeIstegi; // Sadece debounce için kullanılacak.
 
-    // =======================================================
-    // CHECKBOX DEĞİŞİM OLAYI
-    // =======================================================
-    $('#tahsilatOnayTable tbody').on('change', '.borc-checkbox', function() {
-        const $form = $(this).closest('.borc-eslestirme-form');
-        
-        // Dizi, olay içinde anlık olarak oluşturuluyor.
-        const secilenBorcIdleri = $form.find('.borc-checkbox:checked').map(function() {
-    
-            return $(this).val(); 
-        }).get();
+        // =======================================================
+        // CHECKBOX DEĞİŞİM OLAYI
+        // =======================================================
+        $('#tahsilatOnayTable tbody').on('change', '.borc-checkbox', function() {
+            const $form = $(this).closest('.borc-eslestirme-form');
 
-        $form.find('.secilen-borc-toplami').html('<span class="spinner-border spinner-border-sm"></span>');
-        
-        clearTimeout(guncellemeIstegi);
-        guncellemeIstegi = setTimeout(function() {
-            guncelleToplamTutarSunucudan(secilenBorcIdleri, $form);
-        }, 300);
+            // Dizi, olay içinde anlık olarak oluşturuluyor.
+            const secilenBorcIdleri = $form.find('.borc-checkbox:checked').map(function() {
+
+                return $(this).val();
+            }).get();
+
+            $form.find('.secilen-borc-toplami').html('<span class="spinner-border spinner-border-sm"></span>');
+
+            clearTimeout(guncellemeIstegi);
+            guncellemeIstegi = setTimeout(function() {
+                guncelleToplamTutarSunucudan(secilenBorcIdleri, $form);
+            }, 300);
+        });
+
+        // =======================================================
+        // "İŞLENECEK TUTAR" INPUT DEĞİŞİM OLAYI
+        // =======================================================
+        $('#tahsilatOnayTable tbody').on('input', '.islenecek-tutar-input', function() {
+            const $form = $(this).closest('.borc-eslestirme-form');
+            uyariMesajiniGuncelle($form);
+        });
     });
 
-    // =======================================================
-    // "İŞLENECEK TUTAR" INPUT DEĞİŞİM OLAYI
-    // =======================================================
-     $('#tahsilatOnayTable tbody').on('input', '.islenecek-tutar-input', function() {
-        const $form = $(this).closest('.borc-eslestirme-form');
-        uyariMesajiniGuncelle($form);
-     });
-});
 
+    /**
+     * Sunucuya AJAX isteği göndererek seçilen borçların toplamını alır ve ekranı günceller.
+     */
+    function guncelleToplamTutarSunucudan(borcIdleri, $form) {
+        const $toplamGosterge = $form.find('.secilen-borc-toplami');
+        console.log('Seçilen borç ID\'leri:', borcIdleri);
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                "action": 'hesapla_toplam_tutar',
+                "borc_idler": borcIdleri
+                // kisi_id gereksiz olduğu için kaldırıldı.
+            },
+            success: function(response) {
+                // DÜZELTME 1: PHP'den gelen 'success' anahtarını kontrol ediyoruz.
+                if (response.success) {
 
-/**
- * Sunucuya AJAX isteği göndererek seçilen borçların toplamını alır ve ekranı günceller.
- */
-function guncelleToplamTutarSunucudan(borcIdleri, $form) {
-    const $toplamGosterge = $form.find('.secilen-borc-toplami');
-    console.log('Seçilen borç ID\'leri:', borcIdleri);
-    $.ajax({
-        url: url,
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            "action": 'hesapla_toplam_tutar',
-            "borc_idler": borcIdleri 
-            // kisi_id gereksiz olduğu için kaldırıldı.
-        },
-        success: function(response) {
-            // DÜZELTME 1: PHP'den gelen 'success' anahtarını kontrol ediyoruz.
-            if (response.success) { 
+                    console.log('Gelen cevap:', response);
+                    const toplamTutar = parseFloat(response.toplam_tutar) || 0;
 
-                console.log('Gelen cevap:', response);
-                const toplamTutar = parseFloat(response.toplam_tutar) || 0;
+                    // DÜZELTME 2: Ham sayısal değeri data attribute'üne kaydet.
+                    $toplamGosterge.data('raw-total', toplamTutar);
 
-                // DÜZELTME 2: Ham sayısal değeri data attribute'üne kaydet.
-                $toplamGosterge.data('raw-total', toplamTutar);
-                
-                // DÜZELTME 3: Gelen sayıyı JavaScript ile para formatına çevir.
-                const formatliTutar = toplamTutar.toLocaleString('tr-TR', { 
-                    minimumFractionDigits: 2, 
-                    maximumFractionDigits: 2 
-                }) + ' ₺';
-                $toplamGosterge.text(formatliTutar);
+                    // DÜZELTME 3: Gelen sayıyı JavaScript ile para formatına çevir.
+                    const formatliTutar = toplamTutar.toLocaleString('tr-TR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }) + ' ₺';
+                    $toplamGosterge.text(formatliTutar);
 
-                // Toplam güncellendi, uyarıyı kontrol et.
-                uyariMesajiniGuncelle($form);
+                    // Toplam güncellendi, uyarıyı kontrol et.
+                    uyariMesajiniGuncelle($form);
 
-            } else {
+                } else {
+                    $toplamGosterge.text('Hata!').addClass('text-danger');
+                    // response.message PHP'den geliyorsa göster, gelmiyorsa genel bir mesaj yaz.
+                    const message = response.message || 'Toplam hesaplanamadı.';
+                    Swal.fire('Hata!', message, 'error');
+                }
+            },
+            error: function() {
                 $toplamGosterge.text('Hata!').addClass('text-danger');
-                // response.message PHP'den geliyorsa göster, gelmiyorsa genel bir mesaj yaz.
-                const message = response.message || 'Toplam hesaplanamadı.';
-                Swal.fire('Hata!', message, 'error');
+                Swal.fire('Hata!', 'Toplam tutar hesaplanırken sunucuya ulaşılamadı.', 'error');
             }
-        },
-        error: function() {
-            $toplamGosterge.text('Hata!').addClass('text-danger');
-            Swal.fire('Hata!', 'Toplam tutar hesaplanırken sunucuya ulaşılamadı.', 'error');
-        }
-    });
-}
-
-
-/**
- * Sadece uyarı mesajının görünürlüğünü kontrol eder.
- */
-function uyariMesajiniGuncelle($form) {
-    const $uyariMesaji = $form.find('.uyari-mesaji');
-    const $toplamGosterge = $form.find('.secilen-borc-toplami');
-    const $islenecekTutarInput = $form.find('.islenecek-tutar-input');
-
-    const secilenToplam = parseFloat($toplamGosterge.data('raw-total')) || 0;
-    const islenecekTutar = parseFloat($islenecekTutarInput.val().replace(/\./g, '').replace(',', '.')) || 0;
-
-    if (secilenToplam > 0 && islenecekTutar < secilenToplam) {
-        const formatliToplam = secilenToplam.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
-        $uyariMesaji.text(`İşlenecek tutar, seçilen borçların toplamından (${formatliToplam}) az. Ödeme kısmi olarak yansıtılacaktır.`).show();
-    } else {
-        $uyariMesaji.hide();
+        });
     }
-}
 
+
+    /**
+     * Sadece uyarı mesajının görünürlüğünü kontrol eder.
+     */
+    function uyariMesajiniGuncelle($form) {
+        const $uyariMesaji = $form.find('.uyari-mesaji');
+        const $toplamGosterge = $form.find('.secilen-borc-toplami');
+        const $islenecekTutarInput = $form.find('.islenecek-tutar-input');
+
+        const secilenToplam = parseFloat($toplamGosterge.data('raw-total')) || 0;
+        const islenecekTutar = parseFloat($islenecekTutarInput.val().replace(/\./g, '').replace(',', '.')) || 0;
+
+        if (secilenToplam > 0 && islenecekTutar < secilenToplam) {
+            const formatliToplam = secilenToplam.toLocaleString('tr-TR', {
+                style: 'currency',
+                currency: 'TRY'
+            });
+            $uyariMesaji.text(`İşlenecek tutar, seçilen borçların toplamından (${formatliToplam}) az. Ödeme kısmi olarak yansıtılacaktır.`).show();
+        } else {
+            $uyariMesaji.hide();
+        }
+    }
 </script>

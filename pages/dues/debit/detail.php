@@ -4,14 +4,17 @@ use App\Helper\Date;
 use App\Helper\Helper;
 use Model\KisilerModel;
 
+use Model\BorclandirmaModel;
 use Model\BorclandirmaDetayModel;
 
 $Kisiler = new KisilerModel();
+
+$Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
 
 
 $id = Security::decrypt($_GET['id']);
-
+$borc = $Borc->findWithDueName($id);
 
 
 $borc_detay = $BorcDetay->BorclandirmaDetay($id);
@@ -32,10 +35,16 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
     <div class="page-header-right ms-auto">
         <div class="btn-list d-flex gap-2">
 
-            <a href="index?p=dues/debit/list" class="btn btn-outline-secondary">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">
                 <i class="feather-arrow-left me-2"></i>
                 Listeye Dön
             </a>
+
+            <a href="index?p=dues/debit/upload-from-xls&id=<?php echo $_GET['id'] ?>" class="btn btn-outline-secondary">
+                <i class="feather-upload me-2"></i>
+                Excelden Yükle
+            </a>
+
             
             <a href="index?p=dues/debit/single-manage&id=<?php echo $_GET['id'] ?>" class="btn btn-primary">
                 <i class="feather-plus me-2"></i>
@@ -47,8 +56,8 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
 
 <div class="main-content ">
     <?php
-    $title = "Borçlandırma Detayı";
-    $text = "Var olan borçlandırmaya yeni bir borç ekleyebilir, kayıtların borç bilgilerini düzenleyebiir veya borçlandırmadan bazı kayıtları silebilirisiniz.";
+    $title = $borc->borc_adi . " - Borçlandırma Detayı";
+    $text = "Var olan borçlandırmaya yeni bir borç ekleyebilir, kayıtların borç bilgilerini düzenleyebilir veya borçlandırmadan bazı kayıtları silebilirisiniz.";
     require_once 'pages/components/alert.php';
     ?>
 
@@ -78,7 +87,8 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                         <?php
                                         $i = 1;
                                         foreach ($borc_detay as $detay){
-                                            $enc_id = Security::encrypt($detay->id);
+                                            $enc_id = Security::encrypt($detay->borclandirma_id);
+                                            $detay_id = Security::encrypt($detay->id);
                                             
                                         ?>
                                         <tr class="text-center">
@@ -119,7 +129,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             <td>
                                                 <div class="hstack gap-2">
                                                   
-                                                    <a href="index?p=dues/debit/single-manage&id=<?php echo $enc_id; ?>"
+                                                    <a href="index?p=dues/debit/single-manage&id=<?php echo $enc_id ."&detay_id=". $detay_id  ; ?>"
                                                         class="avatar-text avatar-md" title="Düzenle">
                                                         <i class="feather-edit"></i>
                                                     </a>

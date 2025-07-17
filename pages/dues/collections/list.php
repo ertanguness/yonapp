@@ -20,6 +20,23 @@ $tumTahsilatlar = $TahsilatModel->getTumTahsilatlar($_SESSION['site_id']);
 
 ?>
 
+<div class="page-header">
+    <div class="page-header-left d-flex align-items-center">
+        <div class="page-header-title">
+            <h5 class="m-b-10">Tahsilat</h5>
+        </div>
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
+            <li class="breadcrumb-item">Tahsilat Listesi</li>
+        </ul>
+    </div>
+    <div class="page-header-right ms-auto">
+        <a href="index?p=dues/debit/manage" class="btn btn-outline-secondary">
+            <i class="feather-file-plus me-2"></i>
+            Excele Aktar
+        </a>
+    </div>
+</div>
 <!-- ... (page-header kısmı aynı kalabilir) ... -->
 
 <div class="main-content">
@@ -61,8 +78,10 @@ $tumTahsilatlar = $TahsilatModel->getTumTahsilatlar($_SESSION['site_id']);
                                     </td>
                                     <td>
                                         <div><?= htmlspecialchars($tahsilat->aciklama ?: 'Genel Tahsilat') ?></div>
-                                        <small class="text-muted">
-                                            <i class="bi bi-wallet2 me-1"></i><?= htmlspecialchars($tahsilat->kasa_adi) ?>
+                                        <small class="text-muted" data-bs-toggle="tooltip" data-bs-original-title="Hareketleri Görüntüle">
+                                            <a href="index?p=finans-yonetimi/kasa/hareketler">
+                                                <i class="bi bi-wallet2 me-1"></i><?= htmlspecialchars($tahsilat->kasa_adi) ?>
+                                            </a>
                                         </small>
                                     </td>
                                     <td class="text-end fw-bold">

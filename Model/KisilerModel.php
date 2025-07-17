@@ -16,7 +16,7 @@ use App\Helper\Date as Date;
 class KisilerModel extends Model
 {
     protected $table = 'kisiler';
-    protected $siteaktifkisiler = 'site_aktif_kisiler';
+    protected $siteaktifkisiler = 'site_aktif_kisiler'; //Aktif oturan sakinler(Ev Sahipleri ve Kiracılar)
 
     protected $view_site_aktif_evsahipleri = 'view_site_aktif_evsahipleri'; // Sadece ev sahiplerini içeren görünüm
 
@@ -37,6 +37,25 @@ class KisilerModel extends Model
     {
         $sql = $this->db->prepare("SELECT * FROM $this->siteaktifkisiler  
                                           WHERE site_id = ? 
+                                          ");
+        $sql->execute([$site_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**************************************************************************************************** */
+
+    /**Sitenin tüm kişilerini getirir 
+     * @param int $site_id Sitenin ID'si.
+     * @return array Tüm kişileri içeren bir dizi döner.
+    */
+    public function SiteTumKisileri($site_id)
+    {
+        $sql = $this->db->prepare("SELECT 
+                                                k.*,
+                                                d.daire_kodu
+                                            FROM $this->table k
+                                            LEFT JOIN daireler d ON d.id = k.daire_id  
+                                            WHERE k.site_id = ? 
                                           ");
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
@@ -191,7 +210,11 @@ class KisilerModel extends Model
      */
     public function AktifKisiByDaireId($daire_id, $uyelik_tipi)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE daire_id = ? AND uyelik_tipi = ? AND silinme_tarihi IS NULL ORDER BY id DESC LIMIT 1");
+        $sql = $this->db->prepare("SELECT * FROM $this->table 
+                                          WHERE daire_id = ? 
+                                          AND uyelik_tipi = ? 
+                                          AND silinme_tarihi IS NULL 
+                                          ORDER BY id DESC LIMIT 1");
         $sql->execute([$daire_id, $uyelik_tipi]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
@@ -217,6 +240,20 @@ class KisilerModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ);
     }
     //----------------------------------------------------------------------------------------------------\\
+
+
+    /** Gelen daire id'sine göre dairedeki kişileri döndürür
+     * @param int $daire_id Daire ID'si.
+     * @return array Dairedeki kişileri içeren bir dizi döner.
+     * 
+     */
+    public function getKisilerByDaireId($daire_id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE daire_id = ?");
+        $sql->execute([$daire_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
 
 
     /**************************************************************************************************** */

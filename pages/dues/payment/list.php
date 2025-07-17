@@ -51,7 +51,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 <a href="index?p=dues/payment/tahsilat-onay" class="btn btn-outline-success">
                     <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
                 </a>
-                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-secondary">
+                <a href="index?p=dues/payment/tahsilat-eslesmeyen" class="btn btn-outline-secondary">
                     <i class="feather-copy me-2"></i>Eşleşmeyen Ödemeler
                 </a>
                 <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-primary">
@@ -187,6 +187,10 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         border-left: 3px solid #0d6efd;
         /* Sol tarafa mavi bir çizgi */
     }
+
+    .table tr:hover{
+        cursor: pointer;
+    }
 </style>
 <script>
     var kisiId;
@@ -298,35 +302,41 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         }
 
         // "Ekle/Çıkar" butonuna tıklandığında çalışacak ana fonksiyon
-        $(document).on('click', '.tahsilat-islem-btn', function(e) {
-            e.preventDefault(); // a tag'inin varsayılan davranışını engelle
+      
+        $(document).on('click', '.borc-satiri, .tahsilat-islem-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation(); // ÖNEMLİ: İç içe tıklamaların birbirini tetiklemesini engeller
 
-            const $button = $(this);
-            const action = $button.data('action');
-            // Satırın kendisinden ID'yi alıyoruz
-            const borcId = $button.closest('.borc-satiri').data('borc-id');
+        const $satir = $(this).closest('.borc-satiri');
+        const borcId = $satir.data('borc-id');
+        
+        // Satırın içindeki butonu bul
+        const $button = $satir.find('.tahsilat-islem-btn');
+        
+        // Butonun mevcut 'data-action' durumuna göre ne yapılacağına karar ver
+        const mevcutAction = $button.data('action');
 
-            if (action === 'ekle') {
-                // Eğer ID zaten dizide yoksa ekle (güvenlik önlemi)
-                if (!secilenBorcIdleri.includes(borcId)) {
-                    secilenBorcIdleri.push(borcId);
-                }
-                guncelleArayuzu($button, 'ekle');
-            } else { // action === 'cikar'
-                // ID'yi diziden çıkar
-                const index = secilenBorcIdleri.indexOf(borcId);
-                if (index > -1) {
-                    secilenBorcIdleri.splice(index, 1);
-                }
-                guncelleArayuzu($button, 'cikar');
+        if (mevcutAction === 'ekle') {
+            // EKLEME İŞLEMİ
+            if (!secilenBorcIdleri.includes(borcId)) {
+                secilenBorcIdleri.push(borcId);
             }
+            guncelleArayuzu($button, 'ekle'); // Butonun durumunu değiştir
 
-            // Diziyi güncelledikten sonra sunucudan yeni toplamı iste
-            guncelleToplamTutar();
+        } else { // mevcutAction === 'cikar'
+            // ÇIKARMA İŞLEMİ
+            const index = secilenBorcIdleri.indexOf(borcId);
+            if (index > -1) {
+                secilenBorcIdleri.splice(index, 1);
+            }
+            guncelleArayuzu($button, 'cikar'); // Butonun durumunu değiştir
+        }
 
-            // Konsolda güncel diziyi görebilirsiniz (hata ayıklama için)
-            //console.log("Seçilen ID'ler:", secilenBorcIdleri);
-        });
+        // Toplam tutarı her zaman güncelle
+        guncelleToplamTutar();
+
+        console.log("Seçilen ID'ler:", secilenBorcIdleri);
+    });
 
     });
 </script>

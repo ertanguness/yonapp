@@ -121,6 +121,7 @@ if ($_POST['action'] == 'payment_file_upload') {
         return $TahsilatHavuzu->saveWithAttr([
             'id' => 0,
             'islem_tarihi' => $islem_tarihi,
+            'site_id' => $_SESSION['site_id'],  // Site ID'si
             'tahsilat_tutari' => Helper::formattedMoneyToNumber($data[1]),  // Tutar
             'ham_aciklama' => $ham_aciklama,
             'referans_no' => $referans_no,
@@ -158,6 +159,16 @@ if ($_POST['action'] == 'payment_file_upload') {
                     $daire_id = $Daire->DaireId($apartmentInfo) ?? 0;
                     $kisi_id = $Kisi->AktifKisiByDaireId($daire_id, $iyelik_tipi)->id ?? 0;
                 }
+                $logger->info("Açıklamadan daire bilgisi çıkarıldı: " . json_encode(
+                    [
+                        'apartmentInfo' => $apartmentInfo,
+                        'daire_id' => $daire_id,
+                        'kisi_id' => $kisi_id,
+                        'iyelik_tipi' => $iyelik_tipi,
+                        'aciklama' => $aciklama
+
+                    ]
+                ));
             }
 
             // Eşleşen daire bulunduysa tahsilat kaydet
@@ -313,164 +324,6 @@ if ($_POST['action'] == 'onayli_tahsilat_sil') {
 
 
 
-// /// Tahsilat Kaydet (TAHSİLAT GİR MODALINDAN KAYIT İŞLEMİ)
-// if ($_POST['action'] == 'tahsilat-kaydet') {
-//     // 1. Gelen Verileri Al ve Temizle
-//     $kisi_id = Security::decrypt($_POST['kisi_id']);
-//     $odenen_toplam_tutar = Helper::formattedMoneyToNumber($_POST['tutar']);
-//     $kasa_id = Security::decrypt($_POST['kasa_id']);
-//     $islem_tarihi = Date::YmdHIS($_POST['islem_tarihi']);
-//     $aciklama = $_POST['tahsilat_aciklama'] ?? '';
-//     $borcDetayIdsString = $_POST['borc_detay_ids'] ?? '';
-
-//     $kalanOdenecekTutar = $odenen_toplam_tutar;
-
-//     // Şifreli ID'leri deşifre et
-//     $borcDetayIds = [];
-//     if (!empty($borcDetayIdsString)) {
-//         $encryptedBorcDetayIds = explode(',', $borcDetayIdsString);
-//         $borcDetayIds = array_map([App\Helper\Security::class, 'decrypt'], $encryptedBorcDetayIds);
-//     }
-
-//     if (empty($borcDetayIds) && $kalanOdenecekTutar > 0) {
-//         // Borç seçilmeden yapılan ödemeyi direkt kredi olarak işleme mantığı buraya gelebilir.
-//         // Şimdilik borç seçildiğini varsayıyoruz.
-//     }
-
-//     $db->beginTransaction();
-
-//     try {
-//         // 2. Ana Tahsilat Kaydını Oluştur
-//         $tahsilatData = [
-//             'id' => 0,
-//             'kisi_id' => $kisi_id,
-//             'kasa_id' => $kasa_id,
-//             'tutar' => $odenen_toplam_tutar,
-//             'islem_tarihi' => $islem_tarihi,
-//             'aciklama' => $aciklama,
-//         ];
-//         // $tahsilatId'nin temiz (şifresiz) ID olduğunu varsayıyoruz.
-//         $tahsilatId = $Tahsilat->saveWithAttr($tahsilatData);
-
-//         // 3. Seçilen Borçları Getir ve Sırala
-//         $secilenBorclar = [];
-//         if (!empty($borcDetayIds)) {
-//             $secilenBorclar = $FinansalRapor->findWhereIn('id', $borcDetayIds, 'bitis_tarihi ASC, id ASC');
-//         }
-
-//         // 4. Borçları Döngüye Alarak Ödemeyi Dağıt
-//         foreach ($secilenBorclar as $borc) {
-//             if ($kalanOdenecekTutar <= 0) break;
-
-//             // DİKKAT 1: Ödeme anındaki GÜNCEL gecikme zammını hesapla
-//             $guncelGecikmeZammi = $borc->hesaplanan_gecikme_zammi ?? 0;
-//             // Öncelik 1: Gecikme Zammını Kapat
-//             // DİKKAT 2: Ödenecek tutar, o anki güncel zamma göre belirlenir.
-//             $odenecekGecikmeTutari = min($kalanOdenecekTutar, $guncelGecikmeZammi);
-
-//             if ($odenecekGecikmeTutari > 0) {
-//                 // Tahsilat detayına bu kısmı kaydet (YENİ EKLENEN KISIM)
-//                 $data=([
-//                     'id' => 0,
-//                     'tahsilat_id' => Security::decrypt($tahsilatId), // Temiz ID
-//                     'borc_detay_id' => $borc->id,
-//                     'odenen_tutar' => $odenecekGecikmeTutari,
-//                     'aciklama' => 'Gecikme zammı ödemesi',
-//                 ]);
-//                 // $logger->info("Tahsilat detay kaydı: " . json_encode($data));
-//                 $TahsilatDetay->saveWithAttr($data);
-
-//                 // Ödenen tutarı toplamdan düş
-//                 $kalanOdenecekTutar -= $odenecekGecikmeTutari;
-
-//                 $logger->info("Gecikme zammı ödemesi: {$odenecekGecikmeTutari} TL, kalan ödenecek tutar: {$kalanOdenecekTutar} TL");
-
-//                 // Gecikme zammını sıfırla. 
-//                 // Not: Kısmi faiz ödemesi durumunda kalan faizi saklamak için 
-//                 // 'kalan_gecikme_zammi' kolonu kullanılabilir. Şimdilik tamamen kapandığını varsayıyoruz.
-//                 // Eğer kalan faizi tutmak isterseniz: $borc->kalan_gecikme_zammi = $guncelGecikmeZammi - $odenecekGecikmeTutari;
-//                  $BorcDetay->updateSingle($borc->id, ['kalan_gecikme_zammi' => 0]); // veya kalanını güncelle
-//             }
-
-//             if ($kalanOdenecekTutar <= 0) continue;
-
-//             // Öncelik 2: Anaparayı Kapat
-//             $odenecekAnaParaTutari = min($kalanOdenecekTutar, $borc->toplam_kalan_borc);
-
-//             if ($odenecekAnaParaTutari > 0) {
-//                 // Tahsilat detayına anapara ödemesini kaydet
-//                 $TahsilatDetay->saveWithAttr([
-//                     'id' => 0,
-//                     'tahsilat_id' => Security::decrypt($tahsilatId), // Temiz ID
-//                     'borc_detay_id' => $borc->id,
-//                     'odenen_tutar' => $odenecekAnaParaTutari, // Kolon adının 'tutar' olduğunu varsaydım
-//                     'aciklama' => 'Anapara ödemesi',
-//                 ]);
-
-//                 // Borcun kalan anaparasını güncelle
-//                 $yeniKalanBorc = $borc->toplam_kalan_borc - $odenecekAnaParaTutari;
-//                 $BorcDetay->updateSingle($borc->id, ['kalan_borc' => $yeniKalanBorc]);
-
-//                 // Ödenen tutarı toplamdan düş
-//                 $kalanOdenecekTutar -= $odenecekAnaParaTutari;
-//             }
-//         }
-
-//         // 5. Borçlar Kapandıktan Sonra Para Arttıysa Kredi Olarak Kaydet
-//         if ($kalanOdenecekTutar > 0.009) { // Kuruş farkları için küçük bir tolerans
-//             $KisiKredi->saveWithAttr([
-//                 'id' => 0,
-//                 'kisi_id' => $kisi_id,
-//                 'tahsilat_id' =>Security::decrypt($tahsilatId),
-//                 'tutar' => $kalanOdenecekTutar,
-//                 'aciklama' => 'Tahsilat fazlası alacak kaydı',
-//             ]);
-//         }
-
-
-//         //Tahsilatı kasa hareketi olarak kaydet
-//         $data = [
-//             'id' => 0,
-//             'site_id' => $_SESSION['site_id'], // Site ID'si
-//             'kasa_id' => $kasa_id,
-//             'tutar' => $odenen_toplam_tutar,
-//             'islem_tarihi' => $islem_tarihi,
-//             'islem_tipi' => 'gelir', // Tahsilat geliri
-//             'kaynak_tablo' => 'tahsilat', // Tahsilat kaynağı
-//             'kaynak_id' => Security::decrypt($tahsilatId), // Tahsilat ID'si
-//             'kayit_yapan' => $_SESSION['user']->id, // Kayıt yapan kullanıcı ID'si
-//             'aciklama' => $aciklama ?: 'Tahsilat kaydı',
-//         ];
-//         $KasaHareket->saveWithAttr($data);
-
-
-//         $db->commit();
-
-//         $status = 'success';
-//         $message = 'Tahsilat başarıyla kaydedildi ve borçlara dağıtıldı.';
-
-//     } catch (Exception $ex) {
-//         $db->rollBack();
-//         $status = 'error';
-//         $message = 'İşlem sırasında bir hata oluştu: ' . $ex->getMessage();
-//     }
-
-//     // 6. Son Finansal Durumu Hesapla ve Gönder
-//     $kisiFinansalDurum = $BorcDetay->KisiFinansalDurum($kisi_id);
-
-//     echo json_encode([
-//         'status' => $status,
-//         'message' => $message,
-//         "finansalDurum" => [
-//             'toplam_borc' => Helper::formattedMoney($kisiFinansalDurum->toplam_borc ?? 0),
-//             'toplam_odeme' => Helper::formattedMoney($kisiFinansalDurum->toplam_odeme ?? 0),
-//             'bakiye' => Helper::formattedMoney($kisiFinansalDurum->bakiye ?? 0)
-//         ]
-//     ]);
-// };
-
-
-
 
 
 // Tahsilat Kaydet (TAHSİLAT GİR MODALINDAN KAYIT İŞLEMİ)
@@ -550,17 +403,17 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
         }
 
 
-         // 5. Borçlar Kapandıktan Sonra Para Arttıysa Kredi Olarak Kaydet
+        // 5. Borçlar Kapandıktan Sonra Para Arttıysa Kredi Olarak Kaydet
         if ($kalanOdenecekTutar > 0.009) { // Kuruş farkları için küçük bir tolerans
             $KisiKredi->saveWithAttr([
                 'id' => 0,
                 'kisi_id' => $kisi_id,
-                'tahsilat_id' =>Security::decrypt($tahsilatId),
+                'tahsilat_id' => Security::decrypt($tahsilatId),
                 'tutar' => $kalanOdenecekTutar,
                 'aciklama' => 'Tahsilat fazlası alacak kaydı',
             ]);
         }
-        
+
         //Tahsilatı kasa hareketi olarak kaydet
         $data = [
             'id' => 0,
@@ -597,8 +450,6 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
         ]
     ]);
 }
-
-
 
 
 
@@ -766,6 +617,36 @@ if ($_POST['action'] == 'get_kisi_borclari') {
         echo json_encode(['status' => 'success', 'data' => $responseBorclar]);
     } catch (Exception $e) {
         http_response_code(400); // Hata durumunda uygun bir HTTP kodu gönder
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+
+/** Gelen Daire id'sine göre dairenin kişilerini döndürür
+ * @param int $daire_id
+ * @return void
+ */
+
+if ($_POST['action'] == 'get_daire_kisileri') {
+    header('Content-Type: application/json');
+
+    try {
+        $daire_id = ($_POST['daire_id']);
+        $kisiList = $Kisi->getKisilerByDaireId($daire_id);
+
+        $response = [];
+        foreach ($kisiList as $kisi) {
+            $response[] = [
+                'id' => Security::encrypt($kisi->id),
+                'adi_soyadi' => htmlspecialchars($kisi->adi_soyadi),
+                'uyelik_tipi' => $kisi->uyelik_tipi,
+            ];
+        }
+
+        echo json_encode(['status' => 'success', 'kisiler' => $response]);
+    } catch (Exception $e) {
+        http_response_code(400);
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     }
     exit;

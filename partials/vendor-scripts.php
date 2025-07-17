@@ -27,7 +27,9 @@ if (
     $page == 'dues/payment/tahsilat-onay' ||
     $page == "finans-yonetimi/kasa/list" ||
     $page == 'management/sites/list' ||
-    $page == "dues/collections/list" || $page == "dues/collections/detail" 
+    $page == "dues/collections/list" || $page == "dues/collections/detail" ||
+    $page == 'dues/payment/tahsilat-eslesmeyen' ||
+    $page == "finans-yonetimi/kasa/hareketler" 
 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -86,9 +88,14 @@ if (
     $page == 'dues/debit/list' ||
     $page == 'dues/debit/single-manage' 
 ) { ?>
-    <script src="pages/dues/debit/debit.js"></script>
+    <script src="pages/dues/debit/js/debit.js"></script>
 
 <?php }
+if($page == 'dues/debit/upload-from-xls') {
+    echo '<script src="pages/dues/debit/js/upload-from-xls.js"></script>';
+}
+
+
 //*************DEBIT******************************** */
 
 //*************BLOCKS******************************** */

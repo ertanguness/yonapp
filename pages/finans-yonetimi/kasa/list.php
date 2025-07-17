@@ -1,6 +1,7 @@
 <?php
 use Model\KasaModel;
 use App\Helper\Helper;
+use App\Helper\Security;
 
 $Kasa = new KasaModel();
 
@@ -64,6 +65,7 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
                             // Örnek veri — Gerçek veriler veritabanından alınmalı
 
                             foreach ($kasalar as $kasa) {
+                                $enc_id =Security::encrypt($kasa->id);
                               ?>
 
                             <tr>
@@ -125,7 +127,7 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
                                             </li>
 
                                             <li>
-                                                <a class="dropdown-item" href="javascript:void(0)">
+                                                <a class="dropdown-item" href="index?p=finans-yonetimi/kasa/hareketler&id=<?php echo $enc_id; ?>#kasa-hareketleri">
                                                     <i class="feather feather-alert-octagon me-3"></i>
                                                     <span>Hareketleri Göster</span>
                                                 </a>

@@ -6,6 +6,7 @@ require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 use App\Helper\Security;
 use App\Helper\Date;
 use App\Helper\Helper;
+use App\Services\ExcelHelper;
 use App\Helper\Error;
 use App\Helper\FinansalHelper;
 use Database\Db;
@@ -21,6 +22,7 @@ use Model\DueModel;
 use Model\KisiKredileriModel;
 use Model\TahsilatModel;
 use Model\TahsilatDetayModel;
+use App\Services\FlashMessageService;
 
 
 
@@ -92,6 +94,9 @@ if ($_POST["action"] == "borclandir") {
             "hedef_tipi" => $borclandirma_turu,
         ];
 
+        $baslangic_tarihi = new DateTime($data["baslangic_tarihi"]);
+
+
         //Borçlandırma tipi kontrol ediliyor
         if ($borclandirma_turu == "all") {
             //Tüm siteye borçlandırma yapılıyor
@@ -102,19 +107,43 @@ if ($_POST["action"] == "borclandir") {
                 $data["blok_id"] = $kisi->blok_id; // Blok ID'sini de ekliyoruz
                 $data["daire_id"] = $kisi->daire_id; // Daire ID'sini de ekliyoruz
 
-
                 // Eğer gün bazlı borçlandırma ise, başlangıç ve bitiş tarihlerini gün bazlı olarak ayarlıyoruz
-                if ($gun_bazli) {
-                    $data['tutar'] = Helper::calculateDayBased(
+                if ($gun_bazli && (Date::Ymd($kisi->giris_tarihi) > Date::Ymd($data["baslangic_tarihi"]))) {
+                    $tutar = Helper::formattedMoneyToNumber($_POST["tutar"]);
+                    $gun_bazli_tutar = Helper::calculateProratedAmount(
                         Date::Ymd($_POST["baslangic_tarihi"]),
-                        Date::Ymd($_POST["bitis_tarihi"]),
-                        $kisi->giris_tarihi,
-                        Helper::formattedMoneyToNumber($_POST["tutar"])
+                          Date::Ymd($_POST["bitis_tarihi"]),
+                         $kisi->giris_tarihi,
+                          $kisi->cikis_tarihi,
+                              $tutar
                     ); // Günlük tutar hesaplanıyor
-                }
+                    //Tutardan kalan miktar ev sahibine göre hesaplanıyor
+                    $kalan_tutar = $tutar -  $gun_bazli_tutar;
+
+                    //Ev sahibini getir
+                    if($kalan_tutar>0){
+
+                        $evsahibi = $Kisiler->AktifKisiByDaireId($kisi->daire_id,"Ev Sahibi");
+                        $logger->info("Ev sahibi bulunuyor: " . json_encode($evsahibi));
+                        $data["kisi_id"] = $evsahibi->id; // Ev sahibinin ID'sini alıyoruz
+                        $data["tutar"] = $kalan_tutar; // Ev sahibine kalan tutarı ekliyoruz
+                        
+                        $BorcDetay->saveWithAttr($data);
+                    }
+
+                    $data['tutar'] = $gun_bazli_tutar; // Günlük tutar hesaplanıyor
+
+                    $logger->info("Gün bazlı borçlandırma yapıldı: giris : : " . $kisi->giris_tarihi . " " . json_encode($data));
+
+                }else{
+                    $data['tutar'] = Helper::formattedMoneyToNumber($_POST["tutar"]); // Günlük tutar hesaplanıyor
+                    $data["kisi_id"] = $kisi->kisi_id; // Kişi ID'sini ekliyoruz
+
+                };
+
                 $BorcDetay->saveWithAttr($data);
 
-                //$logger->info("Borçlandırma yapıldı: " . json_encode($data));
+
             }
         } elseif ($borclandirma_turu == "evsahibi") {
 
@@ -318,7 +347,7 @@ if ($_POST["action"] == "get_apartment_types") {
 if ($_POST["action"] == "borclandir_single_consolidated") {
 
 
-    $db->beginTransaction();
+   // $db->beginTransaction();
     try {
 
 
@@ -447,14 +476,14 @@ if ($_POST["action"] == "borclandir_single_consolidated") {
 
 
         // Borçlandırma kaydı başarıyla oluşturuldu
-        $db->commit(); // İşlemi onayla
+       // $db->commit(); // İşlemi onayla
 
         $logger->info("Borçlandırma kaydı başarıyla oluşturuldu: " . json_encode($data));
 
             $status = "success";
             $message = "Borçlandırma kaydı başarıyla oluşturuldu!";
     } catch (PDOException $ex) {
-        $db->rollBack(); // Hata durumunda işlemi geri al
+        //$db->rollBack(); // Hata durumunda işlemi geri al
         $status = "error";
         $message = $ex->getMessage();
     }
@@ -623,178 +652,73 @@ if ($_POST["action"] == "update_debit_single_consolidated") {
 }
 
 
-// /**
-//  * Tekli borçlandırma detayını, TÜM tahsilatların TOPLAMINI alıp yeniden dağıtarak günceller.
-//  * Bu yöntem "sil ve yeniden oluştur" prensibiyle çalışır ve en temiz sonucu verir.
-//  */
-// if ($_POST["action"] == "update_debit_single_consolidated") { // Action adını netleştirdim.
+//Excelden Yükleme işlemi
+if ($_POST["action"] == "excel_upload_debits") {
+    $site_id = $_SESSION['site_id'];
+    $file = $_FILES['excelFile'];
+    $fileType = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
     
-//     $db = Db::getInstance();
-//     $db->beginTransaction();
-
-//     try {
-//         // --- 1. GEREKLİ VERİLERİ AL VE HAZIRLIK YAP ---
-//         $borcDetayId = Security::decrypt($_POST["borclandirma_id"]);
-//         $yeniTutar = Helper::formattedMoneyToNumber($_POST["tutar"]);
-
-//         $borcDetay = $BorcDetay->find($borcDetayId);
-//         if (!$borcDetay) {
-//             throw new Exception("Güncellenecek borç kaydı bulunamadı.");
-//         }
-//         $kisiId = $borcDetay->kisi_id;
-//         // --- KRİTİK ADIM: Tüm tahsilat detaylarını ve toplam tahsilatı al ---
-
-
-//         //Tahsilat Detay tablosundan bu borc_detay_id'ye ait tüm tahsilat detaylarını al
-//         $yapılan_tahsilat = $TahsilatDetay->getDetayByTahsilatId($borcDetayId);
-
-//         if (!$yapılan_tahsilat) {
-//             throw new Exception("Bu borç için tahsilat kaydı bulunamadı.");
-//         }
-
-
-//         $tahsilat = $TahsilatModel->find($yapılan_tahsilat->tahsilat_id);
-//         $tahsilatId = $tahsilat->id ; // Tahsilat ID'si, yeni tahsilat detayları için kullanılacak
-
-//         // --- KRİTİK ADIM 1: Bu borca yapılmış TÜM tahsilatların TOPLAMINI al. ---
-//         $toplamYapilanTahsilat = $tahsilat->tutar ?? 0; // Toplam ödenen tutar
-
-//         //$logger->info("Borç toplu mahsuplaşma başlangıcı: BorcID: {$borcDetayId}, Yeni Tutar: {$yeniTutar}, Toplam Tahsilat: {$toplamYapilanTahsilat}");
-
-//         // --- 2. TEMİZLİK: Borcun tüm finansal geçmişini sıfırla ---
-//         $TahsilatDetay->deleteDetayByBorcDetayId($borcDetayId);
-//         $KisiKredi->deleteKrediByBorcDetayId($borcDetayId);
-
-//         // --- 3. YENİDEN HESAPLAMA ---
-//         $yeniHesaplananGecikmeZammi = FinansalHelper::hesaplaGecikmeZammi($yeniTutar, $borcDetay->bitis_tarihi, $borcDetay->ceza_orani);
-        
-//         // --- 4. TOPLAM TAHSİLATIN YENİDEN DAĞITILMASI (MAHSUPLAŞMA) ---
-//         $kalanOdemeMiktari = $toplamYapilanTahsilat;
-        
-//         // a) Önce gecikme zammını kapat.
-//         $odenenGecikmeZammi = min($kalanOdemeMiktari, $yeniHesaplananGecikmeZammi);
-//         $kalanOdemeMiktari -= $odenenGecikmeZammi;
-//         $sonKalanGecikmeZammi = $yeniHesaplananGecikmeZammi - $odenenGecikmeZammi;
-        
-//         // b) Kalan para ile anaparayı kapat.
-//         $odenenAnapara = min($kalanOdemeMiktari, $yeniTutar);
-//         $kalanOdemeMiktari -= $odenenAnapara;
-//         $sonKalanAnapara = $yeniTutar - $odenenAnapara;
-
-//         // c) Hala para kaldıysa, bu artık kişinin alacağıdır (kredi).
-//         $olusanKredi = $kalanOdemeMiktari;
-
-
-//         // --- 5. YENİ VE TEMİZ TAHSİLAT DETAYLARINI OLUŞTUR ---
-//         // Bu işlem, önceki tüm detayların yerine geçer.
-//         if ($odenenGecikmeZammi > 0) {
-//             $TahsilatDetay->saveWithAttr([
-//                 'id' => 0,
-//                 'tahsilat_id' => $tahsilatId, // Orijinal işlemle bağlantıyı koru
-//                 'borc_detay_id' => $borcDetayId,
-//                 'odenen_tutar' => $odenenGecikmeZammi,
-//                 'aciklama' => 'Gecikme zammı (borç güncellemesi sonrası mahsuplaşma)',
-//                 'kayit_tarihi' => date('Y-m-d H:i:s'), // Kayıt tarihi bugündür.
-//             ]);
-//         }
-
-//         if ($odenenAnapara > 0) {
-//              $TahsilatDetay->saveWithAttr([
-//                 'id' => 0,
-//                 'tahsilat_id' => $tahsilatId, // Orijinal işlemle bağlantıyı koru
-//                 'borc_detay_id' => $borcDetayId,
-//                 'odenen_tutar' => $odenenAnapara,
-//                 'aciklama' => 'Anapara (borç güncellemesi sonrası mahsuplaşma)',
-//                 'kayit_tarihi' => date('Y-m-d H:i:s'), // Kayıt tarihi bugündür.
-//             ]);
-//         }
-
-//         $logger->info("Anapara tahsilat detayı kaydedildi: Tutar: {$odenenAnapara}, TahsilatID: {$tahsilatId}");
-//         // --- 6. ANA BORÇ KAYDINI SON DURUMLA GÜNCELLE ---
-//         // DİKKAT: $_POST["aciklama"] SQL Injection'a karşı korumalı olmalıdır (Prepared Statements kullanarak).
-//         $data = [
-//             "id" => $borcDetayId,
-//             "tutar" => $yeniTutar,
-//             "aciklama" => $_POST["aciklama"],
-//             "ceza_orani" => $_POST["ceza_orani"],
-//             "kalan_borc" => $sonKalanAnapara,
-//             "kalan_gecikme_zammi" => $sonKalanGecikmeZammi,
-//             "odeme_durumu" => ($sonKalanAnapara == 0 && $sonKalanGecikmeZammi == 0) ? 'Ödendi' : 'Kısmi Ödendi' 
-//         ];
-//         $BorcDetay->saveWithAttr($data);
-
-        
-//         // --- 7. OLUŞAN KREDİYİ KAYDET ---
-//         if ($olusanKredi > 0) {
-//             $KisiKredi->saveWithAttr([ 
-//                 'id' => 0,
-//                 'kisi_id' => $kisiId,
-//                 'tahsilat_id' => $tahsilatId, // Orijinal tahsilatla bağlantıyı koru
-//                 'tutar' => $olusanKredi,
-//                 'aciklama' => "Borç No:{$borcDetayId} tutarının yeniden yapılandırılması sonucu oluşan alacak.",
-//                 'borc_detay_id' => $borcDetayId,
-//                 'islem_tarihi' => date('Y-m-d H:i:s'),
-//             ]);
-//         }
-   
-   
-      
-//         // --- 8. DETAYLI LOGLAMA ---
-//         // Önceki ve yeni durumu tek bir dizide topla
-//         $logVerisi = [
-//             'onceki_durum' => [
-//                 'borc_ana_tutar' => $borcDetay->tutar,
-//                 'borc_kalan_anapara' => $borcDetay->kalan_borc,
-//                 'borc_kalan_gecikme_zammi' => $borcDetay->kalan_gecikme_zammi,
-//                 'toplam_odeme' => $toplamYapilanTahsilat,
-//                 // 'odeme_detaylari' => $oncekiTahsilatDetaylari // İsteğe bağlı, logu çok büyütebilir
-//             ],
-//             'yeni_durum' => [
-//                 'borc_yeni_ana_tutar' => $yeniTutar,
-//                 'yeni_hesaplanan_gecikme_zammi' => $yeniHesaplananGecikmeZammi,
-//                 'dagilim' => [
-//                     'gecikme_zamina_uygulanan' => $odenenGecikmeZammi,
-//                     'anaparaya_uygulanan' => $odenenAnapara,
-//                 ],
-//                 'sonuc' => [
-//                     'borc_kalan_anapara' => $sonKalanAnapara,
-//                     'borc_kalan_gecikme_zammi' => $sonKalanGecikmeZammi,
-//                     'olusan_kredi' => $olusanKredi,
-//                 ]
-//             ],
-//             'meta' => [
-//                 'islem_yapan_kullanici_id' => $_SESSION['user_id'] ?? 0,
-//                 'ip_adresi' => $_SERVER['REMOTE_ADDR'] ?? 'N/A',
-//                 'islem_tarihi' => date('Y-m-d H:i:s')
-//             ]
-//         ];
-
-//         // *** KRİTİK DEĞİŞİKLİK BURADA BAŞLIYOR ***
-
-//         // 1. Adım: Karşılaştırmalı veriyi kendimiz JSON metnine çeviriyoruz.
-//         $jsonLogDetaylari = json_encode(['karsilastirma' => $logVerisi], JSON_UNESCAPED_UNICODE);
-
-//         // 2. Adım: Log mesajını ve context'i FileLogger'ın anlayacağı şekilde hazırlıyoruz.
-//         // Mesajımız artık JSON verisinin geleceği bir yer tutucu içeriyor.
-//         $logMesaji = "Borç Yeniden Hesaplandı: BorcID: {{borc_id}}. Detaylar: {{json_detaylar}}";
-
-//         // Context dizimiz artık sadece basit anahtar/değer çiftleri içeriyor.
-//         $logContext = [
-//             'borc_id'       => $borcDetayId,
-//             'json_detaylar' => $jsonLogDetaylari // Değerimiz artık bir dizi değil, bir METİN!
-//         ];
-
-//         // 3. Adım: Logger'ı yeni hazırladığımız mesaj ve context ile çağırıyoruz.
-//         $logger->info($logMesaji, $logContext);
-
-//     $db->commit();
-//         $res = ["status" => "success", "message" => "Borç başarıyla güncellendi ve finansal durum yeniden hesaplandı."];
-
-//     } catch (Exception $e) {
-//         $db->rollBack();
-//         $res = ["status" => "error", "message" => "İşlem sırasında bir hata oluştu: " . $e->getMessage()];
-//     }
+    if ($fileType !== 'xlsx' && $fileType !== 'xls') {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Lütfen geçerli bir Excel dosyası yükleyin."
+        ]);
+        exit;
+    }
     
-//     echo json_encode($res);
-//     exit;
-// }
+    $borc = $Borc->findWithDueName(Security::decrypt($_POST["borc_id"]));
+
+    $data = [
+        
+        "borc_id" => Security::decrypt($_POST["borc_id"]),
+        // "borc_adi" => $_POST["borc_adi"],
+        "baslangic_tarihi"      => $borc->baslangic_tarihi,
+        "borc_adi"              => $borc->borc_adi, // Borç adı
+        "bitis_tarihi"          => $borc->bitis_tarihi, 
+        "hedef_tipi"            => $borc->hedef_tipi, // Borçlandırma tipi
+        "aciklama"              => $borc->aciklama, // Borç açıklaması
+    ];
+    
+
+    $result = $BorcDetay->excelUpload($file['tmp_name'], $site_id,$data);
+  
+
+    $errorFileUrl = null;
+    
+    // Eğer hatalı satır varsa ExcelHelper'ı kullan
+    if (!empty($result['data']['error_rows'])) {
+        try {
+            // ExcelHelper nesnesini oluştur
+            $excelHelper = new ExcelHelper();
+
+            // 1. Orijinal başlıkları al
+            $originalHeader = $excelHelper->getHeaders($file['tmp_name']);
+
+            // 2. Hata dosyasını oluştur ve URL'sini al
+            $errorFileUrl = $excelHelper->createErrorFile($result['data']['error_rows'], $originalHeader);
+        
+            FlashMessageService::add("error","Bilgi","Hatalı kayıtlar için bir Excel dosyası oluşturuldu. <a href='{$errorFileUrl}' target='_blank'>Dosyayı İndir</a>");
+
+
+        } catch (Exception $e) {
+             // Loglama zaten helper sınıfı içinde yapılıyor.   
+             // Burada ek bir loglama yapabilir veya sessiz kalabilirsiniz.
+             error_log("Controller: Hata Excel'i işlenirken bir sorun oluştu: " . $e->getMessage());
+        }
+    }
+
+
+
+    if ($result['status'] === 'success') {
+        echo json_encode([
+            "status" => "success",
+            "message" => $result['message'],
+            "data" => $result['data']
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "message" => $result['message']
+        ]);
+    }
+}
