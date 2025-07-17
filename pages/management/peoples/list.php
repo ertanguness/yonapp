@@ -39,7 +39,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php
-                require_once 'pages/components/download.php'
+               // require_once 'pages/components/download.php'
                 ?>
            
                 <a href="index?p=management/peoples/upload-from-xls" 

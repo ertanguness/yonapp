@@ -1,5 +1,5 @@
 <?php
-require_once '../../../../vendor/autoload.php';
+require_once dirname(__DIR__ ,levels: 4). '/configs/bootstrap.php';
 session_start();
 $site_id = $_SESSION['site_id'] ?? 0;
 
@@ -16,10 +16,17 @@ $AcilDurumKisi = new AcilDurumKisileriModel();
 $Kisiler = new KisilerModel();
 $Block = new BloklarModel();
 
+$kisi_id = isset($_GET['kisi_id']) ? Security::decrypt($_GET['kisi_id']) : 0;
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 
 $acilKisi = $AcilDurumKisi->AcilDurumKisiBilgileri($id);
-$kisiBilgileri = $Kisiler->KisiBilgileri($acilKisi->kisi_id ?? null);
+
+// Eğer GET ile kişi ID geldiyse onu kullan, yoksa araçtan gelen kişi ID'yi kullan
+if (!empty($kisi_id)) {
+    $kisiBilgileri = $Kisiler->KisiBilgileri($kisi_id);
+} else {
+    $kisiBilgileri = $Kisiler->KisiBilgileri($acilKisi->kisi_id ?? null);
+}
 $blocks = $Block->SiteBloklari(site_id: $site_id);
 $daireKisileri= $Kisiler->DaireKisileri($kisiBilgileri->daire_id ?? null);
 $daireler = $Daireler->BlokDaireleri($kisiBilgileri->blok_id ?? 0);

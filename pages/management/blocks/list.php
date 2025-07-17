@@ -31,8 +31,8 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php
-                require_once 'pages/components/search.php';
-                require_once 'pages/components/download.php'
+              //  require_once 'pages/components/search.php';
+               // require_once 'pages/components/download.php'
                 ?>
 
                 <a href="#" class="btn btn-primary route-link" data-page="management/blocks/manage">

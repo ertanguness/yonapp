@@ -23,14 +23,11 @@
     </div>
     <div id="blocksContainer" class="mt-3"></div>
 
-    <div class="d-flex justify-content-end mt-3">
-        <button type="button" class="btn btn-primary" id="blocksTabButton">
-            İlerle &nbsp;&nbsp; <i class="feather-arrow-right"></i>
-        </button>
-    </div>
+    
 </div>
 
-<!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme başlangıç 
+
+<!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme başlangıç
 <script>
     document.getElementById("blocksTabButton").addEventListener("click", function(event) {
         event.preventDefault(); // Formun post edilmesini engelle
@@ -61,7 +58,7 @@
         if (allFilled) {
             var daireBilgileriTab = document.querySelector('[data-bs-target="#dairebilgileriTab"]');
             if (daireBilgileriTab) {
-                new bootstrap.Tab(daireBilgileriTab).show(); // Blok Bilgileri sekmesini aktif hale getir
+                new bootstrap.Tab(daireBilgileriTab).show(); // Daire Bilgileri sekmesini aktif hale getir
             }
         } else {
             var toast = new bootstrap.Toast(document.getElementById('warningToast'));
@@ -69,16 +66,9 @@
         }
     });
 
-    // Kullanıcı yazdıkça kırmızı çerçeveyi kaldır
-    document.querySelectorAll(".card-body.blocks-info [required]").forEach(function(field) {
-        field.addEventListener("input", function() {
-            if (field.value.trim()) {
-                field.classList.remove("is-invalid");
-            }
-        });
-    });
-</script>
--->
+
+</script> -->
+
 <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
 
 <!-- Girilen blok Sayısına göre blok ve daire oluşturma -->

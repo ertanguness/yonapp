@@ -1,4 +1,5 @@
 <?php
+
 use Model\BloklarModel;
 use App\Helper\Security;
 use Model\SitelerModel;
@@ -51,37 +52,34 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
     </div>
 </div>
 <div class="main-content">
-    <?php
-    /*
-    $title = $pageTitle;
-    if ($pageTitle === 'Yeni Blok Ekle') {
-        $text = "Yeni Blok tanımlayabilirsiniz.";
-    } else {
-        $text = "Seçtiğiniz Siteye ait blok bilgilerini güncelleyebilirsiniz.";
-    }
-    require_once 'pages/components/alert.php'
-    */
-    ?>
+
     <div class="row">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
                         <form action='' id='blocksForm'>
-                            <div class="card-body custom-card-action p-0">
-                                <div class="card-body personal-info">
-                                    <div class="row mb-4 align-items-center">
-                                    <input type="hidden" name="blok_id" id="blok_id" value="<?php echo $_GET['id'] ?? 0; ?>">
-                                        <?php
+                            <input type="hidden" name="blok_id" id="blok_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+
+                            <div class="row">
+                                <div class="container-xl">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Blok Bilgileri Sayfası</h5>
+                                        </div>
+                                        <div class="card-body aidat-info">
+
+                                            <?php
                                             if (!empty($id) && $id != 0) {
                                                 require_once 'pages/management/blocks/content/BlokDuzenle.php';
                                             } else {
                                                 require_once 'pages/management/blocks/content/BlocksNumberPage.php';
                                             }
-
-                                        ?>
+                                            ?>
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
                         </form>
                     </div>
                 </div>

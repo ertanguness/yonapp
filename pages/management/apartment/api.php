@@ -57,6 +57,7 @@ if ($_POST["action"] == "save_apartment") {
         "net_alan" => $_POST["netArea"],
         "arsa_payi" => $_POST["landShare"],
         "aktif_mi" => isset($_POST["status"]) ? 1 : 0,
+        "aidattan_muaf" => isset($_POST["aidattan_muaf"]) ? 1 : 0,
         "aciklama" => $_POST["aciklama"],
 
     ];

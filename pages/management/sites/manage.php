@@ -1,4 +1,5 @@
 <?php
+
 use Model\SitelerModel;
 use App\Helper\Security;
 use App\Helper\Cities;
@@ -49,67 +50,31 @@ $site = $Sites->find($id  ?? null);
     </div>
 </div>
 <div class="main-content">
-    <?php
-    /*
-    $title = $pageTitle;
-    if ($pageTitle === 'Yeni Site Ekle') {
-        $text = "Yeni site tanımlayabilirsiniz.Site Bilgileri alanını doldurduktan sonra Blok Bilgileri ve Daire Bilgileri alanlarına İleri botonu ile geçebilirsiniz.";
-    } else {
-        $text = "Seçtiğiniz Siteye ait bilgileri güncelleyebilirsiniz.";
-    }
-    require_once 'pages/components/alert.php'
-    */
-    ?>
+
     <div class="row">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                    <form id="sitesForm" method="POST">
-                            <div class="card-body custom-card-action p-0">
-                                <div class="card-body">
-                                    <div class="row mb-4 align-items-center">
-                                    <input type="hidden" name="sites_id" id="sites_id" value="<?php echo $_GET['id'] ?? 0; ?>">
-
-                                        <div class="card-header p-0">
-                                            <!-- Nav tabs -->
-                                            <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
-                                                id="myTab" role="tablist">
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link active"
-                                                        data-bs-toggle="tab" data-bs-target="#sitebilgileriTab"
-                                                        role="tab">Site Bilgileri</a>
-                                                </li>
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link disabled" data-bs-toggle="tab"
-                                                        data-bs-target="#blokbilgileriTab" role="tab">Blok Bilgileri</a>
-                                                </li>
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link disabled" data-bs-toggle="tab"
-                                                        data-bs-target="#dairebilgileriTab" role="tab">Daire
-                                                        Bilgileri</a>
-                                                </li>
-                                            </ul>
+                        <form id="sitesForm" method="POST">
+                            <input type="hidden" name="sites_id" id="sites_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                            <div class="row">
+                                <div class="container-xl">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Site Bilgileri Sayfası</h5>
                                         </div>
-                                        <div class="tab-content">
-                                            <div class="tab-pane fade show active" id="sitebilgileriTab"   role="tabpanel">
+                                        <div class="card-body aidat-info">
+
                                             <?php
-                                                require_once 'pages/management/sites/content/SitesInformationPage.php';
-                                                ?>
-                                            </div>
-                                            <div class="tab-pane fade" id="blokbilgileriTab" role="tabpanel">
-                                                <?php
-                                             //   require_once 'pages/management/blocks/content/BlocksNumberPage.php';
-                                                ?>
-                                            </div>
-                                            <div class="tab-pane fade" id="dairebilgileriTab" role="tabpanel">
-                                                <?php
-                                             //   require_once 'pages/management/apartment/content/ApartmentInformation.php';
-                                                ?>
-                                            </div>
+                                            require_once 'pages/management/sites/content/SitesInformationPage.php';
+                                            ?>
+
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            
                         </form>
                     </div>
                 </div>
@@ -117,72 +82,3 @@ $site = $Sites->find($id  ?? null);
         </div>
     </div>
 </div>
-<!-- Kaydet buton aktif pasiflik kontrolü : Sadece dairebilgileri sekmesi aktif olunca aktif olur -->
-<!-- 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const saveButton = document.getElementById("saveMySites");
-
-        function updateButtonState() {
-            const activeTab = document.querySelector(".tab-pane.fade.show.active");
-            
-            if (activeTab && activeTab.id === "dairebilgileriTab") {
-                saveButton.removeAttribute("disabled"); // "Daire Bilgileri" sekmesinde aktif yap
-            } else {
-                saveButton.setAttribute("disabled", "disabled"); // Diğer sekmelerde pasif yap
-            }
-        }
-
-        // **Sayfa yüklendiğinde** butonun durumunu ayarla
-        updateButtonState();
-
-        // **Sekme tıklamaları ile değişim olduğunda** güncelle
-        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
-            tab.addEventListener("shown.bs.tab", function () {
-                updateButtonState();
-            });
-        });
-
-        // **Blok bilgileri butonuna tıklanınca Daire Bilgileri sekmesine geçiş yap**
-        document.getElementById("blocksTabButton").addEventListener("click", function(event) {
-            event.preventDefault(); // Formun post edilmesini engelle
-
-            var requiredFields = document.querySelectorAll(".card-body.blocks-info [required]");
-            var allFilled = true;
-
-            requiredFields.forEach(function(field) {
-                if (!field.value.trim()) {
-                    allFilled = false;
-                    field.classList.add("is-invalid");
-                } else {
-                    field.classList.remove("is-invalid");
-                }
-            });
-
-            if (allFilled) {
-                var daireBilgileriTab = document.querySelector('[data-bs-target="#dairebilgileriTab"]');
-                if (daireBilgileriTab) {
-                    new bootstrap.Tab(daireBilgileriTab).show(); // Daire Bilgileri sekmesini aç
-                    setTimeout(() => {
-                        updateButtonState(); // Sekme değiştikten sonra butonu güncelle
-                    }, 100);
-                }
-            } else {
-                var toast = new bootstrap.Toast(document.getElementById('warningToast'));
-                toast.show();
-            }
-        });
-
-        // **Kullanıcı inputlara yazdıkça uyarıyı kaldır**
-        document.querySelectorAll(".card-body.blocks-info [required]").forEach(function(field) {
-            field.addEventListener("input", function() {
-                if (field.value.trim()) {
-                    field.classList.remove("is-invalid");
-                }
-            });
-        });
-    });
-</script>
--->
-
-

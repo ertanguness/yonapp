@@ -1,5 +1,5 @@
 <?php
-require_once '../vendor/autoload.php';
+require_once dirname(__DIR__ ,levels: 1). '/configs/bootstrap.php';
 
 use Model\KisilerModel;
 $kisiModel = new KisilerModel();

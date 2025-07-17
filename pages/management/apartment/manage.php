@@ -43,28 +43,38 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
     </div>
 </div>
 <div class="main-content">
-    <?php
-    /*
-    $title = $pageTitle;
-    if ($pageTitle === 'Yeni Daire Ekle') {
-        $text = "Yeni Daire tanımlayabilirsiniz.";
-    } else {
-        $text = "Seçtiğiniz Bloğa ait Daire bilgilerini güncelleyebilirsiniz.";
-    }
-    require_once 'pages/components/alert.php'
-    */
-    ?>
+
     <div class="row">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
+                        <div class="row px-4 pt-4 pb-0">
+                            <div class="col-lg-12">
+                                <div class="alert alert-dismissible d-flex alert-soft-teal-message" role="alert">
+                                    <div class="me-4 d-none d-md-block">
+                                        <i class="feather feather-alert-octagon fs-1"></i>
+                                    </div>
+                                    <div>
+                                        <p class="fw-bold mb-1 text-truncate-1-line alert-header">Daire Tanımla!</p>
+                                        <p class="fs-12 fw-medium  alert-description">
+                                            <strong>Daire kodu,</strong> blok seçilip daire numarası girildikten sonra otomatik oluşmaktadır.<br>
+                                            <strong>Kullanım durumu alanı </strong>ise ilgili alanın boş mu, aktif olarak kullanımda mı olduğunu belirtmektedir. &nbsp;&nbsp; 
+                                           <strong>Aidattan muaf alanı</strong>  ise ilgili alanın aidattan muaf olup olmadığını belirtir.
+                                        </p>
+
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <form action='' id='apartmentForm'>
+                            <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
-                                        <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $_GET['id'] ?? 0; ?>">
-
                                         <div class="card-header p-0">
                                             <!-- Nav tabs -->
                                             <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
@@ -101,6 +111,7 @@ $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                         </form>
                     </div>
                 </div>

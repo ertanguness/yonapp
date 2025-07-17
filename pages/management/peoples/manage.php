@@ -66,11 +66,38 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
+                        <div class="row px-4 pt-4 pb-0">
+                            <div class="col-lg-12">
+                                <div class="alert alert-dismissible d-flex alert-soft-teal-message" role="alert">
+                                    <div class="me-4 d-none d-md-block">
+                                        <i class="feather feather-alert-octagon fs-1"></i>
+                                    </div>
+                                    <div>
+                                        <?php if (empty($id) || $id == 0): ?>                                            
+                                            <p class="fw-bold mb-1 text-truncate-1-line alert-header">Yeni Site Sakini Ekle!</p>
+                                            <p class="fs-12 fw-medium alert-description">
+                                                <strong>Genel Bilgiler</strong> sekmesinde yeni kişi ile ilgili bilgileri girebilirsiniz.<br>
+                                                <strong>Araç Bilgileri</strong> sekmesinde yeni araç ekleyebilirsiniz. Eklenmiş tüm araçları görebilirsiniz.<br>
+                                                <strong>Acil Durum Bilgileri</strong> sekmesinde yeni acil durum kişisi ekleyebilirsiniz. Eklenmiş tüm acil durum kişilerini görebilirsiniz.
+                                            </p>
+                                        <?php else: ?>
+                                            <p class="fw-bold mb-1 text-truncate-1-line alert-header">Site Sakini Güncelle!</p>
+                                            <p class="fs-12 fw-medium alert-description">
+                                                <strong>Genel Bilgiler</strong> sekmesinde seçili kişi bilgilerini güncelleyebilirsiniz.<br>
+                                                <strong>Araç Bilgileri</strong> sekmesinde seçili kişiye ait mevcut araçları görebilir, yeni araç ekleyebilir veya mevcut araç bilgilerini düzenleyebilirsiniz.<br>
+                                                <strong>Acil Durum Bilgileri</strong> sekmesinde seçili kişiye ait mevcut acil durum kişilerini görebilir, yeni acil durum kişisi ekleyebilir veya mevcut acil durum kişi bilgilerini düzenleyebilirsiniz.
+                                            </p>
+                                        <?php endif; ?>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <form action='' id='peoplesForm'>
+                        <input type="hidden" name="kisi_id" id="kisi_id" value="<?php echo $_GET['id'] ?? 0; ?>">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
-                                        <input type="hidden" name="kisi_id" id="kisi_id" value="<?php echo $_GET['id'] ?? 0; ?>">
 
                                         <div class="card-header p-0">
                                             <!-- Nav tabs -->
@@ -147,7 +174,9 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
     document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', function(e) {
             if (e.target && e.target.id === 'ekle_araba') {
-                fetch('pages/management/peoples/content/AracModal.php')
+                const kisiId = document.getElementById('kisi_id').value;
+
+                fetch(`pages/management/peoples/content/AracModal.php?kisi_id=${kisiId}`)
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('modalContainer').innerHTML = html;
@@ -156,8 +185,10 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                     })
                     .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
             }
+
             if (e.target && e.target.id === 'ekle_acildurum') {
-                fetch('pages/management/peoples/content/AcilDurumModal.php')
+                const kisiId = document.getElementById('kisi_id').value;
+                fetch(`pages/management/peoples/content/AcilDurumModal.php?kisi_id=${kisiId}`)
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('modalContainer').innerHTML = html;
