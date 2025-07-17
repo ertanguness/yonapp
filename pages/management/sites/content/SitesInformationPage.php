@@ -15,8 +15,8 @@
             </div>
             <div class="col-lg-4 d-flex align-items-center">
                 <div id="selectedLogoPreview" class="border rounded" style="width:60px; height:60px; background:#f8f9fa; display:inline-block;
-                background-image: url('<?php echo $company->logo ?? ''; ?>'); background-size:cover; background-position:center;"></div>
-                <input type="hidden" id="selectedLogo" name="selectedLogo" value="<?php echo $company->logo ?? ''; ?>">
+                background-image: url('<?php echo $site->logo_path ?? ''; ?>'); background-size:cover; background-position:center;"></div>
+                <input type="hidden" id="selectedLogo" name="selectedLogo" value="<?php echo $site->logo_path ?? ''; ?>">
                 <button type="button" class="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#logoModal" style="height:40px;">
                     Logo Seç / Yükle
                 </button>
@@ -76,7 +76,7 @@
             <div class="col-lg-10">
                 <div class="input-group">
                     <div class="input-group-text"><i class="feather-map"></i></div>
-                    <textarea class="form-control" id="adres" name="adres" cols="30" rows="3" placeholder="Site Adresini yazınız" required><?php echo $site->tam_adres ?? ''; ?></textarea>
+                    <textarea class="form-control" id="adres" name="adres" cols="30" rows="3" placeholder="Site Adresini yazınız"><?php echo $site->tam_adres ?? ''; ?></textarea>
                 </div>
             </div>
         </div>
@@ -92,13 +92,7 @@
                 </div>
             </div>
         </div>
-        <!--
-        <div class="d-flex justify-content-end mt-3">
-            <button type="submit" class="btn btn-primary">
-                Kaydet &nbsp;&nbsp; <i class="feather-save"></i>
-            </button>
-        </div>
--->
+
     </div>
     <!-- Modal -->
     <div class="modal fade" id="logoModal" tabindex="-1" aria-labelledby="logoModalLabel" aria-hidden="true">
@@ -121,9 +115,12 @@
 
                         ?>
                     </div>
-                    <label for="uploadLogo" class="form-label">Yeni logo yükle:</label>
-                    <input type="file" class="form-control" id="uploadLogo" accept="image/*">
+                    <form id="logoUploadForm" enctype="multipart/form-data">
+                        <label for="uploadLogo" class="form-label">Yeni logo yükle:</label>
+                        <input type="file" name="logoFile" class="form-control" id="uploadLogo" accept="image/*">
+                    </form>
                     <div id="previewUpload" class="mt-2"></div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="confirmLogo" class="btn btn-success" data-bs-dismiss="modal">Seçimi Onayla</button>
@@ -133,10 +130,8 @@
     </div>
 
 
-    <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme başlangıç -->
-    <!-- Uyarı Mesajı (Toast) -->
+    <!--diğer sekmeyi aktif etme başlangıç -->
 
-    <!--
     <script>
         document.getElementById("sitesTabButton").addEventListener("click", function(event) {
             event.preventDefault(); // Formun post edilmesini engelle
@@ -163,57 +158,15 @@
                 toast.show();
             }
         });
-
-        document.querySelectorAll(".card-body.personal-info [required]").forEach(function(field) {
-            field.addEventListener("input", function() {
-                if (field.value.trim()) {
-                    field.classList.remove("is-invalid");
-                }
-            });
-        });
     </script>
-    Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
-    <script>
-        let selectedLogoSrc = '';
-
-        const logos = document.querySelectorAll('.logo-option');
-        logos.forEach(logo => {
-            logo.addEventListener('click', function() {
-                logos.forEach(l => l.classList.remove('border-primary'));
-                this.classList.add('border-primary');
-                selectedLogoSrc = this.src;
-                document.getElementById('previewUpload').innerHTML = ''; // yeni yükleme varsa temizle
-            });
-        });
-
-        document.getElementById('uploadLogo').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedLogoSrc = e.target.result;
-                    document.getElementById('previewUpload').innerHTML = `<img src="${selectedLogoSrc}" class="border rounded" style="width:80px; height:80px;">`;
-                    logos.forEach(l => l.classList.remove('border-primary'));
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        document.getElementById('confirmLogo').addEventListener('click', function() {
-            document.getElementById('selectedLogo').value = selectedLogoSrc;
-            document.getElementById('selectedLogoPreview').style.backgroundImage = `url('${selectedLogoSrc}')`;
-            document.getElementById('selectedLogoPreview').style.backgroundSize = 'cover';
-            document.getElementById('selectedLogoPreview').style.backgroundPosition = 'center';
-        });
-    </script>
-
-
+    <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
+    
     <script>
         $(document).ready(function() {
             $('#il').change(function() {
 
                 var cityID = $(this).val();
-                
+
 
                 if (cityID) {
                     $.ajax({
@@ -253,3 +206,4 @@
             }
         });
     </script>
+   

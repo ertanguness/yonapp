@@ -4,6 +4,7 @@ $site_id = $_SESSION['site_id'] ?? 0;
 use Model\BloklarModel;
 use Model\DefinesModel;
 use Model\DairelerModel;
+
 $Block = new BloklarModel();
 $daireModel = new DairelerModel();
 $definesModel = new DefinesModel();
@@ -36,10 +37,10 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
                 <select class="form-select select2 w-100" id="blockName" name="blockName">
                     <option value="">Blok Seçiniz</option>
                     <?php foreach ($blocks as $block): ?>
-                    <option value="<?= htmlspecialchars($block->id) ?>"
-                        <?= (isset($daire->blok_id) && $daire->blok_id == $block->id) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($block->blok_adi) ?>
-                    </option>
+                        <option value="<?= htmlspecialchars($block->id) ?>"
+                            <?= (isset($daire->blok_id) && $daire->blok_id == $block->id) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($block->blok_adi) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
 
@@ -76,10 +77,10 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
                 <select class="form-select select2 w-100" name="apartment_type" id="apartment_type">
                     <option value="">Daire Tipi Seçin</option>
                     <?php foreach ($apartmentTypes as $type): ?>
-                    <option value="<?= htmlspecialchars($type->id) ?>"
-                        <?= (isset($daire->daire_tipi) && $daire->daire_tipi == $type->id) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($type->define_name) ?>
-                    </option>
+                        <option value="<?= htmlspecialchars($type->id) ?>"
+                            <?= (isset($daire->daire_tipi) && $daire->daire_tipi == $type->id) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($type->define_name) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
 
@@ -132,23 +133,39 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
                     <?= (!empty($daire->aktif_mi) && $daire->aktif_mi != 0) ? 'checked' : '' ?>>
                 <label class="form-check-label ms-4" for="status"></label>
                 <small id="kullanimDurumu" class="form-text text-muted">
-                Bağımsız bölümde aktif olarak kalan var mı ? yok mu? onu belirtir.</small>
+                    Bağımsız bölümde aktif olarak kalan var mı ? yok mu? onu belirtir.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4 align-items-center">
+
+        <div class="col-lg-2">
+            <label for="aidattan_muaf" class="fw-semibold">Aidattan Muaf:</label>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-check form-switch d-flex align-items-center">
+                <input class="form-check-input" type="checkbox" id="aidattan_muaf" name="aidattan_muaf" style="transform: scale(2.0);"
+                    data-aktif="<?= isset($daire->aidattan_muaf) ? (int)$daire->aidattan_muaf : 0 ?>"
+                    <?= (!empty($daire->aidattan_muaf) && $daire->aidattan_muaf != 0) ? 'checked' : '' ?>>
+                <label class="form-check-label ms-4" for="aidatMuaf"></label>
+                <small id="aidattanMuaf" class="form-text text-muted">
+                    Seçili ise aidattan Muaftır, seçili değilse aidattan Muaf değildir.</small>
             </div>
         </div>
 
     </div>
-
     <div class="row mb-4 align-items-center">
-            <div class="col-lg-2">
-                <label for="aciklama" class="fw-semibold">Açıklama: </label>
-            </div>
-            <div class="col-lg-10">
-                <div class="input-group">
-                    <div class="input-group-text"><i class="feather-type"></i></div>
-                    <textarea class="form-control" id="aciklama" name="aciklama" cols="30" rows="5" placeholder="Daire ile ilgili açıklama yazabilirsiniz"><?php echo $daire->aciklama ?? ''; ?></textarea>
-                </div>
+        <div class="col-lg-2">
+            <label for="aciklama" class="fw-semibold">Açıklama: </label>
+        </div>
+        <div class="col-lg-10">
+            <div class="input-group">
+                <div class="input-group-text"><i class="feather-type"></i></div>
+                <textarea class="form-control" id="aciklama" name="aciklama" cols="30" rows="5" placeholder="Daire ile ilgili açıklama yazabilirsiniz"><?php echo $daire->aciklama ?? ''; ?></textarea>
             </div>
         </div>
+    </div>
 </div>
 
 <!-- Daire kodu oluşturma başlangıç -->
@@ -164,7 +181,7 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
             const selectedOption = blockSelect.options[blockSelect.selectedIndex];
             let blokAdi = selectedOption.text.trim();
             const daireNo = flatNumberInput.value.trim();
-            const eskiKod = hiddenCodeInput.value.trim(); // mevcut kod
+            const eskiKod = hiddenCodeInput.value.trim();
 
             if (!blokAdi || !daireNo) {
                 return;
@@ -178,7 +195,6 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
             const firstWord = blokAdi.trim().split(' ')[0];
             const yeniKod = `${firstWord}D${daireNo}`.toUpperCase();
 
-            // Eski kodla yeni kod farklıysa kullanıcıya sor
             if (eskiKod && eskiKod !== yeniKod) {
                 Swal.fire({
                     title: "Daire Kodu Değiştirilsin mi?",
@@ -193,25 +209,31 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
                     cancelButtonText: "Hayır, eski kalsın",
                 }).then(result => {
                     if (result.isConfirmed) {
-                        hiddenCodeInput.value = yeniKod; // yeni kodu kaydet
+                        hiddenCodeInput.value = yeniKod;
                     } else {
-                        hiddenCodeInput.value = eskiKod; // eski kodu tut
+                        hiddenCodeInput.value = eskiKod;
                     }
                 });
             } else {
-                hiddenCodeInput.value = yeniKod; // zaten eşitse direk yaz
+                hiddenCodeInput.value = yeniKod;
             }
         }
 
         blockSelect.addEventListener('change', generateDaireKodu);
-        flatNumberInput.addEventListener('input', generateDaireKodu);
+        
+        flatNumberInput.addEventListener('blur', function () {
+            if (flatNumberInput.value.trim()) {
+                generateDaireKodu();
+            }
+        });
+
         if (!hiddenCodeInput.value) {
             generateDaireKodu(); // sadece yeni kayıt için üret
         }
     });
 </script>
-<!--
-<script>
+
+<!-- <script>
     document.getElementById("save_apartment").addEventListener("click", function(event) {
         event.preventDefault(); // Formun post edilmesini engelle
 
@@ -238,12 +260,5 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         }
     });
 
-    document.querySelectorAll(".card-body.apartment-info [required]").forEach(function(field) {
-        field.addEventListener("input", function() {
-            if (field.value.trim()) {
-                field.classList.remove("is-invalid");
-            }
-        });
-    });
-</script>
--->
+   
+</script> -->

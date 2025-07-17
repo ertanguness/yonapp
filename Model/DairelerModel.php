@@ -38,7 +38,7 @@ class DairelerModel extends Model
     // *************************************************************************************** */
     public function SitedekiDaireler($siteID)
     {
-        $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE site_id = ? ORDER BY blok_id ASC, daire_no ASC");
+        $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE site_id = ? ORDER BY blok_id ASC, CAST(daire_no AS UNSIGNED) ASC");
         $query->execute([$siteID]);
         return $query->fetchAll(PDO::FETCH_OBJ);
     }

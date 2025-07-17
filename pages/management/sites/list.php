@@ -42,8 +42,8 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php
-                require_once 'pages/components/search.php';
-                require_once 'pages/components/download.php'
+              //  require_once 'pages/components/search.php';
+               // require_once 'pages/components/download.php'
                 ?>
 
                 <a href="#" class="btn btn-primary route-link" data-page="management/sites/manage">
@@ -117,6 +117,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                                                             data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
+                                                       
                                                         <a href="index?p=management/sites/manage&id=<?php echo $enc_id; ?>"
                                                             class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
@@ -148,8 +149,8 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.addEventListener('click', function (e) {
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(e) {
         const target = e.target.closest('.openSiteDetay');
         if (target) {
             const id = target.getAttribute('data-id');
@@ -158,10 +159,13 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch('pages/management/sites/content/siteDetay.php?id=' + id)
                 .then(response => response.text())
                 .then(html => {
-                    const container = document.getElementById('siteDetay');
-                    container.innerHTML = html;
-
-                   
+                    document.getElementById('siteDetay').innerHTML = html;
+                    // DOM'a yeni offcanvas eklendikten sonra bul
+                    const canvasElement = document.getElementById('siteDetayOffcanvas');
+                    if (canvasElement) {
+                        const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
+                        offcanvasInstance.show();
+                    }
                 })
                 .catch(error => {
                     console.error('Detay yüklenemedi:', error);

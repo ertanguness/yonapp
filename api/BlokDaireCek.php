@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../configs/bootstrap.php';
+require_once dirname(__DIR__ ,levels: 1). '/configs/bootstrap.php';
 
 
 use Model\DairelerModel;

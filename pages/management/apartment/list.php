@@ -39,8 +39,8 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php
-                require_once 'pages/components/search.php';
-                require_once 'pages/components/download.php';
+             //   require_once 'pages/components/search.php';
+             //   require_once 'pages/components/download.php';
                 ?>
                    <a href="index?p=management/apartment/upload-from-xls" 
                 data-tooltip="Daireleri Excelden Yükle"
