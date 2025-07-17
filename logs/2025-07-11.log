@@ -1,0 +1,21 @@
+[2025-07-11 13:58:15] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-07-11 14:37:09] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-07-11 14:37:25] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-11 14:49:18] [INFO] Borç detay güncelleme: ID=2567, Eski Tutar=1200.00, Yeni Tutar=800, Fark=-400 
+[2025-07-11 14:58:00] [INFO] Borç detay güncellemesi: Eski Tutar: 1000.00, Yeni Tutar: 1400, Yapılan Tahsilatlar: 200 
+[2025-07-11 19:29:09] [INFO] Borç detay güncellemesi: Eski Tutar: 1400.00, Yeni Tutar: 1400.00, Yapılan Tahsilatlar: 200 
+[2025-07-11 19:29:41] [INFO] Borç detay güncellemesi: Eski Tutar: 1400.00, Yeni Tutar: 100, Yapılan Tahsilatlar: 200 
+[2025-07-11 19:31:34] [INFO] Borç detay güncellemesi: Eski Tutar: 100.00, Yeni Tutar: 400, Yapılan Tahsilatlar: 200 
+[2025-07-11 19:32:30] [INFO] Borç detay güncellemesi: Eski Tutar: 100.00, Yeni Tutar: 400, Yapılan Tahsilatlar: 200 
+[2025-07-11 19:34:07] [INFO] Borç detay güncellemesi: Eski Tutar: 400.00, Yeni Tutar: 400, Yapılan Tahsilatlar: 200 
+[2025-07-11 19:39:21] [INFO] Borç detay güncellemesi: Eski Tutar: 400.00, Yeni Tutar: 900, Yapılan Tahsilatlar: 200 
+[2025-07-11 19:39:35] [INFO] Borç detay güncellemesi: Eski Tutar: 900.00, Yeni Tutar: 900, Yapılan Tahsilatlar: 200 
+[2025-07-11 19:40:15] [INFO] Borç detay güncellemesi: Eski Tutar: 900.00, Yeni Tutar: 900, Yapılan Tahsilatlar: 200 
+[2025-07-11 20:10:15] [INFO] Borç detay güncellemesi: Eski Tutar: 900.00, Yeni Tutar: 100, Yapılan Tahsilatlar: 200 
+[2025-07-11 20:10:51] [INFO] Borç detay güncellemesi: Eski Tutar: 100.00, Yeni Tutar: 900, Yapılan Tahsilatlar: 200 
+[2025-07-11 20:12:42] [INFO] Borç detay güncellemesi: Eski Tutar: 900.00, Yeni Tutar: 1200, Yapılan Tahsilatlar: 200 
+[2025-07-11 20:13:24] [INFO] Borç detay güncellemesi: Eski Tutar: 1200.00, Yeni Tutar: 1200, Yapılan Tahsilatlar: 200 
+[2025-07-11 20:13:40] [INFO] Borç detay güncellemesi: Eski Tutar: 1200.00, Yeni Tutar: 100, Yapılan Tahsilatlar: 200 
+[2025-07-11 20:15:13] [INFO] Borç detay güncellemesi: Eski Tutar: 100.00, Yeni Tutar: 100, Yapılan Tahsilatlar: 200 
+[2025-07-11 20:16:39] [INFO] Borç detay güncellemesi: Eski Tutar: 100.00, Yeni Tutar: 100, Yapılan Tahsilatlar: 200 
+[2025-07-11 20:20:12] [INFO] Borç detay güncellemesi: Eski Tutar: 100.00, Yeni Tutar: 400, Yapılan Tahsilatlar: 200 

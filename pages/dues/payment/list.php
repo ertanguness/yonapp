@@ -8,6 +8,7 @@ use Model\DairelerModel;
 use Model\KisilerModel;
 use Model\BorclandirmaDetayModel;
 use Model\TahsilatModel;
+use Model\FinansalRaporModel;
 
 use App\Services\Gate;
 
@@ -16,9 +17,13 @@ $Daire = new DairelerModel();
 $KisiModel = new KisilerModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $Tahsilat = new TahsilatModel();
+$FinansalRapor = new FinansalRaporModel();
 
 
-$kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
+
+//$kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
+
+$guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 
 
 ?>
@@ -43,7 +48,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="index?p=dues/payment/tahsilat_onay" class="btn btn-outline-success">
+                <a href="index?p=dues/payment/tahsilat-onay" class="btn btn-outline-success">
                     <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
                 </a>
                 <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-secondary">
@@ -81,16 +86,16 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                                             <th style="width:7%">Daire Kodu</th>
                                             <th>Ad Soyad</th>
                                             <th class="text-end" style="width:11%">Borç Tutarı</th>
-                                            <th class="text-end" style="width:11%">Ödenen</th>
-                                            <th class="text-end" style="width:11%">BAKİYE</th>
+                                            <th class="text-end" style="width:11%">Gecikme Zammı</th>
+                                            <th class="text-end" style="width:11%">Toplam Borç</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
 
-                                        foreach ($kisiler as $index => $kisi):
-                                            $enc_id = Security::encrypt($kisi->kisi_id);
+                                        foreach ($guncel_borclar as $index => $borc):
+                                            $enc_id = Security::encrypt($borc->kisi_id);
                                             $tahsilat_color = 'secondary';
                                             //$color = $kalan_borc < 0 ? 'danger' : 'success';
 
@@ -98,12 +103,12 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                                             <tr>
 
                                                 <td><?php echo $index + 1 ?></td>
-                                                <td class="text-center"><?= $Daire->DaireKodu($kisi->daire_id) ?> </td>
+                                                <td class="text-center"><?= ($borc->daire_kodu) ?> </td>
                                              
-                                                <td><?= $kisi->adi_soyadi ?>
+                                                <td><?= $borc->adi_soyadi ?>
                                                 <div>
                                                     <?php 
-                                                        $uyelik_tipi = $kisi->uyelik_tipi;
+                                                        $uyelik_tipi = $borc->uyelik_tipi;
                                                         $badge_color = $uyelik_tipi == "Kiracı" ? "danger" : "teal"
                                                     ?>
                                                 <a href="javascript:void(0)" class="badge text-<?= $badge_color ?> border border-dashed border-gray-500"><?= $uyelik_tipi ?></a>
@@ -113,11 +118,11 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                                                 <td class="text-end">
                                                     <i class="feather-trending-down fw-bold text-danger"></i>
 
-                                                    <?= Helper::formattedMoney($kisi->toplam_borc)   ?>
+                                                    <?= Helper::formattedMoney($borc->kalan_anapara)   ?>
                                                 </td>
-                                                <td class="text-end"><?= Helper::formattedMoney($kisi->toplam_tahsilat) ?>
+                                                <td class="text-end"><?= Helper::formattedMoney($borc->hesaplanan_gecikme_zammi) ?>
                                                 </td>
-                                                <td class="text-end"><?= Helper::formattedMoney($kisi->bakiye) ?></td>
+                                                <td class="text-end"><?= Helper::formattedMoney($borc->toplam_kalan_borc) ?></td>
                                                 <td style="width:5%;">
                                                     <div class="hstack gap-2 ">
                                                         <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
@@ -128,7 +133,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                                                         <?php if (Gate::allows('tahsilat_ekle_sil')) {; ?>
                                                             <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
                                                                 title="Tahsilat Gir"
-                                                                data-kisi-id="<?php echo Security::encrypt($kisi->kisi_id) ?>"
+                                                                data-kisi-id="<?php echo Security::encrypt($borc->kisi_id) ?>"
                                                                 class="avatar-text avatar-md tahsilat-gir">
                                                                 <i class="bi bi-credit-card-2-front"></i>
                                                             </a>
@@ -239,8 +244,6 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
 
     $(document).ready(function() {
 
-
-
         /**
          * Sunucudan toplam tutarı getirir ve ekranı günceller.
          */
@@ -258,6 +261,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
             });
             formData.append('action', 'hesapla_toplam_tutar');
 
+
             fetch(url, {
                     method: "POST",
                     body: formData,
@@ -267,7 +271,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
                     if (data.success) {
                         const toplam = parseFloat(data.toplam_tutar).toFixed(2);
                         $('#secilen-tahsilat-tutari').text(toplam) + ' TL'; // Seçilen tahsilat tutarını güncelle
-                        $("#tutar").val(data.toplam_tutar); // Tahsilat gir modalındaki tutar alanını güncelle
+                        $("#tutar").val((toplam.replace(".",","))); // Tahsilat gir modalındaki tutar alanını güncelle
                         //console.log("Toplam tutar:", data);
                     } else {
                         console.error('Hata:', data.message);
@@ -321,7 +325,7 @@ $kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
             guncelleToplamTutar();
 
             // Konsolda güncel diziyi görebilirsiniz (hata ayıklama için)
-            console.log("Seçilen ID'ler:", secilenBorcIdleri);
+            //console.log("Seçilen ID'ler:", secilenBorcIdleri);
         });
 
     });

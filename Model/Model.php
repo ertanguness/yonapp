@@ -200,75 +200,55 @@ class Model
         return true;
     }
 
-    //Soft delete
-    public function softDelete($id)
+    /**Kolona göre silme işlemi
+     * @param string $column Silinecek kaydın hangi kolona göre silineceği
+     * @param mixed $value Silinecek kaydın değeri
+     * @return bool|Exception
+     */
+    public function deleteByColumn($column, $value)
     {
-        $id = Security::decrypt($id);
-        $sql = $this->db->prepare("UPDATE $this->table SET deleted_at = NOW() WHERE $this->primaryKey = ?");
-        $sql->execute(array($id));
+        $sql = $this->db->prepare("DELETE FROM $this->table WHERE $column = ?");
+        $sql->execute(array($value));
 
         if ($sql->rowCount() === 0) {
             return new \Exception('Kayıt bulunamadı veya silinemedi.');
         }
         return true;
     }
-    // public function backupDelete($id)
-    // {
-    //     $id = Security::decrypt($id);
 
-    //     // 1. Kaydı bul
-    //     $stmt = $this->db->prepare("SELECT * FROM $this->table WHERE $this->primaryKey = ? LIMIT 1");
-    //     $stmt->execute([$id]);
-    //     $data = $stmt->fetch(PDO::FETCH_ASSOC);
+    //Soft delete
+    public function softDelete($id, $silen_kullanici_id = null)
+    {
+        //$id = Security::decrypt($id);
+        $sql = $this->db->prepare("UPDATE $this->table SET silinme_tarihi = NOW() , silen_kullanici = ?  WHERE $this->primaryKey = ? ");
+        $sql->execute(array( $silen_kullanici_id, $id));
 
-    //     if (!$data) {
-    //         return new \Exception('Kayıt bulunamadı.');
-    //     }
+        if ($sql->rowCount() === 0) {
+            return new \Exception('Kayıt bulunamadı veya silinemedi.');
+        }
+        return true;
+    }
 
-    //     // 2. Silinen kişilere kaydet
-    //     $sqlInsert = $this->db->prepare("
-    //     INSERT INTO silinen_kisiler (
-    //         site_id, blok_id, daire_id, kimlik_no, adi_soyadi, dogum_tarihi, cinsiyet,
-    //         uyelik_tipi, telefon, eposta, adres, notlar, satin_alma_tarihi, giris_tarihi,
-    //         cikis_tarihi, aktif_mi, kullanim_durumu, kayit_tarihi, guncelleme_tarihi,
-    //         silinme_tarihi
-    //     ) VALUES (
-    //         :site_id, :blok_id, :daire_id, :kimlik_no, :adi_soyadi, :dogum_tarihi, :cinsiyet,
-    //         :uyelik_tipi, :telefon, :eposta, :adres, :notlar, :satin_alma_tarihi, :giris_tarihi,
-    //         :cikis_tarihi, :aktif_mi, :kullanim_durumu, :kayit_tarihi, :guncelleme_tarihi,
-    //         NOW()
-    //     )
-    // ");
+    /**Kolona göre Soft delete işlemi
+     * @param string $column Silinecek kaydın hangi kolona göre silineceği
+     * @param mixed $value Silinecek kaydın değeri
+     * @param int $silen_kullanici_id  Silen kullanıcının ID'si
+     *  @return bool|Exception
+     */
+    public function softDeleteByColumn($column, $value, $silen_kullanici_id = null)
+    {
 
-    //     $sqlInsert->execute([
-    //         ':site_id'           => $data['site_id'] ?? null,
-    //         ':blok_id'           => $data['blok_id'] ?? null,
-    //         ':daire_id'          => $data['daire_id'] ?? null,
-    //         ':kimlik_no'         => $data['kimlik_no'] ?? null,
-    //         ':adi_soyadi'        => $data['adi_soyadi'] ?? null,
-    //         ':dogum_tarihi'      => $data['dogum_tarihi'] ?? null,
-    //         ':cinsiyet'          => $data['cinsiyet'] ?? null,
-    //         ':uyelik_tipi'       => $data['uyelik_tipi'] ?? null,
-    //         ':telefon'           => $data['telefon'] ?? null,
-    //         ':eposta'            => $data['eposta'] ?? null,
-    //         ':adres'             => $data['adres'] ?? null,
-    //         ':notlar'            => $data['notlar'] ?? null,
-    //         ':satin_alma_tarihi' => $data['satin_alma_tarihi'] ?? null,
-    //         ':giris_tarihi'      => $data['giris_tarihi'] ?? null,
-    //         ':cikis_tarihi'      => $data['cikis_tarihi'] ?? null,
-    //         ':aktif_mi'          => 0,
-    //         ':kullanim_durumu'   => $data['kullanim_durumu'] ?? null,
-    //         ':kayit_tarihi'      => $data['kayit_tarihi'] ?? null,
-    //         ':guncelleme_tarihi' => $data['guncelleme_tarihi'] ?? null
-    //     ]);
+        $sql = $this->db->prepare("UPDATE $this->table SET silinme_tarihi = NOW(), silen_kullanici = ? WHERE $column = ?");
+        $sql->execute(array($silen_kullanici_id, $value));
 
-    //     // 3. Ana tablodan sil
-    //     $sqlDelete = $this->db->prepare("DELETE FROM $this->table WHERE $this->primaryKey = ?");
-    //     $sqlDelete->execute([$id]);
+        if ($sql->rowCount() === 0) {
+            return new \Exception('Kayıt bulunamadı veya silinemedi.');
+        }
+        return true;
+    }
 
-    //     if ($sqlDelete->rowCount() === 0) {
-    //         return new \Exception('Kayıt silinemedi.');
-    //     }
+
+    
 
     //     return true;
     // }

@@ -1,0 +1,37 @@
+[2025-07-13 23:01:26] [INFO] Borçlandırma yapılıyor: {"id":0,"tutar":"850","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":null} 
+[2025-07-13 23:01:26] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"tutar":"850","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":null} 
+[2025-07-13 23:03:22] [INFO] Borçlandırma yapılıyor: {"id":0,"tutar":"456","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:03:22] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"tutar":"456","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:05:13] [INFO] Borçlandırma yapılıyor: [] 
+[2025-07-13 23:05:13] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"tutar":"789","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:05:47] [INFO] Borçlandırma yapılıyor: ["689","696","702"] 
+[2025-07-13 23:05:47] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"tutar":"789","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person"} 
+[2025-07-13 23:06:59] [INFO] Borçlandırma yapılıyor: ["689","699","701"] 
+[2025-07-13 23:08:08] [INFO] Borçlandırma yapılıyor: ["689","699","701"] 
+[2025-07-13 23:08:37] [INFO] Borçlandırma yapılıyor: ["689","700","701"] 
+[2025-07-13 23:11:31] [INFO] Borçlandırma yapılıyor: ["689","700","701"] 
+[2025-07-13 23:11:31] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"678","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":701,"daire_id":5676} 
+[2025-07-13 23:12:22] [INFO] Borçlandırma yapılıyor: ["689","700","701"] 
+[2025-07-13 23:12:22] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"678","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":701,"daire_id":5676} 
+[2025-07-13 23:13:23] [INFO] Borçlandırma yapılıyor: ["701","715","716"] 
+[2025-07-13 23:13:23] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"567","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":716,"daire_id":5691} 
+[2025-07-13 23:14:04] [INFO] Borçlandırma yapılıyor: ["701","715","716"] 
+[2025-07-13 23:14:04] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"567","borc_adi":"DEV\u0130R","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":716,"daire_id":5691} 
+[2025-07-13 23:16:05] [INFO] Borçlandırma yapılıyor: ["701","715","716"] 
+[2025-07-13 23:17:02] [INFO] Borçlandırma yapılıyor: ["689","703","704"] 
+[2025-07-13 23:17:02] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"567","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":704,"daire_id":5679} 
+[2025-07-13 23:25:19] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"500","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"block","kisi_id":871,"blok_id":"13"} 
+[2025-07-13 23:29:46] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 2475.67 TL 
+[2025-07-13 23:29:46] [INFO] Gecikme zammı ödemesi: 108.67 TL, kalan ödenecek tutar: 1800 TL 
+[2025-07-13 23:29:46] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 1400 TL 
+[2025-07-13 23:29:46] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 1000 TL 
+[2025-07-13 23:29:46] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 600 TL 
+[2025-07-13 23:30:23] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 1200.00 TL 
+[2025-07-13 23:30:23] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 800 TL 
+[2025-07-13 23:30:59] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 600.00 TL 
+[2025-07-13 23:37:20] [INFO] Borçlandırma yapılıyor: ["686"] 
+[2025-07-13 23:37:20] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"393.11","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":686,"daire_id":181} 
+[2025-07-13 23:37:37] [INFO] Borçlandırma yapılıyor: ["687"] 
+[2025-07-13 23:37:37] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"637.00","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":687,"daire_id":182} 
+[2025-07-13 23:37:51] [INFO] Borçlandırma yapılıyor: ["866"] 
+[2025-07-13 23:37:51] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"96","tutar":"544.11","borc_adi":"DEV\u0130R","baslangic_tarihi":"2024-12-31","bitis_tarihi":"2024-12-31","son_odeme_tarihi":"2024-12-31","ceza_orani":"0.00","aciklama":"2024 YILINDAN DEV\u0130R","hedef_tipi":"person","kisi_id":866,"daire_id":5665} 

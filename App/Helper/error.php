@@ -26,4 +26,17 @@ class Error
             "message" => "Hata: " . $exception->getMessage(),
         ];
     }
+
+    /**notFound
+     * gelen değer 404 ise sayfa bulunamadı mesajı döndürür.
+     */
+    public static function notFound()
+    {
+        return [
+            "status" => "error",
+            "message" => "Sayfa bulunamadı.",
+        ];
+       die();
+    }
+
 }

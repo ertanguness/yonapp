@@ -50,7 +50,76 @@ $(document).on("click", "#save_debit", function (e) {
       })
       .then((data) => {
         // Butonu tekrar aktif et
-        button.prop("disabled", false).html( '<i class="feather-save  me-2"></i>Kaydet');
+        button
+          .prop("disabled", false)
+          .html('<i class="feather-save  me-2"></i>Kaydet');
+
+        var title = data.status == "success" ? "Başarılı" : "Hata";
+        swal.fire({
+          title: title,
+          text: data.message,
+          icon: data.status,
+          confirmButtonText: "Tamam",
+        });
+      });
+  });
+});
+
+
+
+//Borçlandırma kaydet(Tekil Borçlandırma için)
+$(document).on("click", "#save_debit_single", function (e) {
+  var form = $("#debitForm");
+  e.preventDefault();
+  var button = $(this);
+
+  // Butonu devre dışı bırak ve yükleme göstergesi ekle
+  button
+    .prop("disabled", true)
+    .html('<i class="fas fa-spinner fa-spin"></i> İşleniyor...');
+
+  var formData = new FormData(form[0]);
+
+  formData.append("action", "borclandir_single_consolidated");
+  formData.append("borc_adi", $("#borc_baslik option:selected").text());
+  formData.append("id", $("#borc_id").val());
+
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ", " + pair[1]);
+  }
+
+  addCustomValidationMethods(); //validNumber methodu için
+  var validator = $("#debitForm").validate({
+    rules: {
+      amount: {
+        required: true,
+        validNumber: true,
+      },
+    },
+    messages: {
+      amount: {
+        required: "Lütfen borç miktarını giriniz",
+        validNumber: "Lütfen geçerli bir sayı giriniz",
+      },
+    },
+  });
+  if (!validator.form()) {
+    return;
+  }
+
+  Pace.track(() => {
+    fetch(url, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        // Butonu tekrar aktif et
+        button
+          .prop("disabled", false)
+          .html('<i class="feather-save  me-2"></i>Kaydet');
 
         var title = data.status == "success" ? "Başarılı" : "Hata";
         swal.fire({
@@ -343,6 +412,35 @@ $(document).ready(function () {
   });
 });
 
+
+//burayı daha sonra açacağım
+// /**
+//  * Tekil Borçlandırmayı düzenleme butonu
+//  * @param {Event} e - Tıklama olayı
+//  */
+// $(document).on("click", "#save_debit_single", function (e) {
+//   e.preventDefault();
+
+//   var form = $("#debitForm");
+//   var formData = new FormData(form[0]);
+
+//   formData.append("action", "update_debit_single_consolidated");
+//   fetch(url, {
+//     method: "POST",
+//     body: formData,
+//   })
+//     .then((response) => response.json())
+//     .then((data) => {
+//       let title = data.status == "success" ? "Başarılı" : "Hata";
+//       swal.fire({
+//         title: title,
+//         text: data.message,
+//         icon: data.status,
+//         confirmButtonText: "Tamam",
+//       });
+//     });
+// });
+
 //Borç bilgilerini getir
 function getDueInfo() {
   //dues tablosundan verileri getir
@@ -351,6 +449,7 @@ function getDueInfo() {
   var formData = new FormData();
   formData.append("action", "get_due_info");
   formData.append("id", duesId);
+  
 
   fetch(url, {
     method: "POST",
@@ -363,7 +462,7 @@ function getDueInfo() {
       if (data.status == "success") {
         // console.log(data.data);
 
-        $("#tutar").val(data.data.amount.replace(".", ","));
+        //$("#tutar").val(data.data.amount.replace(".", ","));
         $("#ceza_orani").val(data.data.penalty_rate);
       } else {
         swal.fire({

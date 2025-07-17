@@ -13,6 +13,7 @@ $BorcDetay = new BorclandirmaDetayModel();
 $id = Security::decrypt($_GET['id']);
 
 
+
 $borc_detay = $BorcDetay->BorclandirmaDetay($id);
 
 ?>
@@ -29,17 +30,25 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
         </ul>
     </div>
     <div class="page-header-right ms-auto">
-        <a href="index?p=dues/debit/list" class="btn btn-outline-secondary">
-            <i class="feather-arrow-left me-2"></i>
-            Listeye Dön
-        </a>
+        <div class="btn-list d-flex gap-2">
+
+            <a href="index?p=dues/debit/list" class="btn btn-outline-secondary">
+                <i class="feather-arrow-left me-2"></i>
+                Listeye Dön
+            </a>
+            
+            <a href="index?p=dues/debit/single-manage&id=<?php echo $_GET['id'] ?>" class="btn btn-primary">
+                <i class="feather-plus me-2"></i>
+                Yeni Ekle
+            </a>
+        </div>
     </div>
 </div>
 
 <div class="main-content ">
     <?php
     $title = "Borçlandırma Detayı";
-    $text = "Borçlandırmaya ait detayları buradan yönetebilirsiniz.";
+    $text = "Var olan borçlandırmaya yeni bir borç ekleyebilir, kayıtların borç bilgilerini düzenleyebiir veya borçlandırmadan bazı kayıtları silebilirisiniz.";
     require_once 'pages/components/alert.php';
     ?>
 
@@ -60,7 +69,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             <th>Tutar</th>
                                             <th>Başlangıç Tarihi</th>
                                             <th>Son Ödeme Tarihi</th>
-                                            <th>Gecikme Zammı</th>
+                                            <th>Gecikme Oranı%</th>
                                             <th>Açıklama</th>
                                             <th>İşlem</th>
                                         </tr>
@@ -73,7 +82,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             
                                         ?>
                                         <tr class="text-center">
-                                            <td><?php echo $i++; ?></td>
+                                            <td><?php echo $detay->id; ?></td>
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
                                                     <?php echo $detay->uyelik_tipi; ?>
@@ -109,11 +118,8 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             </td>
                                             <td>
                                                 <div class="hstack gap-2">
-                                                    <a href="javascript:void(0);" class="avatar-text avatar-md"
-                                                        title="Görüntüle">
-                                                        <i class="feather-eye"></i>
-                                                    </a>
-                                                    <a href="index?p=dues/debit/manage&id=<?php echo $enc_id; ?>"
+                                                  
+                                                    <a href="index?p=dues/debit/single-manage&id=<?php echo $enc_id; ?>"
                                                         class="avatar-text avatar-md" title="Düzenle">
                                                         <i class="feather-edit"></i>
                                                     </a>

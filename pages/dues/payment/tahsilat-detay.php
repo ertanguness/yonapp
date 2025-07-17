@@ -8,12 +8,14 @@ use App\Helper\Helper;
 
 use Model\TahsilatModel;
 use Model\BorclandirmaDetayModel;
+use Model\FinansalRaporModel;
 
 use Model\KisilerModel;
 
 $Kisi = new KisilerModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $Tahsilat = new TahsilatModel();
+$FinansalRapor = new FinansalRaporModel();
 
 
 
@@ -26,8 +28,10 @@ $kisi = $Kisi->find($id);
 $finansalDurum = $BorcDetay->KisiFinansalDurum($id);
 $bakiye_color = $finansalDurum->bakiye < 0 ? 'text-danger' : 'text-success';
 
-$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
-$tahsilatlar = $Tahsilat->KisiTahsilatlari($id);
+//$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
+
+$kisi_borclar = $FinansalRapor->getKisiBorclar($id);
+$tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
 
 
 ?>
@@ -69,7 +73,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlari($id);
 
 </div>
 <style>
-    /* .card-body {
+/* .card-body {
         margin: 0;
         padding: 0;
     } */
@@ -188,33 +192,46 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlari($id);
                         <div class="table-responsive tickets-items-wrapper">
                             <table class="table table-hover mb-0">
                                 <tbody>
-                                    <?php foreach ($borclandirmalar as $borc): ?>
-                                        <tr>
-                                            <td style="width:4%;">
-                                                <div class="avatar-text bg-gray-100">
-                                                    <a href="javascript:void(0);">
-                                                        <?php echo Helper::getInitials($borc->borc_adi); ?>
-                                                    </a>
-                                                </div>
+                                    <?php foreach ($kisi_borclar as $borc): ?>
+                                    <tr>
+                                        <td style="width:4%;">
+                                            <div class="avatar-text bg-gray-100">
+                                                <a href="javascript:void(0);">
+                                                    <?php echo Helper::getInitials($borc->borc_adi); ?>
+                                                </a>
+                                            </div>
 
-                                            </td>
-                                            <td>
-                                                <a href="javascript:void(0);"><?php echo $borc->borc_adi; ?> <span
-                                                        class="fs-12 fw-normal text-muted">(20/02/2023)</span> </a>
-                                                <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
-                                                    <?php echo $borc->aciklama; ?>
-                                                </p>
-                                                <div class="tickets-list-action d-flex align-items-center gap-3">
-                                                    <a href="javascript:void(0);">View</a>
-                                                    <span>|</span>
-                                                    <a href="javascript:void(0);">View public form</a>
-                                                    <span>|</span>
-                                                    <a href="javascript:void(0);">Edit</a>
-                                                    <span>|</span>
-                                                    <a href="javascript:void(0);" class="text-danger">Delete</a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        </td>
+                                        <td>
+                                            <a href="javascript:void(0);"><?php echo $borc->borc_adi; ?> <span
+                                                    class="fs-12 fw-normal text-muted">
+                                                    <?php echo $borc->daire_kodu; ?> </span>
+                                                </span> </a>
+                                            <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
+                                                <?php echo $borc->aciklama; ?>
+                                            </p>
+                                            <div class="tickets-list-action d-flex align-items-center gap-3">
+                                                <a href="javascript:void(0);">View</a>
+                                                <span>|</span>
+                                                <a href="javascript:void(0);">View public form</a>
+                                                <span>|</span>
+                                                <a href="javascript:void(0);">Edit</a>
+                                                <span>|</span>
+                                                <a href="javascript:void(0);" class="text-danger">Delete</a>
+                                            </div>
+                                        </td>
+                                        <TD>
+                                            <div class="mt-2 mt-md-0 text-md-end mg-l-60 ms-md-0">
+                                                <a href="javascript:void(0);" class="fw-bold d-block">
+                                                    <?php echo Helper::formattedMoney($borc->tutar); ?>
+
+                                                </a>
+                                                <span class="fs-12 text-danger">
+                                                    <?php echo "G. Zammı : " . Helper::formattedMoney($borc->hesaplanan_gecikme_zammi); ?>
+                                                </span>
+                                            </div>
+                                        </TD>
+                                    </tr>
                                     <?php endforeach ?>
 
                                 </tbody>
@@ -225,11 +242,11 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlari($id);
 
 
                 <!-- Kayıt yok ise  -->
-                <?php if (empty($borclandirmalar)): ?>
-                    <div class="text-center text-muted">
-                        <p>Kayıt Bulunamadı!!!</p>
+                <?php if (empty($kisi_borclar)): ?>
+                <div class="text-center text-muted">
+                    <p>Kayıt Bulunamadı!!!</p>
 
-                    </div>
+                </div>
                 <?php endif ?>
 
 
@@ -278,52 +295,70 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlari($id);
                             <table class="table table-hover mb-0">
                                 <tbody>
                                     <?php foreach ($tahsilatlar as $tahsilat):
-                                        $enc_id = Security::encrypt($tahsilat->id);
-                                    ?>
-                                        <tr class="cursor-pointer">
-                                            <td style="width:4%;">
-                                                <div class="avatar-text bg-gray-100">
-                                                    <a href="javascript:void(0);">
-                                                        <?php echo Helper::getInitials($tahsilat->tahsilat_tipi); ?>
-                                                    </a>
-                                                </div>
+                        $enc_id = Security::encrypt($tahsilat['id']);
+                    ?>
+                                    <tr class="cursor-pointer">
+                                        <td style="width:4%;">
+                                            <div class="avatar-text bg-gray-100">
+                                                <a href="javascript:void(0);">
+                                                    <i class="fa fa-money-bill-wave"></i>
+                                                    <!-- İkonu değiştirebilirsiniz -->
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td style="width:60%; vertical-align: top;">
+                                            <!-- Ana Açıklama ve Eylemler -->
+                                            <a href="javascript:void(0);" class="fw-bold">
+                                                Tahsilat Fişi #<?php echo $tahsilat['id']; ?>
+                                            </a>
+                                            <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
+                                                <?php echo !empty($tahsilat['ana_aciklama']) ? $tahsilat['ana_aciklama'] : "Genel Tahsilat"; ?>
+                                            </p>
+                                            <div class="tickets-list-action d-flex align-items-center gap-3">
+                                                <a href="javascript:void(0);">Düzenle</a>
+                                                <span>|</span>
+                                                <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
+                                                    class="text-danger tahsilat-sil">Sil</a>
+                                            </div>
 
-                                            </td>
-                                            <td style="width:60%;">
-                                                <a href="javascript:void(0);"><?php echo $tahsilat->tahsilat_tipi; ?></a>
-                                                <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
-                                                    <?php echo !empty($tahsilat->aciklama) ? $tahsilat->aciklama : "&nbsp;"; ?>
-                                                </p>
-                                                <div class="tickets-list-action d-flex align-items-center gap-3">
-                                                    <a href="javascript:void(0);">Düzenle</a>
-                                                    <span>|</span>
-                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                        class="text-danger tahsilat-sil">Sil</a>
-                                                </div>
-                                            </td>
-                                            <td class="text-end" style="width: 35%;">
-                                                <a href="javascript:void(0);"
-                                                    class="fw-bold d-block"><?php echo Helper::formattedMoney($tahsilat->tutar); ?></a>
-                                                <span
-                                                    class="fs-12 text-muted"><?php echo "Ödeme Tarihi : " . Date::dmY($tahsilat->islem_tarihi); ?></span>
-                                            </td>
-                                        </tr>
+                                            <!-- TAHSİLAT DETAYLARI ALT LİSTESİ -->
+                                            <?php if (!empty($tahsilat['detaylar'])): ?>
+                                            <ul class="list-unstyled mt-2 fs-12 text-muted">
+                                                <?php foreach ($tahsilat['detaylar'] as $detay): ?>
+                                                <li>
+                                                    <i class="fa fa-check text-success me-1"></i>
+                                                    <?php echo htmlspecialchars($detay['borc_adi'] . ' - ' . $detay['aciklama']); ?>:
+                                                    <span
+                                                        class="fw-bold"><?php echo Helper::formattedMoney($detay['tutar']); ?></span>
+                                                </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                            <?php endif; ?>
+
+                                        </td>
+                                        <td class="text-end" style="width: 35%; vertical-align: top;">
+                                            <!-- Toplam Tutar ve Tarih -->
+                                            <a href="javascript:void(0);" class="fw-bold d-block">
+                                                <?php echo Helper::formattedMoney($tahsilat['toplam_tutar']); ?>
+                                            </a>
+                                            <span class="fs-12 text-muted">
+                                                <?php echo Date::dmY($tahsilat['islem_tarihi']); ?>
+                                            </span>
+                                        </td>
+                                    </tr>
                                     <?php endforeach ?>
-
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-
-                <!-- Kayıt yok ise  -->
+                <!-- Kayıt yok ise -->
                 <?php if (empty($tahsilatlar)): ?>
-                    <div class="text-center text-muted">
-                        <p>Kayıt Bulunamadı!!!</p>
-
-                    </div>
-                <?php endif ?>
+                <div class="text-center text-muted p-4">
+                    <p>Bu kişiye ait herhangi bir tahsilat kaydı bulunamadı.</p>
+                </div>
+                <?php endif; ?>
 
 
 

@@ -36,4 +36,7 @@ protected $table = "siteler";
         $result = $query->fetch(PDO::FETCH_OBJ);
         return $result;
     }
+
+
+
 }

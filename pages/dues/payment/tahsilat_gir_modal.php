@@ -10,6 +10,7 @@ use App\Helper\Aidat;
 use Model\DairelerModel;
 use Model\KisilerModel;
 use Model\BorclandirmaDetayModel;
+use Model\FinansalRaporModel;
 
 
 use App\Services\Gate;
@@ -19,13 +20,14 @@ $Aidat = new Aidat();
 $Daire = new DairelerModel();
 $Kisiler = new KisilerModel();
 $BorcDetay = new BorclandirmaDetayModel();
+$FinansalRapor = new FinansalRaporModel();
 
 $id = Security::decrypt($_GET['kisi_id']) ?? 0;
 
 
-$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
+//$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
 
-
+$kisi_guncel_borclar = $FinansalRapor->getKisiGuncelBorclar($id);
 
 
 Gate::authorizeOrDie('tahsilat_ekle_sil', 'Bu sayfayı görüntüleme yetkiniz yok!');
@@ -64,6 +66,24 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                 </div>
             </div>
         </div>
+   
+                <div class="hstack justify-content-between gap-4">
+                    <div class="cursor-pointer">
+                        <h6 class="fs-14 text-truncate-1-line">Kullanılabilir Kredi</h6>
+                        <div class="fs-14 text-muted"><span class="text-dark fw-medium">Kullan :</span> 550,00 ₺      </div>
+                    </div>
+                    <div class="project-progress-4" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                        aria-valuenow="75"><svg version="1.1" width="100" height="100" viewBox="0 0 100 100"
+                            class="circle-progress">
+                            <circle class="circle-progress-circle" cx="50" cy="50" r="46" fill="none" stroke="#ddd"
+                                stroke-width="8"></circle>
+                            <path d="M 50 4 A 46 46 0 1 1 4 50.00000000000001" class="circle-progress-value" fill="none"
+                                stroke="#00E699" stroke-width="8"></path><text class="circle-progress-text" x="50"
+                                y="50" font="16px Arial, sans-serif" text-anchor="middle" fill="#999"
+                                dy="0.4em">75%</text>
+                        </svg></div>
+                </div>
+           
         <div class="float-end text-end">
 
             <div>
@@ -113,12 +133,19 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                     </div>
                 </div>
             </div>
+
+            <style>
+            .tickets-sort-desc {
+                min-height: 20px;
+                align-items: bottom;
+            }
+            </style>
             <div class="overflow-auto tasks-items-wrapper" style="height: 400px;">
                 <div class="card-body custom-card-action p-0">
                     <div class="table-responsive tickets-items-wrapper">
                         <table class="table table-hover mb-0">
                             <tbody>
-                                <?php foreach ($borclandirmalar as $borc): ?>
+                                <?php foreach ($kisi_guncel_borclar as $borc): ?>
                                 <tr class="borc-satiri" data-borc-id="<?= Security::encrypt($borc->id)?>">
                                     <td style="width:4%;">
                                         <div class="avatar-text bg-gray-100">
@@ -133,20 +160,21 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                                                 class="fs-12 fw-normal text-muted"><?= " Son Ödeme : " . $borc->bitis_tarihi ?></span>
                                         </a>
                                         <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
-                                            <?php echo $borc->aciklama; ?>
+                                            <?php echo $borc->aciklama ; ?>
                                         </p>
                                         <div class="tickets-list-action d-flex align-items-center gap-3">
 
                                             <a href="javascript:void(0);" class="tahsilat-islem-btn"
                                                 data-action="ekle">Ekle</a>
-                                            
+
                                         </div>
                                     </td>
                                     <td class="text-end" style="width: 35%;">
                                         <a href="javascript:void(0);"
-                                            class="fw-bold d-block"><?php echo Helper::formattedMoney($borc->tutar); ?></a>
-                                        <span
-                                            class="fs-12 text-muted"><?php echo "Gecikme Zammı : 0,00 TL" ; ?></span>
+                                            class="fw-bold d-block"><?php echo Helper::formattedMoney($borc->kalan_anapara); ?></a>
+                                        <span class="fs-12 text-danger">
+                                            <?php echo "G. Zammı : " . Helper::formattedMoney($borc->hesaplanan_gecikme_zammi); ?>
+                                        </span>
                                     </td>
                                 </tr>
                                 <?php endforeach ?>
@@ -159,7 +187,7 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
 
 
             <!-- Kayıt yok ise  -->
-            <?php if (empty($borclandirmalar)): ?>
+            <?php if (empty($kisi_guncel_borclar)): ?>
             <div class="text-center text-muted">
                 <p>Kayıt Bulunamadı!!!</p>
 

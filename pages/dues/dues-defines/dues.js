@@ -7,7 +7,7 @@ $(document).on("click", "#save_dues", function () {
   formData.append("action", "save_dues");
   formData.append("id", $("#dues_id").val());
 
-  addCustomValidationMethods(); //validNumber methodu için
+  addCustomValidationMethods(allowZero = true); //validNumber methodu için
   var validator = $("#duesForm").validate({
     rules: {
       due_days: {
@@ -21,11 +21,11 @@ $(document).on("click", "#save_dues", function () {
     },
     messages: {
       due_days: {
-        required: "Please enter the dues name",
+        required: "Lütfen bir aidat günü giriniz",
       },
       amount: {
-        required: "Please enter the dues amount",
-        validNumber: "Please enter a valid number",
+        required: "Lütfen bir tutar giriniz",
+        validNumber: "Geçerli bir tutar giriniz (0 dahil).",
       },
     },
   });
