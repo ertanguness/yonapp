@@ -8,12 +8,11 @@ use PDO;
 
 class SitelerModel extends Model
 {
-protected $table = "siteler"; 
+    protected $table = "siteler";
 
     public function __construct()
     {
         parent::__construct($this->table);
-
     }
     /**
      * Giriş yapan Kullanıcının sitelerini getirir
@@ -27,7 +26,7 @@ protected $table = "siteler";
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
-  
+
 
     public function SiteBilgileri($id)
     {
@@ -37,6 +36,10 @@ protected $table = "siteler";
         return $result;
     }
 
-
-
+    public function siteSonID()
+    {
+        $query = $this->db->query("SHOW TABLE STATUS LIKE '$this->table'");
+        $result = $query->fetch(PDO::FETCH_OBJ);
+        return $result ? $result->Auto_increment : null;
+    }
 }

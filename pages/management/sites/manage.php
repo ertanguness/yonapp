@@ -10,6 +10,7 @@ $cities = new Cities();
 $id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
 
 $site = $Sites->find($id  ?? null);
+$siteYeniID= $Sites->siteSonID() ?? 0;
 
 ?>
 <div class="page-header">

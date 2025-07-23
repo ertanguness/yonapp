@@ -1,0 +1,5 @@
+[2025-07-19 00:13:01] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-07-19 00:13:05] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-19 00:24:22] [INFO] Bir site kaydı silindi. {"deleted_site_id":"28","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-19 00:26:57] [INFO] Bir site kaydı silindi. {"deleted_site_id":"29","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-07-19 00:39:08] [INFO] Bir site kaydı silindi. {"deleted_site_id":"30","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}

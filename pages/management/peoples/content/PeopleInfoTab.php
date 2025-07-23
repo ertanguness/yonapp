@@ -36,8 +36,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
                 <div class="input-group-text"><i class="fas fa-phone"></i></div>
                 <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Telefon Numarası Giriniz" value="<?php echo $kisi->telefon ?? ''; ?>">
             </div>
-            <small id="buyDateHelp" class="form-text text-muted">
-                Başına 0(sıfır) koyarak giriniz. Örnek: 0555 111 22 33 </small>
+            
         </div>
 
     </div>
@@ -243,7 +242,13 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
 <script>
     $(document).ready(function() {
         // Telefon numarasına maske uygula (Türkiye GSM formatı)
-        //  $("#phoneNumber").inputmask("(0999) 999 99 99");
+        $("#phoneNumber").inputmask({
+            mask: "0(999) 999 99 99",
+            placeholder: "0(___) ___ __ __",
+            showMaskOnHover: false,
+            showMaskOnFocus: true,
+            clearIncomplete: true
+        });
 
         // TC Kimlik veya Pasaport alanı için otomatik maske
         $("#tcPassportNo").on("input", function() {

@@ -13,31 +13,14 @@
             <div class="col-lg-2">
                 <label class="fw-semibold">Site Logosu: </label>
             </div>
-            <div class="col-lg-4 d-flex align-items-center gap-2">
-                <input type="hidden" id="selectedLogo" name="selectedLogo" value="<?= $site->logo_path ?? '' ?>">
-                <?php
-                $fullLogo = $site->logo_path ?? '';
-                $justLogo = $fullLogo ? explode('-', $fullLogo, 2)[1] : 'default.png';
-                ?>
-                <?php
-                // Logo dosyasının yolu
-                $logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/' . $fullLogo;
-
-                // Eğer dosya varsa onu, yoksa varsayılan logoyu kullan
-                $logoUrl = file_exists($logoFile) && !empty($fullLogo)
-                    ? '/assets/images/logo/' . $fullLogo
-                    : '/assets/images/logo/default-logo.png'; // default-logo.png dosyasını bu klasöre koymalısın
-                ?>
-
-                <img id="logoPreview"
-                    src="<?= $logoUrl ?>"
-                    alt="Site Logosu"
-                    style="height: 60px; background-color: #f8f9fa; padding: 6px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);"
-                    class="img-fluid">
-
-                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#logoModal">Seç / Yükle</button>
+            <div class="col-lg-4 d-flex align-items-center">
+                <div id="selectedLogoPreview" class="border rounded" style="width:60px; height:60px; background:#f8f9fa; display:inline-block;
+                background-image: url('<?php echo $site->logo_path ?? ''; ?>'); background-size:cover; background-position:center;"></div>
+                <input type="hidden" id="selectedLogo" name="selectedLogo" value="<?php echo $site->logo_path ?? ''; ?>">
+                <button type="button" class="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#logoModal" style="height:40px;">
+                    Logo Seç / Yükle
+                </button>
             </div>
-
         </div>
 
         <div class="row mb-4 align-items-center">
@@ -111,58 +94,31 @@
         </div>
 
     </div>
-    <style>
-        .logo-option.border-primary {
-            box-shadow: 0 0 0 3px #0d6efd !important;
-        }
-    </style>
-
-    <!-- Modal Başlangıç -->
+    <!-- Modal -->
     <div class="modal fade" id="logoModal" tabindex="-1" aria-labelledby="logoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="logoModalLabel">Logo Seç veya Yükle</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
                 </div>
                 <div class="modal-body">
-
-                    <!-- Mevcut logolar -->
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Mevcut Logolar:</label>
-                        <div class="d-flex flex-wrap gap-2">
-                            <?php
-                            $dir = dirname(__DIR__, 4) . '/assets/images/logo/';
-                            $webPath = '/assets/images/logo/';
-                            $files = glob($dir . '*.{png,jpg,jpeg,gif}', GLOB_BRACE);
-
-                            foreach ($files as $file) {
-                                $filename = basename($file);
-
-                                // "-" işaretine kadar olan kısmı al
-                                $prefix = explode('-', $filename)[0];
-
-                                // Eğer $id boşsa sadece "0-" ile başlayanlar gösterilsin
-                                if ($id == 0 && $prefix != "0") continue;
-
-                                // Eğer $id varsa hem 0- hem de $id- ile başlayanlar gösterilsin
-                                if ($id != 0 && !in_array($prefix, ["0", (string)$id], true)) continue;
-
-                                echo '<img src="' . $webPath . $filename . '" class="logo-option border rounded" style="width:80px; height:80px; object-fit:contain; cursor:pointer;">';
-                            }
-                            ?>
-
-                        </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <?php
+                        $dir = __DIR__ . '/../../../assets/images/logo/';
+                        $webPath = '/assets/images/logo/';
+                        $files = glob($dir . '*.{png,jpg,jpeg,gif}', GLOB_BRACE);
+                        foreach ($files as $file) {
+                            $filename = basename($file);
+                            echo '<img src="' . $webPath . $filename . '" class="logo-option border rounded" style="width:80px; height:80px; cursor:pointer;">';
+                        }
+                        ?>
                     </div>
-
-                    <!-- Yeni logo yükle -->
-                    <div class="mb-3 mt-4">
-                        <label for="uploadLogo" class="form-label fw-bold">Yeni Logo Yükle:</label>
-                        <form id="logoUploadForm" enctype="multipart/form-data">
-                            <input type="file" name="logoFile" class="form-control" id="uploadLogo" accept="image/*">
-                        </form>
-                        <div id="previewUpload" class="mt-2"></div>
-                    </div>
+                    <form id="logoUploadForm" enctype="multipart/form-data">
+                        <label for="uploadLogo" class="form-label">Yeni logo yükle:</label>
+                        <input type="file" name="logoFile" class="form-control" id="uploadLogo" accept="image/*">
+                    </form>
+                    <div id="previewUpload" class="mt-2"></div>
 
                 </div>
                 <div class="modal-footer">
@@ -171,7 +127,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal Bitiş -->
 
 
     <!--diğer sekmeyi aktif etme başlangıç -->
@@ -250,53 +205,69 @@
             }
         });
     </script>
+
     <script>
         $(document).ready(function() {
-            let selectedFileName = "";
+            // Logo seçim işlemleri
+            var selectedLogo = '';
 
-            // Modal içindeki görsele tıklanırsa seç
-            $(".logo-option").on("click", function() {
-                $(".logo-option").removeClass("border-primary border-3");
-                $(this).addClass("border-primary border-3");
-                selectedFileName = $(this).attr("src").split("/").pop(); // logo dosya adı
+            // Logo modalındaki seçeneklere tıklama
+            $(document).on('click', '.logo-option', function() {
+                $('.logo-option').removeClass('border-primary');
+                $(this).addClass('border-primary');
+                selectedLogo = $(this).attr('src');
             });
 
-            // Modal onayla butonuna tıklanınca seçilen logo önizleme ve inputa yazılsın
-            $("#confirmLogo").on("click", function() {
-                if (selectedFileName !== "") {
-                    $("#logoPreview").attr("src", "assets/images/logo/" + selectedFileName);
-                    $("#selectedLogo").val(selectedFileName);
-                }
-            });
-
-            // Dosya seçildiğinde önizleme ve otomatik yükleme
-            $("#uploadLogo").on("change", function() {
-                const file = this.files[0];
+            // Logo yükleme önizleme
+            $('#uploadLogo').change(function(e) {
+                var file = e.target.files[0];
                 if (file) {
-                    const formData = new FormData();
-                    formData.append("logoFile", file);
-                    formData.append("site_id", "<?= (empty($id) || $id == 0) ? $siteYeniID  : $id ?>"); // PHP'den alınan ID 1 artırılarak gönderiliyor
-
-                    $.ajax({
-                        url: "pages/management/sites/content/upload_logo.php",
-                        type: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(res) {
-                            const json = JSON.parse(res);
-                            if (json.status === "success") {
-                                const imagePath = "assets/images/logo/" + json.filename;
-                                $("#logoPreview").attr("src", imagePath);
-                                $("#selectedLogo").val(json.filename); // Tüm isim: 42-logox.jpg gibi
-                                $("#logoModal").modal("hide");
-                            } else {
-                                alert("Logo yükleme başarısız: " + json.message);
-                            }
-                        }
-                    });
-
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#previewUpload').html(
+                            '<img src="' + e.target.result + '" class="border rounded border-primary" style="width:80px; height:80px; cursor:pointer;">'
+                        );
+                        selectedLogo = e.target.result; // Base64 formatında
+                    };
+                    reader.readAsDataURL(file);
                 }
             });
+
+            // Logo seçimini onaylama
+            $('#confirmLogo').click(function() {
+                if (selectedLogo) {
+                    // Eğer yeni bir logo yüklendiyse (base64 formatında)
+                    if (selectedLogo.startsWith('data:image')) {
+                        uploadLogoToServer(selectedLogo);
+                    } else {
+                        // Hazır logolardan biri seçildiyse
+                        $('#selectedLogoPreview').css('background-image', 'url("' + selectedLogo + '")');
+                        $('#selectedLogo').val(selectedLogo);
+                    }
+                }
+            });
+
+            // Base64 formatındaki logoyu sunucuya yükleme
+            function uploadLogoToServer(base64Image) {
+                $.ajax({
+                    url: '/pages/management/sites/content/upload-logo.php',
+                    type: 'POST',
+                    data: {
+                        image: base64Image,
+                        site_id: '<?php echo $site->id ?? 0; ?>'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#selectedLogoPreview').css('background-image', 'url("' + response.file_path + '")');
+                            $('#selectedLogo').val(response.file_path);
+                        } else {
+                            alert('Logo yükleme hatası: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Logo yükleme sırasında bir hata oluştu.');
+                    }
+                });
+            }
         });
     </script>

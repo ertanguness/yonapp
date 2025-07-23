@@ -1,4 +1,4 @@
-let peoplesurl = "/pages/management/peoples/api/KisilerGenelBilgilerApi.php";
+let peoplesurl = "pages/management/peoples/api/KisilerGenelBilgilerApi.php";
 
 $(document).on("click", "#save_peoples, #savePeoples", function () {
   var form = $("#peoplesForm");
@@ -7,15 +7,15 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
   formData.append("action", "save_peoples");
   formData.append("id", $("#kisi_id").val());
 
-  // Telefon numarası için sadece rakam ve 10 hane kontrolü
-  $("#phoneNumber").on("input", function () {
-    // Sadece rakam girilmesine izin ver
-    this.value = this.value.replace(/\D/g, "");
-    // Maksimum 10 karaktere sınırla
-    if (this.value.length > 11) {
-      this.value = this.value.slice(0, 11);
-    }
-  });
+  // // Telefon numarası için sadece rakam ve 10 hane kontrolü
+  // $("#phoneNumber").on("input", function () {
+  //   // Sadece rakam girilmesine izin ver
+  //   this.value = this.value.replace(/\D/g, "");
+  //   // Maksimum 10 karaktere sınırla
+  //   if (this.value.length > 11) {
+  //     this.value = this.value.slice(0, 11);
+  //   }
+  // });
 
   var validator = $("#peoplesForm").validate({
     rules: {
