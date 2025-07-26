@@ -173,7 +173,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
                             <div class="card firm-card shadow-sm p-3 list-item bg-white <?= $site->aktif_mi == 0 ? 'inactive' : '' ?>">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center">
-                                        <img src="../assets/images/logo/google-wallet.png" alt="Firma Logo" class="firm-logo me-3">
+                                    <?php
+                $fullLogo = $site->logo_path ?? '';
+                $justLogo = $fullLogo ? explode('-', $fullLogo, 2)[1] : 'default.png';
+                ?>
+                <img id="logoPreview" src="<?= '/assets/images/logo/' . $fullLogo ?>" alt="Site Logosu"  class="firm-logo me-3">
+                                    <!-- <img src="../assets/images/logo/google-wallet.png" alt="Firma Logo" class="firm-logo me-3"> -->
                                         <div class="text-start">
                                             <h5 class="mb-0"><?= htmlspecialchars($site->site_adi) ?></h5>
                                             <?php if (!empty($site->tam_adres)): ?>

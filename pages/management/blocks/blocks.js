@@ -1,4 +1,4 @@
-let blocksurl = "/pages/management/blocks/api.php";
+let blocksurl = "pages/management/blocks/api.php";
 
 $(document).on("click", "#save_blocks", function () {
     var form = $("#blocksForm");

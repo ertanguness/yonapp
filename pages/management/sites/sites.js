@@ -1,4 +1,4 @@
-let url = "/pages/management/sites/api.php";
+let url = "pages/management/sites/api.php";
 
 $(document).on("click", "#save_sites", function () {
   var form = $("#sitesForm");
