@@ -6,6 +6,7 @@ $(document).on("click", "#tahsilatKaydet", function () {
   var form = $("#tahsilatForm");
   var tahsilatTuru = $("#tahsilat_turu option:selected").text();
   var formData = new FormData(form[0]);
+  var kullanilacakKredi = $("#kullanilacak_kredi").val();
 
   formData.append("tahsilat_turu", tahsilatTuru); // Form verilerine tahsilat türünü ekle
 
@@ -48,6 +49,8 @@ $(document).on("click", "#tahsilatKaydet", function () {
 
   formData.append("action", "tahsilat-kaydet"); // Form verilerine action ekle
   formData.append("borc_detay_ids", secilenBorcIdleri); // Form verilerine id ekle
+formData.append("kullanilacak_kredi", kullanilacakKredi); // Form verilerine kullanılacak kredi ekle
+
 
   
   Pace.restart(); // Pace.js yükleme çubuğunu başlat

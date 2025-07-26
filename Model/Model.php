@@ -54,6 +54,68 @@ class Model
         return $sql->fetch(PDO::FETCH_OBJ) ?? false;
     }
 
+    /**
+     * Birden fazla koşula göre tablodan kayıtları bulur ve getirir.
+     *
+     * Örnek Kullanım:
+     * $kosullar = ['kisi_id' => 12, 'kullanildi_mi' => 0];
+     * $krediler = $KisiKredi->findWhere($kosullar);
+     *
+     * @param array $conditions  Sorgu koşullarını içeren bir anahtar=>değer dizisi.
+     *                           Örn: ['sutun_adi' => 'deger', 'baska_sutun' => 1]
+     * @param string $orderBy    Sıralama için kullanılacak sütun ve yön. Örn: "id DESC"
+     * @param int|null $limit    Getirilecek maksimum kayıt sayısı.
+     * @return array             Bulunan kayıtların nesnelerinden oluşan bir dizi.
+     */
+    public function findWhere(array $conditions, string $orderBy = null, int $limit = null): array
+    {
+        // Temel SQL sorgusunu oluştur.
+        $sql = "SELECT * FROM {$this->table} WHERE 1=1";
+
+        // Koşul dizisindeki her bir eleman için WHERE ifadesini dinamik olarak oluştur.
+        foreach ($conditions as $column => $value) {
+            // Güvenlik: Sütun adının geçerli bir ad olduğundan emin ol (isteğe bağlı ama önerilir).
+            // Bu, '`' karakteri kullanarak SQL injection'a karşı ek bir katman sağlar.
+            $sql .= " AND `{$column}` = :{$column}";
+        }
+        
+        // Sıralama ifadesi ekle
+        if ($orderBy) {
+            // Not: ORDER BY sütunları doğrudan bind edilemez, bu yüzden
+            // bu değeri doğrudan kullanıcıdan almamak en güvenlisidir.
+            $sql .= " ORDER BY {$orderBy}";
+        }
+
+        // Limit ifadesi ekle
+        if ($limit) {
+            $sql .= " LIMIT {$limit}";
+        }
+
+        try {
+            // Sorguyu hazırla
+            $stmt = $this->db->prepare($sql);
+
+            // Değerleri güvenli bir şekilde sorguya bağla (bindParam/bindValue).
+            foreach ($conditions as $column => $value) {
+                $stmt->bindValue(":{$column}", $value);
+            }
+
+            // Sorguyu çalıştır
+            $stmt->execute();
+
+            // Sonuçları bu sınıfın nesneleri olarak döndür.
+            // Bu, sonuçların $kredi->kisi_id gibi kullanılmasını sağlar.
+            return $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        } catch (\PDOException $e) {
+            // Hata yönetimi: Hataları loglayabilir veya bir istisna fırlatabilirsiniz.
+            // error_log("Sorgu hatası: " . $e->getMessage());
+            return []; // Hata durumunda boş bir dizi döndür.
+        }
+    }
+    
+
+
 
     /** Finds records where a specific column matches a value.
      * @param string $column The column to search in.
@@ -178,6 +240,39 @@ class Model
         return $this->update();
     }
 
+    /*Herhangi bir kolona göre güncelleme işlemi
+        * @param string $column Güncellenecek kaydın hangi kolona göre güncelleneceği
+        * @param mixed $value Güncellenecek kaydın değeri
+        * @param array $data Güncellenecek veriler
+        * @return bool|Exception
+    */
+    public function updateWhere($column, $value, $data)
+    {
+        // 1. Güncelleme verilerini hazırla
+        $setClause = '';
+        foreach ($data as $key => $val) {
+            $setClause .= "$key = :$key, ";
+        }
+        $setClause = rtrim($setClause, ', ');
+
+        // 2. Sorguyu hazırla
+        $sql = $this->db->prepare("UPDATE $this->table SET $setClause WHERE $column = :value");
+
+        // 3. Bind işlemi
+        foreach ($data as $key => $val) {
+            $sql->bindValue(":$key", $val);
+        }
+        $sql->bindValue(':value', $value);
+
+        // 4. Sorguyu çalıştır
+        if ($sql->execute()) {
+            return true;
+        } else {
+            return new \Exception('Güncelleme işlemi başarısız.');
+        }
+    }
+
+
     public function reload()
     {
         if (!$this->isNew) {
@@ -189,8 +284,19 @@ class Model
 
     public function delete($id)
     {
-
         $id = Security::decrypt($id);
+        // if (!$id) {
+        //     throw new \Exception('Geçersiz ID.');
+        // }
+
+        $record =  $this->find($id); // Kayıt var mı kontrol et
+
+        if (!$record) {
+            throw new \Exception('Kayıt bulunamadı veya silinemedi.' . $id);
+        }
+
+
+
         $sql = $this->db->prepare("DELETE FROM $this->table WHERE $this->primaryKey = ?");
         $sql->execute(array($id));
 

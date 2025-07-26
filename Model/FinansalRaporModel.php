@@ -84,6 +84,8 @@ class FinansalRaporModel extends Model
 
 
 
+   
+
 
 
     /**Kisinin finansal durumunu getirir(Toplam Anapara Borç, Toplam Gecikme, Toplam Borç, Toplam Tahsilat, Toplam Kalan Borç)

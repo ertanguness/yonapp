@@ -17,10 +17,11 @@ $(document).on("click", "#save_debit", function (e) {
   formData.append("id", $("#borc_id").val());
   formData.append("borc_adi", $("#borc_baslik option:selected").text());
 
-  // for (let pair of formData.entries()) {
-  //   console.log(pair[0] + ", " + pair[1]);
-  // }
-
+//   for (let pair of formData.entries()) {
+//     console.log(pair[0] + ", " + pair[1]);
+//   }
+// return
+  
   addCustomValidationMethods(); //validNumber methodu için
   var validator = $("#debitForm").validate({
     rules: {
@@ -40,6 +41,7 @@ $(document).on("click", "#save_debit", function (e) {
     return;
   }
 
+  preloader.show(); // Yükleme overlay'ini göster
   Pace.track(() => {
     fetch(url, {
       method: "POST",
@@ -55,10 +57,20 @@ $(document).on("click", "#save_debit", function (e) {
           .html('<i class="feather-save  me-2"></i>Kaydet');
 
         var title = data.status == "success" ? "Başarılı" : "Hata";
+        preloader.hide(); // Yükleme overlay'ini gizle
         swal.fire({
           title: title,
           text: data.message,
           icon: data.status,
+          confirmButtonText: "Tamam",
+        });
+      }).catch((error) => {
+        console.error("Fetch error:", error);
+        preloader.hide(); // Yükleme overlay'ini gizle
+        swal.fire({
+          title: "Hata",
+          text: "Bir hata oluştu. Lütfen tekrar deneyin.",
+          icon: "error",
           confirmButtonText: "Tamam",
         });
       });
@@ -132,43 +144,6 @@ $(document).on("click", "#save_debit_single", function (e) {
   });
 });
 
-//List sayfasından borçlandırma silmek için
-$(document).on("click", ".delete-debit", function () {
-  let id = $(this).data("id");
-  let Name = $(this).data("name");
-  let buttonElement = $(this); // Store reference to the clicked button
-  swal
-    .fire({
-      title: "Emin misiniz?",
-      html: `${Name} <br> adlı borcu silmek istediğinize emin misiniz?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Evet",
-      cancelButtonText: "Hayır",
-    })
-    .then((result) => {
-      if (result.isConfirmed) {
-        var formData = new FormData();
-        formData.append("action", "delete_debit");
-        formData.append("id", id);
-
-        fetch(url, {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.status == "success") {
-              let table = $("#debitTable").DataTable();
-              table.row(buttonElement.closest("tr")).remove().draw(false);
-              swal.fire("Silindi", `${Name} başarıyla silindi.`, "success");
-            } else {
-              swal.fire("Hata", data.message, "error");
-            }
-          });
-      }
-    });
-});
 
 //sayfa yüklenince aidat bilgilerini getir
 $(document).ready(function () {
@@ -178,21 +153,14 @@ $(document).ready(function () {
     getDueInfo();
   }
 
-  //   const $targetType = $("#hedef_tipi");
-  // //Hedef Tipi seçildiğinde, hedef tipine göre alanların görünürlüğünü ayarla
-  //   $targetType.on("change", function () {
-  //     let type = $(this).val();
-  //     switch (type) {
-  //       // Daire tipi seçildiğinde, daire tiplerini getir
-  //       case "dairetipi":
 
-  //     }
-  //   });
 });
 
 //Aidat adı değiştiğinde, aidatın güncel verilerini getir
 $(document).on("change", "#borc_baslik", function () {
   getDueInfo();
+  // Aidat adı değiştiğinde, açıklamayı güncelle
+  createDescription(); // Açıklamayı oluştur
 });
 
 //Aidat adı değiştiğinde, aidatın güncel verilerini getir
@@ -413,6 +381,43 @@ $(document).ready(function () {
 });
 
 
+
+//baslangıç tarihini seçince bitiş tarihini güncelle
+$(document).on("change", "#baslangic_tarihi", function () {
+  let startDate = $(this).val();
+  if (startDate) {
+    // Bitiş tarihini başlangıç tarihinin bulunduğu ayın son gününe ayarla
+    let dateParts = startDate.split(".");
+    let date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]); // Gün, Ay, Yıl
+    date.setMonth(date.getMonth() + 1);
+    date.setDate(0); // Ayın son günü
+    let endDate = date.toLocaleDateString("tr-TR"); // DD.MM.YYYY formatında al
+    $("#bitis_tarihi").val(endDate);
+
+
+    
+    createDescription(); // Açıklamayı oluştur
+    
+  }
+
+
+
+
+});
+
+
+function createDescription() {
+  let tarih = $("#baslangic_tarihi").val(); // Başlangıç tarihi seçildi mi?
+  let borc_adi = $("#borc_baslik option:selected").text(); // Borç adı seçildi mi?
+  let $aciklama = $("#aciklama");
+  const [gun, ay, yil] = tarih.split(".");
+  const tarihObjesi = new Date(`${yil}-${ay}-${gun}`);
+  
+  // Ay adını Türkçe almak için Intl kullanılır:
+  const ayAdi = new Intl.DateTimeFormat('tr-TR', { month: 'long' }).format(tarihObjesi).toUpperCase();
+  
+  $aciklama.val(`${ayAdi} ${yil} ${borc_adi}`);
+}
 //burayı daha sonra açacağım
 // /**
 //  * Tekil Borçlandırmayı düzenleme butonu
@@ -462,7 +467,7 @@ function getDueInfo() {
       if (data.status == "success") {
         // console.log(data.data);
 
-        //$("#tutar").val(data.data.amount.replace(".", ","));
+        $("#tutar").val(data.data.amount.replace(".", ","));
         $("#ceza_orani").val(data.data.penalty_rate);
       } else {
         swal.fire({

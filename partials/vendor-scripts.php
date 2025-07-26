@@ -94,6 +94,9 @@ if (
 if($page == 'dues/debit/upload-from-xls') {
     echo '<script src="pages/dues/debit/js/upload-from-xls.js"></script>';
 }
+if($page == 'dues/debit/detail') {
+    echo '<script src="pages/dues/debit/js/detail.js"></script>';
+}
 
 
 //*************DEBIT******************************** */

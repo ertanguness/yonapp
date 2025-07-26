@@ -124,9 +124,6 @@ switch ($hedef_tipi) {
     $title = "Borç Yükleme";
     $text = "*Bu sayfada Excel dosyasından toplu olarak borç yükleyebilirsiniz. ";
     $text .= "<br>*Lütfen aşağıdaki örnek şablona uygun bir dosya kullanınız.";
-    $text .=  "<br>*Dosyada olması gereken alanlar: Blok*, Daire*,Tc Kimlik No,Adı Soyadı*,Telefon*,İyelik Türü(Ev Sahibi,Kiracı),Satın Alma Tarihi(Ev Sahibi İse),
-    Giriş Tarihi,Cinsiyet, Doğum Tarihi, Eposta Adresi";
-    $text .= "<br><strong></strong> <a href='files\payment-upload-from-xls.xlsx' target='_blank'>Örnek Excel Dosyası İndir</a>";
     require_once 'pages/components/alert.php';
     ?>
     <div class="col-lg-12 upload-info d-none">
@@ -145,7 +142,6 @@ switch ($hedef_tipi) {
             </div>
         </div>
     </div>
-
     <div class="row">
         <div class="container-xl">
 
@@ -154,76 +150,75 @@ switch ($hedef_tipi) {
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
+                        <div class="ms-0 ms-sm-3">
+                                        <div class="text-dark fw-bold">
+                                            <?php echo $borc_tanim->due_name ?>
+                                        </div>
+                                        <div class="mb-0 text-truncate-1-line">
+                                            <?php echo $borc->aciklama ?>
+                                        </div>
+                                        <small class=" text-uppercase text-muted text-truncate-1-line">
+                                            <?php echo $borc->baslangic_tarihi . " | " . $borc->bitis_tarihi ?>
 
-
-                            <div class="ms-0 ms-sm-3">
-                                <div class="text-dark fw-bold">
-                                    <?php echo $borc_tanim->due_name ?>
-                                </div>
-                                <div class="mb-0 text-truncate-1-line">
-                                    <?php echo $borc->aciklama ?>
-                                </div>
-                                <small class=" text-uppercase text-muted text-truncate-1-line">
-                                    <?php echo $borc->baslangic_tarihi . " | " . $borc->bitis_tarihi ?>
-
-                                </small>
-                            </div>
-
-
+                                        </small>
+                                    </div>
                         </div>
-
                         <div class="card-body">
-                            <form id="uploadDebitForm" action="pages/dues/debit/download-template.php" method="POST">
+                        <form id="uploadDebitForm" action="pages/dues/debit/download-template.php"
+                                        method="POST">
 
-                                <input type="text" class="form-control d-none" name="borc_id" id="borc_id"
-                                    value="<?php echo $_GET["id"] ?? 0 ?>">
+                                        <input type="text" class="form-control d-none" name="borc_id" id="borc_id"
+                                            value="<?php echo $_GET["id"] ?? 0 ?>">
 
-                                <input type="text" class="form-control d-none" name="borc_baslik" id="borc_baslik"
-                                    value="<?php echo $borc->borc_tipi_id ?? 0 ?>">
-
-
-
-
-                                <div class="row mb-4 align-items-center">
+                                        <input type="text" class="form-control d-none" name="borc_baslik"
+                                            id="borc_baslik" value="<?php echo $borc->borc_tipi_id ?? 0 ?>">
 
 
-                                    <div class="col-lg-3">
-                                        <label for="hedef_tipi" class="fw-semibold mb-1">Kime Borçlandırılacak:</label>
-                                        <div class="input-group flex-nowrap w-100">
-                                            <div class="input-group-text"><i class="fas fa-users"></i></div>
-                                            <?php
+
+
+                                        <div class="row mb-4 align-items-center">
+
+
+                                            <div class="col-lg-3">
+                                                <label for="hedef_tipi" class="fw-semibold mb-1">Kime
+                                                    Borçlandırılacak:</label>
+                                                <div class="input-group flex-nowrap w-100">
+                                                    <div class="input-group-text"><i class="fas fa-users"></i></div>
+                                                    <?php
 
                                             ?>
-                                            <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all"); ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <label for="block_id" class="fw-semibold blok-sec-label mb-1">Blok Seç:</label>
-                                        <div class="input-group flex-nowrap w-100 blok-sec">
-                                            <div class="input-group-text"><i class="fas fa-building"></i></div>
-                                            <select class="form-control select2-single" name="block_id" id="block_id"
-                                                disabled>
-                                                <option value="">Seçiniz</option>
-                                                <?php foreach ($blocks as $block): ?>
-                                                <option value="<?= $block->id ?>"><?= $block->name ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
+                                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all"); ?>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <label for="block_id" class="fw-semibold blok-sec-label mb-1">Blok
+                                                    Seç:</label>
+                                                <div class="input-group flex-nowrap w-100 blok-sec">
+                                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
+                                                    <select class="form-control select2-single" name="block_id"
+                                                        id="block_id" disabled>
+                                                        <option value="">Seçiniz</option>
+                                                        <?php foreach ($blocks as $block): ?>
+                                                        <option value="<?= $block->id ?>"><?= $block->name ?></option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </div>
 
-                                        <div class="input-group flex-nowrap w-100 dairetipi-sec d-none">
-                                            <div class="input-group-text"><i class="fas fa-building"></i></div>
+                                                <div class="input-group flex-nowrap w-100 dairetipi-sec d-none">
+                                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
 
-                                            <?php echo Helper::getApartmentTypesSelect($site_id) ?>
-                                        </div>
-                                    </div>
+                                                    <?php echo Helper::getApartmentTypesSelect($site_id) ?>
+                                                </div>
+                                            </div>
 
-                                    <div class="col-lg-3">
-                                        <label for="hedef_kisi" class="fw-semibold mb-1">Kişi(ler):</label>
-                                        <div class="input-group flex-nowrap w-100">
-                                            <div class="input-group-text"><i class="fas fa-user-friends"></i></div>
-                                            <!-- <select name="hedef_kisi[]" id="hedef_kisi" multiple class="form-control select2">
+                                            <div class="col-lg-3">
+                                                <label for="hedef_kisi" class="fw-semibold mb-1">Kişi(ler):</label>
+                                                <div class="input-group flex-nowrap w-100">
+                                                    <div class="input-group-text"><i class="fas fa-user-friends"></i>
+                                                    </div>
+                                                    <!-- <select name="hedef_kisi[]" id="hedef_kisi" multiple class="form-control select2">
                                     </select> -->
-                                            <?php
+                                                    <?php
                                             echo Form::Select2Multiple(
                                                 'hedef_kisi[]',         // Form gönderildiğinde PHP'nin dizi olarak alması için name.
                                                 $optionsForSelect ?? [],           // SEÇENEKLER: Veritabanından gelen [id => Ad Soyad] dizisi.
@@ -233,80 +228,93 @@ switch ($hedef_tipi) {
                                             );
                                             ?>
 
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="" class="fw-semibold mb-1">Örnek Excel Dosyası İndir</label>
+                                                <a href="#" class="btn btn-outline-secondary" id="sablon-indir-linki">
+                                                    <i class="feather-download me-2"></i>Örnek Excel Dosyası İndir</a>
+                                            </div>
+
                                         </div>
+                                    </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="" class="fw-semibold mb-1">Örnek Excel Dosyası İndir</label>
-                                        <a href="#"
-                                            class="btn btn-outline-secondary" id="sablon-indir-linki">
-                                            <i class="feather-download me-2"></i>Örnek Excel Dosyası İndir</a>
-                                    </div>
+            <div class="row">
+                <div class="container-xl">
 
-                                </div>
-                                </form>
 
-                               <form action="" id="uploadForm">
-                                <div class="mb-3">
-                                    <label for="peoples_file" class="form-label">Excel Dosyası</label>
-                                    <input type="file" class="form-control" id="peoples_file" name="peoples_file"
-                                        accept=".xls,.xlsx" required>
+                    <div class="row row-deck row-cards">
+                        <div class="col-12">
+                            <div class="card">
+                                    <div class="card-body">
+                                    
+
+                                    <form action="" id="uploadForm">
+                                        <div class="mb-3">
+                                            <label for="peoples_file" class="form-label">Excel Dosyası</label>
+                                            <input type="file" class="form-control" id="peoples_file"
+                                                name="peoples_file" accept=".xls,.xlsx" required>
+                                        </div>
+                                        <div class="d-flex justify-content-start">
+                                            <!-- Temizle Butonu -->
+                                            <button type="reset" class="btn btn-secondary" id="clear_peoples_file">
+                                                <i class="feather-x me-2"></i>Temizle
+                                            </button>
+                                            <button type="submit" class="btn btn-primary ms-2" id="upload_peoples_file">
+                                                <i class="feather-upload me-2"></i>Yükle
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-                                <div class="d-flex justify-content-start">
-                                    <!-- Temizle Butonu -->
-                                    <button type="reset" class="btn btn-secondary" id="clear_peoples_file">
-                                        <i class="feather-x me-2"></i>Temizle
-                                    </button>
-                                    <button type="submit" class="btn btn-primary ms-2" id="upload_peoples_file">
-                                        <i class="feather-upload me-2"></i>Yükle
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<?php include "pages/components/dottie-preloader.php" ?>
+        <?php include "pages/components/dottie-preloader.php" ?>
 
-<script>
-$(document).ready(function() {
+        <script>
+        $(document).ready(function() {
 
-    const downloadLink = document.getElementById('sablon-indir-linki');
+            const downloadLink = document.getElementById('sablon-indir-linki');
 
-    $(document).on('click', '#sablon-indir-linki', function(e) {
-    
-        e.preventDefault();
+            $(document).on('click', '#sablon-indir-linki', function(e) {
 
-        const hedef_tipi = $('#hedef_tipi option:selected').val();
-        const hedef_kisi = $('#hedef_kisi').val();
+                e.preventDefault();
 
-        // alert ("Hedef Tipi: " + hedef_tipi + ", Hedef Kişi: " + hedef_kisi);
+                const hedef_tipi = $('#hedef_tipi option:selected').val();
+                const hedef_kisi = $('#hedef_kisi').val();
 
-        if(hedef_tipi === 'person' && (hedef_kisi.length === 0)) {
-            swal.fire({
-                title: "Hata",
-                text: "Lütfen borçlandırma yapılacak kişileri seçiniz.",
-                icon: "warning",
-                confirmButtonText: "Tamam"
+                // alert ("Hedef Tipi: " + hedef_tipi + ", Hedef Kişi: " + hedef_kisi);
+
+                if (hedef_tipi === 'person' && (hedef_kisi.length === 0)) {
+                    swal.fire({
+                        title: "Hata",
+                        text: "Lütfen borçlandırma yapılacak kişileri seçiniz.",
+                        icon: "warning",
+                        confirmButtonText: "Tamam"
+                    });
+                    return;
+                }
+
+
+
+                var form = $('#uploadDebitForm');
+                //form verilerini console'da göster
+                console.log(form.serialize());
+
+
+                // Form verilerini gönder
+                form.submit();
+
             });
-            return;
-        }
-    
-        
-
-        var form = $('#uploadDebitForm');
-//form verilerini console'da göster
-           console.log(form.serialize());
 
 
-        // Form verilerini gönder
-        form.submit();
-        
-    });
-
-
-})
-</script>
+        })
+        </script>

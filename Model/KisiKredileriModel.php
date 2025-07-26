@@ -23,9 +23,12 @@ class KisiKredileriModel extends Model
      */
     public function getKisiKredileri($kisi_id)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE kisi_id = ?");
-        $sql->execute([$kisi_id]);
-        return $sql->fetchAll(PDO::FETCH_OBJ);
+        $sql = $this->db->prepare("SELECT sum(tutar) as toplam_kredi 
+                                          FROM $this->table 
+                                          WHERE kisi_id = ?
+                                          AND kullanildi_mi = ?");
+        $sql->execute([$kisi_id,0]);
+        return $sql->fetch(PDO::FETCH_OBJ)->toplam_kredi ?? 0;
     }
 
     /**Tahsilat id'sine göre kredileri getirir
@@ -148,5 +151,22 @@ class KisiKredileriModel extends Model
         return $stmt->execute([':borc_detay_id' => $borc_detay_id]);
     }
 
+
+
+    /*Tahsilata göre kullanılan krediyi getirir
+     * @param int $tahsilat_id
+     * @return float
+     */
+    public function getKullanilanKrediByTahsilatId(int $tahsilat_id): float
+    {
+        $sql = "SELECT SUM(kullanilan_tutar) as toplam_kullanilan_kredi
+                FROM {$this->table} 
+                WHERE tahsilat_id = :tahsilat_id AND silinme_tarihi IS NULL";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':tahsilat_id' => $tahsilat_id]);
+        
+        return (float)($stmt->fetchColumn() ?? 0.0);
+    }
 
 }

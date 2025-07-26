@@ -64,6 +64,7 @@ $tumTahsilatlar = $TahsilatModel->getTumTahsilatlar($_SESSION['site_id']);
                         <tbody>
                             <?php foreach ($tumTahsilatlar as $tahsilat):
                                 $enc_id = Security::encrypt($tahsilat->id);
+                                $kasa_id = Security::encrypt($tahsilat->kasa_id);
                             ?>
                                 <tr>
                                     <td>
@@ -71,7 +72,7 @@ $tumTahsilatlar = $TahsilatModel->getTumTahsilatlar($_SESSION['site_id']);
                                             <?= htmlspecialchars($tahsilat->makbuz_no ?? 'N/A') ?>
                                         </span>
                                     </td>
-                                    <td><?= Date::dmY($tahsilat->islem_tarihi) ?></td>
+                                    <td><?= ($tahsilat->islem_tarihi) ?></td>
                                     <td>
                                         <div class="fw-bold"><?= htmlspecialchars($tahsilat->adi_soyadi) ?></div>
                                         <small class="text-muted"><?= htmlspecialchars($tahsilat->daire_kodu) ?></small>
@@ -79,13 +80,21 @@ $tumTahsilatlar = $TahsilatModel->getTumTahsilatlar($_SESSION['site_id']);
                                     <td>
                                         <div><?= htmlspecialchars($tahsilat->aciklama ?: 'Genel Tahsilat') ?></div>
                                         <small class="text-muted" data-bs-toggle="tooltip" data-bs-original-title="Hareketleri Görüntüle">
-                                            <a href="index?p=finans-yonetimi/kasa/hareketler">
+                                            <a href="index?p=finans-yonetimi/kasa/hareketler&id=<?= $kasa_id ?>">
                                                 <i class="bi bi-wallet2 me-1"></i><?= htmlspecialchars($tahsilat->kasa_adi) ?>
                                             </a>
                                         </small>
                                     </td>
-                                    <td class="text-end fw-bold">
-                                        <?= Helper::formattedMoney($tahsilat->tutar) ?>
+                                    <td class="text-end">
+                                        <div class="fw-bold">
+                                            <?= Helper::formattedMoney($tahsilat->tutar) ?>
+                                        </div>
+                                        <?php if($tahsilat->kullanilan_kredi >0 ) { ?>
+                                        <div>
+                                            <?= "Kredi : " . Helper::formattedMoney($tahsilat->kullanilan_kredi) ?>
+                                        </div>
+                                        <?php } ?>
+                                     
                                     </td>
                                     <td class="text-center">
                                         <div class="text-center d-flex justify-content-center align-items-center gap-1">

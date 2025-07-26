@@ -35,7 +35,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
     <div class="page-header-right ms-auto">
         <div class="btn-list d-flex gap-2">
 
-            <a href="javascript:history.back()" class="btn btn-outline-secondary">
+            <a href="index?p=dues/debit/list" class="btn btn-outline-secondary">
                 <i class="feather-arrow-left me-2"></i>
                 Listeye Dön
             </a>
@@ -72,6 +72,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>
+                                            <th>Daire Kodu</th>
                                             <th>Oturum Türü</th>
                                             <th>Kişi Adı</th>
                                             <th>Borç Adı</th>
@@ -93,6 +94,12 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                         ?>
                                         <tr class="text-center">
                                             <td><?php echo $detay->id; ?></td>
+                                            <td>
+                                                <div class="text-truncate" style="max-width: 200px;">
+                                                    <?php echo $detay->daire_kodu; ?>
+                                                </div>
+                                            </td>
+
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
                                                     <?php echo $detay->uyelik_tipi; ?>
@@ -121,7 +128,8 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             </td>
 
 
-                                            <td>
+                                            <td data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="<?php echo $detay->aciklama; ?>">
                                                 <div class="text-truncate" style="max-width: 200px;">
                                                     <?php echo $detay->aciklama; ?>
                                                 </div>
@@ -134,8 +142,8 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                                         <i class="feather-edit"></i>
                                                     </a>
                                                     <a href="javascript:void(0);"
-                                                        class="avatar-text avatar-md delete-debit" title="Sil"
-                                                        data-id="<?php echo $enc_id; ?>"
+                                                        class="avatar-text avatar-md delete-debit-detail" title="Sil"
+                                                        data-id="<?php echo $detay_id; ?>"
                                                         data-name="<?php echo $detay->borc_adi; ?>">
                                                         <i class="feather-trash-2"></i>
                                                     </a>

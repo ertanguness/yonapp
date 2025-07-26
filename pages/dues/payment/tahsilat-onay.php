@@ -106,7 +106,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                                                     <?php if ($kalan_tutar > 0.009): ?>
                                                         <!-- DİKKAT: data-bs-toggle ve data-bs-target KALDIRILDI -->
                                                         <button
-                                                            class="btn btn-sm btn-primary borclari-goster-btn"
+                                                            class="btn btn-sm rounded btn-primary borclari-goster-btn"
                                                             data-kisi-id="<?php echo Security::encrypt($onay->kisi_id); ?>"
                                                             data-onay-id="<?php echo $onay->id; ?>">
                                                             <i class="feather-git-merge me-2"></i>Borçları Eşleştir

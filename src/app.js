@@ -1,10 +1,10 @@
-
 let table;
 let row;
+let preloader;
 $(document).ready(function () {
   if ($(".datatables").length > 0) {
     table = $(".datatables").DataTable({
-      stateSave: true,
+      //stateSave: true,
       responsive: false,
       language: {
         url: "assets/js/tr.json",
@@ -84,36 +84,41 @@ $(document).ready(function () {
         });
 
         var state = table.state.loaded();
-if (state) {
-    // Tüm başlık inputlarını al
-    var inputs = $("thead input");
-    
-    inputs.each(function(inputIndex) {
-        // DataTable'daki gerçek sütun indeksini bul
-        var columnIndex = $(this).closest('th').index();
-        var searchValue = state.columns[columnIndex]?.search?.search || "";
-        
-        if (searchValue) {
-            $(this).val(searchValue);
-            // console.log("Input index:", inputIndex, 
-            //            "Column index:", columnIndex, 
-            //            "Value:", searchValue);
-            
-            
-            // Arama filtrelerini uygula
-            table.column(columnIndex).search(searchValue);
+        if (state && state.sTableId === tableId) {
+
+          console.log("State loaded for table:", tableId);
+
+          // Tüm başlık inputlarını al
+          var inputs = $("thead input");
+
+          inputs.each(function (inputIndex) {
+            // DataTable'daki gerçek sütun indeksini bul
+            var columnIndex = $(this).closest("th").index();
+            var searchValue = state.columns[columnIndex]?.search?.search || "";
+
+            if (searchValue) {
+              $(this).val(searchValue);
+              // console.log("Input index:", inputIndex,
+              //            "Column index:", columnIndex,
+              //            "Value:", searchValue);
+
+              // Arama filtrelerini uygula
+              table.column(columnIndex).search(searchValue);
+            }
+          });
+
+          // Değişiklikleri çiz
+          table.draw();
+        }else{
+          //console.log("State not found for table:", tableId);
+          // Eğer state yoksa tablonun state özelliğin temizle
+          table.state.clear();
+          
         }
-    });
-    
-    // Değişiklikleri çiz
-    table.draw();
-}
-        
       },
     });
   }
 });
-
 
 $("#exportExcel").on("click", function () {
   table.button(".buttons-excel").trigger();
@@ -146,7 +151,7 @@ if ($(".select2").length > 0) {
   //   dropdownParent: $(".modal")
   // });
 
- // Modal'daki select2'lerin dropdown parent'ını modal yap
+  // Modal'daki select2'lerin dropdown parent'ını modal yap
   $(".modal .select2").each(function () {
     $(this).select2({ dropdownParent: $(this).parent() });
   });
@@ -179,6 +184,9 @@ if ($(".flatpickr").length > 0) {
     dateFormat: "d.m.Y",
     locale: "tr", // locale for this instance only
   });
+
+
+
 }
 
 function formatNumber(num) {
@@ -186,8 +194,9 @@ function formatNumber(num) {
 }
 
 $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
+  $('[data-toggle="tooltip"]').tooltip();
+  preloader = $("#preloader");
+});
 
 $(document).on("click", ".route-link", function () {
   var page = $(this).data("page");
@@ -358,7 +367,6 @@ function getTowns(cityId, targetElement) {
   formData.append("city_id", cityId);
   formData.append("action", "getTowns");
 
-
   console.log("Fetching towns for city ID:", cityId);
   fetch("api/il-ilce.php", {
     method: "POST",
@@ -417,7 +425,6 @@ function previewImage(event) {
 
 //para birimi mask
 if ($(".money").length > 0) {
- 
   $(document).on("focus", ".money", function () {
     $(this).inputmask("decimal", {
       radixPoint: ",",
@@ -436,36 +443,35 @@ if ($(".money").length > 0) {
       clearIncomplete: true,
     });
   });
-
- }
+}
 
 $.validator.setDefaults({
-  highlight: function(element) {
+  highlight: function (element) {
     // input-group varsa, tüm input-group'u işaretle
-    var $group = $(element).closest('.input-group');
+    var $group = $(element).closest(".input-group");
     if ($group.length) {
-      $group.addClass('is-invalid');
+      $group.addClass("is-invalid");
     } else {
-      $(element).addClass('is-invalid');
+      $(element).addClass("is-invalid");
     }
   },
-  unhighlight: function(element) {
-    var $group = $(element).closest('.input-group');
+  unhighlight: function (element) {
+    var $group = $(element).closest(".input-group");
     if ($group.length) {
-      $group.removeClass('is-invalid');
+      $group.removeClass("is-invalid");
     } else {
-      $(element).removeClass('is-invalid');
+      $(element).removeClass("is-invalid");
     }
-    $(element).next('.error').remove();
+    $(element).next(".error").remove();
   },
-  errorPlacement: function(error, element) {
-    var $group = $(element).closest('.input-group');
+  errorPlacement: function (error, element) {
+    var $group = $(element).closest(".input-group");
     if ($group.length) {
       error.insertAfter($group);
     } else {
       error.insertAfter(element);
     }
-  }
+  },
 });
 
 //Jquery validate ile yapılan doğrulamalarda para birimi formatı için
@@ -476,7 +482,8 @@ function addCustomValidationMethods(allowZero = false) {
       const numericValue = parseFloat(value.replace(",", "."));
       return (
         this.optional(element) ||
-        (/^[0-9.,]+$/.test(value) && (allowZero ? numericValue >= 0 : numericValue > 0))
+        (/^[0-9.,]+$/.test(value) &&
+          (allowZero ? numericValue >= 0 : numericValue > 0))
       );
     },
     allowZero
@@ -497,4 +504,3 @@ function addCustomValidationValidValue() {
     "Lütfen geçerli bir değer girin"
   );
 }
-

@@ -133,6 +133,7 @@ class Helper
         $value = str_replace('TL', '', $value); // TL'yi kaldırır
         return str_replace(['.', ','], ['', '.'], $value);
     }
+    
 
     // Veritabanından gelen sayıdaki "." yı virgüle çevirir
     public static function moneyToNumber($value)
@@ -503,6 +504,165 @@ class Helper
         return null;
     }
 
+
+    //   /**
+    //  * Verilen bir açıklama metni içinde, sağlanan kişi listesinden birinin adını arar.
+    //  * Eşleşme bulursa o kişinin ID'sini döndürür.
+    //  *
+    //  * @param string $description       İçinde isim aranacak olan ham açıklama metni.
+    //  * @param array $people             Arama yapılacak kişilerin listesi. 
+    //  *                                  Her bir kişi nesnesi en az 'id' ve 'adi_soyadi' alanlarına sahip olmalıdır.
+    //  * @return int|null                 Bulunan kişinin ID'si veya eşleşme yoksa null.
+    //  */
+    // public static function findMatchingPersonInDescription($description, $people)
+    // {
+    //     if (empty($description) || empty($people)) {
+    //         return null;
+    //     }
+
+    //     // Açıklamayı standart bir formata getir.
+    //     $standartDescription = self::standardizeText($description);
+
+    //     $foundPeople = [];
+
+    //     foreach ($people as $person) {
+    //         // ---> DÜZELTME 1: ARANAN İSMİ DE STANDARTLAŞTIR <---
+    //         // Veritabanından gelen ismi de aynı standart formata getiriyoruz.
+    //         $personName = self::standardizeText($person->adi_soyadi);
+
+    //         $logger = getlogger();
+            
+    //         // Loglamayı burada yapmak, hem standartlaşmış açıklamayı hem de standartlaşmış ismi görmenizi sağlar.
+    //         $logger->info("Aranan standart kişi adı: " . $personName . 
+    //                                " | Person ID: " . $person->id . 
+    //                                " | Açıklama: " . $standartDescription);
+            
+    //         if (str_word_count($personName) < 2) {
+    //             continue;
+    //         }
+
+    //         // ---> DÜZELTME 2: REGEX'E BÜYÜK/KÜÇÜK HARF DUYARSIZLIĞI EKLE ('i' FLAG'I) <---
+    //         // Bu, standartlaştırmada bir hata olsa bile eşleşmeyi garantiler.
+    //         if (preg_match('/\b' . preg_quote($personName, '/') . '\b/i', $standartDescription)) {
+    //             $foundPeople[] = $person->id;
+    //         }
+    //     }
+        
+    //     if (!empty($foundPeople)) {
+    //         return $foundPeople[0];
+    //     }
+
+    //     return null;
+    // }
+
+
+
+
+/**
+     * Verilen bir açıklama metni içinde, sağlanan kişi listesinden birini
+     * "bulanık" (fuzzy) bir mantıkla arar. Eşleşme bulursa o kişinin ID'sini döndürür.
+     * Bu yöntem, yazım hatalarına, eksik isimlere ve kelime sırasına karşı daha toleranslıdır.
+     *
+     * @param string $description      İçinde isim aranacak olan ham açıklama metni.
+     * @param array $people   Arama yapılacak kişilerin listesi.
+     * @return int|null                En yüksek benzerlik skoruna sahip kişinin ID'si veya eşleşme yoksa null.
+     */
+    public static function findMatchingPersonInDescription($description, $people)
+    {
+        if (empty($description) || empty($people)) {
+            return null;
+        }
+        
+        // Açıklamayı sadece bir kere standartlaştır.
+        $standartDescription = self::standardizeText($description);
+        $logger = getlogger();
+        
+        $bestMatch = [
+            'person_id' => null,
+            'score' => 0 // En iyi eşleşme skorunu tutacak
+        ];
+
+        foreach ($people as $person) {
+            $personName = self::standardizeText($person->adi_soyadi);
+            
+            // "EV SAHIBI GIRILECEK" gibi anlamsız isimleri atla.
+            if (strpos($personName, 'GIRILECEK') !== false) {
+                continue;
+            }
+
+            // İsimdeki parantezleri ve içindekileri temizle, sadece kelimeleri al.
+            $personName = preg_replace('/\s*\(.*\)/', '', $personName);
+            $nameParts = explode(' ', $personName);
+            
+            if (count($nameParts) < 2) { // İsim en az iki kelimeden oluşmalı
+                continue;
+            }
+            
+            $matchesFound = 0;
+            $finalScore = 0;
+            $totalParts = count($nameParts);
+            
+            // İsimdeki her bir parçanın açıklamada geçip geçmediğini kontrol et.
+            foreach ($nameParts as $part) {
+                if (strlen($part) > 1 && strpos($standartDescription, $part) !== false) {
+                    $matchesFound++;
+                }
+            }
+
+            // Eşleşme bulundu mu?
+            if ($matchesFound > 0) {
+                 // Bir skor hesapla. İsimdeki tüm parçalar bulunursa skor daha yüksek olur.
+                 // Bu, "MEHMET EMİN SÖNMEZOĞLU"nun "EMİN"den daha iyi bir eşleşme olmasını sağlar.
+                 $currentScore = ($matchesFound / $totalParts) * 100;
+                 
+                 // Yazım hatalarını yakalamak için similar_text ile skoru daha da iyileştir.
+                 similar_text($personName, $standartDescription, $similarityPercent);
+                 
+                 // İki skorun ortalamasını veya ağırlıklı ortalamasını alabiliriz.
+                 $finalScore = ($currentScore + $similarityPercent) / 2;
+                 
+                 // Eğer bu skor, şimdiye kadarki en iyi skordan daha iyiyse, bunu en iyi eşleşme olarak kaydet.
+                 if ($finalScore > $bestMatch['score']) {
+                     $bestMatch['score'] = $finalScore;
+                     $bestMatch['person_id'] = $person->id;
+                 }
+            }
+
+            // Loglama, hangi kişinin ne kadar benzerlik skoru aldığını gösterir.
+            $logger->info("Person ID: " . $person->id . 
+                          " | Person Name: " . $personName . 
+                          " | Description: " . $standartDescription . 
+                          " | Match Score: " . $finalScore);
+        
+        }
+
+        // Eğer makul bir eşleşme bulunduysa (örn: skoru 40'tan yüksekse), o kişinin ID'sini döndür.
+        if ($bestMatch['score'] > 40) {
+            return $bestMatch['person_id'];
+        }
+
+        return null;
+    }
+
+
+
+    // ... standardizeText fonksiyonu değişmeden kalır ...
+    /**
+     * Metni karşılaştırma için standart bir forma (büyük harf, standart Türkçe karakterler) dönüştürür.
+     * Bu yardımcı fonksiyon, kod tekrarını önler.
+     *
+     * @param string $text
+     * @return string
+     */
+    private static function standardizeText($text)
+    {
+        $text = mb_strtoupper($text, 'UTF-8');
+        return str_replace(
+            ['İ', 'Ü', 'Ö', 'Ç', 'Ş', 'Ğ'],
+            ['I', 'U', 'O', 'C', 'S', 'G'],
+            $text
+        );
+    }
 
    
         // /**

@@ -58,7 +58,7 @@ $page = isset($_GET['p']) ? $_GET['p'] : '';
 	<link rel="stylesheet" type="text/css" href="assets/vendors/css/dataTables.bs5.min.css">	
     <!--! END: Vendors CSS-->
     <!--! BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="assets/vendors/css/style.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/vendors/css/style.css" />
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/flatpickr.min.css" />
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2025-07-16 23:50:02] [INFO] Açıklamadan daire bilgisi çıkarıldı: {"apartmentInfo":null,"daire_id":0,"kisi_id":null,"iyelik_tipi":"Ev Sahibi","aciklama":"MEHMET YILDIZ*0205*C2 BLOK DA\u0130RE 18 \u015eUBAT AYI A\u0130DATI*7590442*FAST"} 
 [2025-07-16 23:50:02] [INFO] Açıklamadan daire bilgisi çıkarıldı: {"apartmentInfo":"C1D1","daire_id":81,"kisi_id":81,"iyelik_tipi":"Ev Sahibi","aciklama":"SEVDA KURT*0046*C1 daire 1 subat ayi aidat*4616095*FAST"} 
 [2025-07-16 23:50:02] [INFO] Açıklamadan daire bilgisi çıkarıldı: {"apartmentInfo":null,"daire_id":0,"kisi_id":81,"iyelik_tipi":"Ev Sahibi","aciklama":"C\u0130HAN ERCAN*0010*\u00dcSK\u00dcP EVLER\u0130 S\u0130TES\u0130*4039872283*FAST"} 
@@ -403,3 +404,8 @@
 [2025-07-16 23:59:30] [INFO] Açıklamadan daire bilgisi çıkarıldı: {"apartmentInfo":null,"daire_id":0,"kisi_id":99,"iyelik_tipi":"Ev Sahibi","aciklama":"MUHAMMET SEL\u0130M MUTLU*0111*C5 Daire 14 Mart Ay\u0131 Aidat*453351123*FAST"} 
 [2025-07-16 23:59:30] [INFO] Açıklamadan daire bilgisi çıkarıldı: {"apartmentInfo":null,"daire_id":0,"kisi_id":99,"iyelik_tipi":"Ev Sahibi","aciklama":"SERTA\u00c7 SARA\u00c7O\u011eLU*0010*\u00dcSK\u00dcP B2 D:15 A\u0130DAT*4122680392*FAST"} 
 [2025-07-16 23:59:30] [INFO] Açıklamadan daire bilgisi çıkarıldı: {"apartmentInfo":null,"daire_id":0,"kisi_id":99,"iyelik_tipi":"Ev Sahibi","aciklama":"SEMANUR AKMAN*0205*C2 DA\u0130RE2 \u015eubat ay\u0131 kalan ve mart ay\u0131 aidat \u00fccreti*8714259*FAST"} 
+=======
+[2025-07-16 11:34:07] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-07-16 11:34:25] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-07-16 12:36:58] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+>>>>>>> d3a32c13927d99cb71560198e52b9a9dc1be2023

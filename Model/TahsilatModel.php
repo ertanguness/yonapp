@@ -213,7 +213,10 @@ public function tahsilatiSil(int $tahsilatId, int $silenKullaniciId)
                     t.makbuz_no,
                     kisi.adi_soyadi,
                     d.daire_kodu,
-                    kasa.kasa_adi
+                    kasa.kasa_adi,
+                    kasa.id AS kasa_id,
+                    COALESCE(SUM(kk.kullanilan_tutar), 0) AS kullanilan_kredi
+                 
                 FROM 
                     tahsilatlar t
                 LEFT JOIN 
@@ -224,10 +227,15 @@ public function tahsilatiSil(int $tahsilatId, int $silenKullaniciId)
                     bloklar bl ON d.blok_id = bl.id
                 LEFT JOIN 
                     kasa kasa ON t.kasa_id = kasa.id
+                LEFT JOIN 
+                    kisi_kredileri kk ON t.id = kk.kullanilan_tahsilat_id
                 WHERE 
                     t.silinme_tarihi IS NULL
                     -- Eğer site ID'si verilmişse, sadece o siteye ait kayıtları getir.
                     AND (:site_id IS NULL OR bl.site_id = :site_id)
+                GROUP BY 
+                    t.id, t.tutar, t.islem_tarihi, t.aciklama, t.makbuz_no,
+                    kisi.adi_soyadi, d.daire_kodu, kasa.kasa_adi, kasa.id
                 ORDER BY 
                     t.islem_tarihi DESC, t.id DESC";
         

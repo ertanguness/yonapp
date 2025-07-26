@@ -142,7 +142,7 @@ if ($_POST['action'] == 'payment_file_upload') {
             continue;  // Başlık satırını atla
         try {
             $daire_id = 0;
-            $apartmentInfo = null;
+            $daireKodu = null;
             $daire_kodu = $data[2] ?? '';  // Daire kodu
             $iyelik_tipi = $data[3] ?? 'Ev Sahibi';  // Ödeyen tipi (Ev Sahibi, Kiracı)
             $aciklama = $data[5];
@@ -154,18 +154,28 @@ if ($_POST['action'] == 'payment_file_upload') {
             }
             // Daire kodu yoksa açıklamadan blok/daire bilgisi çıkar
             else if (!empty($aciklama)) {
-                $apartmentInfo = Helper::extractApartmentInfo($aciklama);
-                if ($apartmentInfo) {
-                    $daire_id = $Daire->DaireId($apartmentInfo) ?? 0;
-                    $kisi_id = $Kisi->AktifKisiByDaireId($daire_id, $iyelik_tipi)->id ?? 0;
+                $daireKodu = Helper::extractApartmentInfo($aciklama);
+                if ($daireKodu) {
+
+
+                    $daire_id = $Daire->DaireId($daireKodu) ?? 0;
+
+                    //Dairedeki tüm kişileri al
+
+                    $kisi_id = 0; // Başlangıçta kişi ID'si 0 olarak ayarla
+                    $daire_kisileri = $Kisi->getKisilerByDaireId($daire_id);
+
+                    //Açıklamada kişi adı varsa, o kişiyi bul
+                    $kisi_id = Helper::findMatchingPersonInDescription($aciklama, $daire_kisileri);
                 }
                 $logger->info("Açıklamadan daire bilgisi çıkarıldı: " . json_encode(
                     [
-                        'apartmentInfo' => $apartmentInfo,
+                        'daireKodu' => $daireKodu,
                         'daire_id' => $daire_id,
                         'kisi_id' => $kisi_id,
                         'iyelik_tipi' => $iyelik_tipi,
-                        'aciklama' => $aciklama
+                        'aciklama' => $aciklama,
+                        "bulunan_kisi" => $bulunan_kisi ?? null
 
                     ]
                 ));
@@ -175,7 +185,7 @@ if ($_POST['action'] == 'payment_file_upload') {
             if ($daire_id > 0 && !empty($kisi_id)) {
                 $data['kisi_id'] = $kisi_id;  // Kişi ID'sini ekle
                 kaydetTahsilatOnay($TahsilatOnay, $data, $daire_id);
-                $bulunan_daireler[] = $apartmentInfo ?? $daire_kodu . 'kisi_id: ' . $data['kisi_id'];
+                $bulunan_daireler[] = $daireKodu ?? $daire_kodu . 'kisi_id: ' . $data['kisi_id'];
                 $successCount++;
             } else {
                 // Eşleşmeyen kayıtları havuza kaydet
@@ -183,7 +193,7 @@ if ($_POST['action'] == 'payment_file_upload') {
                     ? 'Daire Kodu eşleşmedi: ' . $daire_kodu
                     : ('Bilgi var ' . ($aciklama ?? ''));
                 kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk);
-                $eslesmeyen_daireler[] = $apartmentInfo ?? $daire_kodu;
+                $eslesmeyen_daireler[] = $daireKodu ?? $daire_kodu;
                 $eşleşmeyen_kayıtlar++;
             }
         } catch (Exception $e) {
@@ -360,11 +370,125 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
             $secilenBorclar = $FinansalRapor->findWhereIn('id', $borcDetayIds, 'bitis_tarihi ASC, id ASC');
         }
 
+            // //Eğer kredi seçilmişse gelen tutarın üzerine ekliyoruz
+            // $krediTutari = 0;
+            // $krediTutari = $_POST['kullanilacak_kredi'] ?? 0; // Kredi tutarını al, eğer yoksa 0 olarak ayarla
+            // if ($krediTutari > 0) {
+            //     // $krediTutari = ($krediTutari);
+            //     $kalanOdenecekTutar += $krediTutari; // Kredi tutarını ekle
+                
+
+            //     //Önce kredileri getir
+            //     $krediler = $KisiKredi->findWhere([
+            //         'kisi_id' => $kisi_id,
+            //         'kullanildi_mi' => 0, // Kullanılmamış kredileri al
+            //     ]);
+
+
+            //     //$logger->info("Krediler alındı: " . json_encode($krediler));
+            //     if (empty($krediler)) {
+            //         throw new Exception('Kredi bulunamadı veya kullanılmamış kredi yok.');
+            //     }
+
+            //     // Kredilerde döngü ile dön
+            //     foreach ($krediler as $kredi) {
+            //         // Kredi tutarını aşmamak için kalan tutarı kontrol et
+            //         if ($krediTutari <= 0) break;
+
+            //         $krediKullanilacakTutar = min($krediTutari, $kredi->tutar);
+            //         if ($krediKullanilacakTutar <= 0) continue;
+            //         $logger->info("Kredi kullanılacak tutar: {$krediKullanilacakTutar} TL");
+
+            //         // Kredi kullanımı kaydı
+            //         $KisiKredi->saveWithAttr([
+            //             'id' => $kredi->id,
+            //             'kullanildi_mi' => 1, // Krediyi kullanıldı olarak işaretle
+            //             'kullanilan_tahsilat_id' => Security::decrypt($tahsilatId), // Tahsilat ID'si ekle
+            //             'kullanilan_tutar' => $krediKullanilacakTutar, // Kullanılan kredi tutarı
+            //         ]);
+
+            //         $krediTutari -= $krediKullanilacakTutar; // Kalan kredi tutarını güncelle
+            //     }
+
+
+
+            // //     $logger->info("Kredi kullanıldı: {$krediTutari} TL, kalan ödenecek tutar: {$krediTutari} TL");
+            // }
+
+                    // Kredi kullanımı mantığı
+        $kullanilmakIstenenTutar = $_POST['kullanilacak_kredi'] ?? 0;
+        //$kullanilmakIstenenTutar = Helper::formattedMoneyToNumber($kullanilmakIstenenTutar);
+
+        if ($kullanilmakIstenenTutar > 0) {
+            // Kredi tutarını kalan ödenecek tutara ekle
+            $kalanOdenecekTutar += $kullanilmakIstenenTutar; // Kredi tutarını ekle
+
+
+            
+            // ---> DÜZELTME 1: Kredileri en eskiden yeniye doğru sırala (FIFO mantığı) <---
+            // Bu, kredilerin her zaman tutarlı bir sırada kullanılmasını sağlar.
+            // 'kayit_tarihi' veya 'id' sütununa göre sıralama yapabilirsiniz.
+            $krediler = $KisiKredi->findWhere(
+                [
+                    'kisi_id' => $kisi_id,
+                    'kullanildi_mi' => 0, // Kullanılmamış krediler
+                ]
+            );
+
+            if (empty($krediler)) {
+                // Bu noktada bir hata fırlatmak, işlemin tamamen durmasına neden olur.
+                // Belki sadece bir uyarı loglayıp devam etmek daha iyidir.
+                $logger->warning("Kişi ID {$kisi_id} için kullanılacak kredi talep edildi ancak uygun kredi bulunamadı.");
+                // throw new Exception('Kredi bulunamadı veya kullanılmamış kredi yok.');
+            } else {
+
+                // ---> DÜZELTME 2: Daha Anlaşılır Değişken İsimleri <---
+                $kalanKullanilacakMiktar = $kullanilmakIstenenTutar;
+
+                // Kredilerde döngü ile dön
+                foreach ($krediler as $kredi) {
+                    // Eğer kullanmak istediğimiz miktarı karşıladıysak döngüden çık.
+                    if ($kalanKullanilacakMiktar <= 0) {
+                        break;
+                    }
+
+                    // Bu krediden ne kadar kullanabiliriz?
+                    // Ya kalan miktarın tamamını ya da kredinin tamamını (hangisi daha küçükse).
+                    $buKredidenKullanilacak = min($kalanKullanilacakMiktar, $kredi->tutar);
+                    
+                    if ($buKredidenKullanilacak <= 0) continue;
+
+                    //$logger->info("Kredi ID {$kredi->id} ({$kredi->tutar} TL) üzerinden {$buKredidenKullanilacak} TL kullanılacak.");
+
+                    // ---> DÜZELTME 3: Kredinin Tamamı mı Kullanıldı? <---
+                    $yeniKrediDurumu = ($buKredidenKullanilacak >= $kredi->tutar) ? 1 : 0; // Eğer kredinin tamamı kullanıldıysa 1 yap
+
+                    // Kredi kullanım kaydı
+                    // Not: Bu işlem, krediyi tamamen 'kullanıldı' olarak işaretlemek yerine
+                    // krediden ne kadar kullanıldığını kaydetmeli ve kalanını güncellemelidir.
+                    $KisiKredi->saveWithAttr([
+                        'id' => $kredi->id,
+                        'kullanildi_mi' => $yeniKrediDurumu, 
+                        'kullanilan_tahsilat_id' => Security::decrypt($tahsilatId),
+                        'kullanilan_tutar' => ($kredi->kullanilan_tutar ?? 0) + $buKredidenKullanilacak // Önceki kullanıma ekle
+                        
+                    ]);
+
+                    $logger->info("Kredi ID {$kredi->id} için kullanım güncellendi: Kullanıldı mı: {$yeniKrediDurumu}, Kullanılan Tutar: " . ($kredi->kullanilan_tutar + $buKredidenKullanilacak) . " TL");
+                    // Kalan kullanılacak miktarı güncelle
+                    $kalanKullanilacakMiktar -= $buKredidenKullanilacak;
+                }
+
+                if ($kalanKullanilacakMiktar > 0) {
+                    $logger->warning("Kişinin toplam kredisi ({$kullanilmakIstenenTutar} TL) talebini karşılamaya yetmedi. Kalan miktar: {$kalanKullanilacakMiktar} TL");
+                }
+            }
+        }
+
         // 4. Ödemeyi Doğru Mantıkla Dağıt
         foreach ($secilenBorclar as $borc) {
             if ($kalanOdenecekTutar <= 0) break;
 
-            // --- YENİ VE DOĞRU MANTIK ---
 
             // Öncelik 1: NET Gecikme Zammı Borcunu Kapat
             // $borc->kalan_gecikme_zammi_borcu, VIEW'den gelen ve ödenmesi gereken net tutardır.
@@ -399,7 +523,6 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
                 $kalanOdenecekTutar -= $odenecekAnaParaTutari;
             }
 
-            // DİKKAT: Artık borclandirma_detayi tablosunda HİÇBİR GÜNCELLEME YAPMIYORUZ!
         }
 
 

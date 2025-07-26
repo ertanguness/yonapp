@@ -77,15 +77,17 @@ foreach ($kisiListesi as $kisi) {
                 $seciliKisiIdleri = [(string)$seciliKisiler];
             }
         }
+  
         // echo "<pre>";
         // print_r($kisiListesi);
         // echo "</pre>";
 
-
-
     default:
         $hedef_kisi = [];
 }
+
+      
+
 
 
 
@@ -213,7 +215,7 @@ Gate::authorizeOrDie('debit_add');
                                     <?php
 
                                     ?>
-                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all","disabled"); ?>
+                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all"); ?>
                                 </div>
                             </div>
                             <div class="col-lg-2 ">
@@ -222,7 +224,7 @@ Gate::authorizeOrDie('debit_add');
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100 blok-sec">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
-                                    <select class="form-control select2-single" name="block_id" id="block_id" disabled>
+                                    <select class="form-control select2-single" name="block_id" id="block_id" >
                                         <option value="">Seçiniz</option>
                                         <?php foreach ($blocks as $block): ?>
                                             <option value="<?= $block->id ?>"><?= $block->name ?></option>
