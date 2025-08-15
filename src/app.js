@@ -6,6 +6,7 @@ $(document).ready(function () {
     table = $(".datatables").DataTable({
       stateSave: true,
       responsive: false,
+      scrollX: $(".datatables").get(0).scrollWidth > $(".datatables").parent().width(), // Otomatik scroll kontrolü
       language: {
         url: "assets/js/tr.json",
       },

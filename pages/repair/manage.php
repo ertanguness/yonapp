@@ -1,3 +1,18 @@
+<?php
+
+use Model\BakimModel;
+use App\Helper\Security;
+
+$Bakimlar = new BakimModel();
+$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+
+// -------------Bakım ve Arıza Takip Sistemi için talep numarası oluşturma------------
+$bugün = date('Ymd'); // Örn: 20250724
+$talepNo = $bugün . '-' . $Bakimlar->BakimSonID()['last_id'];
+// ------------------------------------------------------------------------------
+$bakim=$Bakimlar->BakimBilgileri($id);
+
+?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -22,7 +37,7 @@
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>
-                <button type="button" class="btn btn-primary" id="repair_kaydet">
+                <button type="button" class="btn btn-primary" id="bakim_kaydet">
                     <i class="feather-save  me-2"></i>
                     Kaydet
                 </button>
@@ -48,117 +63,116 @@
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <form action="" id="repairForm">
-                            <input type="hidden" id="repair_id" value="">
+                        <form  id="bakimForm" method="POST">
+                            <input type="hidden" id="bakim_id" name="bakim_id" value="<?php echo $_GET['id'] ?? 0; ?>">
                             <div class="card-body repair-info">
                                 <div class="row mb-4 align-items-center">
                                     <div class="col-lg-2">
-                                        <label for="talepNo" class="fw-semibold">Talep No:</label>
+                                        <label for="talepno" class="fw-semibold">Talep no:</label>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="fas fa-hashtag"></i></div>
-                                            <input type="text" class="form-control" id="talepNo" placeholder="Veritabanından çekilip tanımlanacak" readonly>
+                                            <input type="text" class="form-control fw-bold" id="talepno" name="talepno" value="<?php echo ($id == 0 || empty($id)) ? $talepNo : ($bakim->talep_no ?? $talepNo); ?>" readonly>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Talep Bilgileri -->
+                                <!-- talep bilgileri -->
                                 <div class="row mb-4 align-items-center">
                                     <div class="col-lg-2">
-                                        <label for="talepEden" class="fw-semibold">Talep Eden:</label>
+                                        <label for="talepeden" class="fw-semibold">Talep eden:</label>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="fas fa-user"></i></div>
-                                            <input type="text" class="form-control" id="talepEden" placeholder="Talep Eden Kişi / Birim">
+                                            <input type="text" class="form-control " id="talepeden" name="talepeden" placeholder="Talep eden kişi / birim giriniz" value="<?php echo $bakim->talep_eden ?? ''; ?>">
                                         </div>
                                     </div>
                                     <div class="col-lg-2">
-                                        <label for="talepTarihi" class="fw-semibold">Talep Tarihi:</label>
+                                        <label for="taleptarihi" class="fw-semibold">Talep tarihi:</label>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                                            <input type="date" class="form-control" id="talepTarihi">
+                                            <input type="text" class="form-control flatpickr" id="taleptarihi" name="taleptarihi" placeholder="Talep tarihi seçiniz" value="<?php echo $bakim->talep_tarihi ?? ''; ?>">
+
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Kategori Seçimi -->
+                                <!-- kategori seçimi -->
                                 <div class="row mb-4 align-items-center">
                                     <div class="col-lg-2">
                                         <label for="kategori" class="fw-semibold">Kategori:</label>
                                     </div>
                                     <div class="col-lg-4">
-                                        <div class="input-group">
+                                        <div class="input-group flex-nowrap w-100">
                                             <div class="input-group-text"><i class="fas fa-list"></i></div>
-                                            <select class="form-control" id="kategori">
-                                                <option value="Bakım">Bakım</option>
-                                                <option value="Onarım">Onarım</option>
-                                                <option value="Arıza">Arıza</option>
+                                            <select class="form-control select2 w-100" id="kategori" name="kategori">
+                                                <option value="Bakım" <?php echo ($id != 0 && !empty($id) && ($bakim->kategori ?? '') == 'Bakım') ? 'selected' : ''; ?>>Bakım</option>
+                                                <option value="Onarım" <?php echo ($id != 0 && !empty($id) && ($bakim->kategori ?? '') == 'Onarım') ? 'selected' : ''; ?>>Onarım</option>
+                                                <option value="Arıza" <?php echo ($id != 0 && !empty($id) && ($bakim->kategori ?? '') == 'Arıza') ? 'selected' : ''; ?>>Arıza</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-2">
-                                        <label for="state" class="fw-semibold">Bakım/Arıza Durumu:</label>
+                                        <label for="state" class="fw-semibold">Bakım/Arıza durumu:</label>
                                     </div>
                                     <div class="col-lg-4">
-                                        <div class="input-group">
+                                        <div class="input-group flex-nowrap w-100">
                                             <div class="input-group-text"><i class="fas fa-tasks"></i></div>
-                                            <select class="form-control" id="state">
-                                                <option value="0">Bekliyor</option>
-                                                <option value="1">İşlemde</option>
-                                                <option value="2">Tamamlandı</option>
+                                            <select class="form-control select2 w-100" id="state" name="state">
+                                                <option value="0" <?php echo ($id == 0 || empty($id) || ($bakim->durum ?? '0') == '0') ? 'selected' : ''; ?>>Bekliyor</option>
+                                                <option value="1" <?php echo (($bakim->durum ?? '') == '1') ? 'selected' : ''; ?>>İşlemde</option>
+                                                <option value="2" <?php echo (($bakim->durum ?? '') == '2') ? 'selected' : ''; ?>>Tamamlandı</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Firma / Kişi Atama -->
+                                <!-- firma / kişi atama -->
                                 <div class="row mb-4 align-items-center">
                                     <div class="col-lg-2">
-                                        <label for="firmaKisi" class="fw-semibold">Atanan Firma / Kişi:</label>
+                                        <label for="firmakisi" class="fw-semibold">Atanan Firma / Kişi:</label>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="fas fa-building"></i></div>
-                                            <input type="text" class="form-control" id="firmaKisi" placeholder="Firma veya Kişi Adı">
+                                            <input type="text" class="form-control" id="firmakisi" name="firmakisi" placeholder="Firma veya kişi adı giriniz" value="<?php echo $bakim->firma_kisi ?? ''; ?>">
                                         </div>
                                     </div>
                                     <div class="col-lg-2">
-                                        <label for="atandiMi" class="fw-semibold">Atama Durumu:</label>
+                                        <label for="atandimi" class="fw-semibold">Atama Durumu:</label>
                                     </div>
                                     <div class="col-lg-4">
-                                        <div class="input-group">
+                                        <div class="input-group flex-nowrap w-100">
                                             <div class="input-group-text"><i class="fas fa-check-circle"></i></div>
-                                            <select class="form-control" id="atandiMi">
-                                                <option value="Evet">Evet</option>
-                                                <option value="Hayır">Hayır</option>
+                                            <select class="form-control select2 w-100" id="atandimi" name="atandimi">
+                                                <option value="1" <?php echo ($id == 0 || empty($id) || ($bakim->atama_durumu ?? '') == 'evet') ? 'selected' : ''; ?>>Evet</option>
+                                                <option value="0" <?php echo (($bakim->atama_durumu ?? '') == 'hayır') ? 'selected' : ''; ?>>Hayır</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
 
-
-                                <!-- Açıklama Alanı -->
-                                <div class="row mb-4 align-items-center">
+                                <!-- açıklama alanı -->
+                                <div class="row mb-4 align-items-center"> 
                                     <div class="col-lg-2">
                                         <label for="aciklama" class="fw-semibold">Açıklama:</label>
                                     </div>
                                     <div class="col-lg-10">
                                         <div class="input-group">
-                                            <div class="input-group-text"><i class="fas fa-info-circle"></i></div>
-                                            <textarea class="form-control" id="aciklama" placeholder="Detayları Giriniz"></textarea>
+                                            <div class="input-group-text"><i class="fas fa-info-circle"></i> </div>
+                                            <textarea class="form-control" id="aciklama" name="aciklama" placeholder="Açıklama Giriniz" rows="3"><?php echo $bakim->aciklama ?? ''; ?></textarea>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
+                        </form>
                     </div>
-                    </form>
+
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>

@@ -242,5 +242,10 @@ class UserModel extends Model
     return ob_get_clean(); // 🔚 HTML'yi döndür
 }
 
-
+public function getUser($id)
+{
+    $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
+    $sql->execute(array($id));
+    return $sql->fetch(PDO::FETCH_OBJ);
+}
 }

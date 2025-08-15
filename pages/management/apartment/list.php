@@ -39,12 +39,12 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php
-             //   require_once 'pages/components/search.php';
-             //   require_once 'pages/components/download.php';
+                //   require_once 'pages/components/search.php';
+                //   require_once 'pages/components/download.php';
                 ?>
-                   <a href="index?p=management/apartment/upload-from-xls" 
-                data-tooltip="Daireleri Excelden Yükle"
-                class="btn btn-icon has-tooltip tooltip-bottom">
+                <a href="index?p=management/apartment/upload-from-xls"
+                    data-tooltip="Daireleri Excelden Yükle"
+                    class="btn btn-icon has-tooltip tooltip-bottom">
                     <i class="feather-upload me-2"></i>
                     Excelden Yükle
                 </a>
@@ -68,7 +68,7 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
     $text = "Seçili siteye ait daireleri görüntüleyip ekleme, düzenleme, silme işlemlerini yapabilirsiniz.";
     require_once 'pages/components/alert.php';
     ?>
-    <div class="row">
+    <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -165,7 +165,7 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
             </div>
         </div>
     </div>
-    <div id="daireDetay" ></div>
+    <div id="daireDetay"></div>
 
 </div>
 <script>

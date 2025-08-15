@@ -1,3 +1,15 @@
+<?php
+use App\Helper\Security;
+use Model\PeriyodikBakimModel;
+use Model\UserModel;
+
+$PeriyodikBakimlar = new PeriyodikBakimModel();
+$Kullanıcılar = new UserModel(); 
+$BakimListesi = $PeriyodikBakimlar->PeriyodikBakimlar();
+
+?>
+
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -17,15 +29,15 @@
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <?php
-                require_once 'pages/components/search.php';
-                require_once 'pages/components/download.php'
-                ?>
-
+                 <a href="#" class="btn btn-success route-link" data-page="repair/cost/manage">
+                    <i class="feather-file-plus me-2"></i>
+                    <span>İşlem Makbuzu Ekle</span>
+                </a>
                 <a href="#" class="btn btn-primary route-link" data-page="repair/care/manage">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni İşlem</span>
                 </a>
+               
             </div>
         </div>
         <div class="d-md-none d-flex align-items-center">
@@ -50,22 +62,105 @@
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-
-                                <table class="table table-hover datatables" id="careList">
-                                   
+                                <table class="table table-hover datatables" id="periyodikBakimList">
                                     <thead>
                                         <tr class="text-center">
-                                            <th>ID</th>
+                                            <th>Sıra</th>
+                                            <th>Bakım No</th>
                                             <th>Bakım Adı</th>
                                             <th>Bakım Yeri</th>
                                             <th>Başlangıç Tarihi</th>
                                             <th>Bitiş Tarihi</th>
-                                            <th>Durum</th>
-                                            <th>İşlemler</th>
+                                            <th>Sorumlu Firma/Kişi</th>
+                                            <th>Planlanan Bakım Durumu</th>
+                                            <th>Kayıt Oluşturan</th>
+                                            <th>İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    <?php
+                                    $i = 1;
+                                    foreach ($BakimListesi as $item):
+                                        $enc_id = Security::encrypt($item->id);
+                                    ?>
+                                        <tr class="text-center">
+                                            <td><?php echo $i; ?></td>
+                                            <td><?php echo htmlspecialchars($item->talep_no); ?></td>
+                                            <td><?php echo htmlspecialchars($item->bakim_adi); ?></td>
+                                            <td><?php echo htmlspecialchars($item->bakim_yeri); ?></td>
+                                            <td>
+                                                <?php
+                                                $baslangic = !empty($item->sonBakim_tarihi) ? date('d-m-Y', strtotime($item->sonBakim_tarihi)) : '';
+                                                echo htmlspecialchars($baslangic);
+                                                ?>
+                                            </td>
+                                            <td>
+                                                <?php
+                                                $bitis = !empty($item->planlanan_bakim_tarihi) ? date('d-m-Y', strtotime($item->planlanan_bakim_tarihi)) : '';
+                                                echo htmlspecialchars($bitis);
+                                                ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($item->sorumlu_firma); ?></td>
+                                           
+                                            <td>
+                                                <?php
+                                                $today = new DateTime();
+                                                $planDate = !empty($item->planlanan_bakim_tarihi) ? new DateTime($item->planlanan_bakim_tarihi) : null;
 
+                                                if ($planDate) {
+                                                    $diff = $today->diff($planDate);
+                                                    $days = (int)$diff->format('%r%a');
+
+                                                    if ($days > 0) {
+                                                        // Bakım günü yaklaşmamış
+                                                        echo '<span class="text-info">
+                                                                <i class="feather-clock"></i> ' . $days . ' gün kaldı
+                                                            </span>';
+                                                    } elseif ($days === 0) {
+                                                        // Bugün bakım günü
+                                                        echo '<span class="text-warning">
+                                                                <i class="feather-alert-circle"></i> Bakım günü!
+                                                            </span>';
+                                                    } else {
+                                                        // Bakım günü geçmiş
+                                                        echo '<span class="text-danger">
+                                                                <i class="feather-x-circle"></i> Bakım günü geçmiş (' . abs($days) . ' gün önce)
+                                                            </span>';
+                                                    }
+                                                } else {
+                                                    echo '<span class="text-secondary">
+                                                            <i class="feather-help-circle"></i> Tarih yok
+                                                        </span>';
+                                                }
+                                                ?>
+                                            </td>
+                                            <td>
+                                                <?php
+                                                $user = $Kullanıcılar->getUser($item->olusturan);
+                                                echo htmlspecialchars($user->full_name ?? "Bilinmiyor");
+                                                ?>
+                                            </td>
+                                            <td>
+                                                <div class="hstack gap-2">
+                                                
+                                                    <a href="index?p=repair/care/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                        <i class="feather-edit"></i>
+                                                    </a>
+                                                    <a href="javascript:void(0);"
+                                                            data-name="<?php echo $item->talep_no ?>"
+                                                            data-id="<?php echo $enc_id ?>"
+                                                            class="avatar-text avatar-md sil-periyodikBakim"
+                                                            data-id="<?php echo $enc_id; ?>"
+                                                            data-name="<?php echo $item->talep_no; ?>">
+                                                            <i class="feather-trash-2"></i>
+                                                        </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php
+                                        $i++;
+                                    endforeach;
+                                    ?>
                                     </tbody>
                                 </table>
                             </div>

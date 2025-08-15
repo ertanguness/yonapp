@@ -7,16 +7,7 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
   formData.append("action", "save_peoples");
   formData.append("id", $("#kisi_id").val());
 
-  // // Telefon numarası için sadece rakam ve 10 hane kontrolü
-  // $("#phoneNumber").on("input", function () {
-  //   // Sadece rakam girilmesine izin ver
-  //   this.value = this.value.replace(/\D/g, "");
-  //   // Maksimum 10 karaktere sınırla
-  //   if (this.value.length > 11) {
-  //     this.value = this.value.slice(0, 11);
-  //   }
-  // });
-
+  
   var validator = $("#peoplesForm").validate({
     rules: {
       blokAdi: { required: true },
@@ -33,9 +24,8 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
       gender: { required: true },
       phoneNumber: { 
         required: true,
-        digits: true,
-        minlength: 11,
-        maxlength: 11
+        // Kontrol: 0(555) 865 88 88 formatı
+        regex: /^0\(\d{3}\) \d{3} \d{2} \d{2}$/
       },
       entryDate: { required: true },
     },
@@ -54,14 +44,16 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
       gender: { required: "Lütfen cinsiyet seçiniz" },
       phoneNumber: { 
         required: "Lütfen telefon numarası giriniz",
-        digits: "Telefon numarası sadece rakamlardan oluşmalıdır",
-        minlength: "Telefon numarası 11 haneli olmalıdır",
-        maxlength: "Telefon numarası 11 haneli olmalıdır"
+        regex: "Telefon numarası 0(555) 865 88 88 formatında olmalıdır"
       },
       entryDate: { required: "Lütfen giriş tarihi giriniz" },
     },
-    
   });
+
+  // jQuery Validate için regex kuralı ekle
+  $.validator.addMethod("regex", function(value, element, param) {
+    return this.optional(element) || param.test(value);
+  }, "Geçersiz format.");
 
   // Özel kural: 11 karakter ise sadece rakam, daha kısa ise harf olabilir
   $.validator.addMethod("customTcPassport", function(value, element) {

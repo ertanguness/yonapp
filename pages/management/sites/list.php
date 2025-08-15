@@ -61,10 +61,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 </div>
 
 <div class="main-content">
-    <?php
-    // --- TEK SATIRDA FLASH MESAJLARI GÖSTERME ---
-    //include __DIR__ . '../../../../partials/_flash_messages.php';
-    ?>
+  
     <?php
     $title = "Siteler Listesi!";
     $text = "Sitelerinizi görüntüleyip ekleme, düzenleme, silme ve yeni site tanımlama işlemlerinizi  yapabilirsiniz.";
@@ -78,7 +75,6 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-
                                 <table class="table table-hover datatables" id="SitelerList">
                                     <thead>
                                         <tr class="text-center">

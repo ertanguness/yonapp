@@ -307,4 +307,6 @@ class Date
 
         return null; // Hiçbir koşula uymuyorsa.
     }
+   
+    
 }

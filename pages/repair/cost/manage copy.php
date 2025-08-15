@@ -87,6 +87,7 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                                     </div>
                                 </div>
 
+                                <!-- Toplam Maliyet, Ödenen Tutar, Kalan Borç -->
                                 <div class="row mb-4 align-items-center">
                                     <div class="col-lg-2">
                                         <label for="makbuzTuru" class="fw-semibold">Makbuz Türü:</label>
@@ -193,22 +194,20 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                                     <div class="col-lg-10">
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="fas fa-file-upload"></i></div>
-                                            <input type="file" name="makbuzEkle[]" id="makbuzEkle" multiple>
-                                            </div>
+                                            <input type="file" class="form-control" id="makbuzEkle" name="makbuzEkle" accept=".pdf,.jpg,.jpeg,.png" value="<?php echo $Maliyet->makbuz_dosya_yolu ?? ''; ?>">
+                                        </div>
                                         <small class="text-muted">Desteklenen formatlar: PDF, JPG, JPEG, PNG</small>
                                     </div>
                                 </div>
                             </div>
-
-                        </form>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
+</div>
 <!-- Talep No Çekme -->
 <script>
     $(document).ready(function() {

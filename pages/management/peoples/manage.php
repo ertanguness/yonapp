@@ -94,7 +94,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                             </div>
                         </div>
                         <form action='' id='peoplesForm'>
-                        <input type="hidden" name="kisi_id" id="kisi_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                        <input type="hidden" name="kisi_id" id="kisi_id" sssssssss">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">

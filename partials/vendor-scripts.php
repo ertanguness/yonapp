@@ -27,7 +27,8 @@ if (
     $page == 'dues/payment/tahsilat-onay' ||
     $page == "finans-yonetimi/kasa/list" ||
     $page == 'management/sites/list' ||
-    $page == "dues/collections/list" || $page == "dues/collections/detail" 
+    $page == "dues/collections/list" || $page == "dues/collections/detail" ||
+    $page == 'repair/list' || $page == 'repair/care/list' ||   $page == 'repair/cost/list' 
 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -111,7 +112,7 @@ if ($page == 'management/apartment/upload-from-xls') {
 }
    //*************APARTMENT******************************** */
 
-   //*************PEOPLES******************************** */
+   //*************PEOPLES BAŞLANGIÇ******************************** */
 if (
     $page == 'management/peoples/manage' ||   $page == 'management/peoples/list') {
         echo '<script src="pages/management/peoples/js/kisiBilgileri.js"></script>';
@@ -123,9 +124,25 @@ if (
 if ($page == 'management/peoples/upload-from-xls') {
     echo '<script src="pages/management/peoples/js/upload-from-xls.js"></script>';
 }
-   //*************PEOPLES******************************** */
- 
-//*************Define APARTMENT TYPES******************************** */
+   //*************PEOPLES BİTİŞ******************************** */
+
+ //*************BAKIM ONARIM ARIZA BAŞLANGIÇ******************************** */
+ if ($page == 'repair/manage' || $page == 'repair/list') {
+    echo '<script src="pages/repair/bakim.js"></script>';
+}
+  //************PERİYODİK BAKIM ONARIM ARIZA BİTİŞ************************************ */
+  if ($page == 'repair/care/manage' || $page == 'repair/care/list') {
+    echo '<script src="pages/repair/care/periyodikBakim.js"></script>';
+}
+  //************PERİYODİK BAKIM ONARIM ARIZA BİTİŞ************************************ */
+
+    //************MALİYET / FATURALANDIRMA BAŞLANGIÇ************************************ */
+    if ($page == 'repair/cost/manage' || $page == 'repair/cost/list') {
+        echo '<script src="pages/repair/cost/maliyet.js"></script>';
+    }
+      //************MALİYET / FATURALANDIRMA BİTİŞ************************************ */
+
+  //*************Define APARTMENT TYPES******************************** */
 // Daire Tipi Tanımlama sayfası
 
 if (

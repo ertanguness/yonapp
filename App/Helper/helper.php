@@ -97,6 +97,10 @@ class Helper
         '4' => 'Misafir',
         '5' => 'Mirasçı'
     ];
+    public const bakimTuru = [
+        '1' => 'Bakım / Arıza / Onarım',
+        '2' => 'Periyodik Bakım'
+    ];
 
     const DAIRE_TYPE = [];
 
