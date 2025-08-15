@@ -235,6 +235,8 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
             const kisiId = $button.data('kisi-id');
             const onayId = $button.data('onay-id');
 
+            //console.log('Kişi ID:', kisiId, 'Onay ID:', onayId);
+
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -252,6 +254,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                             row.child('<div class="alert alert-danger m-3">Hata: ' + response.message + '</div>').show();
                         }
                     }
+                    console.log('Borçlar yüklendi:', response.data);
                 },
                 error: function() {
                     if (row.child.isShown()) {

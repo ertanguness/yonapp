@@ -65,7 +65,15 @@ $dues = $Dues->getDues();
                                             <tr>
                                                 <td class="text-center"><?php echo $key + 1; ?></td>
                                                 <td><?php echo $due->block_id == 0 ? 'TÜM SİTE' : ''; ?></td>
-                                                <td><?php echo $due->due_name; ?></td>
+                                                <td>
+                                                    <?php echo $due->due_name; ?>
+                                                    <div>
+                                                        <?php if ($due->description) : ?>
+                                                            <span class="hstack gap-1 fs-11 fw-normal text-muted"><?php echo $due->description; ?></span>
+                                                        <?php endif; ?>
+
+                                                    </div>
+                                                </td>
                                                 <td><?php echo $due->amount; ?> ₺</td>
                                                 <td><?php echo date('d.m.Y', strtotime($due->start_date)); ?></td>
                                                 <td><?php echo $due->period; ?> </td>

@@ -712,8 +712,8 @@ if ($_POST['action'] == 'get_kisi_borclari') {
 
         $BorcDetay = new BorclandirmaDetayModel();
         // Bu metodun, sadece ödenmemiş (kalan_tutar > 0) borçları getirmesi gerekir.
-        $odenmemisBorclar = $BorcDetay->getOdenmemisBorclarByKisi($kisiId);
-        //echo json_encode(['status' => 'success', 'message' => 'Kişi ID alındı.' . $kisiId ,
+        $odenmemisBorclar = $FinansalRapor->getKisiGuncelBorclar($kisiId);
+        // echo json_encode(['status' => 'success', 'message' => 'Kişi ID alındı.' . $kisiId ,
         //          'data' => $odenmemisBorclar]);
         // exit();
         $responseBorclar = [];
@@ -721,8 +721,8 @@ if ($_POST['action'] == 'get_kisi_borclari') {
             // Her borç için o anki güncel gecikme zammını hesapla
             // (Bu fonksiyonu bir önceki cevaplarımızda oluşturmuştuk)
             $gecikmeZammi = FinansalHelper::hesaplaGecikmeZammi(
-                $borc->kalan_borc,
-                $borc->son_odeme_tarihi,
+                $borc->kalan_anapara,
+                $borc->bitis_tarihi,
                 $borc->ceza_orani
             );
 
@@ -730,10 +730,10 @@ if ($_POST['action'] == 'get_kisi_borclari') {
                 'id' => Security::encrypt($borc->id),
                 'borc_adi' => htmlspecialchars($borc->borc_adi),
                 'kisi_id' => Security::encrypt($borc->kisi_id), // Kişi ID'sini şifrele
-                'son_odeme_tarihi' => Date::dmY($borc->son_odeme_tarihi),
-                'anapara' => Helper::formattedMoney($borc->kalan_borc),
+                'son_odeme_tarihi' => Date::dmY($borc->bitis_tarihi),
+                'anapara' => Helper::formattedMoney($borc->kalan_anapara),
                 'gecikme_zammi' => Helper::formattedMoney($gecikmeZammi),
-                'toplam_borc' => $borc->kalan_borc + $gecikmeZammi // JS tarafında hesaplama için
+                'toplam_borc' => $borc->kalan_anapara + $gecikmeZammi // JS tarafında hesaplama için
             ];
         }
 

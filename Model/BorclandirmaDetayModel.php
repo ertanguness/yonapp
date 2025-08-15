@@ -304,7 +304,7 @@ class BorclandirmaDetayModel extends Model
         } catch (\PDOException $e) {
             // Hata durumunda, hatayı loglayabilir ve boş bir dizi döndürebiliriz.
             // Bu, uygulamanın çökmesini engeller.
-            // getLogger()->error("Ödenmemiş borçlar getirilirken veritabanı hatası: " . $e->getMessage());
+             getLogger()->error("Ödenmemiş borçlar getirilirken veritabanı hatası: " . $e->getMessage());
 
             // veya hatayı yukarıya fırlatabiliriz, bu daha iyi bir pratik olabilir
             throw new \Exception("Ödenmemiş borçlar getirilirken bir veritabanı hatası oluştu.");

@@ -25,19 +25,49 @@ class Aidat
         $this->db = \getDbConnection();
     }
   
-    public function AidatTuruSelect($name = 'dues', $id = null,$disabled = false)
-    {
-        $query = $this->db->prepare('SELECT * FROM dues where site_id = ?');  // Tüm sütunları seç
-        $query->execute([$_SESSION['site_id']]);  // site_id'ye göre filtrele
-        $results = $query->fetchAll(PDO::FETCH_OBJ);  // Tüm sonuçları al
+    // public function AidatTuruSelect($name = 'dues', $id = null,$disabled = false)
+    // {
+    //     $query = $this->db->prepare('SELECT * FROM dues where site_id = ?');  // Tüm sütunları seç
+    //     $query->execute([$_SESSION['site_id']]);  // site_id'ye göre filtrele
+    //     $results = $query->fetchAll(PDO::FETCH_OBJ);  // Tüm sonuçları al
 
+    //     $select = '<select name="' . $name . '" class="form-select select2" id="' . $name . '" 
+    //     ' . ($disabled ? 'disabled' : '') . '  data-placeholder="Aidat Türü Seçiniz" data-select2-id="' . $name . '"
+    //     style="width:100%">';
+    //     foreach ($results as $row) {  // $results üzerinde döngü
+    //         $selected = $id == $row->id ? ' selected' : '';  // Eğer id varsa seçili yap
+    //         $select .= '<option value="' . Security::encrypt($row->id) . '"' . $selected . '>' . $row->due_name . '</option>';  // $row->title yerine $row->name kullanıldı
+    //     }
+    //     $select .= '</select>';
+    //     return $select;
+    // }
+    public function AidatTuruSelect($name = 'dues', $id = null, $disabled = false)
+    {
+        // Veritabanı sorgusunda açıklama kolonunu da aldığınızdan emin olun.
+        // 'SELECT *' zaten tüm kolonları alacaktır.
+        // Kolon adınız farklıysa ('aciklama' gibi), koddaki 'due_description' kısmını güncelleyin.
+        $query = $this->db->prepare('SELECT * FROM dues WHERE site_id = ?');
+        $query->execute([$_SESSION['site_id']]);
+        $results = $query->fetchAll(PDO::FETCH_OBJ);
+    
         $select = '<select name="' . $name . '" class="form-select select2" id="' . $name . '" 
         ' . ($disabled ? 'disabled' : '') . '  data-placeholder="Aidat Türü Seçiniz" data-select2-id="' . $name . '"
         style="width:100%">';
-        foreach ($results as $row) {  // $results üzerinde döngü
-            $selected = $id == $row->id ? ' selected' : '';  // Eğer id varsa seçili yap
-            $select .= '<option value="' . Security::encrypt($row->id) . '"' . $selected . '>' . $row->due_name . '</option>';  // $row->title yerine $row->name kullanıldı
+    
+        // Boş bir başlangıç seçeneği ekleyebilirsiniz
+        $select .= '<option></option>'; 
+    
+        foreach ($results as $row) {
+            $selected = ($id == $row->id) ? ' selected' : '';
+            // Açıklamayı data-description attribute'u olarak ekliyoruz.
+            // htmlspecialchars() kullanımı güvenlik için önemlidir.
+            $description = isset($row->description) ? htmlspecialchars($row->description, ENT_QUOTES, 'UTF-8') : '';
+            
+            $select .= '<option value="' . Security::encrypt($row->id) . '"' . $selected . ' data-description="' . $description . '">' 
+                     . htmlspecialchars($row->due_name, ENT_QUOTES, 'UTF-8') 
+                     . '</option>';
         }
+    
         $select .= '</select>';
         return $select;
     }

@@ -95,12 +95,9 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                                                                 .</p>
                                                             <div
                                                                 class="project-list-action fs-12 d-flex align-items-center gap-3 mt-2">
-                                                                <a href="javascript:void(0);">Start</a>
+                                                                <a href="javascript:void(0);">Esleşen Havuza Gönder</a>
                                                                 <span class="vr text-muted"></span>
-                                                                <a href="javascript:void(0);">Edit</a>
-                                                                <span class="vr text-muted"></span>
-                                                                <a href="javascript:void(0);"
-                                                                    class="text-danger">Delete</a>
+                                                               
                                                             </div>
                                                         </div>
                                                     </div>
