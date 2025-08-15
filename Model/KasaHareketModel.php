@@ -28,5 +28,20 @@ class KasaHareketModel extends Model{
     }
 
 
+    /** Kasa hareketlerini getirir.
+     * @param int $kasa_id
+     * @return array
+     * @throws \Exception
+     */
+    public function getKasaHareketleri($kasa_id)
+    {
+        $query = "SELECT * FROM {$this->table} WHERE kasa_id = :kasa_id ORDER BY islem_tarihi DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
+
+
     
 }

@@ -5,6 +5,10 @@ namespace Model;
 
 use Model\Model;
 use Model\BloklarModel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Helper\Date;
+use Model\KisilerModel;
+
 use PDO;
 
 class BorclandirmaDetayModel extends Model
@@ -17,6 +21,7 @@ class BorclandirmaDetayModel extends Model
     {
         parent::__construct($this->table);
     }
+
 
 
     /**
@@ -299,7 +304,7 @@ class BorclandirmaDetayModel extends Model
         } catch (\PDOException $e) {
             // Hata durumunda, hatayı loglayabilir ve boş bir dizi döndürebiliriz.
             // Bu, uygulamanın çökmesini engeller.
-            // getLogger()->error("Ödenmemiş borçlar getirilirken veritabanı hatası: " . $e->getMessage());
+             getLogger()->error("Ödenmemiş borçlar getirilirken veritabanı hatası: " . $e->getMessage());
 
             // veya hatayı yukarıya fırlatabiliriz, bu daha iyi bir pratik olabilir
             throw new \Exception("Ödenmemiş borçlar getirilirken bir veritabanı hatası oluştu.");
@@ -308,7 +313,7 @@ class BorclandirmaDetayModel extends Model
         }
     }
 
-        /** Kolonddaki değeri gelen değerle toplayarak artrırır
+    /** Kolonddaki değeri gelen değerle toplayarak artrırır
      * @param int $id
      * @param string $column
      * @param float $amount
@@ -337,4 +342,162 @@ class BorclandirmaDetayModel extends Model
     }
 
 
+    // *************************************************************************************** */
+
+    /**
+     * Yüklenen bir Excel dosyasındaki daire bilgilerini işler ve veritabanına kaydeder.
+     * Bu metot, "Benzersiz Daire Kodu"nu kullanarak daireleri bulur ve günceller/ekler.
+     *
+     * @param string $tmpFilePath Yüklenen dosyanın geçici yolu ($_FILES['file']['tmp_name']).
+     * @param int $siteId İşlem yapılan sitenin ID'si.
+     * @return array Başarılı ve hatalı işlemler hakkında bilgi içeren bir sonuç dizisi.
+     */
+    public function excelUpload(string $tmpFilePath, int $siteId, $postData): array
+    {
+
+        // Logger'ı başlat
+        $logger = getLogger();
+        // $logger->info("Excel daire yükleme işlemi başlatıldı.", [
+        //     'site_id' => $siteId,
+        //     'file_path' => $tmpFilePath
+        // ]);
+
+
+        // Sonuçları ve hataları toplayacağımız diziler
+        $processedCount = 0;
+        $errorRows = [];
+        $skippedCount = 0; // Atlanan kayıt sayısı
+
+        try {
+            $spreadsheet = IOFactory::load($tmpFilePath);
+            $worksheet = $spreadsheet->getActiveSheet();
+            // toArray() yerine getRowIterator() kullanmak büyük dosyalarda daha az bellek tüketir.
+            $rows = $worksheet->getRowIterator();
+          
+
+            // Başlık satırını oku ve sütun indekslerini haritala.
+            if (!$rows->valid()) {
+                // Eğer dosya tamamen boşsa, burada işlemi bitirebilirsiniz.
+                return ['status' => 'error', 'message' => 'Yüklenen Excel dosyası boş veya okunamıyor.'];
+            }
+
+            $header = [];
+            foreach ($rows->current()->getCellIterator() as $cell) {
+                $header[$cell->getColumn()] = trim($cell->getValue() ?? ''); // Başlıklardaki boşlukları da temizle
+            }
+            $rows->next(); // Başlık satırını ATLA ve veri satırlarına geç
+
+
+            // === 2. TÜM İŞLEMLERİ TEK BİR TRANSACTION İÇİNDE YAP ===
+            $this->db->beginTransaction();
+
+            // `foreach` yerine `while` döngüsü kullanarak iteratörün kontrolünü ele al.
+            while ($rows->valid()) {
+                $row = $rows->current(); // Mevcut satırı al
+
+                $rowData = [];
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // Boş hücreleri de al
+                foreach ($cellIterator as $cell) {
+                    // Başlık haritasını kullanarak veriyi anahtar-değer şeklinde al
+                    $columnHeader = $header[$cell->getColumn()] ?? null;
+                    if ($columnHeader) {
+                        $rowData[$columnHeader] = $cell->getValue();
+                    }
+                }
+
+                // Satır tamamen boşsa atla
+                if (count(array_filter($rowData)) == 0) {
+                    $rows->next(); // Bir sonraki satıra geç
+                    continue;
+                }
+
+                // Verileri al ve temizle
+                $kisiID             = trim($rowData['Kişi ID*'] ?? '');
+                $ceza_orani         = trim($rowData['Ceza Oranı %'] ?? '0'); // Ceza oranı, boşsa 0 olarak ayarla
+                $aciklama           = trim($rowData['Açıklama'] ?? $postData['aciklama']);
+
+                $kisi = new KisilerModel();
+                //Kişiyi bul
+                $kisi = $kisi->find($kisiID);
+                // Eğer zorunlu alanlar boşsa, hatayı kaydet ve sonraki satıra geç
+                if (empty($kisi)) {
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' =>  "Satır {$row->getRowIndex()}: 'Kişi ID' zorunludur.",
+                        'data' => $rowData // SATIRIN TÜM VERİSİNİ EKLE
+                    ];
+
+                    $rows->next(); // Bir sonraki satıra geç
+                    continue;
+                }
+
+                $daireId = $kisi->daire_id; // Kişinin daire ID'sini al
+                $blokId = $kisi->blok_id; // Kişinin blok ID'sini al
+
+
+
+                // === 3. ANA MANTIK: TEK SORGULA, KARAR VER, İŞLEM YAP ===
+                // Veritabanına eklenecek veriyi hazırla
+                $borcData = [
+                    'borclandirma_id'   => $postData['borc_id'], // Borçlandırma ID'si
+                    'blok_id'           => $blokId,
+                    'daire_id'          => $daireId, // Daire ID'si boş olabilir, yeni daire ekleniyorsa null
+                    'borc_adi'          => $postData['borc_adi'], // Borç adı
+                    'kisi_id'           => $kisiID, 
+                    'tutar'             => (float)(abs($rowData['Tutar']) ?? 0.0), // Tutarı float olarak al
+                    'hedef_tipi'        => $postData['hedef_tipi'], // Hedef tipi (blok, daire, kişi)
+                    'baslangic_tarihi'  => $postData['baslangic_tarihi'] , 
+                    'bitis_tarihi'      => $postData['bitis_tarihi'] , 
+                    'son_odeme_tarihi'  => $postData['bitis_tarihi'] ?? null, // Son ödeme tarihi
+                    'ceza_orani'        => (float)$ceza_orani, // Ceza oranını float olarak al
+                    'aciklama'          => $aciklama, // Açıklama
+                ];
+
+                $this->saveWithAttr($borcData);
+                $processedCount++;
+
+                // Döngünün sonunda bir sonraki satıra MANUEL olarak geç.
+                $rows->next();
+            }
+
+            // === 4. İŞLEMİ SONLANDIR ===
+            $this->db->commit();
+            $logger->info("Excel borç yükleme tamamlandı.", [
+                'İşlenen kayıt sayısı' => $processedCount,
+                'atlanan kayıt sayısı' => $skippedCount,
+                'hatalı kayıt sayısı' => count($errorRows)
+            ]);
+
+            $message = "İşlem tamamlandı: {$processedCount} yeni kişi eklendi, {$skippedCount} kayıt zaten mevcut olduğu için atlandı.";
+            if (!empty($errorRows)) {
+                $message .= " " . count($errorRows) . " satırda hata oluştu.";
+            }
+
+            return [
+                'status' => 'success',
+                'message' => $message,
+                'data' => [
+                    'success_count' => $processedCount,
+                    'skipped_count' => $skippedCount,
+                    'error_rows' => $errorRows,
+                ]
+            ];
+        } catch (\PDOException $e) {
+            // Veritabanı hatası olursa, tüm işlemleri geri al
+            $this->db->rollBack();
+            $logger->error("Excel daire yükleme sırasında veritabanı hatası.", ['error' => $e->getMessage()]);
+            return ['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()];
+        } catch (\Exception $e) {
+            // Dosya okuma veya başka bir genel hata olursa
+            // Not: `rollBack()` sadece transaction başlatıldıysa çalışır, aksi halde hata verir.
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            $logger->error("Excel daire yükleme sırasında genel hata.", ['error' => $e->getMessage()]);
+            return ['status' => 'error', 'message' => 'İşlem sırasında bir hata oluştu: ' . $e->getMessage()];
+        }
+    }
+
+    /* ***************************************************************************************/
 }

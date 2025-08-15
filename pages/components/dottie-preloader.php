@@ -9,7 +9,7 @@
     width: 100%;
     height: 100%;
     /* Görseldeki gibi hafif beyaz bir overlay */
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(2px);
     /* Arka planı hafifçe bulanıklaştırır (isteğe bağlı) */
 
@@ -44,16 +44,16 @@
 <!-- Yükleme Overlay'i (Artık bu kartın içinde) -->
 <div id="loading-overlay">
     <div class="loading-content">
-        <!-- 1. Lottie Animasyonu -->
-
-        <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module">
+        <!-- 1. Lottie Animasyonu-->
+         <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module">
         </script>
         <div class="row text-center">
 
             <dotlottie-player src="https://lottie.host/89ed090e-17ef-4759-a81f-253d8ac79b03/aG8CcljtbZ.lottie"
-                background="transparent" speed="1" style="width: 200px; height: 200px" loop autoplay>
+                background="transparent" speed="1" style="width: 150px; height: 150px" loop autoplay>
             </dotlottie-player>
-        </div>
+        </div> 
+      
         <div class="row text-center">
 
             <p class=" text-white fs-5 mt-3">

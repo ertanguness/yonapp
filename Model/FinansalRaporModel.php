@@ -42,12 +42,12 @@ class FinansalRaporModel extends Model
     public function getGuncelBorclarGruplu($site_id)
     {
         $sql = $this->db->prepare("SELECT kisi_id,daire_kodu,adi_soyadi,uyelik_tipi, 
-                                    SUM(tutar) AS kalan_anapara,  
-                                    SUM(hesaplanan_gecikme_zammi) AS hesaplanan_gecikme_zammi,
-                                    SUM(toplam_kalan_borc) AS toplam_kalan_borc 
-                                    FROM $this->table 
-                                    WHERE site_id = ?  and toplam_kalan_borc > 0
-                                    GROUP BY kisi_id, daire_kodu, adi_soyadi, uyelik_tipi");
+                                                SUM(kalan_anapara) AS kalan_anapara,  
+                                                SUM(hesaplanan_gecikme_zammi) AS hesaplanan_gecikme_zammi,
+                                                SUM(toplam_kalan_borc) AS toplam_kalan_borc 
+                                          FROM $this->table 
+                                          WHERE site_id = ? and toplam_kalan_borc > 0
+                                          GROUP BY kisi_id, daire_kodu, adi_soyadi, uyelik_tipi");
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
@@ -83,6 +83,8 @@ class FinansalRaporModel extends Model
     }
 
 
+
+   
 
 
 

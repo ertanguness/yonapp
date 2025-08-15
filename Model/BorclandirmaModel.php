@@ -15,21 +15,23 @@ class BorclandirmaModel extends Model
         parent::__construct($this->table);
     }
 
-//    /**
-//     * Siteye ait tüm borçlandırmaları getirir.
-//     *@param int $site_id
-//     *@return array
-//     */
-//     public function all($site_id = null)
-//     {
 
-//         $query = "SELECT * FROM {$this->table} WHERE site_id = :site_id ORDER BY bitis_tarihi DESC";
-//         $stmt = $this->db->prepare($query);
-//         $stmt->bindParam(':site_id', $site_id, );
-//         $stmt->execute();
-//         return $stmt->fetchAll(PDO::FETCH_OBJ);
-//     }
 
+    /** Borçlandırma bilgilerini, borç adıyla beraber döndürür
+     * @param int|string $borclandirma_id
+     * @return object
+     */
+    public function findWithDueName($borclandirma_id)
+    {
+        $sql = $this->db->prepare("SELECT 
+                                            b.*,
+                                            d.due_name as borc_adi 
+                                            FROM {$this->table} b
+                                            LEFT JOIN dues d ON d.id = b.borc_tipi_id 
+                                            WHERE b.id = ? AND b.silinme_tarihi IS NULL");
+        $sql->execute([$borclandirma_id]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
 
 
 /**

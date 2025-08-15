@@ -11,13 +11,13 @@ class Form
      * * @param array $options Select elemanının seçenekleri
      * * @param string $selected Seçili olan değer
      */
-    public static function Select2($name, $options = [], $selected = null, $class = 'form-select select2 w-100')
+    public static function Select2($name, $id = null, $options = [], $selected = null, $class = 'form-select select2 w-100')
     {
         // ID değeri verilmemişse, name değerini kullan
         $id = $id ?? $name;
 
         // Select başlangıcı
-        $select = '<select id="' . htmlspecialchars($name) . 
+        $select = '<select id="' . htmlspecialchars($id) . 
                       '" name="' . htmlspecialchars($name) . 
                      '" class="' . htmlspecialchars($class) . '">';
 
@@ -50,7 +50,8 @@ public static function Select2Multiple(
     array $options = [],
     array $selectedValues = [], // Artık bir dizi olarak bekleniyor
     string $class = 'form-select select2 w-100',
-    ?string $id = null
+    ?string $id = null,
+    $disabled = false // İsteğe bağlı olarak disabled niteliği eklenebilir
 ): string 
 {
     // ID değeri verilmemişse, name'deki "[]" karakterlerini temizleyerek bir ID türet.
@@ -59,7 +60,8 @@ public static function Select2Multiple(
     // Select başlangıcı
     $select = '<select id="' . htmlspecialchars($elementId) . '" ' .
                     'name="' . htmlspecialchars($name) . '" ' .
-                    'class="' . htmlspecialchars($class) . '" multiple="multiple">'; // multiple niteliği standartlara uygun hale getirildi.
+                    'class="' . htmlspecialchars($class) . '" multiple="multiple"
+                    ' . ($disabled ? 'disabled' : '') . '>'; // multiple niteliği standartlara uygun hale getirildi.
 
     // Seçenekleri döngüyle ekle
     foreach ($options as $value => $label) {

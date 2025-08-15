@@ -9,16 +9,18 @@ use App\Helper\FinansalHelper;
 use App\Helper\Aidat;
 use Model\DairelerModel;
 use Model\KisilerModel;
+use Model\KisiKredileriModel;
 use Model\BorclandirmaDetayModel;
 use Model\FinansalRaporModel;
 
 
 use App\Services\Gate;
-
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Round;
 
 $Aidat = new Aidat();
 $Daire = new DairelerModel();
 $Kisiler = new KisilerModel();
+$KisiKredi = new KisiKredileriModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $FinansalRapor = new FinansalRaporModel();
 
@@ -28,6 +30,15 @@ $id = Security::decrypt($_GET['kisi_id']) ?? 0;
 //$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
 
 $kisi_guncel_borclar = $FinansalRapor->getKisiGuncelBorclar($id);
+$kredi = $KisiKredi->getKisiKredileri($id) ?? 0;
+
+// Kullanıcının finansal durumunu al
+$finansalDurum = $BorcDetay->KisiFinansalDurum($id);
+
+//kişinin bakiyesini getir
+$bakiye = $finansalDurum->bakiye ?? 0;
+
+//Kredinin borcu karşılama yüzdesini al
 
 
 Gate::authorizeOrDie('tahsilat_ekle_sil', 'Bu sayfayı görüntüleme yetkiniz yok!');
@@ -63,27 +74,36 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                 <div class="fs-11 text-muted">
 
                     <?php echo $Daire->DaireKodu($kisi->daire_id) ?>
+                    <h6 class="fs-14 text-truncate-1-line">Toplam Borç
+                        <span class="text-dark fw-medium">:
+
+                            <?php echo Helper::formattedMoney($bakiye); ?>
+                        </span>
+                    </h6>
+
+
                 </div>
             </div>
         </div>
-   
-                <div class="hstack justify-content-between gap-4">
-                    <div class="cursor-pointer">
-                        <h6 class="fs-14 text-truncate-1-line">Kullanılabilir Kredi</h6>
-                        <div class="fs-14 text-muted"><span class="text-dark fw-medium">Kullan :</span> 550,00 ₺      </div>
-                    </div>
-                    <div class="project-progress-4" role="progressbar" aria-valuemin="0" aria-valuemax="100"
-                        aria-valuenow="75"><svg version="1.1" width="100" height="100" viewBox="0 0 100 100"
-                            class="circle-progress">
-                            <circle class="circle-progress-circle" cx="50" cy="50" r="46" fill="none" stroke="#ddd"
-                                stroke-width="8"></circle>
-                            <path d="M 50 4 A 46 46 0 1 1 4 50.00000000000001" class="circle-progress-value" fill="none"
-                                stroke="#00E699" stroke-width="8"></path><text class="circle-progress-text" x="50"
-                                y="50" font="16px Arial, sans-serif" text-anchor="middle" fill="#999"
-                                dy="0.4em">75%</text>
-                        </svg></div>
+
+        <div class="hstack justify-content-between gap-4">
+            <div class="cursor-pointer">
+                <h6 class="fs-14 text-truncate-1-line">Kullanılabilir Kredi</h6>
+                <div class="fs-14 text-muted kredi-kullan" data-kredi="<?php echo $kredi ?>"><span class="text-dark fw-medium">Kullan :</span>
+                    <?php echo Helper::formattedMoney($kredi); ?> </div>
                 </div>
-           
+                <div class="d-column">
+
+                    <h6 class="fs-14 text-truncate-1-line">Kullanılacak Kredi</h6>
+                    <div class="fs-14">
+                        <input type="text" class="form-control w-50" id="kullanilacak_kredi" name="kullanilacak_kredi"
+                        value="0">
+                    </div>
+                </div>
+                    
+
+        </div>
+
         <div class="float-end text-end">
 
             <div>
@@ -251,8 +271,8 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                                     <label class="form-label">Tarih</label>
                                     <div class="input-group">
                                         <div class="input-group-text"><i class="feather-calendar"></i></div>
-                                        <input type="text" class="form-control flatpickr" name="islem_tarihi"
-                                            value="<?php echo date("d.m.Y") ?>">
+                                        <input type="text" class="form-control flatpickr" name="islem_tarihi" id="islem_tarihi"
+                                            value="<?php echo date("d.m.Y H:i") ?>">
                                     </div>
                                 </div>
                                 <div class="col-lg-12 mb-3">
@@ -294,12 +314,19 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
 </div>
 
 <script>
-$(document).on("focus", ".flatpickr", function() {
-    $(this).inputmask("99.99.9999", {
-        placeholder: "gg.aa.yyyy",
-        clearIncomplete: true,
-    });
-});
+// $(document).on("focus", ".flatpickr", function() {
+//     $(this).inputmask("99.99.9999", {
+//         placeholder: "gg.aa.yyyy",
+//         clearIncomplete: true,
+    
+//     });
+// });
+
+$(function () {
+
+  
+})
+
 $(document).on("focus", ".money", function() {
     $(this).inputmask("decimal", {
         radixPoint: ",",
@@ -311,4 +338,6 @@ $(document).on("focus", ".money", function() {
         removeMaskOnSubmit: true,
     });
 });
+
+
 </script>

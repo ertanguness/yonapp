@@ -104,7 +104,7 @@ $borclar = $Borc->getAll($site_id);
                                                     }elseif($borc_tipi == 'block'){
                                                       $borclandirma_tipi = "Blok";
                                                       $borclandirma_detay =  $BorcDetay->BorclandirilmisBlokIsimleri($borc->id);
-                                                   }elseif($borc_tipi == 'kisi'){
+                                                   }elseif($borc_tipi == 'person'){
                                                       $borclandirma_tipi = "Kişi";
                                                       $borclandirma_detay =  'Kişilere göre borçlandırma yapıldı';
                                                     }elseif($borc_tipi == 'dairetipi'){
@@ -129,7 +129,7 @@ $borclar = $Borc->getAll($site_id);
                                             <td>
                                                 <div class="text-truncate cursor-pointer" data-bs-toggle="tooltip"
                                                     data-bs-trigger="hover" title=""
-                                                    data-bs-original-title="Tahsilat Detayları için tıklayın"
+                                                    data-bs-original-title="Yapılan tahsilat görüntülemek için tıklayın!"
                                                     style="max-width: 200px;">
 
                                                     <div class="mb-2">

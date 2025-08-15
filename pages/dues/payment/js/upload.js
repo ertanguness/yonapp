@@ -65,6 +65,8 @@ document
 $(document).on("click", "#upload_payment_file", function (e) {
   e.preventDefault();
   const fileInput = document.getElementById("payment_file");
+  const loadingOverlay = document.getElementById("loading-overlay");
+
   if (!fileInput.files.length) {
     swal.fire({
       title: "Hata",
@@ -78,6 +80,8 @@ $(document).on("click", "#upload_payment_file", function (e) {
   const formData = new FormData();
   formData.append("action", "payment_file_upload");
   formData.append("payment_file", fileInput.files[0]);
+
+  loadingOverlay.style.display = "flex"; // CSS'te flex kullandığımız için 'flex' yapıyoruz
 
   Pace.restart(); // Pace yükleme çubuğunu başlat
   fetch(url, {
@@ -93,10 +97,10 @@ $(document).on("click", "#upload_payment_file", function (e) {
         html: data.message,
         icon: data.status,
         confirmButtonText: "Tamam",
+      }).then(() => {
+        window.location.href = "index?p=dues/payment/tahsilat-onay"; // Başarılı ise yönlendir
       });
-      if (data.status === "success") {
-        fileInput.value = ""; // Dosya girişini temizle
-      }
+      
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -105,6 +109,8 @@ $(document).on("click", "#upload_payment_file", function (e) {
         text: "Dosya yüklenirken bir hata oluştu.",
         icon: "error",
         confirmButtonText: "Tamam",
+      }).then(() => {
+        loadingOverlay.style.display = "none"; // Yükleme overlay'ini gizle
       });
     });
 });

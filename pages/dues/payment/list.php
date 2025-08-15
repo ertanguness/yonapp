@@ -51,7 +51,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 <a href="index?p=dues/payment/tahsilat-onay" class="btn btn-outline-success">
                     <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
                 </a>
-                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-secondary">
+                <a href="index?p=dues/payment/tahsilat-eslesmeyen" class="btn btn-outline-secondary">
                     <i class="feather-copy me-2"></i>Eşleşmeyen Ödemeler
                 </a>
                 <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-primary">
@@ -100,48 +100,51 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                             //$color = $kalan_borc < 0 ? 'danger' : 'success';
 
                                         ?>
-                                            <tr>
+                                        <tr>
 
-                                                <td><?php echo $index + 1 ?></td>
-                                                <td class="text-center"><?= ($borc->daire_kodu) ?> </td>
-                                             
-                                                <td><?= $borc->adi_soyadi ?>
+                                            <td><?php echo $index + 1 ?></td>
+                                            <td class="text-center"><?= ($borc->daire_kodu) ?> </td>
+
+                                            <td><?= $borc->adi_soyadi ?>
                                                 <div>
-                                                    <?php 
+                                                    <?php
                                                         $uyelik_tipi = $borc->uyelik_tipi;
                                                         $badge_color = $uyelik_tipi == "Kiracı" ? "danger" : "teal"
-                                                    ?>
-                                                <a href="javascript:void(0)" class="badge text-<?= $badge_color ?> border border-dashed border-gray-500"><?= $uyelik_tipi ?></a>
+                                                        ?>
+                                                    <a href="javascript:void(0)"
+                                                        class="badge text-<?= $badge_color ?> border border-dashed border-gray-500"><?= $uyelik_tipi ?></a>
                                                 </div>
 
-                                                </td>
-                                                <td class="text-end">
-                                                    <i class="feather-trending-down fw-bold text-danger"></i>
+                                            </td>
+                                            <td class="text-end">
+                                                <i class="feather-trending-down fw-bold text-danger"></i>
 
-                                                    <?= Helper::formattedMoney($borc->kalan_anapara)   ?>
-                                                </td>
-                                                <td class="text-end"><?= Helper::formattedMoney($borc->hesaplanan_gecikme_zammi) ?>
-                                                </td>
-                                                <td class="text-end"><?= Helper::formattedMoney($borc->toplam_kalan_borc) ?></td>
-                                                <td style="width:5%;">
-                                                    <div class="hstack gap-2 ">
-                                                        <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                            class="avatar-text avatar-md kisi-borc-detay">
-                                                            <i class="feather-eye"></i>
-                                                        </a>
+                                                <?= Helper::formattedMoney($borc->kalan_anapara)   ?>
+                                            </td>
+                                            <td class="text-end">
+                                                <?= Helper::formattedMoney($borc->hesaplanan_gecikme_zammi) ?>
+                                            </td>
+                                            <td class="text-end"><?= Helper::formattedMoney($borc->toplam_kalan_borc) ?>
+                                            </td>
+                                            <td style="width:5%;">
+                                                <div class="hstack gap-2 ">
+                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
+                                                        class="avatar-text avatar-md kisi-borc-detay">
+                                                        <i class="feather-eye"></i>
+                                                    </a>
 
-                                                        <?php if (Gate::allows('tahsilat_ekle_sil')) {; ?>
-                                                            <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                                title="Tahsilat Gir"
-                                                                data-kisi-id="<?php echo Security::encrypt($borc->kisi_id) ?>"
-                                                                class="avatar-text avatar-md tahsilat-gir">
-                                                                <i class="bi bi-credit-card-2-front"></i>
-                                                            </a>
-                                                        <?php } ?>
-                                                    </div>
-                                                </td>
+                                                    <?php if (Gate::allows('tahsilat_ekle_sil')) {; ?>
+                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
+                                                        title="Tahsilat Gir"
+                                                        data-kisi-id="<?php echo Security::encrypt($borc->kisi_id) ?>"
+                                                        class="avatar-text avatar-md tahsilat-gir">
+                                                        <i class="bi bi-credit-card-2-front"></i>
+                                                    </a>
+                                                    <?php } ?>
+                                                </div>
+                                            </td>
 
-                                            </tr>
+                                        </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -181,152 +184,207 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
     </div>
 </div>
 <style>
-    .borc-satiri.secili-satir {
-        background-color: #f0f9ff;
-        /* Açık mavi bir arkaplan */
-        border-left: 3px solid #0d6efd;
-        /* Sol tarafa mavi bir çizgi */
-    }
+.borc-satiri.secili-satir {
+    background-color: #f0f9ff;
+    /* Açık mavi bir arkaplan */
+    border-left: 3px solid #0d6efd;
+    /* Sol tarafa mavi bir çizgi */
+}
+
+.table tr:hover {
+    cursor: pointer;
+}
 </style>
 <script>
-    var kisiId;
-    var secilenBorcIdleri = []; // Seçilen borç ID'lerini tutacak dizi
+var kisiId;
+var secilenBorcIdleri = []; // Seçilen borç ID'lerini tutacak dizi
+let secilenBorcToplami = 0; // Seçilen borçların toplam tutarını tutacak değişken
 
-    $(document).on('click', '.kisi-borc-detay', function() {
-        var id = $(this).data('id');
-        kisiId = $(this).data('id');
-        table = $('#tahsilatTable').DataTable();
-        row = table.row($(this).closest('tr'));
+$(document).on('click', '.kisi-borc-detay', function() {
+    var id = $(this).data('id');
+    kisiId = $(this).data('id');
+    table = $('#tahsilatTable').DataTable();
+    row = table.row($(this).closest('tr'));
 
 
-        $.get("pages/dues/payment/tahsilat-detay.php", {
-            id: id,
-            kisi_id: kisiId
-        }, function(data) {
-            // Verileri tabloya ekle
-            $('.borc-detay').html(data);
-            // Modal'ı göster
-            $('#kisiBorcDetay').modal('show');
-        });
-    });
-
-    $(document).on('click', '.tahsilat-gir', function() {
-        kisiId = $(this).data('kisi-id');
-        table = $('#tahsilatTable').DataTable();
-        row = table.row($(this).closest('tr'));
-        secilenBorcIdleri = []; // Her yeni tahsilat girişinde seçilen borç ID'lerini sıfırla   
-
-        $.get("pages/dues/payment/tahsilat_gir_modal.php", {
-            kisi_id: kisiId
-        }, function(data) {
-            // Verileri tabloya ekle
-            $('.tahsilat-modal-body').html(data);
-            // Modal'ı göster
-            $('#tahsilatGir').modal('show');
-            $(".select2").select2({
-                placeholder: "Kasa Seçiniz",
-                dropdownParent: $('#tahsilatGir'),
-            });
-
-            $("#tahsilat_turu").select2({
-                tags: true,
-                dropdownParent: $('#tahsilatGir'),
-            });
-
-            $(".flatpickr").flatpickr({
-                dateFormat: "d.m.Y",
-                locale: "tr", // locale for this instance only
-            });
-        });
-
+    $.get("pages/dues/payment/tahsilat-detay.php", {
+        id: id,
+        kisi_id: kisiId
+    }, function(data) {
+        // Verileri tabloya ekle
+        $('.borc-detay').html(data);
         // Modal'ı göster
+        $('#kisiBorcDetay').modal('show');
     });
+});
 
-    $(document).ready(function() {
+$(document).on('click', '.tahsilat-gir', function() {
+    kisiId = $(this).data('kisi-id');
+    table = $('#tahsilatTable').DataTable();
+    row = table.row($(this).closest('tr'));
+    secilenBorcIdleri = []; // Her yeni tahsilat girişinde seçilen borç ID'lerini sıfırla   
 
-        /**
-         * Sunucudan toplam tutarı getirir ve ekranı günceller.
-         */
-        function guncelleToplamTutar() {
-            // Eğer hiç borç seçilmemişse, sunucuya istek atmadan sıfırla.
-            if (secilenBorcIdleri.length === 0) {
-                $('#secilen-tahsilat-tutari').text('0.00');
-                $("#tutar").text('0.00');
-                return;
-            }
-
-            const formData = new FormData();
-            secilenBorcIdleri.forEach(id => {
-                formData.append('borc_idler[]', id);
-            });
-            formData.append('action', 'hesapla_toplam_tutar');
-
-
-            fetch(url, {
-                    method: "POST",
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const toplam = parseFloat(data.toplam_tutar).toFixed(2);
-                        $('#secilen-tahsilat-tutari').text(toplam) + ' TL'; // Seçilen tahsilat tutarını güncelle
-                        $("#tutar").val((toplam.replace(".",","))); // Tahsilat gir modalındaki tutar alanını güncelle
-                        //console.log("Toplam tutar:", data);
-                    } else {
-                        console.error('Hata:', data.message);
-                        alert('Toplam tutar hesaplanırken bir hata oluştu.');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        /**
-         * Butonun ve satırın görünümünü günceller.
-         * @param {jQuery} $button - Tıklanan buton nesnesi.
-         * @param {string} action - 'ekle' veya 'cikar'.
-         */
-        function guncelleArayuzu($button, action) {
-            const $satir = $button.closest('.borc-satiri');
-            if (action === 'ekle') {
-                $button.text('Çıkar').data('action', 'cikar').addClass('text-danger');
-                $satir.addClass('secili-satir'); // Arkaplanı değiştirmek için (CSS'te tanımlanmalı)
-            } else { // action === 'cikar'
-                $button.text('Ekle').data('action', 'ekle').removeClass('text-danger');
-                $satir.removeClass('secili-satir');
-            }
-        }
-
-        // "Ekle/Çıkar" butonuna tıklandığında çalışacak ana fonksiyon
-        $(document).on('click', '.tahsilat-islem-btn', function(e) {
-            e.preventDefault(); // a tag'inin varsayılan davranışını engelle
-
-            const $button = $(this);
-            const action = $button.data('action');
-            // Satırın kendisinden ID'yi alıyoruz
-            const borcId = $button.closest('.borc-satiri').data('borc-id');
-
-            if (action === 'ekle') {
-                // Eğer ID zaten dizide yoksa ekle (güvenlik önlemi)
-                if (!secilenBorcIdleri.includes(borcId)) {
-                    secilenBorcIdleri.push(borcId);
-                }
-                guncelleArayuzu($button, 'ekle');
-            } else { // action === 'cikar'
-                // ID'yi diziden çıkar
-                const index = secilenBorcIdleri.indexOf(borcId);
-                if (index > -1) {
-                    secilenBorcIdleri.splice(index, 1);
-                }
-                guncelleArayuzu($button, 'cikar');
-            }
-
-            // Diziyi güncelledikten sonra sunucudan yeni toplamı iste
-            guncelleToplamTutar();
-
-            // Konsolda güncel diziyi görebilirsiniz (hata ayıklama için)
-            //console.log("Seçilen ID'ler:", secilenBorcIdleri);
+    $.get("pages/dues/payment/tahsilat_gir_modal.php", {
+        kisi_id: kisiId
+    }, function(data) {
+        // Verileri tabloya ekle
+        $('.tahsilat-modal-body').html(data);
+        // Modal'ı göster
+        $('#tahsilatGir').modal('show');
+        $(".select2").select2({
+            placeholder: "Kasa Seçiniz",
+            dropdownParent: $('#tahsilatGir'),
         });
 
+        $("#tahsilat_turu").select2({
+            tags: true,
+            dropdownParent: $('#tahsilatGir'),
+        });
+
+        $("#islem_tarihi").flatpickr({
+            dateFormat: "d.m.Y H:i",
+            locale : "tr",
+           enableTime: true,
+           minuteIncrement :1,
+        })
+
     });
+
+    // Modal'ı göster
+});
+
+$(document).ready(function() {
+
+
+
+    /**
+     * Sunucudan toplam tutarı getirir ve ekranı günceller.
+     */
+    function guncelleToplamTutar() {
+        // Eğer hiç borç seçilmemişse, sunucuya istek atmadan sıfırla.
+        if (secilenBorcIdleri.length === 0) {
+            $('#secilen-tahsilat-tutari').text('0.00');
+            $("#tutar").text('0.00');
+
+            return;
+        }
+
+        const formData = new FormData();
+        secilenBorcIdleri.forEach(id => {
+            formData.append('borc_idler[]', id);
+        });
+        formData.append('action', 'hesapla_toplam_tutar');
+
+
+        fetch(url, {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const toplam = parseFloat(data.toplam_tutar).toFixed(2);
+                    $('#secilen-tahsilat-tutari').text(toplam) +
+                        ' TL'; // Seçilen tahsilat tutarını güncelle
+                    $("#tutar").val((toplam.replace(".",
+                        ","))); // Tahsilat gir modalındaki tutar alanını güncelle
+                    secilenBorcToplami = toplam; // Seçilen borçların toplam tutarını güncelle
+                    //console.log("Toplam tutar:", data);
+                } else {
+                    console.error('Hata:', data.message);
+                    alert('Toplam tutar hesaplanırken bir hata oluştu.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    /**
+     * Butonun ve satırın görünümünü günceller.
+     * @param {jQuery} $button - Tıklanan buton nesnesi.
+     * @param {string} action - 'ekle' veya 'cikar'.
+     */
+    function guncelleArayuzu($button, action) {
+        const $satir = $button.closest('.borc-satiri');
+        if (action === 'ekle') {
+            $button.text('Çıkar').data('action', 'cikar').addClass('text-danger');
+            $satir.addClass('secili-satir'); // Arkaplanı değiştirmek için (CSS'te tanımlanmalı)
+        } else { // action === 'cikar'
+            $button.text('Ekle').data('action', 'ekle').removeClass('text-danger');
+            $satir.removeClass('secili-satir');
+        }
+    }
+
+    // "Ekle/Çıkar" butonuna tıklandığında çalışacak ana fonksiyon
+
+    $(document).on('click', '.borc-satiri, .tahsilat-islem-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation(); // ÖNEMLİ: İç içe tıklamaların birbirini tetiklemesini engeller
+
+        const $satir = $(this).closest('.borc-satiri');
+        const borcId = $satir.data('borc-id');
+
+        // Satırın içindeki butonu bul
+        const $button = $satir.find('.tahsilat-islem-btn');
+
+        // Butonun mevcut 'data-action' durumuna göre ne yapılacağına karar ver
+        const mevcutAction = $button.data('action');
+
+        if (mevcutAction === 'ekle') {
+            // EKLEME İŞLEMİ
+            if (!secilenBorcIdleri.includes(borcId)) {
+                secilenBorcIdleri.push(borcId);
+            }
+            guncelleArayuzu($button, 'ekle'); // Butonun durumunu değiştir
+
+        } else { // mevcutAction === 'cikar'
+            // ÇIKARMA İŞLEMİ
+            const index = secilenBorcIdleri.indexOf(borcId);
+            if (index > -1) {
+                secilenBorcIdleri.splice(index, 1);
+            }
+            guncelleArayuzu($button, 'cikar'); // Butonun durumunu değiştir
+        }
+
+        // Toplam tutarı her zaman güncelle
+        guncelleToplamTutar();
+
+        console.log("Seçilen ID'ler:", secilenBorcIdleri);
+    });
+
+
+    $(document).on('click', '.kredi-kullan', function() {
+        $("#kullanilacak_kredi").val($(this).data("kredi"));
+        updateTahsilatTutari();
+    });
+    // //Kredi kullanımını kontrol et
+    // $(document).on('input', '#kullanilacak_kredi', function() {
+    //     var kredi = ($(this).val() || 0).replace(',', '.');
+    //     kredi = parseFloat(kredi);
+
+    //     if (isNaN(kredi) || kredi < 0) {
+    //         kredi = 0;
+    //     }
+
+    //     // Tahsilat tutarını güncelle
+    //     var toplamTutar = secilenBorcToplami - kredi;
+    //     $("#tutar").val(toplamTutar.toFixed(2).replace('.', ','));
+
+    // });
+
+    function updateTahsilatTutari() {
+        var kredi = ($("#kullanilacak_kredi").val() || 0).replace(',', '.');
+        kredi = parseFloat(kredi);
+
+        if (isNaN(kredi) || kredi < 0) {
+            kredi = 0;
+        }
+
+        // Tahsilat tutarını güncelle
+        var toplamTutar = secilenBorcToplami - kredi;
+        $("#tutar").val(toplamTutar.toFixed(2).replace('.', ','));
+    }
+
+
+
+});
 </script>

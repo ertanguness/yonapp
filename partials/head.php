@@ -1,3 +1,7 @@
+<?php 
+$page = isset($_GET['p']) ? $_GET['p'] : '';
+
+?>
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
@@ -15,13 +19,21 @@
     <!--! BEGIN: Bootstrap CSS-->
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css" />
     <!--! END: Bootstrap CSS-->
-    <!--! BEGIN: Vendors CSS-->
+  
+    <link rel="stylesheet" type="text/css" href="assets/vendors/css/select2.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="assets/vendors/css/select2-theme.min.css"> -->
+    
+    
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/vendors.min.css" />
+    
+    
+    <?php 
+    if($page == "home"){
+    ?>
+      <!--! BEGIN: Vendors CSS-->
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/daterangepicker.min.css" />
 	
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/jquery-jvectormap.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/vendors/css/select2.min.css">
-    <!-- <link rel="stylesheet" type="text/css" href="assets/vendors/css/select2-theme.min.css"> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/jquery.time-to.min.css">	
 	
@@ -37,13 +49,16 @@
 	<link type="text/css" rel="stylesheet" href="assets/vendors/css/emojionearea.min.css">	
 
 	<link rel="stylesheet" type="text/css" href="assets/vendors/css/jquery.time-to.min.css">
-	
+	<?php } ?>
+    
+    
+    
+    <link rel="stylesheet" type="text/css" href="assets/css/theme.min.css" />
+    
 	<link rel="stylesheet" type="text/css" href="assets/vendors/css/dataTables.bs5.min.css">	
     <!--! END: Vendors CSS-->
     <!--! BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="assets/css/theme.min.css" />
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="assets/vendors/css/tooltip.css" />
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/flatpickr.min.css" />
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -59,7 +74,7 @@
 
 
     <script src="./assets/js/jquery.3.7.1.min.js"></script>
-    <script src="assets/js/common-init.min.js"></script>
+    <!-- <script src="assets/js/common-init.min.js"></script> -->
     
 
 </head>

@@ -37,10 +37,16 @@ if (!file_exists($pagePath)) {
 ?>
 <!DOCTYPE html>
 <html lang="tr">
-    <?php include './partials/head.php'; ?>
+<?php include './partials/head.php'; ?>
+
 <body>
     <?php include './partials/left-sidebar.php'; ?>
     <?php include './partials/header.php'; ?>
+    
+    <div id="preloader">
+  <div class="ripple-loader"></div>
+</div>
+
 
     <main class="nxl-container">
         <div class="nxl-content">
@@ -50,15 +56,16 @@ if (!file_exists($pagePath)) {
         <?php include './partials/footer.php'; ?>
     </main>
 
-      <!--! ================================================================ !-->
+    <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
     <!--<< Footer Section Start >>-->
-    <?php //include_once './partials/theme-customizer.php' ?> 
+    <?php //include_once './partials/theme-customizer.php' ?>
     <!--<< All JS Plugins >>-->
     <?php include_once './partials/homepage-script.php'; ?>
 
     <?php include_once "./partials/vendor-scripts.php" ?>
 
 </body>
+
 </html>

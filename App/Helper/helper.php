@@ -3,6 +3,10 @@
 namespace App\Helper;
 
 use Model\DefinesModel;
+use PDO;
+use Exception;
+use DateTime;
+
 
 class Helper
 {
@@ -133,6 +137,7 @@ class Helper
         $value = str_replace('TL', '', $value); // TL'yi kaldırır
         return str_replace(['.', ','], ['', '.'], $value);
     }
+    
 
     // Veritabanından gelen sayıdaki "." yı virgüle çevirir
     public static function moneyToNumber($value)
@@ -412,84 +417,450 @@ class Helper
         $select .= '</select>';
         return $select;
     }
+ 
+
+
+    /**
+     * Serbest metin formatındaki bir açıklamadan standart 'BLOKDDAİRE' formatında
+     * daire kodunu çıkaran, en yüksek isabet oranına sahip nihai fonksiyon.
+     * Bu fonksiyon, bir önceki cevaptaki yapı üzerine inşa edilmiştir.
+     *
+     * @param string|null $description Analiz edilecek açıklama metni.
+     * @return string|null Bulunan ilk daire kodu veya bulunamazsa null.
+     */
     public static function extractApartmentInfo($description)
     {
-        // Önce tüm desenleri tanımlayalım
+        if (empty($description)) {
+            return null;
+        }
+
+        // 1. ADIM: HAZIRLIK - Metni standart bir forma getir.
+        $text = ' ' . strtoupper($description) . ' '; // Başına/sonuna boşluk ekle
+
+        // Adım 1a: Türkçe karakterleri ve özel karakterleri standartlaştır.
+        $text = str_replace(
+            ['İ', 'Ü', 'Ö', 'Ç', 'Ş', 'Ğ', '’', '`', "'", 'Ğ'],
+            ['I', 'U', 'O', 'C', 'S', 'G', '', '', '', 'G'],
+            $text
+        );
+        
+        // Adım 1b: Bitişik yazımları ayır (örn: C3BLOK -> C3 BLOK, DAIRE5 -> DAIRE 5)
+        $text = preg_replace('/([A-Z]\d+)(BLOK|DAIRE)/', '$1 $2', $text);
+        $text = preg_replace('/(BLOK|DAIRE|NO)(\d+)/', '$1 $2', $text);
+
+        // Adım 1c: Tüm ayraçları boşlukla değiştir.
+        $text = str_replace(['/', ',', ':', '_', '(', ')', '.'], ' ', $text);
+        
+        // Adım 1d: "D-5" gibi yapıları "D 5" haline getir.
+        $text = preg_replace('/\b(D|NO)\s*-\s*(\d+)\b/', 'D $2', $text);
+
+        // Adım 1e: Çoklu boşlukları tek boşluğa indir.
+        $text = preg_replace('/\s+/', ' ', $text);
+
+        // 2. ADIM: HİYERARŞİK DESENLER (En spesifikten en genele doğru)
         $patterns = [
-            // Standart formatlar: C5 Daire 9, B1 DAİRE 6, C2- Daire:15
-            '/([A-Z]\d+)\s*(?:BLOK|Blok|blok)?\s*(?:DAİRE|Daire|DAiRE|D\.?)\s*[:\.\-]?\s*(\d+)/i',
+            // DESEN 1: En yüksek öncelikli, %100 kesin format. Bitişik yazım.
+            ['pattern' => '/\b([A-Z]\d+D\d+)\b/'],
 
-            // C5 16 numara, B3 Blok Daire10 gibi bitişik yazımlar
-            '/([A-Z]\d+)\s+(\d+)\s*(?:numara|Daire|No|no)?/i',
+            // DESEN 2: Blok-Daire arasında sadece tire olan yapılar (örn: "C2-5", "B2-16").
+            ['pattern' => '/\b([A-Z]\d+)\s*-\s*(\d+)\b/'],
 
-            // C2.D.13, A1-DAİRE9 gibi nokta/tire ile ayrılmış
-            '/([A-Z]\d+)[\.\-]\s*D\.?\s*(\d+)/i',
+            // DESEN 3: En güçlü ve esnek desen. Blok ve Daire arasında her türlü "gürültü" olabilir.
+            ['pattern' => '/\b([A-Z]\s*\d+)\b.*?(?:DAIRE|DA|D|NO|NUMARA|N)\s*(\d+)\b/'],
+            
+            // DESEN 4: Ters sıralı yapı. Önce Daire, sonra Blok.
+            ['pattern' => '/\b(?:DAIRE|DA|D|NO)\s*(\d+)\b.*?\b(BLOK|BLK)\s*([A-Z]\s*\d+)\b/'],
 
-            // B3 BLOK DAİRE5 gibi bitişik yazımlar
-            '/([A-Z]\d+)\s*BLOK\s*DAİRE\s*(\d+)/i',
-
-            // b1 blok d 17 veya B1 Blok D 17
-            '/([A-Z]\d+)\s*blok\s*d\s*(\d+)/i',
-
-            // c5 blok no 19
-            '/([A-Z]\d+)\s*blok\s*no\s*(\d+)/i',
-
-            // A1-DAİRE 9, C1-Daire 5
-            '/([A-Z]\d+)[\-\.]?\s*DAİRE\s*(\d+)/i',
-
-            // C3 16 gibi basit formatlar
-            '/([A-Z]\d+)\s+(\d+)/',
-
-            // B1D5, C2D13 gibi direkt formatlar
-            '/([A-Z]\d+D\d+)/i',
-
-            // Özel durumlar: C2- Daire:15
-            '/([A-Z]\d+)\-?\s*Daire\s*\:?\s*(\d+)/i',
-
-            // Blok ve daire farklı konumda: BLOK C5 DAİRE 9
-            '/(?:BLOK|Blok)\s*([A-Z]\d+).*?(?:DAİRE|Daire)\s*(\d+)/i',
-
-            // Daire kelimesi önce: DAİRE 9 BLOK C5
-            '/(?:DAİRE|Daire)\s*(\d+).*?(?:BLOK|Blok)\s*([A-Z]\d+)/i',
+            // DESEN 5: En genel fallback. Sadece "Blok Numara" var (örn: "C1 17", "B1 03").
+            ['pattern' => '/\b([A-Z]\d+)\s+(\d+)\b/']
         ];
 
-        foreach ($patterns as $pattern) {
-            if (preg_match($pattern, $description, $matches)) {
-                // Eğer direkt B1D5 formatında eşleşme varsa
-                if (isset($matches[1]) && preg_match('/^[A-Z]\d+D\d+$/i', $matches[1])) {
-                    return strtoupper($matches[1]);
+        // 3. ADIM: Eşleşmeyi bul ve sonucu döndür.
+        foreach ($patterns as $item) {
+            if (preg_match($item['pattern'], $text, $matches)) {
+                
+                $blok = '';
+                $daire = '';
+
+                if (count($matches) === 2) { // Tek grup yakalayanlar (Desen 1)
+                    if (preg_match('/([A-Z]\d+)D(\d+)/', $matches[1], $subMatches)) {
+                         return $subMatches[1] . 'D' . $subMatches[2];
+                    }
+                } else if (count($matches) >= 3) { // 2 veya daha fazla grup yakalayanlar
+                    $potentialDaire = $matches[count($matches) - 1];
+                    $potentialBlok = $matches[1];
+
+                    if (is_numeric($potentialDaire)) {
+                        $blok = $potentialBlok;
+                        $daire = $potentialDaire;
+                    }
                 }
 
-                // Normalde blok ve daire ayrı eşleşir
-                if (isset($matches[1]) && isset($matches[2])) {
-                    return strtoupper(trim($matches[1])) . 'D' . trim($matches[2]);
+                if (!empty($blok) && !empty($daire)) {
+                    $blok = preg_replace('/\s+/', '', $blok);
+                    if ((int)$daire > 0 && (int)$daire < 100) {
+                        return $blok . 'D' . $daire;
+                    }
                 }
             }
-        }
-
-        // Özel durumlar için manuel kontrol
-        $specialCases = [
-            'C5 16 numara asansör bakım ücreti' => 'C5D16',
-            'B3 BLOK DAİRE5' => 'B3D5',
-            'B3 Blok Daire 10' => 'B3D10',
-            'b1 blok d 17' => 'B1D17',
-            'C2. D.13' => 'C2D13',
-            'C3 16' => 'C3D16',
-        ];
-
-        foreach ($specialCases as $case => $code) {
-            if (strpos($description, $case) !== false) {
-                return $code;
-            }
-        }
-
-        // Son çare: sayısal bloklar için (A1, B2 gibi olmayanlar)
-        if (preg_match('/(\d+)\s*(?:BLOK|Blok|blok)?\s*(?:DAİRE|Daire|DAiRE|D\.?)\s*[:\.\-]?\s*(\d+)/i', $description, $matches)) {
-            return 'BLOCK' . trim($matches[1]) . 'D' . trim($matches[2]);
         }
 
         return null;
     }
+
+
+    //   /**
+    //  * Verilen bir açıklama metni içinde, sağlanan kişi listesinden birinin adını arar.
+    //  * Eşleşme bulursa o kişinin ID'sini döndürür.
+    //  *
+    //  * @param string $description       İçinde isim aranacak olan ham açıklama metni.
+    //  * @param array $people             Arama yapılacak kişilerin listesi. 
+    //  *                                  Her bir kişi nesnesi en az 'id' ve 'adi_soyadi' alanlarına sahip olmalıdır.
+    //  * @return int|null                 Bulunan kişinin ID'si veya eşleşme yoksa null.
+    //  */
+    // public static function findMatchingPersonInDescription($description, $people)
+    // {
+    //     if (empty($description) || empty($people)) {
+    //         return null;
+    //     }
+
+    //     // Açıklamayı standart bir formata getir.
+    //     $standartDescription = self::standardizeText($description);
+
+    //     $foundPeople = [];
+
+    //     foreach ($people as $person) {
+    //         // ---> DÜZELTME 1: ARANAN İSMİ DE STANDARTLAŞTIR <---
+    //         // Veritabanından gelen ismi de aynı standart formata getiriyoruz.
+    //         $personName = self::standardizeText($person->adi_soyadi);
+
+    //         $logger = getlogger();
+            
+    //         // Loglamayı burada yapmak, hem standartlaşmış açıklamayı hem de standartlaşmış ismi görmenizi sağlar.
+    //         $logger->info("Aranan standart kişi adı: " . $personName . 
+    //                                " | Person ID: " . $person->id . 
+    //                                " | Açıklama: " . $standartDescription);
+            
+    //         if (str_word_count($personName) < 2) {
+    //             continue;
+    //         }
+
+    //         // ---> DÜZELTME 2: REGEX'E BÜYÜK/KÜÇÜK HARF DUYARSIZLIĞI EKLE ('i' FLAG'I) <---
+    //         // Bu, standartlaştırmada bir hata olsa bile eşleşmeyi garantiler.
+    //         if (preg_match('/\b' . preg_quote($personName, '/') . '\b/i', $standartDescription)) {
+    //             $foundPeople[] = $person->id;
+    //         }
+    //     }
+        
+    //     if (!empty($foundPeople)) {
+    //         return $foundPeople[0];
+    //     }
+
+    //     return null;
+    // }
+
+
+
+
+/**
+     * Verilen bir açıklama metni içinde, sağlanan kişi listesinden birini
+     * "bulanık" (fuzzy) bir mantıkla arar. Eşleşme bulursa o kişinin ID'sini döndürür.
+     * Bu yöntem, yazım hatalarına, eksik isimlere ve kelime sırasına karşı daha toleranslıdır.
+     *
+     * @param string $description      İçinde isim aranacak olan ham açıklama metni.
+     * @param array $people   Arama yapılacak kişilerin listesi.
+     * @return int|null                En yüksek benzerlik skoruna sahip kişinin ID'si veya eşleşme yoksa null.
+     */
+    public static function findMatchingPersonInDescription($description, $people)
+    {
+        if (empty($description) || empty($people)) {
+            return null;
+        }
+        
+        // Açıklamayı sadece bir kere standartlaştır.
+        $standartDescription = self::standardizeText($description);
+        $logger = getlogger();
+        
+        $bestMatch = [
+            'person_id' => null,
+            'score' => 0 // En iyi eşleşme skorunu tutacak
+        ];
+
+        foreach ($people as $person) {
+            $personName = self::standardizeText($person->adi_soyadi);
+            
+            // "EV SAHIBI GIRILECEK" gibi anlamsız isimleri atla.
+            if (strpos($personName, 'GIRILECEK') !== false) {
+                continue;
+            }
+
+            // İsimdeki parantezleri ve içindekileri temizle, sadece kelimeleri al.
+            $personName = preg_replace('/\s*\(.*\)/', '', $personName);
+            $nameParts = explode(' ', $personName);
+            
+            if (count($nameParts) < 2) { // İsim en az iki kelimeden oluşmalı
+                continue;
+            }
+            
+            $matchesFound = 0;
+            $finalScore = 0;
+            $totalParts = count($nameParts);
+            
+            // İsimdeki her bir parçanın açıklamada geçip geçmediğini kontrol et.
+            foreach ($nameParts as $part) {
+                if (strlen($part) > 1 && strpos($standartDescription, $part) !== false) {
+                    $matchesFound++;
+                }
+            }
+
+            // Eşleşme bulundu mu?
+            if ($matchesFound > 0) {
+                 // Bir skor hesapla. İsimdeki tüm parçalar bulunursa skor daha yüksek olur.
+                 // Bu, "MEHMET EMİN SÖNMEZOĞLU"nun "EMİN"den daha iyi bir eşleşme olmasını sağlar.
+                 $currentScore = ($matchesFound / $totalParts) * 100;
+                 
+                 // Yazım hatalarını yakalamak için similar_text ile skoru daha da iyileştir.
+                 similar_text($personName, $standartDescription, $similarityPercent);
+                 
+                 // İki skorun ortalamasını veya ağırlıklı ortalamasını alabiliriz.
+                 $finalScore = ($currentScore + $similarityPercent) / 2;
+                 
+                 // Eğer bu skor, şimdiye kadarki en iyi skordan daha iyiyse, bunu en iyi eşleşme olarak kaydet.
+                 if ($finalScore > $bestMatch['score']) {
+                     $bestMatch['score'] = $finalScore;
+                     $bestMatch['person_id'] = $person->id;
+                 }
+            }
+
+            // Loglama, hangi kişinin ne kadar benzerlik skoru aldığını gösterir.
+            $logger->info("Person ID: " . $person->id . 
+                          " | Person Name: " . $personName . 
+                          " | Description: " . $standartDescription . 
+                          " | Match Score: " . $finalScore);
+        
+        }
+
+        // Eğer makul bir eşleşme bulunduysa (örn: skoru 40'tan yüksekse), o kişinin ID'sini döndür.
+        if ($bestMatch['score'] > 40) {
+            return $bestMatch['person_id'];
+        }
+
+        return null;
+    }
+
+
+
+    // ... standardizeText fonksiyonu değişmeden kalır ...
+    /**
+     * Metni karşılaştırma için standart bir forma (büyük harf, standart Türkçe karakterler) dönüştürür.
+     * Bu yardımcı fonksiyon, kod tekrarını önler.
+     *
+     * @param string $text
+     * @return string
+     */
+    private static function standardizeText($text)
+    {
+        $text = mb_strtoupper($text, 'UTF-8');
+        return str_replace(
+            ['İ', 'Ü', 'Ö', 'Ç', 'Ş', 'Ğ'],
+            ['I', 'U', 'O', 'C', 'S', 'G'],
+            $text
+        );
+    }
+
+   
+        // /**
+        //  * Serbest metin formatındaki bir açıklamadan standart 'BLOKDDAİRE' formatında
+        //  * daire kodunu çıkaran, en yüksek isabet oranına sahip nihai fonksiyon.
+        //  * Bu fonksiyon, bir önceki cevaptaki yapı üzerine inşa edilmiştir.
+        //  *
+        //  * @param string|null $description Analiz edilecek açıklama metni.
+        //  * @return string|null Bulunan ilk daire kodu veya bulunamazsa null.
+        //  */
+        // public static function extractApartmentInfo($description)
+        // {
+        //     if (empty($description)) {
+        //         return null;
+        //     }
+    
+        //     // 1. ADIM: HAZIRLIK - Metni standart bir forma getir.
+        //     $text = ' ' . strtoupper($description) . ' '; // Başına/sonuna boşluk ekle, bu regex'i basitleştirir.
+    
+        //     // Adım 1a: Türkçe karakterleri ve özel karakterleri standartlaştır.
+        //     $text = str_replace(
+        //         ['İ', 'Ü', 'Ö', 'Ç', 'Ş', 'Ğ', '’', '`', "'", 'Ğ'],
+        //         ['I', 'U', 'O', 'C', 'S', 'G', '', '', '', 'G'],
+        //         $text
+        //     );
+            
+        //     // Adım 1b: Bitişik yazımları ayır (örn: C3BLOK -> C3 BLOK, DAIRE5 -> DAIRE 5)
+        //     $text = preg_replace('/([A-Z]\d+)(BLOK|DAIRE)/', '$1 $2', $text);
+        //     $text = preg_replace('/(BLOK|DAIRE|NO)(\d+)/', '$1 $2', $text);
+    
+        //     // Adım 1c: Tüm ayraçları boşlukla değiştir.
+        //     $text = str_replace(['/', ',', ':', '_', '(', ')', '.'], ' ', $text);
+            
+        //     // Adım 1d: "D-5" gibi yapıları "D 5" haline getir.
+        //     $text = preg_replace('/(D|NO)\s*-\s*(\d+)/', 'D $2', $text);
+    
+        //     // Adım 1e: Çoklu boşlukları tek boşluğa indir.
+        //     $text = preg_replace('/\s+/', ' ', $text);
+    
+        //     // 2. ADIM: HİYERARŞİK DESENLER (En spesifikten en genele doğru)
+        //     $patterns = [
+        //         // DESEN 1: En yüksek öncelikli, %100 kesin format. Bitişik yazım.
+        //         // Örn: "A1D9", "B1_D14" (temizlik sonrası), "SAMİERGİNB1D5"
+        //         [
+        //             'pattern' => '/([A-Z]\d+D\d+)/',
+        //             'formatter' => function($m) { return $m[1]; }
+        //         ],
+    
+        //         // DESEN 2: Blok-Daire arasında sadece tire olan yapılar.
+        //         // Örn: "C2-5", "B2-16", "C4-3"
+        //          [
+        //             'pattern' => '/\s([A-Z]\d+)\s*-\s*(\d+)\s/',
+        //             'formatter' => function($m) { return $m[1] . 'D' . $m[2]; }
+        //         ],
+    
+        //         // DESEN 3: En güçlü ve esnek desen. Blok ve Daire arasında her türlü "gürültü" olabilir.
+        //         [
+        //             'pattern' => '/([A-Z]\s*\d+)\s+.*?(?:DAIRE|DA|D|NO|NUMARA|N)\s*(\d+)/',
+        //             'formatter' => function($m) {
+        //                 $blok = preg_replace('/\s+/', '', $m[1]); // "C 2" -> "C2"
+        //                 return $blok . 'D' . $m[2];
+        //             }
+        //         ],
+                
+        //         // DESEN 4: Ters sıralı yapı. Önce Daire, sonra Blok.
+        //         [
+        //             'pattern' => '/(?:DAIRE|DA|D|NO)\s*(\d+)\s+.*?(?:BLOK|BLK)\s+([A-Z]\s*\d+)/',
+        //             'formatter' => function($m) {
+        //                  $blok = preg_replace('/\s+/', '', $m[2]);
+        //                  return $blok . 'D' . $m[1];
+        //             }
+        //         ],
+    
+        //         // DESEN 5: En genel fallback. Sadece "Blok Numara" var.
+        //         [
+        //             'pattern' => '/\s([A-Z]\d+)\s+(\d+)\s/',
+        //             'formatter' => function($m) {
+        //                 if ((int)$m[2] > 0 && (int)$m[2] < 100) {
+        //                     return $m[1] . 'D' . $m[2];
+        //                 }
+        //                 return null;
+        //             }
+        //         ],
+        //     ];
+    
+        //     // 3. ADIM: Eşleşmeyi bul ve sonucu döndür.
+        //     foreach ($patterns as $item) {
+        //         if (preg_match($item['pattern'], $text, $matches)) {
+        //             $result = call_user_func($item['formatter'], $matches);
+        //             if ($result !== null) {
+        //                 return $result;
+        //             }
+        //         }
+        //     }
+    
+        //     return null; // Hiçbir desen eşleşmedi.
+        // }
+    
+ 
+  
+
+    // public static function extractApartmentInfo($description)
+    // {
+    //     // Önce tüm desenleri tanımlayalım
+    //     $patterns = [
+    //         // Standart formatlar: C5 Daire 9, B1 DAİRE 6, C2- Daire:15
+    //         '/([A-Z]\d+)\s*(?:BLOK|Blok|blok)?\s*(?:DAİRE|Daire|DAiRE|D\.?)\s*[:\.\-]?\s*(\d+)/i',
+
+    //         // C5 16 numara, B3 Blok Daire10 gibi bitişik yazımlar
+    //         '/([A-Z]\d+)\s+(\d+)\s*(?:numara|Daire|No|no)?/i',
+
+    //         // C2.D.13, A1-DAİRE9 gibi nokta/tire ile ayrılmış
+    //         '/([A-Z]\d+)[\.\-]\s*D\.?\s*(\d+)/i',
+
+    //         // B3 BLOK DAİRE5 gibi bitişik yazımlar
+    //         '/([A-Z]\d+)\s*BLOK\s*DAİRE\s*(\d+)/i',
+
+    //         // b1 blok d 17 veya B1 Blok D 17
+    //         '/([A-Z]\d+)\s*blok\s*d\s*(\d+)/i',
+
+    //         // c5 blok no 19
+    //         '/([A-Z]\d+)\s*blok\s*no\s*(\d+)/i',
+
+    //         // B 2 blok daire 2
+    //         '/([A-Z]\d+)\s*blok\s*daire\s*(\d+)/i',
+
+
+    //         // A1-DAİRE 9, C1-Daire 5
+    //         '/([A-Z]\d+)[\-\.]?\s*DAİRE\s*(\d+)/i',
+
+    //         // A1 D9 gibi basit formatlar
+    //         '/([A-Z]\d+)\s*D(\d+)/i',
+
+
+    //         // C2D13 gibi direkt formatlar
+    //         '/([A-Z]\d+D\d+)/i',
+
+    //         // A5 16 gibi basit formatlar
+    //         '/([A-Z]\d+)\s+(\d+)/',
+
+
+    //         // C3 16 gibi basit formatlar
+    //         '/([A-Z]\d+)\s+(\d+)/',
+
+    //         // B1D5, C2D13 gibi direkt formatlar
+    //         '/([A-Z]\d+D\d+)/i',
+
+    //         // Özel durumlar: C2- Daire:15
+    //         '/([A-Z]\d+)\-?\s*Daire\s*\:?\s*(\d+)/i',
+
+    //         // Blok ve daire farklı konumda: BLOK C5 DAİRE 9
+    //         '/(?:BLOK|Blok)\s*([A-Z]\d+).*?(?:DAİRE|Daire)\s*(\d+)/i',
+
+    //         // Daire kelimesi önce: DAİRE 9 BLOK C5
+    //         '/(?:DAİRE|Daire)\s*(\d+).*?(?:BLOK|Blok)\s*([A-Z]\d+)/i',
+    //     ];
+
+    //     foreach ($patterns as $pattern) {
+    //         if (preg_match($pattern, $description, $matches)) {
+    //             // Eğer direkt B1D5 formatında eşleşme varsa
+    //             if (isset($matches[1]) && preg_match('/^[A-Z]\d+D\d+$/i', $matches[1])) {
+    //                 return strtoupper($matches[1]);
+    //             }
+
+    //             // Normalde blok ve daire ayrı eşleşir
+    //             if (isset($matches[1]) && isset($matches[2])) {
+    //                 return strtoupper(trim($matches[1])) . 'D' . trim($matches[2]);
+    //             }
+    //         }
+    //     }
+
+    //     // Özel durumlar için manuel kontrol
+    //     $specialCases = [
+    //         'C5 16 numara asansör bakım ücreti' => 'C5D16',
+    //         'B3 BLOK DAİRE5' => 'B3D5',
+    //         'B3 Blok Daire 10' => 'B3D10',
+    //         'b1 blok d 17' => 'B1D17',
+    //         'C2. D.13' => 'C2D13',
+    //         'C3 16' => 'C3D16',
+    //     ];
+
+    //     foreach ($specialCases as $case => $code) {
+    //         if (strpos($description, $case) !== false) {
+    //             return $code;
+    //         }
+    //     }
+
+    //     // Son çare: sayısal bloklar için (A1, B2 gibi olmayanlar)
+    //     if (preg_match('/(\d+)\s*(?:BLOK|Blok|blok)?\s*(?:DAİRE|Daire|DAiRE|D\.?)\s*[:\.\-]?\s*(\d+)/i', $description, $matches)) {
+    //         return 'BLOCK' . trim($matches[1]) . 'D' . trim($matches[2]);
+    //     }
+
+    //     return null;
+    // }
 
 
     /**
@@ -510,6 +881,12 @@ class Helper
             return $amount; // Parametre tarihi başlangıç ve bitiş tarihleri arasında değilse tutar döner
         }
 
+
+        //Bitiş tarihi, paramatre tarihinden sonraysa  0 döner
+        if ($end < $param) {
+            return 0; // Bitiş tarihi parametre tarihinden önceyse 0 döner
+        }
+
         // Gün farkını hesapla
         $days = ($end - $start) / (60 * 60 * 24);
         if ($days <= 0) {
@@ -518,8 +895,80 @@ class Helper
 
         // Gün bazında tutarı hesapla
         $daily_amount = $amount / $days;
-        $param_days = ($param - $start) / (60 * 60 * 24);
+        $param_days = ($end - $param ) / (60 * 60 * 24);
 
         return round($daily_amount * $param_days, 2); // İstenen tarihe göre tutarı döner
     }
+
+
+
+    
+        /**
+         * Belirtilen iki tarih aralığının kesişimine göre orantılı tutarı hesaplar.
+         * '0000-00-00' gibi geçersiz veya boş tarihleri mantıklı varsayımlarla yönetir.
+         *
+         * @param string $billing_start_date Fatura başlangıç tarihi (örn: '2025-01-01')
+         * @param string $billing_end_date   Fatura bitiş tarihi (örn: '2025-01-31')
+         * @param string|null $person_entry_date  Kişinin giriş tarihi. '0000-00-00' veya boş olabilir.
+         * @param string|null $person_exit_date   Kişinin çıkış tarihi. '0000-00-00' veya boş olabilir.
+         * @param float $total_amount         Fatura döneminin toplam tutarı
+         * @return float                      Hesaplanan orantılı tutar
+         */
+        public static function calculateProratedAmount($billing_start_date, $billing_end_date, 
+                                                       $person_entry_date, $person_exit_date, 
+                                                       $total_amount)
+        {
+            try {
+                // 1. Ana fatura tarihlerini DateTime nesnelerine çevirelim.
+                $billing_start = new DateTime($billing_start_date);
+                $billing_end = new DateTime($billing_end_date);
+            } catch (Exception $e) {
+                // Fatura tarihleri geçersizse hesaplama yapılamaz.
+                return 0;
+            }
+    
+            // 2. Kişinin giriş ve çıkış tarihlerini mantığa göre belirleyelim.
+            
+            // Giriş tarihi geçerli bir tarih mi? Değilse, fatura başlangıcını varsay.
+            $person_entry = ($person_entry_date && $person_entry_date !== '0000-00-00')
+                ? new DateTime($person_entry_date)
+                : $billing_start;
+    
+            // Çıkış tarihi geçerli bir tarih mi? Değilse, fatura bitişini varsay.
+            $person_exit = ($person_exit_date && $person_exit_date !== '0000-00-00')
+                ? new DateTime($person_exit_date)
+                : $billing_end;
+    
+            // 3. Günlük ücreti hesaplamak için fatura dönemindeki toplam gün sayısını bulalım.
+            $total_billing_days = $billing_start->diff($billing_end)->days + 1;
+    
+            if ($total_billing_days <= 0) {
+                return 0; // Hatalı aralık veya sıfıra bölme hatasını önle.
+            }
+            $daily_rate = $total_amount / $total_billing_days;
+    
+            // 4. Ücretlendirilecek dönemin başlangıcını belirleyelim (kesişim başlangıcı).
+            // Bu, fatura başlangıcı ve kişinin efektif giriş tarihinden hangisi daha SONRA ise odur.
+            $charge_start_date = max($billing_start, $person_entry);
+    
+            // 5. Ücretlendirilecek dönemin sonunu belirleyelim (kesişim sonu).
+            // Bu, fatura bitişi ve kişinin efektif çıkış tarihinden hangisi daha ÖNCE ise odur.
+            $charge_end_date = min($billing_end, $person_exit);
+    
+            // 6. Ücretlendirilecek gün sayısını hesaplayalım.
+            if ($charge_start_date > $charge_end_date) {
+                // Konaklama süresi, fatura dönemiyle hiç kesişmiyorsa ücret 0'dır.
+                return 0;
+            }
+    
+            $chargeable_days = $charge_start_date->diff($charge_end_date)->days + 1;
+    
+            // 7. Sonucu hesaplayıp döndürelim.
+            return round($chargeable_days * $daily_rate, 2);
+        }
+
+
+
+
+
 }

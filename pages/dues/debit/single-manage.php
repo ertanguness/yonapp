@@ -23,11 +23,11 @@ $BorcDetayModel = new BorclandirmaDetayModel();
 
 
 $borc_id = Security::decrypt($_GET["id"] ?? 0) ?? 0;
-$borc_detay_id = Security::decrypt($_GET["borc_detay_id"] ?? 0) ?? 0;
+$borc_detay_id = Security::decrypt($_GET["detay_id"] ?? 0) ?? 0;
 
 
 $borc = $BorcModel->find($borc_id);
-$borc_detay = $BorcDetayModel->BorclandirmaDetayByID($borc_id);
+$borc_detay = $BorcDetayModel->BorclandirmaDetayByID($borc_detay_id);
 
 // if (!$borc_detay) {
 //     header("Location: index?p=dues/debit/list");
@@ -38,7 +38,7 @@ $borc_detay = $BorcDetayModel->BorclandirmaDetayByID($borc_id);
 $adi_soyadi = $borc_detay->adi_soyadi ?? '';
 $borc_adi = $borc_detay->borc_adi ?? '';
 
-
+echo "borc id: " . $borc_id . "<br>";
 
 
 $hedef_tipi = $borc->hedef_tipi ?? 'all'; // Hedef tipi, eğer borç detayında tanımlı değilse 'all' olarak varsayılır
@@ -56,8 +56,14 @@ switch ($hedef_tipi) {
         //$hedef_kisi = $DebitHelper->getActiveUsersByApartmentType($borc->apartment_type_id ?? 0);
         break;
     case 'person':
-        $kisiListesi = $KisiModel->SiteAktifKisileri($_SESSION["site_id"]);
-        $optionsForSelect = array_column($kisiListesi, 'adi_soyadi', 'kisi_id');
+        $kisiListesi = $KisiModel->SiteTumKisileri($_SESSION["site_id"]);
+        //$optionsForSelect = array_column($kisiListesi, 'adi_soyadi', 'id');
+
+        // Orijinal dizi üzerinde dönün
+foreach ($kisiListesi as $kisi) {
+    // Yeni diziyi [id => "Adı Soyadı (Daire Kodu)"] formatında doldurun
+    $optionsForSelect[$kisi->id] = $kisi->daire_kodu . ' | ' . $kisi->adi_soyadi . ' | ' . $kisi->uyelik_tipi;
+}
         
         if ($borc_detay_id != 0) {
 
@@ -71,15 +77,17 @@ switch ($hedef_tipi) {
                 $seciliKisiIdleri = [(string)$seciliKisiler];
             }
         }
+  
         // echo "<pre>";
         // print_r($kisiListesi);
         // echo "</pre>";
 
-
-
     default:
         $hedef_kisi = [];
 }
+
+      
+
 
 
 
@@ -104,7 +112,7 @@ Gate::authorizeOrDie('debit_add');
     <div class="page-header-right ms-auto">
         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-            <a href="index?p=dues/debit/detail&id=<?php echo Security::encrypt($borc_id) ?>" type="button"
+            <a href="javascript:history.back()" type="button"
                 class="btn btn-outline-secondary me-2" data-page="">
                 <i class="feather-arrow-left me-2"></i>
                 Listeye Dön
@@ -216,7 +224,7 @@ Gate::authorizeOrDie('debit_add');
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100 blok-sec">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
-                                    <select class="form-control select2-single" name="block_id" id="block_id" disabled>
+                                    <select class="form-control select2-single" name="block_id" id="block_id" >
                                         <option value="">Seçiniz</option>
                                         <?php foreach ($blocks as $block): ?>
                                             <option value="<?= $block->id ?>"><?= $block->name ?></option>
@@ -247,7 +255,8 @@ Gate::authorizeOrDie('debit_add');
                                         $optionsForSelect ?? [],           // SEÇENEKLER: Veritabanından gelen [id => Ad Soyad] dizisi.
                                         $seciliKisiIdleri ?? [],      // SEÇİLİ OLANLAR: Seçili olacak kişi ID'lerini içeren bir DİZİ.
                                         'form-select select2 w-100', // CSS Sınıfı
-                                        'hedef_kisi'            // JavaScript (Select2) için temiz bir ID.
+                                        'hedef_kisi',            // JavaScript (Select2) için temiz bir ID.
+                                        "disabled" // İsteğe bağlı olarak "disabled" sınıfı ekleyebilirsiniz.
                                     );
                                     ?>
 
