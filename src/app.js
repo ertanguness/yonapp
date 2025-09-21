@@ -6,7 +6,6 @@ $(document).ready(function () {
     table = $(".datatables").DataTable({
       //stateSave: true,
       responsive: false,
-      scrollX: $(".datatables").get(0).scrollWidth > $(".datatables").parent().width(), // Otomatik scroll kontrolü
       language: {
         url: "assets/js/tr.json",
       },
@@ -16,7 +15,7 @@ $(document).ready(function () {
       initComplete: function (settings, json) {
         var api = this.api();
         var tableId = settings.sTableId;
-        var tableId = settings.sTableId;
+
         $("#" + tableId + " thead").append(
           '<tr class="search-input-row"></tr>'
         );
@@ -31,95 +30,72 @@ $(document).ready(function () {
             title != "#" &&
             $(column.header()).find('input[type="checkbox"]').length === 0
           ) {
-            // Create input element
+            // Input elementini oluştur
             let input = document.createElement("input");
             input.placeholder = title;
-            input.classList.add("form-control");
-            input.classList.add("form-control-sm");
+            input.classList.add("form-control", "form-control-sm");
             input.setAttribute("autocomplete", "off");
 
-            // // Append input element to the new row
-            // $("#" + tableId + " .search-input-row").append(
-            //   $('<th class="search">').append(input)
-            // );
-
-            // Append input element to the new row
-            const th = $('<th class="search">').append(input);
+            // Ortalanmış <th> içine ekle
+            const th = $('<th class="search text-center align-middle">').append(input);
             $("#" + tableId + " .search-input-row").append(th);
 
-            // Event listener for user input
+            // Event listener
             $(input).on("keyup change", function () {
               if (column.search() !== this.value) {
                 column.search(this.value).draw();
               }
             });
 
-            // Sütunun gerçekten görünür olup olmadığını kontrol et
+            // Sütunun görünürlüğünü kontrol et
             const isColumnVisible =
               column.visible() && !$(column.header()).hasClass("dtr-hidden");
 
-            //  const isColumnVisible =
-            //  column.visible() && $(column.header()).css("display") !== "none";
-
             if (!isColumnVisible) {
-              th.hide(); // Sütun gerçekten görünmüyorsa input'u da gizle
+              th.hide(); // görünmüyorsa input gizle
             }
           } else {
-            // Eğer "İşlem" sütunuysa, boş bir th ekleyin
-
-            // Sütun görünürse <th> elemanını ekle
+            // İşlem / seçim sütunları için boş th
             $("#" + tableId + " .search-input-row").append("<th></th>");
           }
         });
 
-        // Responsive olayını dinle
+        // Responsive resize olayı
         table.on("responsive-resize", function (e, datatable, columns) {
-          // Sütun görünürlüğünü kontrol et ve inputları gizle/göster
           $("#" + tableId + " .search-input-row th").each(function (index) {
             if (columns[index]) {
-              $(this).show(); // Sütun görünüyorsa inputu göster
+              $(this).show();
             } else {
-              $(this).hide(); // Sütun gizliyse inputu gizle
+              $(this).hide();
             }
           });
         });
 
+        // State yükleme
         var state = table.state.loaded();
         if (state && state.sTableId === tableId) {
-
           console.log("State loaded for table:", tableId);
-
-          // Tüm başlık inputlarını al
           var inputs = $("thead input");
 
           inputs.each(function (inputIndex) {
-            // DataTable'daki gerçek sütun indeksini bul
             var columnIndex = $(this).closest("th").index();
             var searchValue = state.columns[columnIndex]?.search?.search || "";
 
             if (searchValue) {
               $(this).val(searchValue);
-              // console.log("Input index:", inputIndex,
-              //            "Column index:", columnIndex,
-              //            "Value:", searchValue);
-
-              // Arama filtrelerini uygula
               table.column(columnIndex).search(searchValue);
             }
           });
 
-          // Değişiklikleri çiz
           table.draw();
-        }else{
-          //console.log("State not found for table:", tableId);
-          // Eğer state yoksa tablonun state özelliğin temizle
+        } else {
           table.state.clear();
-          
         }
       },
     });
   }
 });
+
 
 $("#exportExcel").on("click", function () {
   table.button(".buttons-excel").trigger();

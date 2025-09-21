@@ -1,0 +1,7 @@
+[2025-09-21 19:23:51] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-21 19:28:22] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-21 19:28:31] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"::1"}
+[2025-09-21 19:30:11] [INFO] Demo süresi dolan kullanıcı sisteme erişmeye çalıştı ve çıkışa yönlendirildi. {"user_id":147,"email":"ertanguness@gmail.com"}
+[2025-09-21 19:30:32] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"::1"}
+[2025-09-21 19:41:37] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-21 19:49:08] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}

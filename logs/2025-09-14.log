@@ -1,0 +1,9 @@
+[2025-09-14 14:47:19] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-14 14:47:23] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-14 21:29:59] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"1","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 21:50:45] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"5","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 21:54:57] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"6","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 21:56:17] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"7","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 22:14:08] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"9","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 22:16:54] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"8","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 22:30:22] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"10","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}

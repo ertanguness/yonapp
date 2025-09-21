@@ -459,3 +459,19 @@ table thead tr:first-child th {
     opacity: 0;
   }
 }
+/* DataTable başlık yazılarını ortala */
+table.dataTable thead th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Arama inputlarının bulunduğu th hücrelerini ortala */
+table.dataTable thead th.search {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Inputların içeriğini ortala */
+table.dataTable thead th.search input {
+  text-align: center;
+}
