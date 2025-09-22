@@ -287,3 +287,5 @@ if($page == "ana-sayfa")
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 <script src="/src/app.js?v=<?php echo filemtime('src/app.js'); ?>" defer ></script>
 <!--<< All JS Plugins >>-->
+
+
