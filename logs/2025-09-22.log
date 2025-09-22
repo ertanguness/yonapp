@@ -59,3 +59,6 @@
 =======
 >>>>>>> b9d74c01d98d885efc5101abe0a931110f9d85ad
 >>>>>>> c8fe039315bfaa1ed88700354d079ea46a945a5e
+[2025-09-22 12:31:08] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-22 12:31:20] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-22 12:31:36] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
