@@ -111,3 +111,83 @@ if ($_POST['action'] == 'savePermissions') {
     header('Content-Type: application/json');
     echo json_encode($res);
 }
+
+
+/**
+ * Kullanıcı Grubu Ekleme ve Güncelleme
+ * 
+ */
+if ($_POST['action'] == 'saveRole') {
+
+    $roleID = Security::decrypt($_POST['id'] ?? 0);
+    $roleName = $_POST['role_name'] ?? '';
+    $description = $_POST['description'] ?? '';
+
+    try {
+      
+            // Yeni rol ekleniyor
+            $data = [
+                "id" => $roleID,
+                "owner_id" => $_SESSION['user']->id,
+                'role_name' => $roleName,
+                'description' => $description,
+                'main_role' => 0
+            ];
+
+            $lastInsertId = $UserRoles->saveWithAttr($data);
+
+            $status = 'success';
+            $message = 'Yeni kullanıcı grubu başarıyla eklendi.';
+       
+    } catch (Exception $e) {
+        $status = 'error';
+        $message = 'Bir hata oluştu: ' . $e->getMessage();
+    }
+
+    $res = [
+        'status' => $status,
+        'message' => $message
+    ];
+
+    echo json_encode($res);
+}
+
+
+/**
+ * Kullanıcı Grubu Silme
+ */
+if ($_POST['action'] == 'deleteRole') {
+
+    $roleID = $_POST['id'] ?? 0;
+
+    try {
+        if ($roleID === 0) {
+            throw new Exception("Geçersiz veya eksik Yetki grubu ID'si.");
+        }
+
+        // Silme işlemi
+        $deleted = $UserRoles->delete($roleID);
+        if (!$deleted) {
+            throw new Exception("Yetki grubu silinemedi veya bulunamadı (ID: {$roleID}).");
+        }
+
+        // İlgili kullanıcı izinlerini de sil
+        //$UserPermissions->deleteByRoleId($roleID);
+
+        //Menu cache'yi temizle
+        //$Menus->clearMenuCacheForRole($roleID);
+
+        $status = 'success';
+        $message = 'Yetki grubu başarıyla silindi.';
+    } catch (Exception $e) {
+        $status = 'error';
+        $message = 'Bir hata oluştu: ' . $e->getMessage();
+    }
+
+    $res = [
+        'status' => $status,
+        'message' => $message
+    ];
+
+    echo json_encode($res);
+}

@@ -46,7 +46,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                // require_once 'pages/components/download.php'
                 ?>
 
-                <a href="#" class="btn btn-primary route-link" data-page="management/sites/manage">
+                <a href="site-ekle" class="btn btn-primary route-link">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Site Ekle</span>
                 </a>
@@ -114,7 +114,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                                                             <i class="feather-eye"></i>
                                                         </a>
                                                        
-                                                        <a href="index?p=management/sites/manage&id=<?php echo $enc_id; ?>"
+                                                        <a href="site-duzenle/<?php echo $enc_id; ?>"
                                                             class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>

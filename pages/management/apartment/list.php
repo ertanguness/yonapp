@@ -143,7 +143,7 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
                                                         <a href="javascript:void(0);" class="avatar-text avatar-md openDaireDetay" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="index?p=management/apartment/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                        <a href="daire-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);" data-name=" <?php echo $apartment->daire_no ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-apartment" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $apartment->daire_no; ?>">

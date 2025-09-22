@@ -12,8 +12,11 @@ $Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $Due = new DueModel();
 
+$site_id = $_SESSION['site_id'];
+
 //borçlandırmaları getir
 $borclar = $Borc->getAll($site_id);
+
 
 
 
@@ -32,7 +35,7 @@ $borclar = $Borc->getAll($site_id);
         </ul>
     </div>
     <div class="page-header-right ms-auto">
-        <a href="index?p=dues/debit/manage" class="btn btn-primary">
+        <a href="borclandirma-yap" class="btn btn-primary">
             <i class="feather-plus me-2"></i>
             Borçlandırma Yap
         </a>
@@ -134,7 +137,7 @@ $borclar = $Borc->getAll($site_id);
 
                                                     <div class="mb-2">
                                                         <div class="fs-14 fw-bold text-dark">
-                                                            <a href="index?p=dues/collections/detail&id=<?php echo $enc_id?>">
+                                                            <a href="tahsilat-detayi/<?php echo $enc_id?>">
                                                                 <?php echo Helper::formattedMoney($borc->toplam_tahsilat); ?>
                                                             </a>
                                                         </div>
@@ -161,11 +164,11 @@ $borclar = $Borc->getAll($site_id);
                                             </td>
                                             <td>
                                                 <div class="hstack gap-2">
-                                                    <a href="index?p=dues/debit/detail&id=<?php echo $enc_id ?>"
+                                                    <a href="borclandirma-detayi/=<?php echo $enc_id ?>"
                                                         class="avatar-text avatar-md" title="Görüntüle">
                                                         <i class="feather-eye"></i>
                                                     </a>
-                                                    <a href="index?p=dues/debit/manage&id=<?php echo $enc_id; ?>"
+                                                    <a href="borclandirma-duzenle/<?php echo $enc_id; ?>"
                                                         class="avatar-text avatar-md" title="Düzenle">
                                                         <i class="feather-edit"></i>
                                                     </a>

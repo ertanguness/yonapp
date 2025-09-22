@@ -9,9 +9,8 @@ use App\Helper\Security;
 use Model\UserRolesModel;
 
 $UserRoles = new UserRolesModel();
-
-
-$role_id = Security::decrypt($_GET['id']) ?? 0;
+$enc_id = $role_id;
+$role_id = Security::decrypt($role_id) ?? 0;
 $role = $UserRoles->find($role_id);
 
 ?>
@@ -42,7 +41,7 @@ $title = "Yetki Yönetimi ". ($role ? " - ( " . $role->role_name . " )" : "");
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
                 <div class="d-flex gap-2">
-                    <a href="index?p=kullanici-gruplari/list" class="btn btn-outline-secondary">
+                    <a href="/kullanici-gruplari" class="btn btn-outline-secondary">
                         <i class="feather-arrow-left font-size-16 align-middle me-2"></i> Listeye Dön
                     </a>
                     <button id="resetChanges" class="btn btn-outline-danger">
@@ -70,7 +69,7 @@ $title = "Yetki Yönetimi ". ($role ? " - ( " . $role->role_name . " )" : "");
 </div>
 <div class="main-content">
     <div class="row">
-        <input type="text" id="user_id" name="user_id" value="<?php echo $_GET['id'] ?? 0 ?>" hidden>
+        <input type="text" id="role_id" name="role_id" value="<?php echo $enc_id ?? 0 ?>" hidden >
         <div class="col-12">
             <div class="card">
                 <div class="card-header">

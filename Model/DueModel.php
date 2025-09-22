@@ -10,6 +10,16 @@ class DueModel extends Model
 {
 protected $table = "dues"; 
 
+const PERIOD = [
+    '0' => 'Aylık',
+    '1' => '3 Aylık',
+    '2' => '6 Aylık',
+    '3' => 'Yıllık',
+    '4' => 'Tek Seferlik',
+];
+
+
+
     //DuesModel sınıfının constructor metodunu tanımlıyoruz
     public function __construct()
     {
@@ -20,9 +30,16 @@ protected $table = "dues";
     //aidat tablosundaki verileri alır
     public function getDues()
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table");
+        //Period alanını dizi olarak döndürmek için SQL sorgusunu güncelliyoruz 
+        $sql = $this->db->prepare("SELECT * FROM $this->table order by id DESC");
         $sql->execute();
-        return $sql->fetchAll(PDO::FETCH_OBJ);
+
+        //period alanını self::PERIOD dizisinden alıyoruz
+        $dues = $sql->fetchAll(PDO::FETCH_OBJ);
+        foreach ($dues as $due) {
+            $due->period_text = self::PERIOD[$due->period];
+        }
+        return $dues;
     }
 
     //Aidat adını getirir

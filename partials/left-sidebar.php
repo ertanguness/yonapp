@@ -16,7 +16,7 @@ if (!isset($_SESSION['user']->id)) {
 $userId = (int)$_SESSION['user']->id;
 
 // 2. AKTİF SAYFA LİNKİNİ BELİRLE
-$activePageLink = $_GET['p'] ?? '';
+$activePageLink = $page;
 
 // 3. GÖRÜNÜR MENÜ AĞACINI ÇEK
 $menuTree = $menuModel->getHierarchicalMenuForRole($userId);
@@ -67,7 +67,7 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
             renderMenuItems($item->children, $activeMenuInfo);
             echo '</ul>';
         } else {
-            echo '<a href="index?p=' . htmlspecialchars($item->menu_link) . '" class="nxl-link">';
+            echo '<a href="/' . htmlspecialchars($item->menu_link) . '" class="nxl-link">';
             echo '  <span class="nxl-micon"><i class="' . htmlspecialchars($item->icon) . '"></i></span>';
             echo '  <span class="nxl-mtext">' . htmlspecialchars($item->page_name) . '</span>';
             echo '</a>';
@@ -90,8 +90,8 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
     <div class="navbar-wrapper">
         <div class="m-header p-3 d-flex justify-content-center align-items-center">
             <!-- Logo... -->
-            <img src="assets/images/logo/logo.svg" alt="" class="logo logo-lg w-90 "  />
-            <img src="assets/images/logo/logo.svg" alt="" class="logo logo-sm" />
+            <img src="/assets/images/logo/logo.svg" alt="" class="logo logo-lg w-90 "  />
+            <img src="/assets/images/logo/logo.svg" alt="" class="logo logo-sm" />
         </div>
         <div class="navbar-content">
             <ul class="nxl-navbar " id="side-menu">

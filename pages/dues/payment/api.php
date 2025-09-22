@@ -492,7 +492,7 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
 
             // Öncelik 1: NET Gecikme Zammı Borcunu Kapat
             // $borc->kalan_gecikme_zammi_borcu, VIEW'den gelen ve ödenmesi gereken net tutardır.
-            $odenecekGecikmeTutari = min($kalanOdenecekTutar, $borc->kalan_gecikme_zammi_borcu);
+            $odenecekGecikmeTutari = min($kalanOdenecekTutar, $borc->hesaplanan_gecikme_zammi);
 
             if ($odenecekGecikmeTutari > 0) {
                 $TahsilatDetay->saveWithAttr([
@@ -679,11 +679,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'hesapla_toplam_tutar') {
     $toplamTutar = $FinansalRapor->getToplamTutarByIds($cozulmusBorcIdleri);
     // Eğer toplam tutar başarılı bir şekilde alındıysa, JSON olarak döndür.
 
+    
 
     if ($toplamTutar !== false) {
         echo json_encode([
             'success' => true,
-            'toplam_tutar' => ($toplamTutar)
+            'toplam_tutar' => ($toplamTutar )
         ]);
     } else {
         echo json_encode([

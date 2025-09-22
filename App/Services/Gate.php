@@ -98,7 +98,9 @@ class Gate
                   $customMessage = "Bu işlemi gerçekleştirmek veya bu sayfayı görüntülemek için gerekli yetkiye sahip değilsiniz.";
          
         };
-      
+          //Sayfayı yönlendir
+       // header("Location: /unauthorize");
+
         echo '<div class="p-5">
                 <div class="alert alert-dismissible mb-4 p-4 d-flex alert-soft-danger-message" role="alert">
                     <div class="me-4 d-none d-md-block">

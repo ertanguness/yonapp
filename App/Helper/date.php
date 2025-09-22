@@ -12,7 +12,7 @@ class Date
     public static function dmY($date = null, $format = 'd.m.Y')
     {
         if ($date == null) {
-            $date = date('Y-m-d');
+            return null;
         }
         return date($format, strtotime($date));
     }

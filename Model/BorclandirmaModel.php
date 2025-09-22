@@ -82,7 +82,7 @@ protected function getBorclandirmaOzet(int $site_id, ?int $borclandirma_id = nul
 
     // Sıralama sadece tüm liste istendiğinde anlamlıdır.
     if (is_null($borclandirma_id)) {
-        $query .= " ORDER BY b.bitis_tarihi DESC";
+        $query .= " ORDER BY b.id desc, b.bitis_tarihi asc";
     }
 
     $stmt = $this->db->prepare($query);
@@ -121,6 +121,8 @@ public function findByID(int $site_id, int $borclandirma_id): ?object
     // Sonuç dizisinin ilk elemanını döndür. Eğer dizi boşsa, null döner.
     return $results[0] ?? null;
 }
+
+
 
 
 

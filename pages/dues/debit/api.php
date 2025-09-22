@@ -1,4 +1,5 @@
 <?php
+
 require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 
@@ -7,7 +8,6 @@ use App\Helper\Security;
 use App\Helper\Date;
 use App\Helper\Helper;
 use App\Services\ExcelHelper;
-use App\Helper\Error;
 use App\Helper\FinansalHelper;
 use Database\Db;
 
@@ -100,15 +100,18 @@ if ($_POST["action"] == "borclandir") {
         //Borçlandırma tipi kontrol ediliyor
         if ($borclandirma_turu == "all") {
 
-            
-            
+
+
             $baslangic_tarihi_str = Date::Ymd($_POST["baslangic_tarihi"]);
             $bitis_tarihi_str = Date::Ymd($_POST["bitis_tarihi"]);
-            
+
             // 1. O dönemde aktif olan TÜM kişileri, daire bilgileriyle birlikte çek.
+            //$borclandirilacakKisiler = $Kisiler->BorclandirilacakAktifKisileriGetir($site_id, $baslangic_tarihi_str, $bitis_tarihi_str);
             $borclandirilacakKisiler = $Kisiler->BorclandirilacakAktifKisileriGetir($site_id, $baslangic_tarihi_str, $bitis_tarihi_str);
             
             
+            $logger->info("Borçlandırılacak kişiler: " . json_encode($borclandirilacakKisiler));
+
 
 
 
@@ -118,24 +121,24 @@ if ($_POST["action"] == "borclandir") {
                 // Anahtar olarak daire_id'yi kullanarak kişileri grupla.
                 $dairelerVeSakinleri[$kisi->daire_id][] = $kisi;
             }
-    
+
             // 3. DAİRE bazında döngüye başla.
             // Anahtar ($daire_id) ve değer ($sakinler -> o dairedeki kişilerin listesi)
             foreach ($dairelerVeSakinleri as $daire_id => $sakinler) {
-                
+
                 //Daire aidattan muaf ise daireyi atla
                 $daire = $Daire->find($daire_id);
                 if ($daire->aidattan_muaf) {
                     $logger->info("Daire ID {$daire_id} aidattan muaf, atlanıyor.");
                     continue; // Bu daireyi atla
                 }
-    
 
-                
+
+
                 // 4. Bu dairedeki EV SAHİBİNİ ve TÜM KİRACILARI ayıkla.
                 $evSahibi = null;
                 $kiracilar = []; // Kiracıları bir dizi olarak topla
-    
+
                 foreach ($sakinler as $sakin) {
                     if ($sakin->uyelik_tipi == 'Ev Sahibi') {
                         $evSahibi = $sakin;
@@ -143,13 +146,13 @@ if ($_POST["action"] == "borclandir") {
                         $kiracilar[] = $sakin; // Her kiracıyı diziye ekle
                     }
                 }
-    
+
                 // Güvenlik kontrolü: Eğer bir dairede ev sahibi yoksa (veri tutarsızlığı), bu daireyi atla.
                 if (!$evSahibi) {
                     $logger->info("Daire ID {$daire_id} için ev sahibi bulunamadı, atlanıyor.");
                     continue;
                 }
-                
+
                 // Ortak verileri ve tutarları hazırla
                 $tutar = Helper::formattedMoneyToNumber($_POST["tutar"]);
                 $faturaBaslangic = new DateTime($baslangic_tarihi_str);
@@ -157,83 +160,89 @@ if ($_POST["action"] == "borclandir") {
                 $toplamKiraciPayi = 0; // O ayki tüm kiracıların toplam borcunu tutacak değişken
 
                 $logger->info("Borçlandırma işlemi başlatılıyor: Daire ID: {$daire_id}, Tutar: {$tutar}, Başlangıç: {$faturaBaslangic->format('Y-m-d')}, Bitiş: {$faturaBitis->format('Y-m-d')}");
-    
+
                 // 5. KARAR MEKANİZMASI: Bu dairede borç paylaşımı olacak mı?
-                
+
                 // Eğer gün bazlı borçlandırma aktifse VE dairede en az bir kiracı varsa...
                 if ($gun_bazli && !empty($kiracilar)) {
-                    
+
                     /********** GÜN BAZLI BORÇLANDIRMA (PAYLAŞTIRMA) **********/
-                    
+
                     // Her bir kiracı için ayrı ayrı dönerek paylarını hesapla ve kaydet.
                     foreach ($kiracilar as $kiraci) {
-                        
+
                         // Bu kiracının payını hesapla
                         $kiraci_tutari = Helper::calculateProratedAmount(
-                            $faturaBaslangic->format('Y-m-d'), $faturaBitis->format('Y-m-d'),
-                            $kiraci->giris_tarihi, $kiraci->cikis_tarihi, $tutar
+                            $faturaBaslangic->format('Y-m-d'),
+                            $faturaBitis->format('Y-m-d'),
+                            $kiraci->giris_tarihi,
+                            $kiraci->cikis_tarihi,
+                            $tutar
                         );
-                        
+
                         // KİRACININ PAYINI KAYDET (Eğer borcu varsa)
                         if ($kiraci_tutari > 0.01) {
-                             $kiraciEfektifBaslangic = max($faturaBaslangic, new DateTime($kiraci->giris_tarihi));
-                             $kiraciEfektifBitis = ($kiraci->cikis_tarihi && $kiraci->cikis_tarihi !== '0000-00-00') ? min($faturaBitis, new DateTime($kiraci->cikis_tarihi)) : $faturaBitis;
+                            $kiraciEfektifBaslangic = max($faturaBaslangic, new DateTime($kiraci->giris_tarihi));
+                            $kiraciEfektifBitis = ($kiraci->cikis_tarihi && $kiraci->cikis_tarihi !== '0000-00-00') ? min($faturaBitis, new DateTime($kiraci->cikis_tarihi)) : $faturaBitis;
 
 
-                             //Açıklama alanı boş ise, hesaplanan tutara göre açıklama belirle
-                             if(empty($_POST["aciklama"])){
+                            //Açıklama alanı boş ise, hesaplanan tutara göre açıklama belirle
+                            if (empty($_POST["aciklama"])) {
 
-                                 $aciklama = $tutar == $kiraci_tutari
-                                 ? " Aidat" . " (" .
+                                $aciklama = $tutar == $kiraci_tutari
+                                    ? " Aidat" . " (" .
                                     $baslangic_tarihi->format('d.m.Y') . " - " .
                                     $faturaBitis->format('d.m.Y') . ")"
 
-                                 : "Oturulan dönem Aidatı (" .
-                                   $kiraciEfektifBaslangic->format('d.m.Y') . " - " .
-                                   $kiraciEfektifBitis->format('d.m.Y') . ")";
-                                }else{
-                                    $aciklama = $_POST["aciklama"];
+                                    : "Oturulan dönem Aidatı (" .
+                                    $kiraciEfektifBaslangic->format('d.m.Y') . " - " .
+                                    $kiraciEfektifBitis->format('d.m.Y') . ")";
+                            } else {
+                                $aciklama = $_POST["aciklama"];
 
-                                    $aciklama .= $tutar != $kiraci_tutari
+                                $aciklama .= $tutar != $kiraci_tutari
                                     ?  " (" .
-                                       $kiraciEfektifBaslangic->format('d.m.Y') . " - " .
-                                       $kiraciEfektifBitis->format('d.m.Y') . ")"
-   
+                                    $kiraciEfektifBaslangic->format('d.m.Y') . " - " .
+                                    $kiraciEfektifBitis->format('d.m.Y') . ")"
+
                                     : "";
-                                
-                                }
+                            }
 
 
-                             $kiraciData = [
-                                "borclandirma_id" => Security::decrypt($lastInsertId), 
+                            $kiraciData = [
+                                "borclandirma_id" => Security::decrypt($lastInsertId),
                                 "kisi_id" => $kiraci->id,
                                 "borc_adi" => $_POST["borc_adi"],
-                                "daire_id" => $daire_id, "tutar" => $kiraci_tutari,
+                                "daire_id" => $daire_id,
+                                "tutar" => $kiraci_tutari,
+                                "ceza_orani" => $_POST["ceza_orani"],
                                 "baslangic_tarihi" => $kiraciEfektifBaslangic->format('Y-m-d'),
                                 "bitis_tarihi" => $kiraciEfektifBitis->format('Y-m-d'),
                                 "son_odeme_tarihi" => $kiraciEfektifBitis->format('Y-m-d'),
                                 "aciklama" => $aciklama,
 
                                 // ... $data'dan gelen diğer ortak alanlar
-                             ];
-                             $BorcDetay->saveWithAttr($kiraciData);
-                             $toplamKiraciPayi += $kiraci_tutari; // Hesaplan kiracı payını toplama ekle
+                            ];
+                            $BorcDetay->saveWithAttr($kiraciData);
+                            $toplamKiraciPayi += $kiraci_tutari; // Hesaplan kiracı payını toplama ekle
                         }
                     }
-    
+
                     // EV SAHİBİNİN PAYINI HESAPLA VE KAYDET
                     // Ev sahibinin payı = Toplam Tutar - TÜM kiracıların toplam payı
                     $ev_sahibi_tutari = $tutar - $toplamKiraciPayi;
-    
+
                     if ($ev_sahibi_tutari > 0.01) {
 
 
 
                         $evSahibiData = [
-                            "borclandirma_id" => Security::decrypt($lastInsertId), 
+                            "borclandirma_id" => Security::decrypt($lastInsertId),
                             "kisi_id" => $evSahibi->id,
                             "borc_adi" => $_POST["borc_adi"],
-                            "daire_id" => $daire_id, "tutar" => $ev_sahibi_tutari,
+                            "daire_id" => $daire_id,
+                            "tutar" => $ev_sahibi_tutari,
+                            "ceza_orani" => $_POST["ceza_orani"],
                             "baslangic_tarihi" => $faturaBaslangic->format('Y-m-d'),
                             "bitis_tarihi" => $faturaBitis->format('Y-m-d'),
                             "son_odeme_tarihi" => $faturaBitis->format('Y-m-d'),
@@ -242,36 +251,36 @@ if ($_POST["action"] == "borclandir") {
                         ];
                         $BorcDetay->saveWithAttr($evSahibiData);
                     }
-    
                 } else {
                     /********** TAM AY BORÇLANDIRMA (TEK KİŞİ) **********/
-    
+
                     // Borçlandırılacak kişiyi belirle: Kiracı varsa öncelik onundur, yoksa ev sahibidir.
                     // Not: !empty($kiracilar) kontrolü, kiracı olup olmadığını doğrular.
                     $borcluKisi = !empty($kiracilar) ? $kiracilar[0] : $evSahibi;
 
                     //Açıklama alanı boş ise, hesaplanan tutara göre açıklama belirle
-                    if(empty($_POST["aciklama"])){
+                    if (empty($_POST["aciklama"])) {
                         $aciklama = "Aidat" . " (" .
                             $baslangic_tarihi->format('d.m.Y') . " - " .
                             $faturaBitis->format('d.m.Y') . ")";
-                    
-                    }else{
+                    } else {
                         $aciklama = $_POST["aciklama"];
                     }
-    
+
                     $tamAyData = [
-                        "borclandirma_id" => Security::decrypt($lastInsertId), 
+                        "borclandirma_id" => Security::decrypt($lastInsertId),
                         "kisi_id" => $borcluKisi->id,
                         "borc_adi" => $_POST["borc_adi"],
-                        "daire_id" => $daire_id, "tutar" => $tutar,
+                        "daire_id" => $daire_id,
+                        "tutar" => $tutar,
+                        "ceza_orani" => $_POST["ceza_orani"],
                         "baslangic_tarihi" => $faturaBaslangic->format('Y-m-d'),
                         "bitis_tarihi" => $faturaBitis->format('Y-m-d'),
                         "son_odeme_tarihi" => $faturaBitis->format('Y-m-d'),
                         "aciklama" => $aciklama,
-                         // ... $data'dan gelen diğer ortak alanlar
+                        // ... $data'dan gelen diğer ortak alanlar
                     ];
-    
+
                     $BorcDetay->saveWithAttr($tamAyData);
                 }
             } // Daire bazlı döngü sonu
@@ -301,11 +310,34 @@ if ($_POST["action"] == "borclandir") {
                 $BorcDetay->saveWithAttr($data);
             }
         } elseif ($borclandirma_turu == "block") {
+            //Eğer kişiler boş ise tüm bloga borçlandir
+            $kisiler = $_POST["hedef_kisi"];
+
             //Bloklara borçlandırma yapılıyor
             //Blogun aktif kişilerini getir
-            $kisiler = $Kisiler->BlokKisileri(Security::decrypt($_POST["block_id"]));
+            if (empty($kisiler)) {
+
+                $kisiler = $Kisiler->BlokKisileri(Security::decrypt($_POST["block_id"]));
+
+            }
+
+            // $res = [
+            //     "status" => "success",
+            //     "message" => "Blok Kişileri getirildi",
+            //     "data" => $kisiler
+            
+            // ];
+        
+            
+
+            // echo json_encode($res);
+            // exit;
+
+            
+
+
             foreach ($kisiler as $kisi) {
-                $data["kisi_id"] = $kisi->id;
+                $data["kisi_id"] = Security::decrypt($kisi);
                 $data["blok_id"] = Security::decrypt($_POST["block_id"]);
                 $BorcDetay->saveWithAttr($data);
             }
@@ -367,16 +399,35 @@ if ($_POST["action"] == "borclandir") {
     }
 }
 
-if ($_POST["action"] == "delete_debit") {
+if ($_POST["action"] == "borclandirma_sil") {
+    $id = $_POST["id"];
+//İlişkili tahsilatlar varsa silinmesin
+    $tahsilat = $TahsilatDetay->BorclandirmaTahsilatVarmi($id);
+    if($tahsilat){
+        $res = [
+            "status" => "error",
+            "message" => "Bu borçlandırma ile ilişkili tahsilatlar var, silinemez! id:" . Security::decrypt($id)
+        ];
+        echo json_encode($res);
+        exit;
+    }   
+
+
+
     try {
-        $Borc->delete($_POST["id"]);
+         $BorcDetay->BorclandirmaDetaylariniSil($id);
+          $Borc->delete($id);
 
         $res = [
             "status" => "success",
-            "message" => "Borçlandırma başarı ile kaydedildi!"
+            "message" => "Borçlandırma başarı ile silindi!",
+            "id" => $id
         ];
-    } catch (Exception $e) {
-        $res = Error::handlePDOException($e);
+    } catch (PDOException $e) {
+        $res = [
+            "status" => "error",
+            "message" => $e->getMessage()
+        ];
     }
     echo json_encode($res);
 }
@@ -384,7 +435,7 @@ if ($_POST["action"] == "delete_debit") {
 
 if ($_POST["action"] == "delete_debit_detail") {
     try {
-        
+
         $BorcDetay->delete($_POST["id"]);
 
         $res = [
@@ -395,7 +446,7 @@ if ($_POST["action"] == "delete_debit_detail") {
         $res = [
             "status" => "error",
             "message" => $e->getMessage()
-        
+
         ];
     };
     echo json_encode($res);
@@ -494,7 +545,7 @@ if ($_POST["action"] == "get_apartment_types") {
 }
 
 
-/**Tekli borçlandırma kaydet
+/** Tekli borçlandırma kaydet
  * Bu işlem, tek bir borçlandırma kaydı oluşturur.
  * @param array $_POST
  */

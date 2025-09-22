@@ -5,13 +5,13 @@ use Model\UserModel;
 
 $User = new UserModel();
 
-$type = isset($_GET["type"]) ? $_GET["type"] : 0;
-if ($type > 0) {
-    $users = $User->getUsers($type);
-} elseif ($type == 0) {
-    $users = $User->getUsers();
-}
+// Type paramatresi Route ile geliyor
 
+    if (isset($type) && $type != 0) {
+        $users = $User->getUsers($type);
+    } else {
+        $users = $User->getUsers();
+    };
 ?>
 
 
@@ -39,7 +39,7 @@ if ($type > 0) {
                 require_once 'pages/components/download.php'
                 ?>
 
-                <a href="#" class="btn btn-primary route-link" data-page="kullanici/duzenle">
+                <a href="kullanici-ekle" class="btn btn-primary route-link">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Kullanıcı</span>
                 </a>
@@ -106,14 +106,13 @@ if ($type > 0) {
                                                 <td><?php echo $user->status; ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="javascript:void(0);"
-                                                            class="avatar-text avatar-md  route-link"
-                                                            data-page="kullanici/duzenle&id=<?php echo $id ?>">
+                                                        <a href="kullanici-duzenle?id=<?php echo $id ?>"
+                                                            class="avatar-text avatar-md" >
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <?php if ($user->is_main_user != 1) { ?>
                                                             <a href="javascript:void(0);"
-                                                                class="avatar-text avatar-md delete_user"
+                                                                class="avatar-text avatar-md kullanici-sil"
                                                                 data-id="<?php echo $id ?>">
                                                                 <i class="feather-trash-2"></i>
                                                             </a>

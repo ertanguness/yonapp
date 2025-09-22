@@ -149,5 +149,23 @@ class TahsilatDetayModel extends Model
     }
 
 
+    /**
+     * Borçlandırmaya ait tahsilat var mı kontrolü
+     * @param int $borclandirma_id
+     * @return bool
+     */
+    public function BorclandirmaTahsilatVarmi($borclandirma_id): bool
+    {
+        $borclandirma_id = Security::decrypt($borclandirma_id);
+        $sql = $this->db->prepare("SELECT 1 
+                                   FROM tahsilat_detay 
+                                   WHERE borc_detay_id IN (SELECT id FROM borclandirma_detayi WHERE borclandirma_id = ?) 
+                                   LIMIT 1");
+        $sql->execute([$borclandirma_id]);
+        return $sql->fetchColumn() !== false;
+    }
+
+
+
 
 }

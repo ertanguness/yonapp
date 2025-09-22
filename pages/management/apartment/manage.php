@@ -2,7 +2,7 @@
 
 use App\Helper\Security;
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id =  Security::decrypt($id ?? 0);
 
 ?>
 <div class="page-header">

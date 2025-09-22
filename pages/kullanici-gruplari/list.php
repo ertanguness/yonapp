@@ -32,7 +32,7 @@ $usergroups = $UserGroups->getUserGroups();
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php //if ($Auths->hasPermission('permission_group_add_update')) { ?>
-                <a href="#" class="btn btn-primary route-link" data-page="kullanici-gruplari/duzenle">
+                <a href="kullanici-grubu-ekle" class="btn btn-primary route-link">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Grup</span>
                 </a>
@@ -81,7 +81,7 @@ $usergroups = $UserGroups->getUserGroups();
                                             <td class="text-center"><?php echo $i; ?></td>
                                             <td title = "Bu Kullanıcı grubuna ait kullanıcıları listelemek için tıklayınız!"> 
                                                 <!-- Bu Kullanıcı grubuna ait kullanıcılar listelenir -->
-                                                 <a href="index?p=kullanici/list&type=<?php echo $id ?>"
+                                                 <a href="kullanici-listesi/<?php echo $id ?>"
                                                  class="cursor-pointer">
                                                     <?php echo $group->role_name; ?>
                                                  </a>
@@ -92,18 +92,18 @@ $usergroups = $UserGroups->getUserGroups();
                                             <td>
                                                 <div class="hstack gap-2 ">
                                                     <?php //if ($Auths->hasPermission('transaction_permissions')) { ?>
-                                                    <a href="javascript:void(0);" title="Yetkileri Düzenle"
+                                                    <a href="yetki-yonetimi/<?php echo $id ?>" title="Yetkileri Düzenle"
                                                         class="avatar-text avatar-md  route-link"
-                                                        data-page="kullanici-gruplari/yetkiler&id=<?php echo $id ?>">
+                                                        >
                                                         <i class="feather-unlock"></i>
                                                     </a>
                                             
                                                     <?php //} ?>
                                                     <!-- Yetki grubunu güncelleme işlemleri -->
                                                     <?php //if ($Auths->hasPermission('permission_group_add_update')) { ?>
-                                                    <a href="javascript:void(0);"
+                                                    <a href="kullanici-grubu-duzenle?id=<?php echo $id ?>"
                                                         class="avatar-text avatar-md route-link"
-                                                        data-page="users/roles/manage&id=<?php echo $id ?>">
+                                                        title="Grubu Düzenle">
                                                         <i class="feather-edit"></i>
                                                     </a>
                                                     <?php //} ?>
@@ -112,7 +112,7 @@ $usergroups = $UserGroups->getUserGroups();
                                                     <?php //if ($Auths->hasPermission('permission_group_delete')) { ?>
 
                                                     <a href="javascript:void(0);"
-                                                        class="avatar-text avatar-md delete_role"
+                                                        class="avatar-text avatar-md delete-role"
                                                         data-id="<?php echo $id ?>">
                                                         <i class="feather-trash-2"></i>
                                                     </a>

@@ -12,14 +12,13 @@ use Model\KasaModel;
 $KasaHareket = new KasaHareketModel();
 $Kasa = new KasaModel();
 
-$kasa_id = Security::decrypt($_GET['id']) ?? 0;
+// $kasa_id = Security::decrypt($_GET['id']) ?? 0;
 
-$kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
+$id = Security::decrypt($id) ?? 0;
 
-// echo "<pre>";
-//  print_r($kasa_hareketleri);
-// echo "</pre>";
+$kasa = $Kasa->find($id);
 
+$kasa_hareketleri = $KasaHareket->getKasaHareketleri($id);
 
 ?>
 
@@ -57,8 +56,8 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
 
 <div class="main-content">
     <?php
-    $title = "Tahsilat Listesi";
-    $text = "Bu sayfada siteye ait tüm tahsilatları görüntüleyebilirsiniz.";
+    $title = $kasa->kasa_adi;
+    $text = "Bu sayfada kasaya ait tüm hareketleri görüntüleyebilirsiniz.";
     require_once 'pages/components/alert.php';
     ?>
 

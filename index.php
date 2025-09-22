@@ -17,21 +17,33 @@ $authController = new AuthController();
 //giriş ve demo süresi kontrolü
 $authController->checkAuthentication();
 
-// 3. Adım: Yönlendiriciyi (Router) çağır.
-// Router, gelen URL'i analiz eder ve ilgili Controller'ı ve metodu belirler.
-// $router = new App\Core\Router();
-// $router->dispatch();
 
+// 3. Adım: ROTA TESPİTİ (SAYFANIN EN BAŞINDA)
+// Rota tanımlarını ve Router nesnesini yükle
+require_once __DIR__ . '/route.php'; 
 
-// Görünüm (View) için gerekli değişkenleri hazırla
-$page = $_GET['p'] ?? 'home';
-$page = preg_replace('/[^a-zA-Z0-9\/\-]/', '', $page); // Güvenlik!
-$pagePath = __DIR__ . "/pages/{$page}.php";
-$viewToInclude = file_exists($pagePath) ? $pagePath : __DIR__ . "/pages/404.php";
+// Gelen URL'yi al
+$url = $_GET['p'] ?? 'ana-sayfa';
+$url = rtrim($url, '/');
+if (empty($url)) $url = 'ana-sayfa';
+
+// URL'yi çözümle ve eşleşen rota bilgilerini al
+$resolvedRoute = $router->resolve($url);
+
+// 3. SAYFA ADINI AL (SİHİR BURADA GERÇEKLEŞİYOR)
+// Router artık hangi desenin eşleştiğini biliyor ve bize temiz halini veriyor.
+$page = $router->getPageName();
 // echo "Yüklenen sayfa: " . ($page); // Debug için
-if (!file_exists($pagePath)) {
-    http_response_code(404);
-}
+// exit;
+
+// // Görünüm (View) için gerekli değişkenleri hazırla
+// $page = preg_replace('/[^a-zA-Z0-9\/\-]/', '', $page); // Güvenlik!
+// $pagePath = __DIR__ . "/pages/{$page}.php";
+// $viewToInclude = file_exists($pagePath) ? $pagePath : __DIR__ . "/pages/404.php";
+// echo "Yüklenen sayfa: " . ($page); // Debug için
+// if (!file_exists($pagePath)) {
+//     http_response_code(404);
+// }
 
 // ------------------- ARTIK HTML BAŞLAYABİLİR -------------------
 ?>
@@ -50,8 +62,13 @@ if (!file_exists($pagePath)) {
 
     <main class="nxl-container">
         <div class="nxl-content">
-            <?php //echo "site_ id : " . $_SESSION["site_id"] ?>
-            <?php include $viewToInclude; // Sayfayı dahil et ?>
+        <?php 
+            // 4. Adım: İÇERİK OLUŞTURMA
+            // Rota tespitinde bulduğumuz callback'i parametreleriyle birlikte çalıştır.
+            call_user_func_array($resolvedRoute['callback'], $resolvedRoute['params']);
+            ?>
+            
+            <?php //include $viewToInclude; // Sayfayı dahil et ?>
         </div>
         <?php include './partials/footer.php'; ?>
     </main>

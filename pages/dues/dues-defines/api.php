@@ -18,6 +18,7 @@ if($_POST["action"] == "save_dues"){
        'site_id' => $_SESSION['site_id'],
         "due_name" => $_POST["due_name"],
         "start_date" => Date::Ymd($_POST["start_date"]),
+        "end_date" => !empty($_POST["end_date"]) ? Date::Ymd($_POST["end_date"]) : null,
         "amount" => Helper::formattedMoneyToNumber($_POST["amount"]),
         "period" => $_POST["period"],
         "auto_renew" => isset($_POST["auto_renew"]) ? 1 : 0,

@@ -13,7 +13,8 @@ $Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
 
 
-$id = Security::decrypt($_GET['id']);
+//id Route ile geliyor
+$id = Security::decrypt($id);
 $borc = $Borc->findWithDueName($id);
 
 
@@ -35,18 +36,18 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
     <div class="page-header-right ms-auto">
         <div class="btn-list d-flex gap-2">
 
-            <a href="index?p=dues/debit/list" class="btn btn-outline-secondary">
+            <a href="/borclandirma" class="btn btn-outline-secondary">
                 <i class="feather-arrow-left me-2"></i>
                 Listeye Dön
             </a>
 
-            <a href="index?p=dues/debit/upload-from-xls&id=<?php echo $_GET['id'] ?>" class="btn btn-outline-secondary">
+            <a href="index?p=dues/debit/upload-from-xls&id=<?php echo $id ?>" class="btn btn-outline-secondary">
                 <i class="feather-upload me-2"></i>
                 Excelden Yükle
             </a>
 
             
-            <a href="index?p=dues/debit/single-manage&id=<?php echo $_GET['id'] ?>" class="btn btn-primary">
+            <a href="index?p=dues/debit/single-manage&id=<?php echo $id ?>" class="btn btn-primary">
                 <i class="feather-plus me-2"></i>
                 Yeni Ekle
             </a>

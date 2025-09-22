@@ -7,6 +7,7 @@ use Model\Model;
 use Model\BloklarModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Helper\Date;
+use App\Helper\Security;
 use Model\KisilerModel;
 
 use PDO;
@@ -304,7 +305,7 @@ class BorclandirmaDetayModel extends Model
         } catch (\PDOException $e) {
             // Hata durumunda, hatayı loglayabilir ve boş bir dizi döndürebiliriz.
             // Bu, uygulamanın çökmesini engeller.
-             getLogger()->error("Ödenmemiş borçlar getirilirken veritabanı hatası: " . $e->getMessage());
+            getLogger()->error("Ödenmemiş borçlar getirilirken veritabanı hatası: " . $e->getMessage());
 
             // veya hatayı yukarıya fırlatabiliriz, bu daha iyi bir pratik olabilir
             throw new \Exception("Ödenmemiş borçlar getirilirken bir veritabanı hatası oluştu.");
@@ -373,7 +374,7 @@ class BorclandirmaDetayModel extends Model
             $worksheet = $spreadsheet->getActiveSheet();
             // toArray() yerine getRowIterator() kullanmak büyük dosyalarda daha az bellek tüketir.
             $rows = $worksheet->getRowIterator();
-          
+
 
             // Başlık satırını oku ve sütun indekslerini haritala.
             if (!$rows->valid()) {
@@ -444,11 +445,11 @@ class BorclandirmaDetayModel extends Model
                     'blok_id'           => $blokId,
                     'daire_id'          => $daireId, // Daire ID'si boş olabilir, yeni daire ekleniyorsa null
                     'borc_adi'          => $postData['borc_adi'], // Borç adı
-                    'kisi_id'           => $kisiID, 
+                    'kisi_id'           => $kisiID,
                     'tutar'             => (float)(abs($rowData['Tutar']) ?? 0.0), // Tutarı float olarak al
                     'hedef_tipi'        => $postData['hedef_tipi'], // Hedef tipi (blok, daire, kişi)
-                    'baslangic_tarihi'  => $postData['baslangic_tarihi'] , 
-                    'bitis_tarihi'      => $postData['bitis_tarihi'] , 
+                    'baslangic_tarihi'  => $postData['baslangic_tarihi'],
+                    'bitis_tarihi'      => $postData['bitis_tarihi'],
                     'son_odeme_tarihi'  => $postData['bitis_tarihi'] ?? null, // Son ödeme tarihi
                     'ceza_orani'        => (float)$ceza_orani, // Ceza oranını float olarak al
                     'aciklama'          => $aciklama, // Açıklama
@@ -499,5 +500,27 @@ class BorclandirmaDetayModel extends Model
         }
     }
 
+    /**
+     * Borçlandırma Detaylarını sil
+     * @param $borclandirma_id
+     * @return void
+     */
+    public function BorclandirmaDetaylariniSil($borclandirma_id): void
+    {
+        $borclandirma_id = Security::decrypt($borclandirma_id);
+        // Borçlandırma id'sine göre borçlandırma detayını sil
+        $sql = $this->db->prepare("DELETE FROM {$this->table} WHERE borclandirma_id = ?");
+        $sql->execute([$borclandirma_id]);
+    }
+
     /* ***************************************************************************************/
+
+
+    /* Borc detaylarini getirir */
+    public function borc_detaylari_param($borc_idleri)
+    {
+        $sql = $this->db->prepare("CALL borc_detaylari_param(?)");
+        $sql->execute([$borc_idleri]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
 }

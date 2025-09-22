@@ -29,22 +29,22 @@
             <div class="card-body">
 
 
-                <a href="index?p=management/sites/manage"
+                <a href="site-ekle"
                     class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
                     <i class="bi bi-diagram-3"></i>
                     <p class="fs-12 text-muted mb-0">Site Ekle</p>
                 </a>
-                <a href="index?p=management/blocks/manage"
+                <a href="blok-ekle"
                     class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
                     <i class="bi bi-building"></i>
                     <p class="fs-12 text-muted mb-0">Blok Ekle</p>
                 </a>
-                <a href="index?p=management/apartment/manage"
+                <a href="daire-ekle"
                     class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
                     <i class="bi bi-textarea"></i>
                     <p class="fs-12 text-muted mb-0">Daire Ekle</p>
                 </a>
-                <a href="index?p=management/peoples/manage"
+                <a href="kisi-ekle"
                     class="flex-fill py-3 px-4 me-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
                     <i class="feather-user-plus"></i>
                     <p class="fs-12 text-muted mb-0">Kişi Ekle</p>

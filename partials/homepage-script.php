@@ -3,12 +3,12 @@
     <!--! Footer Script !-->
     <!--! ================================================================ !-->
     <!--! BEGIN: Vendors JS !-->
-    <script src="assets/vendors/js/vendors.min.js"></script>
+    <script src="/assets/vendors/js/vendors.min.js"></script>
     <!-- vendors.min.js {always must need to be top} -->
-    <script src="assets/vendors/js/daterangepicker.min.js"></script>	
+    <script src="/assets/vendors/js/daterangepicker.min.js"></script>	
 
-    <script src="assets/vendors/js/circle-progress.min.js"></script>
-	<script src="assets/vendors/js/jquery.time-to.min.js "></script>
+    <script src="/assets/vendors/js/circle-progress.min.js"></script>
+	<script src="/assets/vendors/js/jquery.time-to.min.js "></script>
     <!--! END: Vendors JS !-->
     <!--! BEGIN: Apps Init  !-->
    

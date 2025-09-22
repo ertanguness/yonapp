@@ -7,7 +7,7 @@ use App\Helper\Cities;
 $Sites = new SitelerModel();
 $cities = new Cities();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0);
 
 $site = $Sites->find($id  ?? null);
 $siteYeniID= $Sites->siteSonID() ?? 0;
@@ -33,10 +33,10 @@ $siteYeniID= $Sites->siteSonID() ?? 0;
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="management/sites/list">
+                <a href="/siteler" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+</a>
                 <button type="button" class="btn btn-primary" id="save_sites">
                     <i class="feather-save  me-2"></i>
                     Kaydet
