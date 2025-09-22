@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-<script src="src/blok-daire.js"></script>
-<script src="src/daire-kisi.js"></script>
+<script src="/src/blok-daire.js"></script>
+<script src="/src/daire-kisi.js"></script>
 
 

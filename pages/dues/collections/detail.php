@@ -11,7 +11,10 @@ use Model\TahsilatDetayModel;
 $BorclandirmaModel = new BorclandirmaModel();
 $TahsilatDetayModel = new TahsilatDetayModel();
 
-$id = Security::decrypt($_GET['id'] ?? 0) ?? 0;
+
+//id route sayfasından geliyor
+
+$id = Security::decrypt($id ?? 0) ?? 0;
 
 
 $tahsilat_detay = $TahsilatDetayModel->getTahsilatlarByBorclandirmaId($id);
@@ -42,7 +45,7 @@ $odeme_yuzdesi = number_format($odeme_yuzdesi, 2, ',', '.'); // Yüzdeyi formatl
         </ul>
     </div>
     <div class="page-header-right ms-auto">
-        <a href="index?p=dues/debit/list" class="btn btn-outline-secondary me-2">
+        <a href="/tahsilatlar" class="btn btn-outline-secondary me-2">
             <i class="feather-arrow-left me-2"></i>
             Listeye Dön
         </a>
@@ -166,7 +169,7 @@ $odeme_yuzdesi = number_format($odeme_yuzdesi, 2, ',', '.'); // Yüzdeyi formatl
                                                         <i class="feather-edit"></i>
                                                     </a>
                                                     <a href="javascript:void(0);"
-                                                        class="avatar-text avatar-md delete-debit" title="Sil"
+                                                        class="avatar-text avatar-md tahsilat-detay-sil" title="Sil"
                                                         data-id="<?php echo $enc_id; ?>">
                                                         <i class="feather-trash-2"></i>
                                                     </a>

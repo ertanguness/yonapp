@@ -1,6 +1,4 @@
-let url = "pages/kullanici/api.php";
-let row;
-
+let url = "/pages/kullanici/api.php";
 
 $(document).on("click", "#userSaveBtn", function () {
   var form = $("#userForm");
@@ -100,7 +98,7 @@ $(document).on("click", "#userSaveBtn", function () {
   })
     .then((response) => response.json())
     .then((data) => {
-      //console.log(data);
+      console.log(data);
       
       var title = data.status == "success" ? "Başarılı" : "Hata";
       

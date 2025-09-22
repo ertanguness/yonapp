@@ -1,4 +1,4 @@
-let url = "pages/dues/debit/api.php";
+let url = "/pages/dues/debit/api.php";
 
 //Borçlandırma kaydet
 $(document).on("click", "#save_debit", function (e) {
@@ -58,6 +58,7 @@ $(document).on("click", "#save_debit", function (e) {
 
         var title = data.status == "success" ? "Başarılı" : "Hata";
         preloader.hide(); // Yükleme overlay'ini gizle
+       console.log(data);
         swal.fire({
           title: title,
           text: data.message,
@@ -67,6 +68,9 @@ $(document).on("click", "#save_debit", function (e) {
       }).catch((error) => {
         console.error("Fetch error:", error);
         preloader.hide(); // Yükleme overlay'ini gizle
+        button
+        .prop("disabled", false)
+        .html('<i class="feather-save  me-2"></i>Kaydet');
         swal.fire({
           title: "Hata",
           text: "Bir hata oluştu. Lütfen tekrar deneyin.",
@@ -74,6 +78,54 @@ $(document).on("click", "#save_debit", function (e) {
           confirmButtonText: "Tamam",
         });
       });
+  });
+});
+
+
+//borclandirma sil
+$(document).on("click", ".delete-debit", function (e) {
+  row = $(this).closest("tr");
+
+  e.preventDefault();
+  var debitId = $(this).data("id");
+  var formData = new FormData();
+  formData.append("action", "borclandirma_sil");
+  formData.append("id", debitId);
+  swal.fire({
+    title: "Emin misin?",
+    text: "Bu işlem geri alınamaz!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Evet, sil!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Pace.track(() => {
+        fetch(url, {
+          method: "POST",
+            body: formData,
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+            preloader.hide(); // Yükleme overlay'ini gizle
+            if (data.status == "success") {
+              //Tablo satırını kaldır
+              row.remove();
+
+            }
+            swal.fire({
+              title: data.status == "success" ? "Başarılı" : "Hata",
+              text: data.message,
+              icon: data.status,
+              confirmButtonText: "Tamam",
+            });
+          });
+      });
+    }
   });
 });
 

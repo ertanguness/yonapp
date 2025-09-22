@@ -69,5 +69,16 @@ class KasaModel extends Model{
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
-    
+
+    /** Varsayılan kasayı getirir
+     * @return object|null
+     */
+    public function varsayilanKasa()
+    {
+        $query = "SELECT * FROM {$this->table} WHERE varsayilan_mi = 1 LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_OBJ);
+    }
+
 }

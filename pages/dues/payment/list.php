@@ -48,7 +48,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="index?p=dues/payment/tahsilat-onay" class="btn btn-outline-success">
+                <a href="/onay-bekleyen-tahsilatlar" class="btn btn-outline-success">
                     <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
                 </a>
                 <a href="index?p=dues/payment/tahsilat-eslesmeyen" class="btn btn-outline-secondary">
@@ -229,8 +229,12 @@ $(document).on('click', '.tahsilat-gir', function() {
     }, function(data) {
         // Verileri tabloya ekle
         $('.tahsilat-modal-body').html(data);
+        
         // Modal'ı göster
-        $('#tahsilatGir').modal('show');
+        if ($(".modal").length > 0) {
+            $('#tahsilatGir').modal('show');
+        }
+        if ($(".select2").length > 0) {
         $(".select2").select2({
             placeholder: "Kasa Seçiniz",
             dropdownParent: $('#tahsilatGir'),
@@ -241,12 +245,15 @@ $(document).on('click', '.tahsilat-gir', function() {
             dropdownParent: $('#tahsilatGir'),
         });
 
+    }
+        if ($("#islem_tarihi").length > 0) {
         $("#islem_tarihi").flatpickr({
             dateFormat: "d.m.Y H:i",
             locale : "tr",
            enableTime: true,
            minuteIncrement :1,
         })
+    }
 
     });
 
@@ -289,7 +296,7 @@ $(document).ready(function() {
                     $("#tutar").val((toplam.replace(".",
                         ","))); // Tahsilat gir modalındaki tutar alanını güncelle
                     secilenBorcToplami = toplam; // Seçilen borçların toplam tutarını güncelle
-                    //console.log("Toplam tutar:", data);
+                    console.log("Toplam tutar:", data);
                 } else {
                     console.error('Hata:', data.message);
                     alert('Toplam tutar hesaplanırken bir hata oluştu.');

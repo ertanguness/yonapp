@@ -7,7 +7,7 @@ use Model\SitelerModel;
 $Siteler = new SitelerModel();
 $Blocks = new BloklarModel();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id) ?? 0;
 $blocks = $Blocks->find($id  ?? null);
 
 $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
@@ -200,8 +200,8 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
         });
     });
 </script>
-<script src="src/daire-kisi.js"></script>
-<script src="src/blok-daire.js"></script>
+<script src="/src/daire-kisi.js"></script>
+<script src="/src/blok-daire.js"></script>
 <!-- Araç ve acil durum sekmesinin butonla aktif edilmesi -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {

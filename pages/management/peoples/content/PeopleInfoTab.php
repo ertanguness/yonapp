@@ -1,6 +1,7 @@
 <?php
 $site_id = $_SESSION['site_id'] ?? 0;
 
+use App\Helper\Date;
 use Model\BloklarModel;
 use Model\DairelerModel;
 use Model\KisilerModel;
@@ -125,7 +126,8 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-check"></i></div>
-                <input type="text" class="form-control flatpickr" id="entryDate" name="entryDate" placeholder="Giriş Tarihi Giriniz" value="<?php echo $kisi->giris_tarihi ?? ''; ?>">
+                <input type="text" class="form-control flatpickr" id="entryDate" name="entryDate" placeholder="Giriş Tarihi Giriniz" 
+                value="<?php echo Date::dmY($kisi->giris_tarihi)  ?? ''; ?>">
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Kişi kayıt yaptığında tarih girilmelidir. </small>
@@ -203,7 +205,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-2">
             <label for="status" class="fw-semibold">Kullanım Durumu:</label>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-4 ms-3">
             <div class="form-check form-switch d-flex align-items-center">
                 <input class="form-check-input" type="checkbox" id="kullanim_durumu" name="kullanim_durumu" style="transform: scale(2.0);"
                     data-kullanim="<?= isset($kisi->kullanim_durumu) ? (int)$kisi->kullanim_durumu : 0 ?>"

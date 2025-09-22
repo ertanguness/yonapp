@@ -38,7 +38,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="index?p=dues/payment/list" class="btn btn-outline-secondary">
+                <a href="/yonetici-aidat-odeme" class="btn btn-outline-secondary">
                     <i class="feather-arrow-left me-2"></i>Listeye Dön
                 </a>
                 <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-success">
@@ -211,7 +211,8 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
 
 
         // --- 1. MERKEZİ FONKSİYON: Bir satırın çocuk (child) bölümünü açar/kapatır ---
-    function toggleChildRow(mainRow) {
+    
+        function toggleChildRow(mainRow) {
         const $mainRow = $(mainRow); // jQuery nesnesi olduğundan emin ol
         const $button = $mainRow.find('button.borclari-goster-btn');
         const row = table.row($mainRow);
@@ -446,4 +447,79 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
             $uyariMesaji.hide();
         }
     }
+
+
+    /**
+     * Yapılan Tahsilatı borç ile eşleştirir ve kaydeder.
+     */
+    $('#tahsilatOnayTable tbody').on('submit', '.borc-eslestirme-form', function(e) {
+        e.preventDefault();
+        let APIurl = "/pages/dues/payment/api/APItahsilat_onay.php";
+
+        const $form = $(this);
+        const onayId = $form.data('onay-id');
+        const islenecekTutar = parseFloat($form.find('.islenecek-tutar-input').val().replace(/\./g, '').replace(',', '.')) || 0;
+        const secilenBorcIdleri = $form.find('.borc-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+        const $submitBtn = $form.find('.tahsilati-onayla-btn');
+        const $iptalBtn = $form.find('.iptal-btn');
+        const $toplamGosterge = $form.find('.secilen-borc-toplami');
+        const secilenToplam = parseFloat($toplamGosterge.data('raw-total')) || 0;
+        console.log('Form gönderildi. Onay ID:', onayId, 'İşlenecek Tutar:', islenecekTutar, 'Seçilen Borç ID\'leri:', secilenBorcIdleri);
+       
+        if (secilenBorcIdleri.length === 0) {
+            Swal.fire('Uyarı', 'Lütfen en az bir borç seçin.', 'warning');
+            return;
+        }
+        if (islenecekTutar <= 0) {
+            Swal.fire('Uyarı', 'İşlenecek tutar sıfır veya negatif olamaz.', 'warning');
+            return;
+        }
+        if (islenecekTutar > secilenToplam) {
+            Swal.fire('Uyarı', 'İşlenecek tutar, seçilen borçların toplamından fazla olamaz.', 'warning');
+            return;
+        }
+        $submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Kaydediliyor...');
+        $iptalBtn.prop('disabled', true);
+       
+         // AJAX isteği
+        
+        $.ajax({
+            url: APIurl,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'tahsilati_borc_ile_eslestir',
+                onay_id: onayId,
+                islenecek_tutar: islenecekTutar,
+                borc_idler: secilenBorcIdleri
+            },
+            success: function(response) {
+                if (response.success) {
+
+                    Swal.fire('Başarılı', response.message, 'success').then(() => {
+                        console.log('Sunucudan gelen cevap:', response);
+                        
+                        // İşlem başarılı ise, ilgili satırı tablodan kaldır
+                        const $anaSatir = $form.closest('tr').prev('.dt-hasChild');
+                        if ($anaSatir.length > 0) {
+                            const row = table.row($anaSatir);
+                            row.remove().draw();
+                        }
+                    });
+                } else {
+                    const message = response.message || 'Tahsilat borçlara yansıtılırken bir hata oluştu.';
+                    Swal.fire('Hata', message, 'error');
+                }
+            },
+            error: function() {
+                Swal.fire('Hata', 'Sunucuya ulaşılamadı veya bir hata oluştu.', 'error');
+            },
+            complete: function() {
+                $submitBtn.prop('disabled', false).html('<i class="feather-check me-1"></i>Onayla ve Kaydet');
+                $iptalBtn.prop('disabled', false);
+            }
+        });
+    });
 </script>

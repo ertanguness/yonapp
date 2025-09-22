@@ -124,3 +124,55 @@ if ($_POST['action'] == 'delete_tahsilat') {
     exit;
 }
 ////TASHİLAT SİLME İŞLEMİ
+
+
+//Tahsila detayı silme işlemi
+if ($_POST['action'] == 'tahsilat_detay_sil') {
+
+    $db->beginTransaction();
+    try {
+        if (empty($_POST['id'])) {
+            throw new Exception("Tahsilat Detay ID'si gönderilmedi.");
+        }
+
+        $sifreliTahsilatDetayId = $_POST['id'];
+        $tahsilatDetayId = Security::decrypt($sifreliTahsilatDetayId); // Temiz, şifresiz ID
+        $silenKullaniciId = $_SESSION['user']->id; // Mevcut kullanıcı ID'si
+
+        // 1. İlgili tüm kayıtları silmeden ÖNCE OKU (loglama ve işlem için)
+        $tahsilatDetay = $tahsilatDetayModel->find($tahsilatDetayId);
+        if (!$tahsilatDetay) {
+            throw new Exception("Silinecek tahsilat detay kaydı bulunamadı.");
+        }
+
+        // 3. İlgili tüm kayıtları SİL (Tercihen Soft Delete)
+       // $tahsilatDetayModel->softDelete($tahsilatDetayId, $silenKullaniciId);
+
+        //Delete
+        $tahsilatDetayModel->delete($sifreliTahsilatDetayId);
+
+        // 4. Loglama
+        $logger->info("Tahsilat Detayı (soft) silindi ve etkileri geri alındı", [
+            'tahsilat_detay_id' => json_encode($tahsilatDetayId),
+            'silen_kullanici_id' => $silenKullaniciId,
+            'geri_alinan_tahsilat_detay_kaydi' => json_encode($tahsilatDetay),
+        ]);
+
+        // 5. Başarılı olduysa transaction'ı onayla
+        $db->commit();
+        echo json_encode(['status' => 'success', 'message' => 'Tahsilat detayı başarıyla silindi.']);
+    } catch (Exception $e) {
+        $db->rollBack();
+        http_response_code(400);
+        // ... (hata loglama ve cevap kısmı aynı) ...
+        $logger->error("Tahsilat detayı silme işlemi sırasında hata oluştu", [
+            'error' => $e->getMessage(),
+            'tahsilat_detay_id' => $tahsilatDetayId,
+            'silen_kullanici_id' => $_SESSION['user']->id ?? 'Bilinmiyor',
+        ]);
+        
+
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}

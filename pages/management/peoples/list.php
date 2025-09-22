@@ -122,7 +122,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                                         <a href="javascript:void(0);" class="avatar-text avatar-md opensiteSakiniDetay" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="index?p=management/peoples/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Düzenle">
+                                                        <a href="site-sakini-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Düzenle">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);" data-name="<?php echo $adi_soyadi; ?>" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md delete-peoples" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $adi_soyadi; ?>">

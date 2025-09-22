@@ -15,7 +15,9 @@ $TahsilatModel = new TahsilatModel();
 
 $tumTahsilatlar = $TahsilatModel->getTumTahsilatlar($_SESSION['site_id']);
 
-//Gate::authorizeOrDie('tahsilat_listele');
+//Sayfaya erişim yetkisi kontrolü
+//Eğer yetki yoksa yetki yok sayfasına yönlendir
+Gate::authorizeOrDie('tahsilat_listele');
 
 
 ?>
@@ -80,7 +82,7 @@ $tumTahsilatlar = $TahsilatModel->getTumTahsilatlar($_SESSION['site_id']);
                                     <td>
                                         <div><?= htmlspecialchars($tahsilat->aciklama ?: 'Genel Tahsilat') ?></div>
                                         <small class="text-muted" data-bs-toggle="tooltip" data-bs-original-title="Hareketleri Görüntüle">
-                                            <a href="index?p=finans-yonetimi/kasa/hareketler&id=<?= $kasa_id ?>">
+                                        <a href="kasa-hareketleri/<?= ($kasa_id) ?>">
                                                 <i class="bi bi-wallet2 me-1"></i><?= htmlspecialchars($tahsilat->kasa_adi) ?>
                                             </a>
                                         </small>

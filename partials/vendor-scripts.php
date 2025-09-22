@@ -1,13 +1,17 @@
 <?php
 
-$page = isset($_GET['p']) ? $_GET['p'] : '';
+
+
+
+//$page = isset($_GET['p']) ? $_GET['p'] : '';
+
 
 if (
     $page == 'dues/dues-defines/list' ||
     $page == 'offers/list' ||
     $page == 'reports/list' ||
     $page == 'kullanici/list' ||
-    $page == 'kullanici-gruplari/list' ||
+    $page == 'kullanici-gruplari' ||
     $page == 'persons/list' ||
     $page == 'persons/manage' ||
     $page == 'persons/manage' ||
@@ -21,17 +25,34 @@ if (
     $page == 'defines/apartment-type/list' ||
     $page == 'dues/payment/tahsilat-onay' ||
     $page == "finans-yonetimi/kasa/list" ||
-    $page == 'management/sites/list' ||
+    $page == 'siteler' ||
+    $page == "dues/collections/list" || $page == "dues/collections/detail" ||
+    
+    $page == "aidat-turu-listesi" ||
+    $page == "yonetici-aidat-odeme"  || $page == "tahsilatlar"  ||  $page == "borclandirma" || 
+    $page == "kasa-hareketleri"  || $page == "kasa-listesi" ||
+    $page == "borclandirma-detayi" || $page == "tahsilat-detayi" ||
+    $page == "daire-ekle" || $page == "daire-duzenle" ||
+    $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" ||
+    $page == "site-sakini-ekle" || $page == "site-sakini-duzenle"  ||
+    $page == "kullanici-gruplari" ||$page == "kullanici-listesi" ||
+    $page == "onay-bekleyen-tahsilatlar" ||
+
+
+     $page == 'management/sites/list' ||
     $page == "dues/collections/list" || $page == "dues/collections/detail" ||
     $page == "ziyaretci/list" || $page == "ziyaretci/guvenlik/list" ||
     $page == "ziyaretci/guvenlik/GorevYeri/list"  || $page == "ziyaretci/guvenlik/Vardiya/list" ||
     $page == "ziyaretci/guvenlik/Personel/list" ||
     $page == "icra/list" ||  $page == "icra/detay/manage"
+    
 
 ) { ?>
-    <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
-    <script src="assets/vendors/js/dataTables.min.js"></script>
-    <script src="assets/vendors/js/dataTables.bs5.min.js"></script>
+     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
+     <script src="/assets/vendors/js/dataTables.min.js"></script>
+     <script src="/assets/vendors/js/dataTables.bs5.min.js"></script>	
+     
+     
 
     
 <?php  }
@@ -42,15 +63,21 @@ if ($page == 'users/list' || $page == 'users/manage') {
     echo '<script src="./src/users/users.js"></script>';
 }
 
-// Kullanıcı rolü ekleme ve düzenleme sayfası
-if ($page == 'kullanici-gruplari/duzenle' || $page == 'kullanici-gruplari/yetkiler') {
-    echo '<script src="pages/kullanici-gruplari/js/duzenle.js"></script>';
+
+//Kullanıcı Ekle
+if ($page == 'kullanici-ekle' || $page == 'kullanici-duzenle' || $page == 'kullanici-listesi') {
+    echo '<script src="/pages/kullanici/js/user.js"></script>';
 }
 
-//Kullanıcı ekleme ve düzenleme sayfası
-if ($page ==  'kullanici/duzenle') {
-    echo '<script src="pages/kullanici/js/user.js"></script>';
+// Kullanıcı rolü ekleme ve düzenleme sayfası
+if ($page == 'kullanici-grubu-duzenle' || $page == 'kullanici-grubu-ekle' || $page == 'kullanici-gruplari') {
+    echo '<script src="/pages/kullanici-gruplari/js/duzenle.js"></script>';
 }
+
+if ($page == 'yetki-yonetimi' ) {
+    echo '<script src="/pages/kullanici-gruplari/js/yetkiler.js"></script>';
+}
+
 
 //Role Yetkileri ekleme ve düzenleme sayfası
 if ($page == 'users/auths/auths') {
@@ -61,10 +88,9 @@ if ($page == 'users/auths/auths') {
 //*************DUES******************************** */
 // Dues Tanımlama sayfası
 if (
-    $page == 'dues/dues-defines/manage' ||   $page == 'dues/dues-defines/list'
-) {
-    echo '<script src="pages/dues/dues-defines/dues.js"></script>';
-}
+    $page == 'aidat-turu-tanimlama' ||   $page == 'aidat-turu-listesi' || $page == 'aidat-turu-duzenle') {
+        echo '<script src="/pages/dues/dues-defines/dues.js"></script>';
+    }
 
 //*************DUES******************************** */
 
@@ -82,11 +108,11 @@ if (
 //*************DEBIT******************************** */
 // Debit Tanımlama sayfası
 if (
-    $page == 'dues/debit/manage' ||
-    $page == 'dues/debit/list' ||
-    $page == 'dues/debit/single-manage'
+    $page == 'borclandirma-yap' ||
+    $page == 'borclandirma' ||
+    $page == 'borclandirma-duzenle' 
 ) { ?>
-    <script src="pages/dues/debit/js/debit.js"></script>
+    <script src="/pages/dues/debit/js/debit.js"></script>
 
 <?php }
 if ($page == 'dues/debit/upload-from-xls') {
@@ -95,6 +121,13 @@ if ($page == 'dues/debit/upload-from-xls') {
 if ($page == 'dues/debit/detail') {
     echo '<script src="pages/dues/debit/js/detail.js"></script>';
 }
+
+
+//Tahsilat Detay Sayfası
+if($page == 'tahsilat-detayi') {
+    echo '<script src="/pages/dues/collections/js/tahsilat.js"></script>';
+}
+
 
 
 //*************DEBIT******************************** */
@@ -203,16 +236,16 @@ if ($page == 'dues/payment/upload-from-xls') {
     echo '<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mini.min.js"></script>';
     echo '<script src="pages/dues/payment/js/upload.js"></script>';
 }
-if ($page == 'dues/payment/tahsilat-onay') {
+if ($page == 'onay-bekleyen-tahsilatlar') {
     echo '<script src="pages/dues/payment/js/tahsilat-onay.js" defer></script>';
 }
 
-if ($page == 'dues/payment/list') {
+if($page == 'yonetici-aidat-odeme') {
     echo '<script src="pages/dues/payment/js/tahsilat-gir.js" defer></script>';
 }
 
 
-if ($page == 'home') {
+if ($page == 'ana-sayfa') {
     // //echo '<script src="./dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>';
     // echo '<script src="./dist/libs/jsvectormap/dist/js/jsvectormap.min.js" defer></script>';
     // echo '<script src="./dist/libs/jsvectormap/dist/maps/world.js" defer></script>';
@@ -223,26 +256,36 @@ if ($page == 'home') {
 }
 
 
-if ($page == "home") {
-    echo '<script src="assets/vendors/js/daterangepicker.min.js"></script>';
+if($page == "ana-sayfa")
+{
+   echo '<script src="assets/vendors/js/daterangepicker.min.js"></script>';
     echo '<script src="assets/vendors/js/circle-progress.min.js"></script>';
     echo '<script src="assets/vendors/js/jquery.time-to.min.js "></script>';
 }
 
-
 ?>
 
-<script src="./src/jquery.inputmask.js" defer></script>
 
 
-<script src="./assets/js/flatpickr.min.js"></script>
-<script src="./assets/js/flatpickr.tr.min.js"></script>
+
+
+
+
+
+
+<script src="/src/jquery.inputmask.js" defer></script>
+
+
+<script src="/assets/js/flatpickr.min.js" ></script>
+<script src="/assets/js/flatpickr.tr.min.js" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" defer></script>
-<script src="./assets/js/jquery.validate.min.js" defer></script>
+<script src="/assets/js/jquery.validate.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" defer></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
-<script src="./assets/js/select2/js/select2.min.js"></script>
+<script src="/assets/js/select2/js/select2.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-<script src="./src/app.js" defer></script>
+<script src="/src/app.js?v=<?php echo filemtime('src/app.js'); ?>" defer ></script>
 <!--<< All JS Plugins >>-->
+
+

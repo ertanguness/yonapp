@@ -22,7 +22,7 @@ $KisiModel = new KisilerModel();
 
 //$Auths->checkAuthorize('dues/debit/manage');
 
-$id = Security::decrypt(@$_GET["id"] ?? 0) ?? 0;
+$id = Security::decrypt($id ?? 0) ?? 0;
 $borc = $Borc->find($id) ?? null;
 
 $DebitHelper = new Debit();
@@ -99,7 +99,7 @@ switch ($hedef_tipi) {
     <div class="page-header-right ms-auto">
         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-            <a href="index?p=dues/debit/list" type="button" class="btn btn-outline-secondary me-2" data-page="">
+            <a href="/borclandirma" type="button" class="btn btn-outline-secondary me-2" data-page="">
                 <i class="feather-arrow-left me-2"></i>
                 Listeye Dön
             </a>

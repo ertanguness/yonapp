@@ -1,5 +1,6 @@
 <?php
-require_once '../../vendor/autoload.php';
+require_once dirname(__DIR__ ,levels: 2). '/configs/bootstrap.php';
+
 
 use App\Helper\Helper;
 use App\Helper\Security;
@@ -14,7 +15,6 @@ $User = new UserModel();
 //     ]);
 //     exit;
 // };
-session_start();
 
 if ($_POST["action"] == "kullanici-kaydet") {
     $id = Security::decrypt($_POST['user_id']) ?? 0;
@@ -22,7 +22,17 @@ if ($_POST["action"] == "kullanici-kaydet") {
     $lastInsertedId = 0; // Son eklenen ID başlangıç değeri
     $rowData = ''; // Satır verisi başlangıç değeri
 
-    
+    //Email adresi ile kayıt var mı kontrol et
+    $existingUser = $User->getUserByEmail($_POST['email_adresi'], $id);
+    if ($existingUser && $id == 0) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Bu e-posta adresi zaten kayıtlı.'
+        ]);
+        exit;
+    }
+
+      
     
     try {
         $data = [
@@ -31,6 +41,8 @@ if ($_POST["action"] == "kullanici-kaydet") {
             'email' => $_POST['email_adresi'],
             'phone' => $_POST['phone'],
             'owner_id' => $_SESSION["owner_id"],
+            "status" => 1,
+            "is_main_user" => 0,
             'roles' => Security::decrypt($_POST['user_roles']),
         ];
         if (!empty($_POST['password'])) {

@@ -1,7 +1,7 @@
 <?php
 
 require_once "Model/JobGroupsModel.php";
-$JobGroups = new JobGroupsModel();
+//$JobGroups = new //JobGroupsModel();
 
 use App\Helper\Security;
 

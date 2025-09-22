@@ -9,7 +9,8 @@ $Dues = new DueModel();
 $BlokHelper = new BlokHelper();
 
 // Yeni eklemelerde 0 olarak gönderilmesi gerekir
-$id = Security::decrypt($_GET['id'] ?? 0) ?? 0;
+$enc_id = $id ?? 0;
+$id = Security::decrypt($id ?? 0) ?? 0;
 $due = $Dues->find($id ?? null);
 
 ?>
@@ -35,11 +36,11 @@ $due = $Dues->find($id ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2"
-                    data-page="dues/dues-defines/list">
+                <a href="/aidat-turu-listesi" class="btn btn-outline-secondary route-link me-2"
+                    >
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+</a>
                 <button type="button" class="btn btn-primary" id="save_dues">
                     <i class="feather-save  me-2"></i>
                     Kaydet
@@ -56,7 +57,7 @@ $due = $Dues->find($id ?? null);
 
 <div class="main-content">
     <form id="duesForm" method="POST">
-        <input type="hidden" name="dues_id" id="dues_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+        <input type="hidden" name="dues_id" id="dues_id" value="<?php echo $enc_id ?? 0; ?>">
         <div class="row">
             <div class="container-xl">
                 <div class="card">

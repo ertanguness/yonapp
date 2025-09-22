@@ -3,6 +3,9 @@
 use Model\DueModel;
 use App\Helper\Security;
 use App\Helper\Helper;
+use App\Helper\Date;
+
+
 
 $Dues = new DueModel();
 
@@ -22,7 +25,7 @@ $dues = $Dues->getDues();
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items">
-            <a href="#" class="btn btn-primary route-link" data-page="dues/dues-defines/manage">
+            <a href="aidat-turu-tanimlama" class="btn btn-primary route-link">
                 <i class="feather-plus me-2"></i>
                 <span>Yeni Aidat Tanımla</span>
             </a>
@@ -51,7 +54,7 @@ $dues = $Dues->getDues();
                                             <th>Blok</th>
                                             <th>Aidat Adı</th>
                                             <th>Aidat Tutarı</th>
-                                            <th>Başlangıç Tarihi</th>
+                                            <th>Başlangıç/Bitiş Tarihi</th>
                                             <th>Period</th>
                                             <th>Durum</th>
                                             <th style="width:7%">İşlem</th>
@@ -75,8 +78,17 @@ $dues = $Dues->getDues();
                                                     </div>
                                                 </td>
                                                 <td><?php echo $due->amount; ?> ₺</td>
-                                                <td><?php echo date('d.m.Y', strtotime($due->start_date)); ?></td>
-                                                <td><?php echo $due->period; ?> </td>
+                                                <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                      
+                                                        <a href="javascript:void(0);" class="text-muted">
+                                                            <span class="d-block"><?php echo $due->start_date; ?></span>
+                                                            <span class="d-block"><?php echo $due->end_date; ?></span>
+                                                        </a>
+                                                    </div>
+                                                   
+                                                </td>
+                                                <td><?php echo $due->period_text; ?> </td>
                                                 <td>
                                                     <?php echo Helper::getState($due->state) ?>
                                                 </td>
@@ -85,7 +97,7 @@ $dues = $Dues->getDues();
                                                         <a href="index?p=dues/dues-defines/detail&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="index?p=dues/dues-defines/manage&id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                        <a href="aidat-turu-duzenle/<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);" data-name="<?php echo $due->due_name ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-dues" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $due->due_name; ?>">

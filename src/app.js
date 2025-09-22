@@ -7,7 +7,7 @@ $(document).ready(function () {
       //stateSave: true,
       responsive: false,
       language: {
-        url: "assets/js/tr.json",
+        url: "/assets/js/tr.json",
       },
 
       ...getTableSpecificOptions(),
@@ -481,3 +481,24 @@ function addCustomValidationValidValue() {
     "Lütfen geçerli bir değer girin"
   );
 }
+
+/**
+ * Kısayol Tuşları atamak için fonksiyon
+ */
+function setupShortcut(shortcutKey, callback) {
+  $(document).on('keydown', function(event) {
+    // Ctrl + <shortcutKey> kombinasyonunu kontrol et
+    if (event.ctrlKey && event.key.toLowerCase() === shortcutKey.toLowerCase()) {
+      event.preventDefault(); // Varsayılan işlemi engelle
+
+      // Dışarıdan gelen callback fonksiyonunu çalıştır
+      callback();
+    }
+  });
+
+}
+// Kullanım örneği:
+//setupShortcut('s', function() {
+  // Burada yapılacak işlemi tanımlıyoruz
+  //$('#userSaveBtn').trigger('click');
+//});
