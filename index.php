@@ -22,6 +22,8 @@ $authController->checkAuthentication();
 // Rota tanımlarını ve Router nesnesini yükle
 require_once __DIR__ . '/route.php'; 
 
+
+
 // Gelen URL'yi al
 $url = $_GET['p'] ?? 'ana-sayfa';
 $url = rtrim($url, '/');

@@ -56,17 +56,18 @@ $Ziyaretciler = $Ziyaretci->Ziyaretciler();
     </div>
 </div>
 
+
 <div class="main-content">
-    <div class="container-xl mb-2 d-flex justify-content-end">
+  
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="showExitedVisitors"   style="width: 3rem; height: 1.5rem;">
             <label class="form-check-label" for="showExitedVisitors">
                 Çıkış yapmış ziyaretçileri göster
             </label>
         </div>
-    </div>
+   
 
-    <div class="container-xl">
+  
         <div class="card">
             <div class="table-responsive position-relative">
                 <table class="table table-hover datatables" id="ZiyaretciList">

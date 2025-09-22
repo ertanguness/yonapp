@@ -12,7 +12,7 @@ header("Expires: 0");
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
     if (!isset($_GET["p"])) {
-        $returnUrl = urlencode("index?p=home");
+        $returnUrl = urlencode("ana-sayfa");
     }
     header("Location: sign-in?returnUrl={$returnUrl}");
    exit();
@@ -43,7 +43,7 @@ if (count($mySites) <= 1) {
     if (count($mySites) === 1) {
         $_SESSION['site_id'] = $mySites[0]->id;
     }
-    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'index?p=home';
+    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'ana-sayfa';
     header("Location: $redirectUri");
     exit();
 }
@@ -51,7 +51,7 @@ if (count($mySites) <= 1) {
 // Seçim sonrası yönlendirme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
     $_SESSION['site_id'] = $_POST['site_id'];
-    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'index?p=home';
+    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'ana-sayfa';
     header("Location: $redirectUri");
     exit();
 }

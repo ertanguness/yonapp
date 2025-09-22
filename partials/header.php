@@ -145,7 +145,7 @@ $new_url = $url_parts['path'] . '?' . $new_query_string;
                             <span>Kilit Ekranı</span>
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a href="logout.php" class="dropdown-item">
+                        <a href="/logout" class="dropdown-item">
                             <i class="feather-log-out"></i>
                             <span>Çıkış</span>
                         </a>

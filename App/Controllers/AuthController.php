@@ -66,7 +66,7 @@ class AuthController
         if ($validationError) {
             // Hata varsa, girilen e-postayı session'da saklayıp formu tekrar göster
             $_SESSION['old_form_input'] = ['email' => $email];
-            header("Location: sign-in.php");
+            header("Location: /sign-in");
             exit();
         }
         
@@ -107,6 +107,7 @@ class AuthController
      */
     public static function checkAuthentication(): void
     {
+        
 
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
 

@@ -12,7 +12,7 @@
 </div>
 
 <div class="main-content">
-    <div class="container-xl">
+
 
         <!-- Dosya Bilgileri -->
         <div class="card mb-4">
@@ -128,7 +128,7 @@
             </div>
         </div>
 
-    </div> <!-- /.container-xl -->
+
 </div> <!-- /.main-content -->
 
 <!-- Ödeme Modalı -->

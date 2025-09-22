@@ -162,6 +162,27 @@ $router->get('kasa-hareketleri/{id}', function ($id) {
     require 'pages/finans-yonetimi/kasa/hareketler.php';
 });
 
+
+
+// Ziyaretciler
+$router->get('ziyaretci-listesi', function () {
+    require 'pages/ziyaretci/list.php';
+});
+
+
+//İcra İşlemleri
+$router->get('icralarim', function () {
+    require 'pages/levy/people/list.php';
+});
+
+//İcra Detay
+$router->get('icra-detay/{id}', function ($id) {
+    require 'pages/levy/people/manage.php';
+});
+
+
+
+
 // ROUTES tanımla
 $router->get('index', function () {
     require 'index.php';
@@ -205,9 +226,7 @@ $router->get('sign-up', function () {
 
 //Çıkış yap
 $router->get('logout', function () {
-    session_destroy();
-    header("Location: sign-in");
-    exit();
+    require 'logout.php';
 });
 
 // Yetkiniz yok sayfası
