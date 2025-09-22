@@ -54,7 +54,11 @@
 [2025-09-22 10:10:35] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
 [2025-09-22 10:11:55] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
 [2025-09-22 10:12:09] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
+<<<<<<< HEAD
+[2025-09-22 10:24:52] [INFO] Kullanıcı oturumu kapattı. {"user_id":1,"ip":"::1"}
+=======
 >>>>>>> b9d74c01d98d885efc5101abe0a931110f9d85ad
+<<<<<<< HEAD
 [2025-09-22 11:28:16] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"127.0.0.1","requested_url":"\/sign-in"}
 [2025-09-22 11:31:06] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"127.0.0.1"}
 [2025-09-22 11:34:53] [INFO] Kullanıcı oturumu kapattı. {"user_id":1,"ip":"127.0.0.1"}
@@ -888,3 +892,6 @@
 [2025-09-22 12:11:41] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"127.0.0.1","requested_url":"\/logout"}
 [2025-09-22 12:11:45] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1"}
 [2025-09-22 12:11:54] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"127.0.0.1"}
+=======
+>>>>>>> c8fe039315bfaa1ed88700354d079ea46a945a5e
+>>>>>>> 3d954851481ad56145ba42a63d82d0e26752a05e
