@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 [2025-09-17 11:02:02] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 800.00 TL 
 [2025-09-17 11:04:29] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 600 TL 
 [2025-09-17 11:05:28] [INFO] Kredi ID 8 için kullanım güncellendi: Kullanıldı mı: 1, Kullanılan Tutar: 200 TL 
 [2025-09-17 11:05:28] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 400 TL 
+=======
+[2025-09-17 10:55:40] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-17 10:55:44] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-17 18:23:48] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-17 18:23:58] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+>>>>>>> b9d74c01d98d885efc5101abe0a931110f9d85ad

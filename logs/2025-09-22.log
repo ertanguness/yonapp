@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2025-09-22 07:56:05] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"tahsilat_ekle_si","url":"\/pages\/dues\/payment\/tahsilat_gir_modal.php?kisi_id=-9DkPxCuc_5RXm887BXP_9xuul1TEj55lX03vGj2lg%252A%252A"}
 [2025-09-22 07:56:09] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"tahsilat_ekle_si","url":"\/pages\/dues\/payment\/tahsilat_gir_modal.php?kisi_id=-9DkPxCuc_5RXm887BXP_9xuul1TEj55lX03vGj2lg%252A%252A"}
 [2025-09-22 07:56:17] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"tahsilat_ekle_si","url":"\/pages\/dues\/payment\/tahsilat_gir_modal.php?kisi_id=-9DkPxCuc_5RXm887BXP_9xuul1TEj55lX03vGj2lg%252A%252A"}
@@ -36,3 +37,21 @@
 [2025-09-22 10:13:56] [INFO] Gecikme zammı ödemesi: 70.67 TL, kalan ödenecek tutar: 800 TL 
 [2025-09-22 10:20:53] [INFO] Gecikme zammı ödemesi: 70.67 TL, kalan ödenecek tutar: 729.33 TL 
 [2025-09-22 10:21:35] [INFO] Gecikme zammı ödemesi: 6.24 TL, kalan ödenecek tutar: 70.67 TL 
+=======
+[2025-09-22 09:26:11] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-22 09:26:19] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-22 09:55:52] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-09-22 09:55:57] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"::1"}
+[2025-09-22 10:03:57] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-22 10:04:13] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-09-22 10:04:18] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"::1"}
+[2025-09-22 10:04:50] [INFO] Kullanıcı oturumu kapattı. {"user_id":1,"ip":"::1"}
+[2025-09-22 10:04:55] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-22 10:07:27] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-09-22 10:07:31] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-22 10:07:44] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+[2025-09-22 10:07:49] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"::1"}
+[2025-09-22 10:10:35] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
+[2025-09-22 10:11:55] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
+[2025-09-22 10:12:09] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
+>>>>>>> b9d74c01d98d885efc5101abe0a931110f9d85ad

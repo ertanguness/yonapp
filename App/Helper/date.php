@@ -4,7 +4,7 @@ namespace App\Helper;
 
 use DateTime;
 use PhpOffice\PhpSpreadsheet\Shared\Date as PhpSpreadsheetDate;
- 
+
 
 
 class Date
@@ -31,15 +31,15 @@ class Date
             return '';
         }
 
-        return self::normalizeDate( $date);
+        return self::normalizeDate($date);
     }
 
-    public static function normalizeDate($date, $outputFormat = 'Y-m-d H:i:s') 
+    public static function normalizeDate($date, $outputFormat = 'Y-m-d H:i:s')
     {
         if (empty($date)) {
             return '';
         }
-    
+
         // Önceden tanımlanmış yaygın formatlar
         $commonFormats = [
             'd/m/Y-H:i:s',    // 26/05/2025-14:02:40
@@ -52,10 +52,10 @@ class Date
             DateTime::ATOM,     // 2025-05-26T14:02:40+00:00
             DateTime::RFC2822,  // Tue, 26 May 2025 14:02:40 +0000
         ];
-    
+
         // Önce DateTime objesi oluşturmayı dene
         $datetime = date_create($date);
-        
+
         // Başarısız olursa, bilinen formatları dene
         if ($datetime === false) {
             foreach ($commonFormats as $format) {
@@ -65,12 +65,12 @@ class Date
                 }
             }
         }
-    
+
         // Hala geçerli bir tarih yoksa, şimdiki zamanı dön
         if ($datetime === false) {
             return date($outputFormat);
         }
-    
+
         return $datetime->format($outputFormat);
     }
 
@@ -261,7 +261,7 @@ class Date
     }
 
 
-    
+
 
     /**
      * Excel'den gelen sayısal bir tarih değerini veya tarih metnini 'Y-m-d' formatına çevirir.
@@ -287,10 +287,10 @@ class Date
                 return null;
             }
         }
-        
+
         // 2. Durum: Değer metin ise (kullanıcı '25.12.2023' gibi manuel girmişse)
         if (is_string($dateValue)) {
-             try {
+            try {
                 // PHP'nin standart DateTime yapıcısı ile metni tarihe çevirmeyi dene.
                 // Bu, '2023-12-25', '25-12-2023' gibi birçok formatı anlar.
                 $dateTimeObject = new \DateTime(trim($dateValue));
@@ -307,6 +307,6 @@ class Date
 
         return null; // Hiçbir koşula uymuyorsa.
     }
-   
+  
     
 }

@@ -7,6 +7,7 @@ use Model\DueModel;
 use Model\BorclandirmaModel;
 use Model\BorclandirmaDetayModel;
 use Model\PeriyodikBorclandirmaModel;
+use App\Services\Gate;
 
 $Borc = new PeriyodikBorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
@@ -17,8 +18,9 @@ $borclar = $Borc->all();
 
 
 
-
+Gate::authorizeOrDie('debit_add');
 ?>
+
 
 
 <div class="page-header">

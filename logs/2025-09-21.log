@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2025-09-21 20:48:30] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1230","gelen_tutar":800,"kullanici_id":147}
 [2025-09-21 20:48:30] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1130"}
 [2025-09-21 20:49:11] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1230","gelen_tutar":800,"kullanici_id":147}
@@ -101,3 +102,12 @@
 [2025-09-21 23:04:09] [INFO] Gecikme zammı ödemesi: -28.65 TL, kalan ödenecek tutar: 510.01 TL 
 [2025-09-21 23:05:11] [INFO] Tahsilat (soft) silindi ve etkileri geri alındı {"tahsilat_id":"\"1153\"","silen_kullanici_id":147,"geri_alinan_detaylar":"[{\"id\":511,\"tahsilat_id\":1153,\"borc_detay_id\":15079,\"odenen_tutar\":\"469.33\",\"aciklama\":\"Anapara \\u00f6demesi\",\"islem_tarihi\":\"\",\"kayit_tarihi\":\"2025-09-21 23:04:09\",\"silinme_tarihi\":null,\"silen_kullanici\":null}]","geri_alinan_krediler":"[{\"id\":24,\"kisi_id\":218,\"site_id\":0,\"tahsilat_id\":1153,\"tutar\":\"40.68\",\"borc_detay_id\":0,\"aciklama\":\"Tahsilat fazlas\\u0131 alacak kayd\\u0131\",\"kullanildi_mi\":0,\"kullanilan_tutar\":0,\"kullanilan_tahsilat_id\":0,\"created_at\":\"2025-09-21 23:04:09\",\"islem_tarihi\":\"0000-00-00 00:00:00\",\"silinme_tarihi\":\"2025-09-21 23:04:09\",\"silen_kullanici\":0}]","silinen_tahsilat_ana_kaydi":"{\"id\":1153,\"site_id\":1,\"kisi_id\":218,\"kasa_id\":3,\"tutar\":\"510.01\",\"islem_tarihi\":\"2025-09-21 23:04:00\",\"makbuz_no\":null,\"toplam_taksit\":null,\"aciklama\":\"\",\"olusturulma_tarihi\":\"2025-09-21 23:04:09\",\"olusturan\":null,\"guncelleme_tarihi\":null,\"guncelleyen\":null,\"silinme_tarihi\":null,\"silen_kullanici\":null}"}
 [2025-09-21 23:05:49] [INFO] Gecikme zammı ödemesi: 69.33 TL, kalan ödenecek tutar: 800 TL 
+=======
+[2025-09-21 19:23:51] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-21 19:28:22] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-21 19:28:31] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"::1"}
+[2025-09-21 19:30:11] [INFO] Demo süresi dolan kullanıcı sisteme erişmeye çalıştı ve çıkışa yönlendirildi. {"user_id":147,"email":"ertanguness@gmail.com"}
+[2025-09-21 19:30:32] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"::1"}
+[2025-09-21 19:41:37] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-21 19:49:08] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"::1"}
+>>>>>>> b9d74c01d98d885efc5101abe0a931110f9d85ad

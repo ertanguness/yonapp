@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2025-09-13 09:22:14] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
 [2025-09-13 09:22:28] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
 [2025-09-13 10:02:35] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 5853.11 TL 
@@ -80,3 +81,9 @@
 [2025-09-13 22:34:42] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 2460 TL 
 [2025-09-13 22:34:42] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 1860 TL 
 [2025-09-13 22:34:42] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 800 TL 
+=======
+[2025-09-13 20:58:21] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-13 20:58:49] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-13 21:31:14] [INFO] Güvenlik personel kaydı silindi. {"deleted_personel_id":"6","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-13 21:44:56] [INFO] Güvenlik personel kaydı silindi. {"deleted_personel_id":"7","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+>>>>>>> b9d74c01d98d885efc5101abe0a931110f9d85ad

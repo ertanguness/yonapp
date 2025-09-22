@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2025-09-14 10:24:19] [INFO] Borçlandırma işlemi başlatılıyor: Daire ID: 1, Tutar: 800.00, Başlangıç: 2025-09-01, Bitiş: 2025-09-30 
 [2025-09-14 10:24:19] [INFO] Borçlandırma işlemi başlatılıyor: Daire ID: 2, Tutar: 800.00, Başlangıç: 2025-09-01, Bitiş: 2025-09-30 
 [2025-09-14 10:24:19] [INFO] Borçlandırma işlemi başlatılıyor: Daire ID: 3, Tutar: 800.00, Başlangıç: 2025-09-01, Bitiş: 2025-09-30 
@@ -593,3 +594,14 @@
 [2025-09-14 21:04:58] [INFO] Borçlandırma işlemi başarıyla tamamlandı: {"id":0,"borclandirma_id":"126","borc_adi":"G\u0130DER A\u00c7MA","tutar":"825.00","kalan_borc":"825.00","baslangic_tarihi":"20250901","bitis_tarihi":"20250930","son_odeme_tarihi":"20250930","ceza_orani":"0.00","aciklama":"EYL\u00dcL 2025 G\u0130DER A\u00c7MA","hedef_tipi":"person","kisi_id":9,"daire_id":9} 
 [2025-09-14 21:06:04] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 954.03 TL 
 [2025-09-14 21:06:04] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 825 TL 
+=======
+[2025-09-14 14:47:19] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-14 14:47:23] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-14 21:29:59] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"1","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 21:50:45] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"5","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 21:54:57] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"6","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 21:56:17] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"7","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 22:14:08] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"9","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 22:16:54] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"8","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+[2025-09-14 22:30:22] [INFO] Bir icra kaydı silindi. {"deleted_icra_id":"10","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
+>>>>>>> b9d74c01d98d885efc5101abe0a931110f9d85ad

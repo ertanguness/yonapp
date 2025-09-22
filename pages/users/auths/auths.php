@@ -1,13 +1,14 @@
 <?php
 
-require_once 'Model/Auths.php';
+require_once 'Model/AuthsModel.php';
 require_once 'Model/RolesModel.php';
 require_once 'Model/RoleAuthsModel.php';
 require_once 'App/Helper/security.php';
 
 use App\Helper\Security;
+use Model\AuthsModel;
 
-$authObj = new Auths();
+$authObj = new AuthsModel();
 $roleObj = new Roles();
 $roleAuthsObj = new RoleAuthsModel();
 ob_start(); // Çıktı tamponlamasını başlatın

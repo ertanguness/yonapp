@@ -392,10 +392,6 @@ class KisilerModel extends Model
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
     
-    
-    
-    
-    
     /**
      * Tahsilat kaydı yapıldıktan sonra anlık olarak satırdaki veriyi güncellemek için kullanılır
      * @param int $kisi_id
