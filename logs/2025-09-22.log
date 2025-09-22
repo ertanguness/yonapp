@@ -14,3 +14,4 @@
 [2025-09-22 10:10:35] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
 [2025-09-22 10:11:55] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
 [2025-09-22 10:12:09] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":1,"email":"m@gmail.com","ip":"::1","required_permission":"debit_add","url":"\/index?p=dues\/debit\/periyodik-borclandirma"}
+[2025-09-22 10:24:52] [INFO] Kullanıcı oturumu kapattı. {"user_id":1,"ip":"::1"}
