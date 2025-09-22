@@ -37,6 +37,8 @@ if (
     $page == "site-sakini-ekle" || $page == "site-sakini-duzenle"  ||
     $page == "kullanici-gruplari" ||$page == "kullanici-listesi" ||
     $page == "onay-bekleyen-tahsilatlar" ||
+    $page == "ziyaretci-listesi" ||
+    $page == "icralarim" || $page == "icra-detay" ||
 
 
      $page == 'management/sites/list' ||

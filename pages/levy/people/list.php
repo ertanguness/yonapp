@@ -1,3 +1,8 @@
+<?php 
+$id = 5;
+?>
+
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -11,8 +16,7 @@
 </div>
 
 <div class="main-content">
-    <div class="container-xl">
-        <div class="row row-cards">
+          <div class="row row-cards">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
@@ -35,7 +39,7 @@
                                         <td>12.500 ₺</td>
                                         <td><span class="badge bg-warning">Devam Ediyor</span></td>
                                         <td>
-                                        <a href="javascript:void(0);" class="avatar-text avatar-md route-link" title="Detay" data-page="levy/people/manage">
+                                        <a href="/icra-detay/<?php echo $id; ?>" class="avatar-text avatar-md route-link" title="Detay" data-page="levy/people/manage">
                                             <i class="feather-eye"></i>
                                         </a>
                                             
@@ -50,5 +54,4 @@
                 </div> <!-- /.card -->
             </div> <!-- /.col-12 -->
         </div> <!-- /.row-cards -->
-    </div> <!-- /.container-xl -->
 </div> <!-- /.main-content -->

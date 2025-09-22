@@ -1,6 +1,7 @@
 <?php
 ob_start();
 
+
 require_once __DIR__ . '/configs/bootstrap.php';
 
 // Artık Controller'ları ve diğer sınıfları güvenle kullanabiliriz.
@@ -10,6 +11,7 @@ $errors = [];
 // Sadece POST isteği varsa kontrolcüyü çalıştır
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitForm'])) {
     $authController = new AuthController();
+   
     $authController->handleLoginRequest();
 }
 

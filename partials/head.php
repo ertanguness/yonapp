@@ -1,7 +1,8 @@
 <?php 
 //$page = isset($_GET['p']) ? $_GET['p'] : '';
 
-
+//eğer $page değişkeni yoka url'deki sayfa adını al, örnek sign-in.php
+$page = isset($_GET['p']) ? $_GET['p'] : '';
 
 ?>
 <head>
