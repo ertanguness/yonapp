@@ -1,4 +1,6 @@
 <?php
+require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
+
 require_once "Model/RolesModel.php";
 require_once "App/Helper/security.php";
 
@@ -6,7 +8,7 @@ use App\Helper\Security;
 $roleObj = new Roles();
 
 //Sayfa başlarında eklenecek alanlar
-$perm->checkAuthorize("permission_group_add_update");
+//$perm->checkAuthorize("permission_group_add_update");
 $id = isset($_GET["id"]) ? Security::decrypt($_GET['id']) : 0;
 $new_id = isset($_GET["id"]) ? $_GET['id'] : 0;
 
