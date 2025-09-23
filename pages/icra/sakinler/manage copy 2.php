@@ -19,23 +19,6 @@ $id = Security::decrypt($id ?? 0);
 $icraBilgileri = $Icra->IcraBilgileri($id);
 $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
 
-$toplamOdenenTutar = 0;
-$toplamOdenmemisTutar = 0;
-$odenenTaksitSayisi = 0;
-$odemenmemisTaksitSayisi = 0;
-
-if (!empty($icraOdemeler)) {
-    foreach ($icraOdemeler as $odeme) {
-        if ($odeme->durumu == 1) {
-            $toplamOdenenTutar += $odeme->toplam_borc;
-            $odenenTaksitSayisi++;
-        } else {
-            $toplamOdenmemisTutar += $odeme->toplam_borc;
-            $odemenmemisTaksitSayisi++;
-        }
-    }
-}
-
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -90,18 +73,7 @@ if (!empty($icraOdemeler)) {
                     <div class="col-md-4">
                         <?= Helper::paraFormat($icraBilgileri->borc_tutari) ?? 0 ?> ₺
                     </div>
-                    <div class="col-md-2 fw-semibold">Toplam Borcu:</div>
-                    <div class="col-md-1">
-                        <?php
-                        $toplamBorc = $toplamOdenenTutar + $toplamOdenmemisTutar;
-                        echo Helper::paraFormat($toplamBorc) ?? 0;
-                        ?>
-                    </div>
-                    <div class="col-md-2">
-                       <small>Anapara+ Faiz Tutarını belirtir.</small>
-                    </div>
-                </div>
-                <div class="row mb-2">
+
                     <div class="col-md-2 fw-semibold">Açıklama:</div>
                     <div class="col-md-10">
                         <?= htmlspecialchars($icraBilgileri->aciklama ?? '-') ?>
@@ -110,12 +82,12 @@ if (!empty($icraOdemeler)) {
             </div>
         </div>
 
+        <!-- Online Ödeme Alanı -->
         <div class="card mb-4">
-            <div class="tab-pane fade show active" id="paymentPlan" role="tabpanel">
+            <div class="tab-pane fade show active " id="paymentPlan" role="tabpanel">
                 <table class="table text-center table-hover">
                     <thead style="background-color:antiquewhite;">
                         <tr>
-                            <th>Seçim</th>
                             <th>Taksit No</th>
                             <th>Aylık Ödeme</th>
                             <th>Faiz Oranı (%)</th>
@@ -124,24 +96,18 @@ if (!empty($icraOdemeler)) {
                             <th>Son Ödeme Tarihi</th>
                             <th>Ödenen Tarih</th>
                             <th>Durum</th>
+                            <th>İşlem</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!empty($icraOdemeler)): ?>
                             <?php foreach ($icraOdemeler as $odeme): ?>
                                 <tr>
-                                    <td>
-                                        <?php if ($odeme->durumu != 1): ?>
-                                            <input type="checkbox" class="taksitSec"
-                                                data-id="<?= $odeme->id ?>"
-                                                data-tutar="<?= $odeme->toplam_borc ?>">
-                                        <?php else: ?>
-                                            <span class="text-muted">-</span>
-                                        <?php endif; ?>
-                                    </td>
                                     <td><?= htmlspecialchars($odeme->taksit_adi) ?></td>
                                     <td><?= Helper::paraFormat($odeme->taksit_tutari) ?> ₺</td>
-                                    <td><?= $icraBilgileri->faiz_orani ?? 0 ?>%</td>
+                                    <td>
+                                        <?= $icraBilgileri->faiz_orani ?? 0 ?>%
+                                    </td>
                                     <td><?= Helper::paraFormat($odeme->faiz_tutari) ?> ₺</td>
                                     <td><?= Helper::paraFormat($odeme->toplam_borc) ?> ₺</td>
                                     <td><?= !empty($odeme->taksit_odeme_tarihi) ? Date::dmY($odeme->taksit_odeme_tarihi) : '-' ?></td>
@@ -153,27 +119,38 @@ if (!empty($icraOdemeler)) {
                                             <span class="badge bg-danger">Ödenmedi</span>
                                         <?php endif; ?>
                                     </td>
+                                    <td>
+                                        <?php if ($odeme->durumu != 1): ?>
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#paymentModal"
+                                                    data-id="<?= $odeme->id ?>"
+                                                    data-amount="<?= $odeme->toplam_borc ?>">
+                                                    Öde
+                                                </button>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="9" class="text-muted">Henüz ödeme planı oluşturulmamış.</td>
+                                <td colspan="8" class="text-muted">Henüz ödeme planı oluşturulmamış.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
-                <!-- Ödeme Butonu -->
-                <?php if (!empty($icraOdemeler)): ?>
-                    <div class="d-flex justify-content-end mt-3" style="padding-right: 15px;">
-                        <button type="button" id="odemeYapBtn" class="btn btn-success">
-                            Seçilen Taksitleri Öde
-                        </button>
-                    </div>
-                <?php endif; ?>
             </div>
-
             <div class="card-body text-center">
-                <h5>Kalan Borç: <span class="text-danger"><?= Helper::paraFormat($toplamOdenmemisTutar) ?> ₺</span></h5>
+                <?php
+                // $toplamBorc = $icraBilgileri->borc_tutari ?? 0;
+                // $odenenToplam = $IcraOdeme->ToplamOdenenTutar($id) ?? 0;
+                // $kalanBorc = $toplamBorc - $odenenToplam;
+                ?>
+                <h5>Kalan Borç: <span class="text-danger"><?= Helper::paraFormat($kalanBorc) ?> ₺</span></h5>
                 <p>Ödemelerinizi aşağıdaki yöntemlerle gerçekleştirebilirsiniz:</p>
                 <div class="alert alert-info mt-3" role="alert">
                     <strong>Havale Bilgileri</strong> <br>
@@ -183,7 +160,6 @@ if (!empty($icraOdemeler)) {
                 </div>
             </div>
         </div>
-
 
 
     </div> <!-- /.container-xl -->
@@ -209,6 +185,13 @@ if (!empty($icraOdemeler)) {
                         <span id="odemeBilgiText">
                             Henüz taksit seçilmedi.
                         </span>
+                    </div>
+
+                    <!-- Ödeme Açıklaması -->
+                    <div class="mb-3">
+                        <label class="form-label">Ödeme Açıklaması</label>
+                        <textarea class="form-control" id="odemeAciklama" name="odeme_aciklama" rows="2"
+                            placeholder="Örneğin: Mart - Nisan - Mayıs taksit ödemesi"></textarea>
                     </div>
 
                     <div class="mb-3">
@@ -305,42 +288,18 @@ if (!empty($icraOdemeler)) {
         }, 500); // Modal kapanıp açılırken küçük gecikme
     });
 
-    $(document).on("click", "#odemeYapBtn", function() {
-        let toplamTutar = 0;
-        let taksitSayisi = 0;
-        let secilenler = [];
+    // Tablodaki ödeme butonuna tıklanınca modal verilerini doldur
+    document.querySelectorAll('[data-bs-target="#paymentModal"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            let odemeId = this.getAttribute('data-id');
+            let amount = this.getAttribute('data-amount');
 
-        $(".taksitSec:checked").each(function() {
-            let tutar = parseFloat($(this).data("tutar"));
-            let id = $(this).data("id");
-            if (!isNaN(tutar)) {
-                toplamTutar += tutar;
-                taksitSayisi++;
-                secilenler.push(id);
-            }
+            document.getElementById('odeme_id').value = odemeId;
+            document.getElementById('payment_amount').value = new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 2
+            }).format(amount);
         });
-
-        if (taksitSayisi > 0) {
-            $("#odemeBilgiText").html(
-                `<strong>${taksitSayisi}</strong> taksit için toplam 
-             <strong>${HelperParaFormat(toplamTutar)}</strong> tahsil edilecektir.`
-            );
-            $("#odemeBilgiText").closest('.alert').removeClass('alert-danger').addClass('alert-info');
-            $("#payment_amount").val(HelperParaFormat(toplamTutar));
-        } else {
-            $("#odemeBilgiText").html(`Herhangi bir taksit seçilmedi!`);
-            $("#odemeBilgiText").closest('.alert').removeClass('alert-info').addClass('alert-danger');
-            $("#payment_amount").val("0,00 ₺");
-        }
-
-        $("#secilenTaksitler").val(secilenler.join(","));
-        $("#paymentModal").modal("show");
     });
-
-    function HelperParaFormat(amount) {
-        return new Intl.NumberFormat("tr-TR", {
-            style: "currency",
-            currency: "TRY"
-        }).format(amount);
-    }
 </script>

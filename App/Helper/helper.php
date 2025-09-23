@@ -990,4 +990,8 @@ class Helper
         // 7. Sonucu hesaplayıp döndürelim.
         return round($chargeable_days * $daily_rate, 2);
     }
+    public static function paraFormat($tutar, $decimal = 2)
+    {
+        return number_format((float)$tutar, $decimal, ',', '.');
+    }
 }

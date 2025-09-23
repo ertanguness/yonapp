@@ -76,7 +76,7 @@ $Icralar = $Icra->Icralar();
                                     <tbody>
                                         <?php if (!empty($Icralar)) : ?>
                                             <?php foreach ($Icralar as $index => $icra) : ?>
-                                                <?php  $enc_id = Security::encrypt($icra->id);?>
+                                                <?php $enc_id = Security::encrypt($icra->id); ?>
                                                 <tr>
                                                     <td><?= $index + 1 ?></td>
                                                     <td><?= htmlspecialchars($icra->dosya_no) ?></td>
@@ -104,17 +104,17 @@ $Icralar = $Icra->Icralar();
                                                     </td>
                                                     <td class="text-end">
                                                         <div class="hstack gap-2">
-                                                            <a href="index?p=icra/detay/manage&id=<?= $enc_id; ?>" class="avatar-text avatar-md">
+                                                            <a href="icra-detay/<?= $enc_id; ?>"
+                                                                class="avatar-text avatar-md">
                                                                 <i class="feather-eye"></i>
                                                             </a>
                                                             <a href="index?p=icra/manage&id=<?= $enc_id; ?>" class="avatar-text avatar-md">
                                                                 <i class="feather-edit"></i>
                                                             </a>
-                                                            <a href="javascript:void(0);"
-                                                                data-name="<?= htmlspecialchars($icra->dosya_no); ?>"
-                                                                data-id="<?= $enc_id; ?>"
-                                                                class="avatar-text avatar-md sil-icra">
-                                                                <i class="feather-trash-2"></i>
+                                                            <a href="icra-sakin-detay/<?= $enc_id; ?>"
+                                                                class="avatar-text avatar-md route-link d-inline-flex justify-content-center align-items-center"
+                                                                title="Detay">
+                                                                <i class="feather-eye"></i>
                                                             </a>
                                                         </div>
                                                     </td>

@@ -169,17 +169,22 @@ $router->get('ziyaretci-listesi', function () {
     require 'pages/ziyaretci/list.php';
 });
 
-
+// ---------------İcra işlemleri takip modülü başlangıç-------------------
 //İcra İşlemleri
 $router->get('icralarim', function () {
-    require 'pages/levy/people/list.php';
+    require 'pages/icra/sakinler/list.php';
 });
-
-//İcra Detay
+//İcra Düzenle
 $router->get('icra-detay/{id}', function ($id) {
-    require 'pages/levy/people/manage.php';
+    require 'pages/icra/detay/manage.php';
 });
-
+//İcra sakinler Detay
+$router->get('icra-sakin-detay/{id}', function ($id) {
+    require 'pages/icra/sakinler/manage.php';
+});
+$router->get('icra-takibi', function () {
+    require 'pages/icra/list.php';
+});
 
 
 
@@ -187,9 +192,6 @@ $router->get('icra-detay/{id}', function ($id) {
 $router->get('index', function () {
     require 'index.php';
 });
-
-
-
 
 //Onay Bekleyen Tahsilatlar
 $router->get('onay-bekleyen-tahsilatlar', function () {
