@@ -895,3 +895,10 @@
 =======
 >>>>>>> c8fe039315bfaa1ed88700354d079ea46a945a5e
 >>>>>>> 3d954851481ad56145ba42a63d82d0e26752a05e
+[2025-09-22 13:04:22] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1"}
+[2025-09-22 13:10:51] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"127.0.0.1"}
+[2025-09-22 13:11:50] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
+[2025-09-22 13:12:00] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
+[2025-09-22 13:18:09] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"127.0.0.1","requested_url":"\/"}
+[2025-09-22 13:18:12] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1"}
+[2025-09-22 14:38:49] [INFO] Gecikme zammı ödemesi: 70.67 TL, kalan ödenecek tutar: 800 TL 
