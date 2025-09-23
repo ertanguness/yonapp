@@ -35,7 +35,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                // require_once 'pages/components/download.php'
                 ?>
 
-                <a href="#" class="btn btn-primary route-link" data-page="management/blocks/manage">
+                <a href="#" class="btn btn-primary route-link" data-page="/blok-ekle">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Blok Ekle</span>
                 </a>
@@ -95,7 +95,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                                                 <td>
                                                     <div class="hstack gap-2">
                                                       
-                                                        <a href="index?p=management/blocks/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                        <a href="blok-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);" data-name="<?php echo $blok->blok_adi ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md delete-blocks" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $blok->blok_adi; ?>">

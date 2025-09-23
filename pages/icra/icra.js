@@ -53,10 +53,10 @@ $(document).on("click", "#icra_kaydet", function () {
         }).then((result) => {
           if (result.isConfirmed) {
             // Listeye yönlendirme
-            window.location.href = "index.php?p=icra/list";
+            window.location.href = "/icra-listesi";
           } else if (result.dismiss === Swal.DismissReason.cancel) {
             // Ödeme planı sayfasına yönlendirme
-            window.location.href = "index.php?p=icra/detay/manage&id=" + data.id;
+            window.location.href = "/icra-detay?id=" + data.id;
           }
         });
       } else {

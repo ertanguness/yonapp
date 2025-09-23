@@ -25,10 +25,10 @@ $id =  Security::decrypt($id ?? 0);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="management/apartment/list">
+                <a href="/site-daireleri" type="button" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="save_apartment">
                     <i class="feather-save  me-2"></i>
                     Kaydet

@@ -38,10 +38,10 @@ $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="icra/list">
+                <a href="/icra-takibi" class="btn btn-outline-secondary me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+</a>
                 <button type="button" class="btn btn-info" id="payPlanAdd" data-bs-toggle="modal" data-bs-target="#paymentPlanModal">
                     <i class="feather-refresh-cw me-2"></i>Ödeme Planı Ekle
                 </button>
@@ -57,7 +57,6 @@ $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
 </div>
 
 <div class="main-content">
-    <div class="container-xl">
         <div class="row row-cards">
             <div class="col-12">
                 <div class="card">
@@ -232,7 +231,6 @@ $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
             </div> <!-- /.card -->
         </div> <!-- /.col-12 -->
     </div> <!-- /.row-cards -->
-</div> <!-- /.container-xl -->
 </div> <!-- /.main-content -->
 
 <!-- Ödeme Planı Modal -->

@@ -5,7 +5,6 @@
 
 //$page = isset($_GET['p']) ? $_GET['p'] : '';
 
-
 if (
     $page == 'dues/dues-defines/list' ||
     $page == 'offers/list' ||
@@ -31,6 +30,7 @@ if (
     $page == "aidat-turu-listesi" ||
     $page == "yonetici-aidat-odeme"  || $page == "tahsilatlar"  ||  $page == "borclandirma" || 
     $page == "kasa-hareketleri"  || $page == "kasa-listesi" ||
+    $page == "gelir-gider-islemleri" ||
     $page == "borclandirma-detayi" || $page == "tahsilat-detayi" ||
     $page == "daire-ekle" || $page == "daire-duzenle" ||
     $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" ||
@@ -38,15 +38,14 @@ if (
     $page == "kullanici-gruplari" ||$page == "kullanici-listesi" ||
     $page == "onay-bekleyen-tahsilatlar" ||
     $page == "ziyaretci-listesi" ||
-    $page == "icralarim" || $page == "icra-detay" ||
+    $page == "icralarim" || $page == "icra-detay" || $page == "icra-listesi" ||  $page == "icra-takibi" ||
 
 
-     $page == 'management/sites/list' ||
+    $page == 'management/sites/list' ||
     $page == "dues/collections/list" || $page == "dues/collections/detail" ||
     $page == "ziyaretci/list" || $page == "ziyaretci/guvenlik/list" ||
     $page == "ziyaretci/guvenlik/GorevYeri/list"  || $page == "ziyaretci/guvenlik/Vardiya/list" ||
-    $page == "ziyaretci/guvenlik/Personel/list" ||
-    $page == "icra/list" ||  $page == "icra/detay/manage"
+    $page == "ziyaretci/guvenlik/Personel/list" 
     
 
 ) { ?>
@@ -220,14 +219,19 @@ if (
 }
 //*************define APARTMENT TYPES******************************** */
 
+
+
 //************İCRA BAŞLANGIÇ************************************ */
-if ($page == 'icra/manage' || $page == 'icra/list') {
+if ($page == 'icra-ekle' || $page == 'icra-duzenle' || $page == 'icra-listesi') {
     echo '<script src="pages/icra/icra.js"></script>';
 }
-if ($page == 'icra/detay/manage') {
-    echo '<script src="pages/icra/detay/detay.js"></script>';
+
+if ($page == 'icra-detay') {
+    echo '<script src="/pages/icra/detay/detay.js"></script>';
 }
 //************İCRA BİTİŞ************************************ */
+
+
 
 if ($page == 'finans-yonetimi/kasa/duzenle' || $page == 'finans-yonetimi/kasa/list') {
     echo '<script src="pages/finans-yonetimi/kasa/js/kasa.js"></script>';

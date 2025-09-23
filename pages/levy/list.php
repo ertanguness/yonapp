@@ -77,7 +77,7 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="hstack gap-2">
-                                            <a href="#" class="avatar-text avatar-md route-link"  data-page="levy/detail">
+                                            <a href="icra-detay/3" class="avatar-text avatar-md route-link">
                                                 <i class="feather-eye"></i>
                                             </a>
                                             <a href="icra-duzenle.php?id=3" class="avatar-text avatar-md">
@@ -129,7 +129,7 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="hstack gap-2">
-                                            <a href="#" class="avatar-text avatar-md route-link"  data-page="levy/detail">
+                                            <a href="icra-detay/<?php echo $icra->id ?? 1; ?>" class="avatar-text avatar-md" >
                                                 <i class="feather-eye"></i>
                                             </a>
                                             <a href="icra-duzenle.php?id=3" class="avatar-text avatar-md">

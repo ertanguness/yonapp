@@ -1,0 +1,33 @@
+[2025-09-23 13:16:57] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 800.00 TL 
+[2025-09-23 13:17:54] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1229","gelen_tutar":400,"kullanici_id":147}
+[2025-09-23 13:17:54] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1163"}
+[2025-09-23 13:17:54] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 15157,\n        \"borc_tutari\": \"800.00\",\n        \"gun_farki\": 54,\n        \"gecikme_zammi\": \"72.00\",\n        \"ceza_orani\": \"5.00\",\n        \"toplam_borc\": \"872.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"872.00\",\n        \"kalan_gecikme_zammi\": \"72.00\"\n    }\n]"}
+[2025-09-23 13:17:54] [INFO] Borç kaydı işleniyor. {"borc_detay_id":15157,"kalan_dagitilacak_tutar":400}
+[2025-09-23 13:17:54] [INFO] Gecikme zammı için tahsilat detayı oluşturuldu. {"borc_detay_id":15157,"odenen_gecikme":72}
+[2025-09-23 13:17:54] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":15157,"odenen_anapara":328}
+[2025-09-23 13:18:52] [INFO] Gecikme zammı ödemesi: 42.48 TL, kalan ödenecek tutar: 472 TL 
+[2025-09-23 13:22:22] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"127.0.0.1"}
+[2025-09-23 13:22:28] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":1,"email":"m@gmail.com","ip":"127.0.0.1"}
+[2025-09-23 13:29:59] [INFO] Kullanıcı oturumu kapattı. {"user_id":1,"ip":"127.0.0.1"}
+[2025-09-23 13:30:03] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1"}
+[2025-09-23 15:39:02] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"127.0.0.1"}
+[2025-09-23 15:39:10] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":206,"email":"m@gmail.com","ip":"127.0.0.1"}
+[2025-09-23 15:39:20] [INFO] Kullanıcı oturumu kapattı. {"user_id":206,"ip":"127.0.0.1"}
+[2025-09-23 15:39:23] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1"}
+[2025-09-23 15:41:01] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"127.0.0.1"}
+[2025-09-23 15:41:07] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":206,"email":"m@gmail.com","ip":"127.0.0.1"}
+[2025-09-23 15:58:40] [INFO] Kullanıcı oturumu kapattı. {"user_id":206,"ip":"127.0.0.1"}
+[2025-09-23 15:58:43] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1"}
+[2025-09-23 16:25:19] [INFO] Kullanıcı oturumu kapattı. {"user_id":147,"ip":"127.0.0.1"}
+[2025-09-23 16:25:24] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":206,"email":"m@gmail.com","ip":"127.0.0.1"}
+[2025-09-23 16:25:59] [INFO] Kullanıcı oturumu kapattı. {"user_id":206,"ip":"127.0.0.1"}
+[2025-09-23 16:26:03] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1"}
+[2025-09-23 19:18:50] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 600.00 TL 
+[2025-09-23 19:24:27] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"finans_yonetimi","url":"\/gelir-gider-islemleri"}
+[2025-09-23 19:24:53] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"finans_yonetimi","url":"\/gelir-gider-islemleri"}
+[2025-09-23 19:27:12] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"finans_yonetimi","url":"\/gelir-gider-islemleri"}
+[2025-09-23 19:28:58] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"finans_yonetimi","url":"\/gelir-gider-islemleri"}
+[2025-09-23 19:41:11] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"tahsilat_ekle_s","url":"\/pages\/dues\/payment\/tahsilat_gir_modal.php?kisi_id=n8q09EdTfsbb3XqtFgAOHCDqd2ZShgYts72wvi8%252A"}
+[2025-09-23 19:41:30] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"tahsilat_ekle_s","url":"\/pages\/dues\/payment\/tahsilat_gir_modal.php?kisi_id=Xd_f7nANQIwRv73cISumDWn_yqUmwWjBgSrFGsY%252A"}
+[2025-09-23 19:43:39] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"income_expense_add_updat","url":"\/gelir-gider-islemleri"}
+[2025-09-23 19:48:18] [WARNING] Yetkisiz erişim denemesi engellendi. {"user_id":147,"email":"ertanguness@gmail.com","ip":"127.0.0.1","required_permission":"income_expense_add_updat","url":"\/gelir-gider-islemleri"}

@@ -41,7 +41,9 @@ $bakiye = $finansalDurum->bakiye ?? 0;
 //Kredinin borcu karşılama yüzdesini al
 
 
-Gate::authorizeOrDie('tahsilat_ekle_sil', 'Bu sayfayı görüntüleme yetkiniz yok!');
+Gate::authorizeOrDie(permissionName: 'tahsilat_ekle_sil', 
+                     customMessage: 'Bu sayfayı görüntüleme yetkiniz yok!',
+                     redirectUrl: false);
 
 
 

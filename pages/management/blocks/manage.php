@@ -34,10 +34,10 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="management/blocks/list">
+                <a href="/site-bloklari" type="button" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="save_blocks">
                     <i class="feather-save  me-2"></i>
                     Kaydet

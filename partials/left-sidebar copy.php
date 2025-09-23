@@ -94,7 +94,7 @@ function renderMenuItems(array $items, string $activePage)
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">
         <div class="m-header p-3">
-            <a href="index.php" class="b-brand text-center p-5">
+            <a href="/ana-sayfa" class="b-brand text-center p-5">
                 <!-- ========   change your logo hear   ============ -->
                 <img src="assets/images/logo/logo.svg" alt="" class="logo logo-lg text-center" style="width: 60%; height: auto;" />
                 <img src="assets/images/logo/logo.svg" alt="" style="width: 20%;" class="logo logo-sm" />

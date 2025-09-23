@@ -27,7 +27,7 @@ class Gate
             // Eğer bir rol dizisi verilmişse, kullanıcının rolü bu dizide var mı diye bak.
             return in_array($userRole, $roles);
         }
-        
+
         // Eğer tek bir rol (string) verilmişse, doğrudan karşılaştır.
         return $userRole === $roles;
     }
@@ -55,13 +55,13 @@ class Gate
         // Kullanıcının izinlerini alalım.
         $permissionModel = new PermissionsModel();
         // Bu metodu bir sonraki adımda güncelleyeceğiz.
-        $userPermissions = $permissionModel->getPermissionsForUser($user->id); 
+        $userPermissions = $permissionModel->getPermissionsForUser($user->id);
 
         return in_array($permissionName, $userPermissions);
     }
 
 
-    
+
     /**
      * Belirtilen izni kontrol eder. Eğer kullanıcının izni yoksa,
      * bir uyarı mesajı basar ve betiği sonlandırır (exit).
@@ -72,7 +72,7 @@ class Gate
      * @param string|null $customMessage (İsteğe bağlı) Varsayılan mesaj yerine gösterilecek özel HTML mesajı.
      * @return void Metot, izin varsa hiçbir şey yapmaz, yoksa betiği sonlandırır.
      */
-    public static function authorizeOrDie(string $permissionName, ?string $customMessage = null): void
+    public static function authorizeOrDie(string $permissionName, ?string $customMessage = null, bool $redirectUrl = true): void
     {
         // Temel yetki kontrolünü `allows()` metodu ile yapıyoruz.
         // Bu, kod tekrarını önler.
@@ -82,7 +82,7 @@ class Gate
         }
 
         // --- YETKİ YOKSA BURADAN AŞAĞISI ÇALIŞIR ---
-        
+
         // Loglama yapmak iyi bir pratiktir.
         $user = AuthController::user();
         \getLogger()->warning("Yetkisiz erişim denemesi engellendi.", [
@@ -92,16 +92,21 @@ class Gate
             'required_permission' => $permissionName,
             'url' => $_SERVER['REQUEST_URI']
         ]);
-        
+
         // Gösterilecek mesajı belirle.
         if ($customMessage == null) {
-                  $customMessage = "Bu işlemi gerçekleştirmek veya bu sayfayı görüntülemek için gerekli yetkiye sahip değilsiniz.";
-         
+            $customMessage = "Bu işlemi gerçekleştirmek veya bu sayfayı görüntülemek için gerekli yetkiye sahip değilsiniz.";
         };
-          //Sayfayı yönlendir
-       // header("Location: /unauthorize");
 
-        echo '<div class="p-5">
+        if ($redirectUrl) {
+            // Belirtilen URL'ye yönlendir
+            header("Location: /unauthorize");
+        } else {
+
+
+            // Sayfayı yönlendir
+
+            echo '<div class="p-5">
                 <div class="alert alert-dismissible mb-4 p-4 d-flex alert-soft-danger-message" role="alert">
                     <div class="me-4 d-none d-md-block">
                         <i class="feather feather-alert-triangle text-danger fs-1"></i>
@@ -109,16 +114,17 @@ class Gate
                     <div>
                         <p class="fw-bold mb-0 text-truncate-1-line">Yetkisiz Erişim</p>
                         <p class="text-truncate-3-line mt-2 mb-4">
-                            '.$customMessage.'
+                            ' . $customMessage . '
                         </p>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 </div>
             </div>';
-        
-        // Betiğin daha fazla çalışmasını engelle.
-        // Genellikle bir sayfanın altındaki footer veya diğer bileşenlerin
-        // yüklenmesini önlemek için bu gereklidir.
-        exit;
+
+            // Betiğin daha fazla çalışmasını engelle.
+            // Genellikle bir sayfanın altındaki footer veya diğer bileşenlerin
+            // yüklenmesini önlemek için bu gereklidir.
+            exit;
+        };
     }
 }

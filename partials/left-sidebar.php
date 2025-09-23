@@ -21,6 +21,8 @@ $activePageLink = $page;
 // 3. GÖRÜNÜR MENÜ AĞACINI ÇEK
 $menuTree = $menuModel->getHierarchicalMenuForRole($userId);
 
+
+
 // 4. YENİ: AKTİF MENÜ BİLGİLERİNİ ÇEK
 // Bu, is_menu=0 olan sayfalar için bile doğru ana menüyü ve üstlerini bulur.
 $activeMenuInfo = $menuModel->findActiveMenuInfoByLink($activePageLink);

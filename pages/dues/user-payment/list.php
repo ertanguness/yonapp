@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\Date;
 use App\Helper\Helper;
 use App\Helper\Security;
 
@@ -11,9 +12,74 @@ use Model\UserPaymentModel;
 
 // Kullanıcı Ödemeleri
 $UserPayment = new UserPaymentModel();
+$user_id = $_SESSION['user']->kisi_id ?? 0;
 
 // Kullanıcının Gruplanmış Borç Başlıklarını ve Ödeme Durumlarını Getirir
-$gruplanmisBorc = $UserPayment->KategoriBazliOzet(user_id: 257);
+$BorcTahsilatDetay = $UserPayment->kisiBorcTahsilatDetay(user_id: $user_id);
+
+// echo "<pre>";
+//  print_r($BorcTahsilatDetay);
+//  echo "</pre>";
+//  exit;
+
+//Borc_adina göre grupla
+$gruplanmisBorc = array_reduce($BorcTahsilatDetay, function ($acc, $item) {
+    $kategori = $item->borc_adi;
+    if (!isset($acc[$kategori])) {
+        $acc[$kategori] = (object)[
+            'borc_adi' => $kategori,
+            'kayit_sayisi' => 0,
+            "bakiye" => 0,
+            "detaylar" => []
+        ];
+    }
+
+
+    // Kaydı detaylar dizisine ekle
+    $acc[$kategori]->detaylar[] = (object)[
+        'islem_tarihi' => $item->islem_tarihi,
+        "borc_adi"     => $item->borc_adi,
+        'aciklama'     => $item->aciklama,
+        'islem_turu'   => $item->islem_turu,
+        'tutar'        => $item->tutar,
+        'gecikme_zammi' => $item->gecikme_zammi,
+        'yuruyen_bakiye' => 0 // şimdilik boş, sonra dolduracağız
+    ];
+    $acc[$kategori]->kayit_sayisi += 1;
+    $acc[$kategori]->bakiye += (float)$item->tutar - (float)$item->gecikme_zammi;
+
+    return $acc;
+}, []);
+
+
+// Her kategori için ayrı yürüyen bakiye
+foreach ($gruplanmisBorc as $kategori => $borc) {
+    // Önce tarihe göre sırala (eskiden yeniye)
+    usort($borc->detaylar, function ($a, $b) {
+        return strtotime($a->islem_tarihi) - strtotime($b->islem_tarihi);
+    });
+
+    // Sonra yürüyen bakiye hesapla
+    $bakiye = 0;
+    foreach ($borc->detaylar as $detay) {
+        $bakiye += (float)$detay->tutar - (float)$detay->gecikme_zammi;
+        $detay->yuruyen_bakiye = $bakiye;
+    }
+}
+
+//$gruplanmisBorc = array_values($gruplanmisBorc); // Reindex array
+
+// echo "<pre>";
+//  print_r($gruplanmisBorc);
+// echo "</pre>";
+// exit;
+$hesap_ozet = (object)[
+    'toplam_borc' => 0,
+    'toplam_tahsilat' => 0,
+    'bakiye' => 0
+];
+
+
 $hesap_ozet = $UserPayment->KullaniciToplamBorc(257);
 $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
 
@@ -309,7 +375,7 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
                     $i = 0;
                     foreach ($gruplanmisBorc as $borc) {
                         $i++;
-                        $color = $borc->bakiye > 0 ? "success" : "danger";
+                        $color = $borc->bakiye >= 0 ? "success" : "danger";
                     ?>
 
                         <div class="accordion-item border border-dashed border-gray-500 my-3">
@@ -319,11 +385,12 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
                                     data-bs-target="#collapse<?php echo $i; ?>">
                                     <div class="d-flex align-items-center w-100">
                                         <div
-                                            class="avatar-text avatar-lg bg-soft-success text-success border-soft-success rounded me-3">
-                                            <i class="feather-award"></i>
+                                            class="avatar-text avatar-lg bg-soft-<?php echo $color; ?> text-<?php echo $color; ?> border-soft-<?php echo $color; ?> rounded me-3">
+                                            <?php echo Helper::getInitials($borc->borc_adi) ?>
+                                        </i>
                                         </div>
                                         <div>
-                                            <a href="javascript:void(0);"><?php echo $borc->kategori_adi; ?></a>
+                                            <a href="javascript:void(0);"><?php echo $borc->borc_adi  ?></a>
                                         </div>
                                         <div class="text-end ms-auto pe-3">
                                             <span
@@ -343,10 +410,12 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
 
 
                                         <?php
-                                        $borc_detay = $UserPayment->KullaniciBorcDetaylari(113, $borc->kategori_adi);
 
-
-                                        foreach ($borc_detay as $detay) {
+                                        $detaylar = array_reverse($borc->detaylar);
+                                        foreach ($detaylar as $detay) {
+                                            if ($detay->borc_adi != $borc->borc_adi) {
+                                                continue;
+                                            }
                                             $enc_id = Security::encrypt($detay->borc_id ?? 0);
                                             $color = $detay->islem_turu == "tahsilat" ? "success" : "danger";
 
@@ -354,14 +423,18 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
                                         ?>
                                             <li class="feed-item feed-item-<?php echo  $color; ?>">
                                                 <div class="d-flex gap-4 justify-content-between">
-                                                    <div>
-                                                        <div class="mb-2 text-truncate-1-line"><a
+                                                    <div class="d-flex flex-column">
+                                                        <div class="text-truncate-1-line"><a
                                                                 href="javascript:void(0)"
                                                                 class="fw-semibold text-dark">
-                                                                <?php echo $detay->islem_adi; ?>
+                                                                <?php echo $detay->borc_adi; ?>
+                                                                <!-- Ödeme Tarihi : -->
                                                             </a>
                                                         </div>
-                                                        <p class="fs-12 text-muted mb-3 text-truncate-2-line">
+                                                        <span class="text-muted">
+                                                            <?php echo Date::dmy($detay->islem_tarihi,); ?>
+                                                        </span>
+                                                        <p class="fs-12 text-muted text-truncate-2-line">
                                                             <?php echo  $detay->aciklama; ?></p>
 
                                                     </div>
@@ -370,12 +443,17 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
 
                                                             <div
                                                                 class="fw-semibold text-<?php echo  $color; ?> text-uppercase text-muted text-nowrap">
-                                                                <?php echo Helper::formattedMoneyWithoutCurrency($detay->tutar); ?>
-                                                                ₺
+                                                                <?php echo Helper::formattedMoneyWithoutCurrency($detay->tutar); ?> ₺
+
                                                             </div>
+                                                            <?php if ($detay->gecikme_zammi > 0) { ?>
+                                                            <div class="text-danger fs-12 text-muted text-truncate-2-line">
+                                                                <?php echo "Gecikme Zammı : " . ($detay->gecikme_zammi ?? 0); ?> ₺
+                                                            </div>
+                                                        <?php } ?>
                                                         </div>
                                                         <span class="fs-10 fw-semibold text-muted">Bak.
-                                                            <?php echo Helper::formattedMoneyWithoutCurrency($detay->bakiye); ?>
+                                                            <?php echo Helper::formattedMoneyWithoutCurrency($detay->yuruyen_bakiye ?? 0); ?>
                                                             ₺</span>
                                                     </div>
                                                 </div>
@@ -399,128 +477,128 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
             <p>Find what you're looking for with our powerful search tools.</p>
         </div>
 
-  
+
         <div id="profile" class="tab-content">
-        <div class="card-body custom-card-action p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <a href="javascript:void(0);">
-                                                        <i class="fa-brands fa-chrome fs-16 text-primary me-2"></i>
-                                                        <span>Google Chrome</span>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <span class="text-end d-flex align-items-center m-0">
-                                                        <span class="me-3">90%</span>
-                                                        <span class="progress w-100 ht-5">
-                                                            <span class="progress-bar bg-success" style="width: 90%"></span>
-                                                        </span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="javascript:void(0);">
-                                                        <i class="fa-brands fa-firefox-browser fs-16 text-warning me-2"></i>
-                                                        <span>Mozila Firefox</span>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <span class="text-end d-flex align-items-center m-0">
-                                                        <span class="me-3">76%</span>
-                                                        <span class="progress w-100 ht-5">
-                                                            <span class="progress-bar bg-primary" style="width: 76%"></span>
-                                                        </span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="javascript:void(0);">
-                                                        <i class="fa-brands fa-safari fs-16 text-info me-2"></i>
-                                                        <span>Apple Safari</span>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <span class="text-end d-flex align-items-center m-0">
-                                                        <span class="me-3">50%</span>
-                                                        <span class="progress w-100 ht-5">
-                                                            <span class="progress-bar bg-warning" style="width: 50%"></span>
-                                                        </span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="javascript:void(0);">
-                                                        <i class="fa-brands fa-edge fs-16 text-success me-2"></i>
-                                                        <span>Edge Browser</span>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <span class="text-end d-flex align-items-center m-0">
-                                                        <span class="me-3">20%</span>
-                                                        <span class="progress w-100 ht-5">
-                                                            <span class="progress-bar bg-success" style="width: 20%"></span>
-                                                        </span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="javascript:void(0);">
-                                                        <i class="fa-brands fa-opera fs-16 text-danger me-2"></i>
-                                                        <span>Opera mini</span>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <span class="text-end d-flex align-items-center m-0">
-                                                        <span class="me-3">15%</span>
-                                                        <span class="progress w-100 ht-5">
-                                                            <span class="progress-bar bg-danger" style="width: 15%"></span>
-                                                        </span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="javascript:void(0);">
-                                                        <i class="fa-brands fa-internet-explorer fs-16 text-teal me-2"></i>
-                                                        <span>Internet Explorer</span>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <span class="text-end d-flex align-items-center m-0">
-                                                        <span class="me-3">12%</span>
-                                                        <span class="progress w-100 ht-5">
-                                                            <span class="progress-bar bg-teal" style="width: 12%"></span>
-                                                        </span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="javascript:void(0);">
-                                                        <i class="fa-brands fa-octopus-deploy fs-16 text-dark me-2"></i>
-                                                        <span>Others Browser</span>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <span class="text-end d-flex align-items-center m-0">
-                                                        <span class="me-3">6%</span>
-                                                        <span class="progress w-100 ht-5">
-                                                            <span class="progress-bar bg-dark" style="width: 6%"></span>
-                                                        </span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+            <div class="card-body custom-card-action p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);">
+                                        <i class="fa-brands fa-chrome fs-16 text-primary me-2"></i>
+                                        <span>Google Chrome</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="text-end d-flex align-items-center m-0">
+                                        <span class="me-3">90%</span>
+                                        <span class="progress w-100 ht-5">
+                                            <span class="progress-bar bg-success" style="width: 90%"></span>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);">
+                                        <i class="fa-brands fa-firefox-browser fs-16 text-warning me-2"></i>
+                                        <span>Mozila Firefox</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="text-end d-flex align-items-center m-0">
+                                        <span class="me-3">76%</span>
+                                        <span class="progress w-100 ht-5">
+                                            <span class="progress-bar bg-primary" style="width: 76%"></span>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);">
+                                        <i class="fa-brands fa-safari fs-16 text-info me-2"></i>
+                                        <span>Apple Safari</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="text-end d-flex align-items-center m-0">
+                                        <span class="me-3">50%</span>
+                                        <span class="progress w-100 ht-5">
+                                            <span class="progress-bar bg-warning" style="width: 50%"></span>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);">
+                                        <i class="fa-brands fa-edge fs-16 text-success me-2"></i>
+                                        <span>Edge Browser</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="text-end d-flex align-items-center m-0">
+                                        <span class="me-3">20%</span>
+                                        <span class="progress w-100 ht-5">
+                                            <span class="progress-bar bg-success" style="width: 20%"></span>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);">
+                                        <i class="fa-brands fa-opera fs-16 text-danger me-2"></i>
+                                        <span>Opera mini</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="text-end d-flex align-items-center m-0">
+                                        <span class="me-3">15%</span>
+                                        <span class="progress w-100 ht-5">
+                                            <span class="progress-bar bg-danger" style="width: 15%"></span>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);">
+                                        <i class="fa-brands fa-internet-explorer fs-16 text-teal me-2"></i>
+                                        <span>Internet Explorer</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="text-end d-flex align-items-center m-0">
+                                        <span class="me-3">12%</span>
+                                        <span class="progress w-100 ht-5">
+                                            <span class="progress-bar bg-teal" style="width: 12%"></span>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);">
+                                        <i class="fa-brands fa-octopus-deploy fs-16 text-dark me-2"></i>
+                                        <span>Others Browser</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="text-end d-flex align-items-center m-0">
+                                        <span class="me-3">6%</span>
+                                        <span class="progress w-100 ht-5">
+                                            <span class="progress-bar bg-dark" style="width: 6%"></span>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <script>

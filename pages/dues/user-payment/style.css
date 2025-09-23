@@ -18,7 +18,7 @@ body {
 
 /* Tab Navigation Container */
 .tab-container {
-    max-width: 1200px;
+    /* max-width: 1200px; */
     margin: 0 auto;
 }
 
@@ -91,7 +91,6 @@ body {
 
 /* Tab Content Styles */
 .tab-content h2 {
-    margin-bottom: 16px;
     color: var(--primary);
 }
 
@@ -104,6 +103,10 @@ body {
 @media (max-width: 768px) {
     body {
         padding-bottom: 70px;
+    }
+
+    .accordion-header, .accordion-button{
+        background-color: #f4f4f4 !important;
     }
     
     .tab-nav {
@@ -118,10 +121,7 @@ body {
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         gap: 0;
     }
-    .tab-content{
-        height: 100% !important;
-    }
-    
+       
     .tab-nav a {
         padding: 6px 2px;
     }
@@ -137,7 +137,7 @@ body {
     
     .tab-container {
         padding-bottom: 10px;
-        height: 100vh !important;
+        margin-bottom: 80px !important;
     }
     
     /* Diğer elementleri gizleme */

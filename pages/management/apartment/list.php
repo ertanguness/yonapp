@@ -48,7 +48,7 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
                     <i class="feather-upload me-2"></i>
                     Excelden Yükle
                 </a>
-                <a href="#" class="btn btn-primary route-link" data-page="management/apartment/manage">
+                <a href="/daire-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Daire Ekle</span>
                 </a>

@@ -32,7 +32,7 @@ $Icralar = $Icra->Icralar();
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="#" class="btn btn-primary route-link" data-page="icra/manage">
+                <a href="/icra-ekle" class="btn btn-primary">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni İcra Başlat</span>
                 </a>
@@ -104,10 +104,10 @@ $Icralar = $Icra->Icralar();
                                                     </td>
                                                     <td class="text-end">
                                                         <div class="hstack gap-2">
-                                                            <a href="index?p=icra/detay/manage&id=<?= $enc_id; ?>" class="avatar-text avatar-md">
+                                                            <a href="icra-detay/<?= $enc_id; ?>" class="avatar-text avatar-md">
                                                                 <i class="feather-eye"></i>
                                                             </a>
-                                                            <a href="index?p=icra/manage&id=<?= $enc_id; ?>" class="avatar-text avatar-md">
+                                                            <a href="icra-detay/<?= $enc_id; ?>" class="avatar-text avatar-md">
                                                                 <i class="feather-edit"></i>
                                                             </a>
                                                             <a href="javascript:void(0);"

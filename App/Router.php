@@ -1,4 +1,5 @@
 <?php
+
 namespace App;
 
 class Router
@@ -9,7 +10,7 @@ class Router
     private $matchedPattern = null; // Eşleşen desen burada tutulacak
 
     // get, setBasePath, prefix, group gibi diğer metotlarınız aynı kalabilir...
-    
+
     // GET route ekle
     public function get($pattern, $callback)
     {
@@ -24,7 +25,7 @@ class Router
                     // Bu örnekte sadece tek parametre ($id) varsayıyoruz, 
                     // daha karmaşık durumlar için farklı bir yapı gerekebilir.
                     // En yaygın kullanım:
-                    $id = $args[0]; 
+                    $id = $args[0];
                 }
                 require $callback;
             };
@@ -37,7 +38,7 @@ class Router
         return $this;
     }
 
-     /**
+    /**
      * URL'yi analiz eder ve eşleşen rotanın bilgilerini döndürür.
      * Bu metot içeriği çalıştırmaz, sadece tespit eder.
      */
@@ -46,6 +47,7 @@ class Router
         foreach ($this->routes as $route) {
             // Deseni regex'e çevir: 'kasa-hareketleri/{id}' -> '@^kasa-hareketleri/([^/]+)$@'
             $pattern = "@^" . preg_replace('/\{([^\/]+)\}/', '([^/]+)', $route['pattern']) . "$@";
+            // echo "Checking pattern: " . $pattern . "\n";
 
             if (preg_match($pattern, $url, $matches)) {
                 // EŞLEŞME BULUNDU! Orijinal deseni saklayalım.
@@ -71,6 +73,8 @@ class Router
         ];
     }
 
+
+
     /**
      * YENİ VE ANAHTAR METOT:
      * Eşleşen desenin dinamik kısımlarını atarak temiz sayfa adını döndürür.
@@ -87,10 +91,17 @@ class Router
         if ($this->matchedPattern === null) {
             return null;
         }
-        
-        // Bu regex, bir desenin sonundaki '/{parametre}' kısmını bulur ve siler.
+
+        // Gelen veriyi görelim
+        //echo "GİRDİ: " . $this->matchedPattern . "<br>";
+
+        // preg_replace işleminin sonucunu görelim
         $pageName = preg_replace('/\/\{[^\/]+\}$/', '', $this->matchedPattern);
-        
-        return $pageName;
+        // echo "İŞLEM SONUCU (\$pageName): " . $pageName . "<br>";
+
+        // Fonksiyonun ne döndürdüğünü görelim ve duralım
+        //die("DÖNDÜRÜLEN DEĞER: " . $pageName);
+
+        return $pageName ;
     }
 }

@@ -1,4 +1,4 @@
-let icraurl = "pages/icra/api.php";
+let icraurl = "/pages/icra/api.php";
 
 // Ödeme Planı Kaydet
 $(document).on("click", "#odeme_kaydet", function () {

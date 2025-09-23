@@ -40,6 +40,11 @@ $router->get('borclandirma-detayi/{id}', function ($id) {
     require 'pages/dues/debit/detail.php';
 });
 
+//Borçlarım
+$router->get('borclarim', function () {
+    require 'pages/dues/user-payment/list.php';
+});
+
 
 
 //Yönetici aidat ödeme sayfası
@@ -79,6 +84,15 @@ $router->get('site-duzenle/{id}', function ($id) {
 //Bloklar
 $router->get('site-bloklari', function () {
     require 'pages/management/blocks/list.php';
+});
+
+//Blok Ekle
+$router->get('blok-ekle', function () {
+    require 'pages/management/blocks/manage.php';
+});
+//Blok Düzenle
+$router->get('blok-duzenle/{id}', function ($id) {
+    require 'pages/management/blocks/manage.php';
 });
 
 //Daireler
@@ -163,21 +177,37 @@ $router->get('kasa-hareketleri/{id}', function ($id) {
 });
 
 
+//Gelir gider işlemleri
+$router->get('gelir-gider-islemleri', function () {
+    require 'pages/finans-yonetimi/gelir-gider/list.php';
+});
+
+
 
 // Ziyaretciler
 $router->get('ziyaretci-listesi', function () {
     require 'pages/ziyaretci/list.php';
 });
-
+// Ziyaretci ekle
 
 //İcra İşlemleri
 $router->get('icralarim', function () {
-    require 'pages/levy/people/list.php';
+    require 'pages/icra/sakinler/list.php';
+});
+
+//İcra Listesi
+$router->get('icra-takibi', function () {
+    require 'pages/icra/list.php';
 });
 
 //İcra Detay
 $router->get('icra-detay/{id}', function ($id) {
-    require 'pages/levy/people/manage.php';
+    require 'pages/icra/detay/manage.php';
+});
+
+//İcra Ekle
+$router->get('icra-ekle', function () {
+    require 'pages/icra/manage.php';
 });
 
 

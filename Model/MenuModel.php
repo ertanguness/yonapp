@@ -59,6 +59,9 @@ public function getHierarchicalMenuForRole(int $user_id): array
 
         $Users = new UserModel();
         $roleId = $Users->getUserRoleID($user_id);
+
+
+
         if ($roleId === 0 || $roleId === null) {
             return [];
         }
@@ -77,6 +80,8 @@ public function getHierarchicalMenuForRole(int $user_id): array
         }
 
         $menuData = $this->fetchAndBuildMenuFromDb($user_id, $roleId);
+
+      
 
         if (is_writable($this->ownerSpecificCacheDir)) {
             @file_put_contents($cacheFile, serialize($menuData));
@@ -104,6 +109,8 @@ public function getHierarchicalMenuForRole(int $user_id): array
         $stmt = $this->db->prepare("SELECT permission_id FROM user_role_permissions WHERE role_id = ?");
         $stmt->execute([$roleId]);
         $rolePermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        
         
         // Eğer rolün hiçbir izni yoksa, sadece izin gerektirmeyen (herkese açık) menüleri gösterebilir.
         // Bu yüzden burada boş dizi döndürmüyoruz.

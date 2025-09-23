@@ -2,7 +2,7 @@
 //$page = isset($_GET['p']) ? $_GET['p'] : '';
 
 //eğer $page değişkeni yoka url'deki sayfa adını al, örnek sign-in.php
-$page = isset($_GET['p']) ? $_GET['p'] : '';
+//$page = isset($_GET['p']) ? $_GET['p'] : '';
 
 ?>
 <head>
@@ -34,7 +34,7 @@ $page = isset($_GET['p']) ? $_GET['p'] : '';
 // Sadece anasayfa için gerekli olan css dosyaları
 
 
-    if($page == "home"){
+    if(isset($page) && $page == "ana-sayfa"){
     ?>
       <!--! BEGIN: Vendors CSS-->
     <link rel="stylesheet" type="text/css" href="/assets/vendors/css/daterangepicker.min.css" />

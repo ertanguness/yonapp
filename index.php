@@ -26,17 +26,16 @@ require_once __DIR__ . '/route.php';
 
 // Gelen URL'yi al
 $url = $_GET['p'] ?? 'ana-sayfa';
-$url = rtrim($url, '/');
-if (empty($url)) $url = 'ana-sayfa';
+//$url = rtrim($url, '/');
+//if (empty($url)) $url = 'ana-sayfa';
 
 // URL'yi çözümle ve eşleşen rota bilgilerini al
 $resolvedRoute = $router->resolve($url);
 
 // 3. SAYFA ADINI AL (SİHİR BURADA GERÇEKLEŞİYOR)
 // Router artık hangi desenin eşleştiğini biliyor ve bize temiz halini veriyor.
-$page = $router->getPageName();
-// echo "Yüklenen sayfa: " . ($page); // Debug için
-// exit;
+$page = $router->getPageName() ?? '';
+
 
 // // Görünüm (View) için gerekli değişkenleri hazırla
 // $page = preg_replace('/[^a-zA-Z0-9\/\-]/', '', $page); // Güvenlik!
