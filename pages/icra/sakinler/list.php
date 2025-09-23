@@ -1,3 +1,17 @@
+<?php
+$user_id = $_SESSION['user']->id;
+
+use App\Helper\Security;
+use App\Helper\Date;
+use App\Helper\Helper;
+use Model\IcraModel;
+use Model\KisilerModel;
+
+$Icra = new IcraModel();
+$kisiler = new KisilerModel();
+
+$icralarim = $Icra->SakinIcraBilgileri($user_id);
+?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -16,11 +30,11 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        
+
                         <div class="table-responsive">
                             <table class="table table-hover datatables">
                                 <thead>
-                                    <tr>
+                                    <tr class="text-center">
                                         <th>İcra Dairesi</th>
                                         <th>Dosya No</th>
                                         <th>Borç Tutarı</th>
@@ -29,20 +43,42 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>İstanbul 5. İcra</td>
-                                        <td>2025/1578</td>
-                                        <td>12.500 ₺</td>
-                                        <td><span class="badge bg-warning">Devam Ediyor</span></td>
-                                        <td>
-                                        <a href="javascript:void(0);" class="avatar-text avatar-md route-link" title="Detay" data-page="icra/sakinler/manage">
-                                            <i class="feather-eye"></i>
-                                        </a>
-                                            
-                                        </td>
-                                    </tr>
-                                    <!-- Başka dosyalar da listelenebilir -->
+                                    <?php if (!empty($icralarim)) : ?>
+                                        <?php foreach ($icralarim as $icra) :
+                                            $enc_id = Security::encrypt($icra->id);
+
+                                        ?>
+                                            <tr class="text-center">
+                                                <td><?= htmlspecialchars($icra->icra_dairesi ?? '-') ?></td>
+                                                <td><?= htmlspecialchars($icra->dosya_no ?? '-') ?></td>
+                                                <td><?= number_format($icra->borc_tutari, 2, ',', '.') ?> ₺</td>
+                                                <td>
+                                                    <?php
+                                                    $durumKey = $icra->durum ?? 0;
+                                                    $durum = Helper::Durum[$durumKey] ?? Helper::Durum[0];
+                                                    ?>
+                                                    <span class="badge <?= $durum['class']; ?>">
+                                                        <i class="<?= $durum['icon']; ?>"></i> <?= htmlspecialchars($durum['label']); ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="icra-sakin-detay/<?php echo $enc_id; ?>"
+                                                        class="avatar-text avatar-md route-link d-inline-flex justify-content-center align-items-center"
+                                                        title="Detay">
+                                                        <i class="feather-eye"></i>
+                                                    </a>
+                                                </td>
+
+
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php else : ?>
+                                        <tr>
+                                            <td colspan="5" class="text-center">Kayıtlı icra dosyanız bulunmamaktadır.</td>
+                                        </tr>
+                                    <?php endif; ?>
                                 </tbody>
+
                             </table>
                         </div>
 

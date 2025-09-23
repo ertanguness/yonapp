@@ -42,4 +42,11 @@ class IcraModel extends Model
         $query->execute([$id]);
         return $query->fetch(PDO::FETCH_OBJ);
     }
+    public function SakinIcraBilgileri($kisi_id)
+    {
+        $query = $this->db->prepare("SELECT * FROM $this->table WHERE kisi_id = ?");
+        $query->execute([$kisi_id]);
+        return $query->fetchAll(PDO::FETCH_OBJ);
+    }
 }
+

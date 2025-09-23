@@ -13,7 +13,9 @@ $Icra = new IcraModel();
 $IcraOdeme = new IcraOdemeModel();
 
 $kisiler = $kisilerModel->SiteTumKisileri($site_id);
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+//$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0) ;
+
 $icraBilgileri = $Icra->IcraBilgileri($id);
 $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
 
@@ -85,7 +87,7 @@ $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
                             <div class="col-lg-3 fw-semibold">Borç Tutarı:</div>
                             <div class="col-lg-9">
                                 <?php
-                                echo htmlspecialchars($icraBilgileri->borc_tutari . ' ₺' ?? '-');
+                                echo htmlspecialchars(string: $icraBilgileri->borc_tutari . ' ₺' ?? '-');
                                 ?>
                             </div>
                         </div>
@@ -244,7 +246,7 @@ $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
             </div>
             <div class="modal-body">
                 <form id="odemePlanForm" method="post">
-                    <input type="hidden" name="id" id="icra_id" value="<?= $_GET['id'] ?? 0; ?>">
+                    <input type="hidden" name="id" id="icra_id" value="<?= $id ?? 0; ?>">
 
                     <!-- Toplam Borç -->
                     <div class="mb-3">

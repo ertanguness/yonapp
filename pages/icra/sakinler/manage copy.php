@@ -19,23 +19,6 @@ $id = Security::decrypt($id ?? 0);
 $icraBilgileri = $Icra->IcraBilgileri($id);
 $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
 
-$toplamOdenenTutar = 0;
-$toplamOdenmemisTutar = 0;
-$odenenTaksitSayisi = 0;
-$odemenmemisTaksitSayisi = 0;
-
-if (!empty($icraOdemeler)) {
-    foreach ($icraOdemeler as $odeme) {
-        if ($odeme->durumu == 1) {
-            $toplamOdenenTutar += $odeme->toplam_borc;
-            $odenenTaksitSayisi++;
-        } else {
-            $toplamOdenmemisTutar += $odeme->toplam_borc;
-            $odemenmemisTaksitSayisi++;
-        }
-    }
-}
-
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -86,22 +69,11 @@ if (!empty($icraOdemeler)) {
                 </div>
 
                 <div class="row mb-2">
-                    <div class="col-md-2 fw-semibold">İcra Borcu:</div>
+                    <div class="col-md-2 fw-semibold">Toplam Borç:</div>
                     <div class="col-md-4">
-                        <?= Helper::paraFormat($icraBilgileri->borc_tutari) ?? 0 ?> ₺
+                        <?= $icraBilgileri->borc_tutari ?? 0 ?> ₺
                     </div>
-                    <div class="col-md-2 fw-semibold">Toplam Borcu:</div>
-                    <div class="col-md-1">
-                        <?php
-                        $toplamBorc = $toplamOdenenTutar + $toplamOdenmemisTutar;
-                        echo Helper::paraFormat($toplamBorc) ?? 0;
-                        ?>
-                    </div>
-                    <div class="col-md-2">
-                       <small>Anapara+ Faiz Tutarını belirtir.</small>
-                    </div>
-                </div>
-                <div class="row mb-2">
+                    
                     <div class="col-md-2 fw-semibold">Açıklama:</div>
                     <div class="col-md-10">
                         <?= htmlspecialchars($icraBilgileri->aciklama ?? '-') ?>
@@ -110,70 +82,43 @@ if (!empty($icraOdemeler)) {
             </div>
         </div>
 
+        <!-- Online Ödeme Alanı -->
         <div class="card mb-4">
-            <div class="tab-pane fade show active" id="paymentPlan" role="tabpanel">
+            <div class="tab-pane fade show active " id="paymentPlan" role="tabpanel">
                 <table class="table text-center table-hover">
                     <thead style="background-color:antiquewhite;">
                         <tr>
-                            <th>Seçim</th>
                             <th>Taksit No</th>
                             <th>Aylık Ödeme</th>
-                            <th>Faiz Oranı (%)</th>
-                            <th>Faiz Tutarı</th>
+                            <th>Faizi Oranı (%)</th>
                             <th>Toplam Borç (₺)</th>
                             <th>Son Ödeme Tarihi</th>
                             <th>Ödenen Tarih</th>
                             <th>Durum</th>
+                            <th>İşlem</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($icraOdemeler)): ?>
-                            <?php foreach ($icraOdemeler as $odeme): ?>
-                                <tr>
-                                    <td>
-                                        <?php if ($odeme->durumu != 1): ?>
-                                            <input type="checkbox" class="taksitSec"
-                                                data-id="<?= $odeme->id ?>"
-                                                data-tutar="<?= $odeme->toplam_borc ?>">
-                                        <?php else: ?>
-                                            <span class="text-muted">-</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?= htmlspecialchars($odeme->taksit_adi) ?></td>
-                                    <td><?= Helper::paraFormat($odeme->taksit_tutari) ?> ₺</td>
-                                    <td><?= $icraBilgileri->faiz_orani ?? 0 ?>%</td>
-                                    <td><?= Helper::paraFormat($odeme->faiz_tutari) ?> ₺</td>
-                                    <td><?= Helper::paraFormat($odeme->toplam_borc) ?> ₺</td>
-                                    <td><?= !empty($odeme->taksit_odeme_tarihi) ? Date::dmY($odeme->taksit_odeme_tarihi) : '-' ?></td>
-                                    <td><?= !empty($odeme->taksit_odenen_tarih) ? Date::dmY($odeme->taksit_odenen_tarih) : '-' ?></td>
-                                    <td>
-                                        <?php if ($odeme->durumu == 1): ?>
-                                            <span class="badge bg-success">Ödendi</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-danger">Ödenmedi</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="9" class="text-muted">Henüz ödeme planı oluşturulmamış.</td>
-                            </tr>
-                        <?php endif; ?>
+                        <tr>
+                            <td>1</td>
+                            <td>1.000 ₺</td>
+                            <td>10%</td>
+                            <td>12.500 ₺</td>
+                            <td>2025-07-01</td>
+                            <td>-</td>
+                            <td><span class="badge bg-danger">Ödenmedi</span></td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                                        Öde </button>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
-                <!-- Ödeme Butonu -->
-                <?php if (!empty($icraOdemeler)): ?>
-                    <div class="d-flex justify-content-end mt-3" style="padding-right: 15px;">
-                        <button type="button" id="odemeYapBtn" class="btn btn-success">
-                            Seçilen Taksitleri Öde
-                        </button>
-                    </div>
-                <?php endif; ?>
             </div>
-
             <div class="card-body text-center">
-                <h5>Kalan Borç: <span class="text-danger"><?= Helper::paraFormat($toplamOdenmemisTutar) ?> ₺</span></h5>
+                <h5>Kalan Borç: <span class="text-danger">7.500 ₺</span></h5>
                 <p>Ödemelerinizi aşağıdaki yöntemlerle gerçekleştirebilirsiniz:</p>
                 <div class="alert alert-info mt-3" role="alert">
                     <strong>Havale Bilgileri</strong> <br>
@@ -181,10 +126,43 @@ if (!empty($icraOdemeler)) {
                     <strong>IBAN:</strong> TR00 0000 0000 0000 0000 00 <br>
                     <strong>Alıcı:</strong> Site Yönetimi A.Ş.
                 </div>
+
             </div>
         </div>
 
-
+        <!-- Ödeme Geçmişi -->
+        <div class="card mb-4">
+            <div class="tab-pane fade show active " id="paymentHistory" role="tabpanel">
+                <table class="table text-center table-hover">
+                    <thead style="background-color:lightblue;">
+                        <tr>
+                            <th>Taksit No</th>
+                            <th>Ödeme Tutarı</th>
+                            <th>Ödeme Tarihi</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>2.500 ₺</td>
+                            <td>2025-04-10</td>
+                            <td><span class="badge bg-success">Ödendi</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>2.500 ₺</td>
+                            <td>2025-05-10</td>
+                            <td><span class="badge bg-success">Ödendi</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body text-center">
+                <h5>Toplam Ödenen Tutar: <span class="text-success">5.000 ₺</span></h5>
+                <p>Ödeme geçmişiniz yukarıda listelenmiştir.</p>
+            </div>
+        </div>
 
     </div> <!-- /.container-xl -->
 </div> <!-- /.main-content -->
@@ -200,17 +178,6 @@ if (!empty($icraOdemeler)) {
                 </div>
 
                 <div class="modal-body">
-                    <input type="hidden" name="odeme_id" id="odeme_id"> <!-- Hangi taksit için ödeme yapılacağı -->
-                    <input type="hidden" name="secilen_taksitler" id="secilenTaksitler"> <!-- Çoklu seçim için -->
-
-                    <!-- Bilgilendirme -->
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <span id="odemeBilgiText">
-                            Henüz taksit seçilmedi.
-                        </span>
-                    </div>
-
                     <div class="mb-3">
                         <label class="form-label">Kart Üzerindeki İsim</label>
                         <input type="text" class="form-control" name="card_name" placeholder="Ad Soyad" required>
@@ -235,7 +202,7 @@ if (!empty($icraOdemeler)) {
 
                     <div class="mb-3">
                         <label class="form-label">Ödenecek Tutar</label>
-                        <input type="text" class="form-control" name="amount" id="payment_amount" readonly>
+                        <input type="text" class="form-control" name="amount" value="7.500 ₺" readonly>
                     </div>
 
                     <div class="alert alert-warning small mt-3" role="alert">
@@ -253,8 +220,6 @@ if (!empty($icraOdemeler)) {
         </div>
     </div>
 </div>
-
-
 
 <!-- Ödeme Başarılı Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
@@ -304,43 +269,4 @@ if (!empty($icraOdemeler)) {
             successModal.show();
         }, 500); // Modal kapanıp açılırken küçük gecikme
     });
-
-    $(document).on("click", "#odemeYapBtn", function() {
-        let toplamTutar = 0;
-        let taksitSayisi = 0;
-        let secilenler = [];
-
-        $(".taksitSec:checked").each(function() {
-            let tutar = parseFloat($(this).data("tutar"));
-            let id = $(this).data("id");
-            if (!isNaN(tutar)) {
-                toplamTutar += tutar;
-                taksitSayisi++;
-                secilenler.push(id);
-            }
-        });
-
-        if (taksitSayisi > 0) {
-            $("#odemeBilgiText").html(
-                `<strong>${taksitSayisi}</strong> taksit için toplam 
-             <strong>${HelperParaFormat(toplamTutar)}</strong> tahsil edilecektir.`
-            );
-            $("#odemeBilgiText").closest('.alert').removeClass('alert-danger').addClass('alert-info');
-            $("#payment_amount").val(HelperParaFormat(toplamTutar));
-        } else {
-            $("#odemeBilgiText").html(`Herhangi bir taksit seçilmedi!`);
-            $("#odemeBilgiText").closest('.alert').removeClass('alert-info').addClass('alert-danger');
-            $("#payment_amount").val("0,00 ₺");
-        }
-
-        $("#secilenTaksitler").val(secilenler.join(","));
-        $("#paymentModal").modal("show");
-    });
-
-    function HelperParaFormat(amount) {
-        return new Intl.NumberFormat("tr-TR", {
-            style: "currency",
-            currency: "TRY"
-        }).format(amount);
-    }
 </script>

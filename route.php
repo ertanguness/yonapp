@@ -199,8 +199,7 @@ $router->get('icralarim', function () {
 $router->get('icra-takibi', function () {
     require 'pages/icra/list.php';
 });
-
-//İcra Detay
+//İcra Düzenle
 $router->get('icra-detay/{id}', function ($id) {
     require 'pages/icra/detay/manage.php';
 });
@@ -212,14 +211,10 @@ $router->get('icra-ekle', function () {
 
 
 
-
 // ROUTES tanımla
 $router->get('index', function () {
     require 'index.php';
 });
-
-
-
 
 //Onay Bekleyen Tahsilatlar
 $router->get('onay-bekleyen-tahsilatlar', function () {

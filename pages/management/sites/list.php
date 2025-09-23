@@ -68,7 +68,6 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
     require_once 'pages/components/alert.php'
     ?>
     <div class="row mb-5">
-   
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
@@ -96,8 +95,8 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                                             $daireSayisi = $Bloklar->SitedekiDaireSayisi($Siteler->id ?? null);
 
                                         ?>
-                                            <tr>
-                                                <td><?php echo $i; ?></td>
+                                            <tr class="text-center">
+                                            <td><?php echo $i; ?></td>
                                                 <td><a data-page="Siteler/manage&id=<?php echo $id ?>" href="#">
                                                         <?php echo $Siteler->site_adi; ?>
                                                     </a>
