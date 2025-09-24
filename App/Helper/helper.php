@@ -128,6 +128,23 @@ class Helper
         ]
     ];
 
+    CONST ODEME_YONTEMI = [
+        "1" => "Nakit",
+        "2" => "Kredi Kartı",
+        "3" => "Havale / EFT",
+        "4" => "Çek",
+        "5" => "Senet",
+        "6" => "Diğer"
+    ];
+
+    CONST ODEME_KATEGORISI = [
+        "1" => "Aidat",
+        "2" => "Su",
+        "3" => "Elektrik",
+        "4" => "Doğalgaz",
+        "5" => "Internet",
+        "6" => "Diğer"
+    ];
     const DAIRE_TYPE = [];
 
     public static function getPriority($priority)
@@ -137,6 +154,32 @@ class Helper
     }
 
 
+    public static function getOdemeKategoriSelect($name = 'odeme_kategori', $selected = '1')
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        foreach (self::ODEME_KATEGORISI as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
+        }
+        $select .= '</select>';
+        return $select;
+    }
+    
+
+
+    /**
+     * Ödeme Yöntemi Select
+     */
+    public static function getOdemeYontemiSelect($name = 'odeme_yontemi', $selected = '1')
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        foreach (self::ODEME_YONTEMI as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
+        }
+        $select .= '</select>';
+        return $select;
+    }
 
 
     public static function short($value, $lenght = 21)

@@ -25,7 +25,6 @@ $icralarim = $Icra->SakinIcraBilgileri($user_id);
 </div>
 
 <div class="main-content">
-    <div class="container-xl">
         <div class="row row-cards">
             <div class="col-12">
                 <div class="card">
@@ -72,10 +71,7 @@ $icralarim = $Icra->SakinIcraBilgileri($user_id);
 
                                             </tr>
                                         <?php endforeach; ?>
-                                    <?php else : ?>
-                                        <tr>
-                                            <td colspan="5" class="text-center">Kayıtlı icra dosyanız bulunmamaktadır.</td>
-                                        </tr>
+                 
                                     <?php endif; ?>
                                 </tbody>
 
@@ -86,5 +82,4 @@ $icralarim = $Icra->SakinIcraBilgileri($user_id);
                 </div> <!-- /.card -->
             </div> <!-- /.col-12 -->
         </div> <!-- /.row-cards -->
-    </div> <!-- /.container-xl -->
 </div> <!-- /.main-content -->

@@ -237,6 +237,12 @@ if ($page == 'finans-yonetimi/kasa/duzenle' || $page == 'finans-yonetimi/kasa/li
     echo '<script src="pages/finans-yonetimi/kasa/js/kasa.js"></script>';
 }
 
+
+//************GELİR GİDER KAYDET************************************ */
+if ($page == 'gelir-gider-islemleri') {
+    echo '<script src="/pages/finans-yonetimi/gelir-gider/js/gelir-gider.js"></script>';
+}
+
 //Payment upload from excel
 if ($page == 'dues/payment/upload-from-xls') {
     echo '<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mini.min.js"></script>';

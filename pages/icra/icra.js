@@ -1,4 +1,4 @@
-let icraurl = "pages/icra/api.php";
+let icraurl = "/pages/icra/api.php";
 
 $(document).on("click", "#icra_kaydet", function () {
   var form = $("#icraForm");

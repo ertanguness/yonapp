@@ -1,9 +1,15 @@
-<?php 
+<?php
 
+use App\Helper\FinansalHelper;
 use App\Helper\Security;
+use App\Helper\Helper;
 use App\Services\Gate;
+use Model\KasaModel;
 
 Gate::authorizeOrDie("income_expense_add_update");
+
+$Kasa = new KasaModel();
+
 
 ?>
 
@@ -26,7 +32,7 @@ Gate::authorizeOrDie("income_expense_add_update");
                 title="Filtrele">
                 <i class="feather-filter"></i>
             </a>
-            <button type="button" class="btn btn-primary route-link" data-page="income-expense/manage">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gelirGiderModal">
                 <i class="feather-plus me-2"></i> Yeni Gelir/Gider Ekle
             </button>
         </div>
@@ -200,30 +206,194 @@ Gate::authorizeOrDie("income_expense_add_update");
 </div>
 
 
-<!-- Ödeme Planı Modal -->
+<!-- Gelir Gider Modal -->
+
+<!-- <div class="modal fade" id="gelirGiderModal" tabindex="-1" aria-labelledby="gelirGiderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="gelirGiderModalLabel">Gelir Gider İşlemleri</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="gelirGiderForm" method="post">
+                    <input type="hidden" name="id" id="icra_id" value="<?= $_GET['id'] ?? 0; ?>">
+
+                                  
+
+                   
+                    <div class="mb-3">
+                        <label for="aciklama" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="aciklama" name="aciklama" rows="3" placeholder="Gelir gider işlemleriyle ilgili notlar..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-primary" id="gelirGiderKaydet">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+<style>
+    .option-card {
+        border: 1px dashed #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .option-card:hover {
+        border-color: #6c757d;
+    }
+
+    .option-card.selected {
+        border-color: #0d6efd;
+        background-color: #f0f8ff;
+    }
+
+    .option-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .option-title {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .option-price {
+        font-weight: 600;
+        color: #0d6efd;
+    }
+
+    .option-desc {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    input[type="radio"] {
+        margin-right: 10px;
+    }
+
+    .radio-label {
+        display: flex;
+        align-items: flex-start;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .radio-content {
+        flex-grow: 1;
+    }
+</style>
+
+<!-- Gelir Gider Modal -->
 <div class="modal fade" id="gelirGiderModal" tabindex="-1" aria-labelledby="gelirGiderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="gelirGiderModalLabel">Ödeme Planı Ekle / Güncelle</h5>
+                <h5 class="modal-title" id="gelirGiderModalLabel">Gelir Gider İşlemleri</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="odemePlanForm" method="post">
+                <form id="gelirGiderForm" method="post">
                     <input type="hidden" name="id" id="icra_id" value="<?= $_GET['id'] ?? 0; ?>">
+                    <input type="hidden" name="islem_id" id="islem_id" value="0">
 
-                    <!-- Toplam Borç -->
-                    <div class="mb-3">
-                        <label for="borc_tutari" class="form-label">Toplam Borç (₺)</label>
-                        <input type="number" class="form-control" id="borc_tutari" name="borc_tutari" placeholder="Toplam borç tutarını girin" required value="<?= $icraBilgileri->borc_tutari ?? ''; ?>">
+                    <!-- İşlem Türü -->
+                    <div class="">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="option-card" id="standardOption">
+                                    <label class="radio-label">
+                                        <input type="radio" name="islem_tipi" value="gelir" checked>
+                                        <div class="radio-content">
+                                            <div class="option-header">
+                                                <span class="option-title">Gelir</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="option-card" id="expressOption">
+                                    <label class="radio-label">
+                                        <input type="radio" name="islem_tipi" value="gider">
+                                        <div class="radio-content">
+                                            <div class="option-header">
+                                                <span class="option-title">Gider</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    
+                    <!-- Kasa -->
+                    <div class="mb-3">
+                        <label for="kasa" class="form-label">Kasa *</label>
+
+                        <?php echo FinansalHelper::KasaSelect("kasa") ?>
+                    </div>
+
+                    <!-- İşleme Tarihi -->
+                    <div class="mb-3">
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <label for="islem_tarihi" class="form-label">İşlem Tarihi *</label>
+                                <input type="text" class="form-control flatpickr" name="islem_tarihi" id="islem_tarihi" required
+                                    value="<?= date('Y-m-d'); ?>">
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label for="tutar" class="form-label">Tutar (₺) *</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control money" id="tutar" name="tutar"
+                                        placeholder="0.00" required>
+                                    <span class="input-group-text">₺</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Kategori -->
+                    <div class="mb-3">
+                        <label for="kategori" class="form-label">Kategori *</label>
+                        <?php echo Helper::getOdemeKategoriSelect("kategori") ?>
+                       
+                    </div>
 
                     <!-- Açıklama -->
                     <div class="mb-3">
                         <label for="aciklama" class="form-label">Açıklama</label>
-                        <textarea class="form-control" id="aciklama" name="aciklama" rows="3" placeholder="Ödeme planıyla ilgili notlar..."><?= $icraBilgileri->aciklama ?? ''; ?></textarea>
+                        <textarea class="form-control" id="aciklama" name="aciklama" rows="3"
+                            placeholder="Gelir gider işlemleriyle ilgili detaylı açıklama..."></textarea>
+                    </div>
+
+                    <!-- Ödeme Yöntemi -->
+                    <div class="mb-3">
+                        <label for="odeme_yontemi" class="form-label">Ödeme Yöntemi</label>
+                        <?php echo Helper::getOdemeYontemiSelect("odeme_yontemi") ?>
+                    </div>
+
+                    <!-- Belge No -->
+                    <div class="mb-3">
+                        <label for="belge_no" class="form-label">Belge No</label>
+                        <input type="text" class="form-control" id="belge_no" name="belge_no"
+                            placeholder="Fatura, fiş veya belge numarası">
+                    </div>
+
+                    <div class="alert alert-info">
+                        <small><strong>*</strong> işaretli alanlar zorunludur.</small>
                     </div>
                 </form>
             </div>
@@ -234,3 +404,58 @@ Gate::authorizeOrDie("income_expense_add_update");
         </div>
     </div>
 </div>
+
+<!-- JavaScript için ek kod -->
+<script>
+    $(function(){
+
+   
+    document.addEventListener('DOMContentLoaded', function() {
+        const islemTuruSelect = document.getElementById('islem_turu');
+        const gelirKategorileri = document.getElementById('gelir_kategorileri');
+        const giderKategorileri = document.getElementById('gider_kategorileri');
+        const kategoriSelect = document.getElementById('kategori');
+
+        // İşlem türü değiştiğinde kategorileri güncelle
+        islemTuruSelect.addEventListener('change', function() {
+            gelirKategorileri.style.display = 'none';
+            giderKategorileri.style.display = 'none';
+            kategoriSelect.value = '';
+
+            if (this.value === 'gelir') {
+                gelirKategorileri.style.display = 'block';
+            } else if (this.value === 'gider') {
+                giderKategorileri.style.display = 'block';
+            }
+        });
+
+        // Form gönderme işlemi
+        document.getElementById('gelirGiderKaydet').addEventListener('click', function() {
+            const form = document.getElementById('gelirGiderForm');
+
+            if (form.checkValidity()) {
+                // Form verilerini gönderme işlemi burada yapılacak
+                console.log('Form gönderiliyor...');
+                // AJAX veya normal form submit işlemi
+            } else {
+                form.reportValidity();
+            }
+        });
+
+        // Modal kapatıldığında formu temizle
+        document.getElementById('gelirGiderModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('gelirGiderForm').reset();
+            gelirKategorileri.style.display = 'none';
+            giderKategorileri.style.display = 'none';
+        });
+    });
+     });
+</script>
+
+<style>
+    .optgroup-label {
+        font-weight: bold;
+        color: #495057;
+        background-color: #f8f9fa;
+    }
+</style>

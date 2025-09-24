@@ -328,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateStatus(button, status, id) {
         var row = button.closest('tr');
 
-        fetch("pages/icra/api.php", {
+        fetch("/pages/icra/api.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
