@@ -46,7 +46,6 @@ $router->get('borclarim', function () {
 });
 
 
-
 //Yönetici aidat ödeme sayfası
 $router->get('yonetici-aidat-odeme', function () {
     require 'pages/dues/payment/list.php';
@@ -62,14 +61,10 @@ $router->get('tahsilat-detayi/{id}', function ($id) {
     require 'pages/dues/collections/detail.php';
 });
 
-
-
-
 //Ana Sayfa
 $router->get('ana-sayfa', function () {
     require 'pages/home.php';
 });
-
 
 
 //Site Yönetimi
