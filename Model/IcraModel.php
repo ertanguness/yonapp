@@ -48,5 +48,30 @@ class IcraModel extends Model
         $query->execute([$kisi_id]);
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
-}
 
+    /**
+     * Belirli bir dosya numarasıyla kayıt var mı kontrol et
+     * 
+     * @param string $dosya_no
+     * @param int|null $excludeId Güncellemede kendi kaydını hariç tutmak için
+     * @return object|false
+     */
+    public function findByDosyaNo($dosya_no, $excludeId = null)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE dosya_no = :dosya_no";
+
+        if ($excludeId) {
+            $sql .= " AND id != :excludeId";
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':dosya_no', $dosya_no);
+
+        if ($excludeId) {
+            $stmt->bindValue(':excludeId', $excludeId, \PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_OBJ); // Kayıt varsa obje, yoksa false döner
+    }
+}

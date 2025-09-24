@@ -183,18 +183,23 @@ $router->get('gelir-gider-islemleri', function () {
 $router->get('ziyaretci-listesi', function () {
     require 'pages/ziyaretci/list.php';
 });
-// Ziyaretci ekle
 
-//İcra İşlemleri
+//----------------İCRA İŞLEMLERİ BAŞLANGIÇ----------------
+//Sakin İcraları listesi
 $router->get('icralarim', function () {
     require 'pages/icra/sakinler/list.php';
+});
+
+//Sakin İcra detayı
+$router->get('icra-sakin-detay/{id}', function ($id) {
+    require 'pages/icra/sakinler/manage.php';
 });
 
 //İcra Listesi
 $router->get('icra-takibi', function () {
     require 'pages/icra/list.php';
 });
-//İcra Düzenle
+//İcra Detay 
 $router->get('icra-detay/{id}', function ($id) {
     require 'pages/icra/detay/manage.php';
 });
@@ -203,8 +208,13 @@ $router->get('icra-detay/{id}', function ($id) {
 $router->get('icra-ekle', function () {
     require 'pages/icra/manage.php';
 });
+//İcra Düzenle
+$router->get('icra-duzenle/{id}', function ($id) {
+    require 'pages/icra/manage.php';
+});
 
 
+//----------------İCRA İŞLEMLERİ BİTİŞ----------------
 
 // ROUTES tanımla
 $router->get('index', function () {
@@ -254,10 +264,6 @@ $router->get('unauthorize', function () {
     
      require 'pages/authorize.php';
 });
-
-
-
-
 
 // Parametreli örnek: /rapor/2025-08-17
 $router->get('rapor/{tarih}', function ($tarih) {

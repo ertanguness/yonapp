@@ -4,7 +4,7 @@ $(document).ready(function () {
 
         if (kisiId) {
             $.ajax({
-                url: 'api/kisiBilgileriCek.php',
+                url: '/api/kisiBilgileriCek.php',
                 type: 'POST',
                 data: {id: kisiId},
                 dataType: 'json',

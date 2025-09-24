@@ -9,38 +9,42 @@ $(document).on("click", "#icra_kaydet", function () {
 
   var validator = $("#icraForm").validate({
     rules: {
-      "dosya_no": { required: true },
-      "icra_durumu": { required: true },
-      "kisi_id": { required: true },
-      "tc": { required: true },
-      "borc_tutari": { required: true, number: true },
-      "faiz_orani": { required: true, number: true },
-      "baslangic_tarihi": { required: true },
-      "icra_dairesi": { required: true },
+      dosya_no: { required: true },
+      icra_durumu: { required: true },
+      kisi_id: { required: true },
+      tc: { required: true },
+      borc_tutari: { required: true, number: true },
+      faiz_orani: { required: true, number: true },
+      baslangic_tarihi: { required: true },
+      icra_dairesi: { required: true },
     },
     messages: {
-      "dosya_no": { required: "Lütfen dosya numarasını giriniz" },
-      "icra_durumu": { required: "Lütfen icra durumunu seçiniz" },
-      "kisi_id": { required: "Lütfen kişi seçiniz" },
-      "tc": {
-        required: "Site Yönetimi->Kişiler sayfasından TC Kimlik Numarasını giriniz",
+      dosya_no: { required: "Lütfen dosya numarasını giriniz" },
+      icra_durumu: { required: "Lütfen icra durumunu seçiniz" },
+      kisi_id: { required: "Lütfen kişi seçiniz" },
+      tc: {
+        required:
+          "Site Yönetimi->Kişiler sayfasından TC Kimlik Numarasını giriniz",
       },
-      "borc_tutari": { required: "Lütfen borç tutarını giriniz", number: "Geçerli bir sayı giriniz" },
-      "faiz_orani": { required: "Lütfen faiz oranını giriniz", number: "Geçerli bir sayı giriniz" },
-      "baslangic_tarihi": { required: "Lütfen başlangıç tarihini giriniz" },
-      "icra_dairesi": { required: "Lütfen icra dairesini giriniz" },
-    }
+      borc_tutari: {
+        required: "Lütfen borç tutarını giriniz",
+        number: "Geçerli bir sayı giriniz",
+      },
+      faiz_orani: {
+        required: "Lütfen faiz oranını giriniz",
+        number: "Geçerli bir sayı giriniz",
+      },
+      baslangic_tarihi: { required: "Lütfen başlangıç tarihini giriniz" },
+      icra_dairesi: { required: "Lütfen icra dairesini giriniz" },
+    },
   });
 
   if (!validator.form()) {
     return;
   }
 
-  fetch(icraurl, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.json())
+  fetch(icraurl, { method: "POST", body: formData })
+    .then((res) => res.json())
     .then((data) => {
       if (data.status === "success") {
         Swal.fire({
@@ -48,15 +52,13 @@ $(document).on("click", "#icra_kaydet", function () {
           text: data.message,
           icon: "success",
           showCancelButton: true,
-          confirmButtonText: '<i class="fa fa-arrow-left" ></i> Listeye Dön ',
-          cancelButtonText: "Ödeme Planı Oluştur"
+          confirmButtonText: "Listeye Dön",
+          cancelButtonText: "Ödeme Planı Oluştur",
         }).then((result) => {
           if (result.isConfirmed) {
-            // Listeye yönlendirme
-            window.location.href = "/icra-listesi";
+            window.location.href = "/icra-takibi"; // liste sayfası
           } else if (result.dismiss === Swal.DismissReason.cancel) {
-            // Ödeme planı sayfasına yönlendirme
-            window.location.href = "/icra-detay?id=" + data.id;
+            window.location.href = "/icra-detay/" + data.id; // burası normal listede olduğu gibi
           }
         });
       } else {
