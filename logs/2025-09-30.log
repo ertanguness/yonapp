@@ -1,0 +1,150 @@
+[2025-09-30 10:04:29] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 10:04:29] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1296"}
+[2025-09-30 10:04:29] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:04:29] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 10:04:29] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 10:12:42] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 10:12:42] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1297"}
+[2025-09-30 10:12:42] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:12:42] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 10:12:42] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 10:28:40] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 10:28:40] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1298"}
+[2025-09-30 10:28:40] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:28:40] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 10:28:40] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 10:39:12] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":15.3,"kullanici_id":147}
+[2025-09-30 10:39:12] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1299"}
+[2025-09-30 10:39:12] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 22994,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 242,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:39:12] [INFO] Borç kaydı işleniyor. {"borc_detay_id":22994,"kalan_dagitilacak_tutar":15.3}
+[2025-09-30 10:39:12] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":22994,"odenen_anapara":15.3}
+[2025-09-30 10:49:03] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 10:49:03] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1300"}
+[2025-09-30 10:49:03] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:49:03] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 10:49:03] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 10:51:17] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 10:51:17] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1301"}
+[2025-09-30 10:51:17] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:51:17] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 10:51:17] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 10:54:37] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 10:54:37] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1302"}
+[2025-09-30 10:54:37] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:54:37] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 10:54:37] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 10:55:39] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 10:55:39] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1303"}
+[2025-09-30 10:55:39] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:55:39] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 10:55:39] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 10:57:42] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 10:57:42] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1304"}
+[2025-09-30 10:57:42] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 10:57:42] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 10:57:42] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:04:00] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:04:00] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1305"}
+[2025-09-30 11:04:00] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:04:00] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:04:00] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:13:04] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:13:04] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1306"}
+[2025-09-30 11:13:04] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:13:04] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:13:04] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:15:20] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:15:20] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1307"}
+[2025-09-30 11:15:20] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:15:20] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:15:20] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:16:57] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:16:57] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1308"}
+[2025-09-30 11:16:57] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:16:57] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:16:57] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:20:07] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:20:07] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1309"}
+[2025-09-30 11:20:07] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:20:07] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:20:07] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:21:47] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:21:47] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1310"}
+[2025-09-30 11:21:47] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:21:47] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:21:47] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:22:41] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:22:41] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1311"}
+[2025-09-30 11:22:41] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:22:41] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:22:41] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:23:34] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:23:34] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1312"}
+[2025-09-30 11:23:34] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:23:34] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:23:34] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:24:05] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":15.3,"kullanici_id":147}
+[2025-09-30 11:24:05] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1313"}
+[2025-09-30 11:24:05] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 22994,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 242,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:24:05] [INFO] Borç kaydı işleniyor. {"borc_detay_id":22994,"kalan_dagitilacak_tutar":15.3}
+[2025-09-30 11:24:05] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":22994,"odenen_anapara":15.3}
+[2025-09-30 11:26:45] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:26:45] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1314"}
+[2025-09-30 11:26:45] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:26:45] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:26:45] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:27:04] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":15.3,"kullanici_id":147}
+[2025-09-30 11:27:04] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1315"}
+[2025-09-30 11:27:04] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 22994,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 242,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:27:04] [INFO] Borç kaydı işleniyor. {"borc_detay_id":22994,"kalan_dagitilacak_tutar":15.3}
+[2025-09-30 11:27:04] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":22994,"odenen_anapara":15.3}
+[2025-09-30 11:28:25] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:28:25] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1316"}
+[2025-09-30 11:28:25] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:28:25] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:28:25] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:30:15] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:30:15] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1317"}
+[2025-09-30 11:30:15] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23173,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:30:15] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23173,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:30:15] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23173,"odenen_anapara":400}
+[2025-09-30 11:30:22] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1955","gelen_tutar":15.3,"kullanici_id":147}
+[2025-09-30 11:30:22] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1318"}
+[2025-09-30 11:30:22] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 22994,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 242,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:30:22] [INFO] Borç kaydı işleniyor. {"borc_detay_id":22994,"kalan_dagitilacak_tutar":15.3}
+[2025-09-30 11:30:22] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":22994,"odenen_anapara":15.3}
+[2025-09-30 11:32:20] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 385 TL 
+[2025-09-30 11:37:49] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1946","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:37:49] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1320"}
+[2025-09-30 11:37:49] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23126,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:37:49] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23126,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:37:49] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23126,"odenen_anapara":400}
+[2025-09-30 11:37:56] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1948","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:37:56] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1321"}
+[2025-09-30 11:37:56] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23087,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:37:56] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23087,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:37:56] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23087,"odenen_anapara":400}
+[2025-09-30 11:38:06] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1949","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:38:06] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1322"}
+[2025-09-30 11:38:06] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 22985,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 242,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:38:06] [INFO] Borç kaydı işleniyor. {"borc_detay_id":22985,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:38:06] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":22985,"odenen_anapara":400}
+[2025-09-30 11:38:21] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1954","gelen_tutar":400,"kullanici_id":147}
+[2025-09-30 11:38:21] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1323"}
+[2025-09-30 11:38:21] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23129,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:38:21] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23129,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:38:21] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23129,"odenen_anapara":400}
+[2025-09-30 11:38:40] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1978","gelen_tutar":800,"kullanici_id":147}
+[2025-09-30 11:38:40] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1324"}
+[2025-09-30 11:38:40] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23047,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 242,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    },\n    {\n        \"id\": 23226,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:38:40] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23047,"kalan_dagitilacak_tutar":800}
+[2025-09-30 11:38:40] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23047,"odenen_anapara":400}
+[2025-09-30 11:38:40] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23226,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:38:40] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23226,"odenen_anapara":400}
+[2025-09-30 11:54:08] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"1978","gelen_tutar":800,"kullanici_id":147}
+[2025-09-30 11:54:08] [INFO] Ana tahsilat kaydı oluşturuldu. {"tahsilat_id":"1325"}
+[2025-09-30 11:54:08] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23047,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 242,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    },\n    {\n        \"id\": 23226,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 214,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-09-30 11:54:08] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23047,"kalan_dagitilacak_tutar":800}
+[2025-09-30 11:54:08] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23047,"odenen_anapara":400}
+[2025-09-30 11:54:08] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23226,"kalan_dagitilacak_tutar":400}
+[2025-09-30 11:54:08] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23226,"odenen_anapara":400}

@@ -1,2 +1,0 @@
-[2025-09-16 11:20:32] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
-[2025-09-16 11:20:36] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}

@@ -1,8 +1,0 @@
-[2025-07-24 12:32:26] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
-[2025-07-24 12:32:31] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
-[2025-07-24 21:45:58] [ERROR] Kullanıcı oturum açmaya çalıştı, ancak oturum bilgisi bulunamadı. {"ip":"::1","requested_url":"\/index.php"}
-[2025-07-24 21:46:02] [INFO] Kullanıcı başarıyla giriş yaptı. {"user_id":147,"email":"ertanguness@gmail.com","ip":"::1"}
-[2025-07-24 22:13:40] [INFO] Bir bakım kaydı silindi. {"deleted_bakim_id":"2","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
-[2025-07-24 22:13:43] [INFO] Bir bakım kaydı silindi. {"deleted_bakim_id":"3","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
-[2025-07-24 22:13:45] [INFO] Bir bakım kaydı silindi. {"deleted_bakim_id":"4","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
-[2025-07-24 22:19:22] [INFO] Bir bakım kaydı silindi. {"deleted_bakim_id":"5","deleted_by_user_id":147,"user_email":"ertanguness@gmail.com","ip_address":"::1"}
