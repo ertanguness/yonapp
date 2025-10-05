@@ -229,8 +229,8 @@ if (
 
 
 //************İCRA BAŞLANGIÇ************************************ */
-if ($page == 'icra-ekle' || $page == 'icra-duzenle' || $page == 'icra-listesi') {
-    echo '<script src="pages/icra/icra.js"></script>';
+if ($page == 'icra-ekle' || $page == 'icra-duzenle' || $page == 'icra-listesi' || $page == 'icra-takibi')  {
+    echo '<script src="/pages/icra/icra.js"></script>';
 }
 
 if ($page == 'icra-detay') {
@@ -238,12 +238,9 @@ if ($page == 'icra-detay') {
 }
 //************İCRA BİTİŞ************************************ */
 
-
-
 if ($page == 'finans-yonetimi/kasa/duzenle' || $page == 'finans-yonetimi/kasa/list') {
     echo '<script src="pages/finans-yonetimi/kasa/js/kasa.js"></script>';
 }
-
 
 //************GELİR GİDER KAYDET************************************ */
 if ($page == 'gelir-gider-islemleri') {

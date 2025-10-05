@@ -10,15 +10,27 @@ use Model\IcraOdemeModel;
 
 $Icra = new IcraModel();
 $IcraOdeme = new IcraOdemeModel();
-
 if ($_POST["action"] == "icra_kaydetme") {
 
     $baslangic_tarihi = Date::Ymd($_POST["baslangic_tarihi"] ?? null);
 
     $id = Security::decrypt($_POST["id"]);
+    $dosya_no = $_POST["dosya_no"] ?? '';
+
+    // Aynı dosya_no var mı kontrol et (güncellemede kendi kaydını hariç tutacak)
+    $oncekiKayit = $Icra->findByDosyaNo($dosya_no, $id);
+
+    if ($oncekiKayit) {
+        echo json_encode([
+            "status"  => "error",
+            "message" => "Bu dosya numarasıyla daha önce kayıt yapılmış."
+        ]);
+        exit;
+    }
+
     $data = [
         "id"                => $id,
-        "dosya_no"          => $_POST["dosya_no"] ?? '',
+        "dosya_no"          => $dosya_no,
         "kisi_id"           => $_POST["kisi_id"] ?? null,
         "tc"                => $_POST["tc"] ?? '',
         "borc_tutari"       => $_POST["borc_tutari"] ?? '',
@@ -36,24 +48,43 @@ if ($_POST["action"] == "icra_kaydetme") {
 
     $lastInsertId = $Icra->saveWithAttr($data);
 
-    // Yeni kayıt eklenmişse lastInsertId kullanılacak
-    $realId = !empty($id) ? $id : $lastInsertId;
+    if (empty($id)) {
+        $realId = $lastInsertId; // Yeni kayıt -> DB ID
+    } else {
+        $realId = Security::encrypt($id); // Güncelleme -> şifreli ID
+    }
 
     $res = [
         "status"   => "success",
         "message"  => "İcra kaydı başarıyla kaydedildi.",
-        "id"       => Security::encrypt($realId) // yönlendirme için lazım olacak
+        "id"       => $realId
     ];
     echo json_encode($res);
     exit;
 }
+
 if ($_POST["action"] == "odeme_plan_kaydet") {
 
     $id = Security::decrypt($_POST["id"]);
     $icraOdemeBilgileri = $IcraOdeme->IcraOdemeBilgileri($id);
 
+    // Ödeme başlangıç tarihi
     $odemeBaslangicTarihi = Date::Ymd($_POST["odeme_baslangic_tarihi"] ?? null);
 
+    // İcra başlangıç tarihi
+    $icraBilgileri = $Icra->IcraBilgileri($id);
+    $icraBaslangicTarihi = Date::Ymd($icraBilgileri->icra_baslangic_tarihi ?? null);
+
+    // Kontrol: Ödeme başlangıcı icra başlangıcından önce olamaz
+    if ($icraBaslangicTarihi && $odemeBaslangicTarihi < $icraBaslangicTarihi) {
+        echo json_encode([
+            "status"  => "error",
+            "message" => "Ödeme başlangıç tarihi, icra başlangıç tarihinden önce olamaz."
+        ]);
+        exit;
+    }
+
+    // Ödenen var mı kontrolü
     $odenenVar = false;
     foreach ($icraOdemeBilgileri as $odeme) {
         if (isset($odeme->durumu) && $odeme->durumu === "Ödendi") {
@@ -68,6 +99,7 @@ if ($_POST["action"] == "odeme_plan_kaydet") {
         ]);
         exit;
     }
+
     $data = [
         "id"                         => $id,
         "borc_tutari"                => $_POST["borc_tutari"] ?? 0,
@@ -79,15 +111,16 @@ if ($_POST["action"] == "odeme_plan_kaydet") {
     ];
 
     $lastInsertId = $Icra->saveWithAttr($data);
+    $enc_id = Security::encrypt($lastInsertId);
 
-    $res = [
-        "status"  => "success",
-        "message" => "Ödeme planı başarıyla kaydedildi."
-        //"id"      => Security::encrypt($id)
-    ];
-    echo json_encode($res);
+    echo json_encode([
+        "status" => "success",
+        "message" => "İcra kaydı başarıyla eklendi.",
+        "id" => $enc_id
+    ]);
     exit;
 }
+
 if ($_POST["action"] == "durum_guncelle") {
 
     $id = Security::decrypt($_POST["id"]);
@@ -103,8 +136,8 @@ if ($_POST["action"] == "durum_guncelle") {
 
     $res = [
         "status"  => "success",
-        "message" => "Ödeme planı başarıyla kaydedildi."
-        //"id"      => Security::encrypt($id)
+        "message" => "Ödeme planı başarıyla kaydedildi.",
+        "id"      => Security::encrypt($id)
     ];
     echo json_encode($res);
     exit;
@@ -114,18 +147,13 @@ if ($_POST["action"] == "odeme_durum_guncelle") {
     $status = $_POST["status"];
     $bugun = date("Y-m-d");
 
-    $IcraOdeme = new \Model\IcraOdemeModel();
-    $odeme = $IcraOdeme->IcraTaksitBilgileri($id); 
+    $odeme = $IcraOdeme->IcraTaksitBilgileri($id);
 
     if ($status === "Ödendi") {
-        $durum = "Ödendi";
+        $durum = 1; // Ödendi
         $taksit_odenen_tarih = $bugun;
     } else {
-        if ($odeme->taksit_odeme_tarihi < $bugun) {
-            $durum = "Gecikmiş";
-        } else {
-            $durum = "Ödenmedi";
-        }
+        $durum = 0; // Ödenmedi
         $taksit_odenen_tarih = null;
     }
 
@@ -144,6 +172,7 @@ if ($_POST["action"] == "odeme_durum_guncelle") {
     ]);
     exit;
 }
+
 
 
 if ($_POST["action"] == "sil-icra") {

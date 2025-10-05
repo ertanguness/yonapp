@@ -177,6 +177,8 @@ body {
     .main-content {
         padding-top: 0px !important;
         margin: 0 !important;
+        padding-bottom: 50px !important;
+
     }
     .custom-card-action{
         padding: 0 !important;

@@ -108,13 +108,13 @@ $Icralar = $Icra->Icralar();
                                                                 class="avatar-text avatar-md">
                                                                 <i class="feather-eye"></i>
                                                             </a>
-                                                            <a href="icra-detay/<?= $enc_id; ?>" class="avatar-text avatar-md">
+
+                                                            <a href="icra-duzenle/<?php echo $enc_id; ?>"
+                                                                class="avatar-text avatar-md">
                                                                 <i class="feather-edit"></i>
                                                             </a>
-                                                            <a href="icra-sakin-detay/<?= $enc_id; ?>"
-                                                                class="avatar-text avatar-md route-link d-inline-flex justify-content-center align-items-center"
-                                                                title="Detay">
-                                                                <i class="feather-eye"></i>
+                                                            <a href="javascript:void(0);" data-name="<?php echo $icra->dosya_no ?>" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md sil-icra">
+                                                                <i class="feather-trash-2"></i>
                                                             </a>
                                                         </div>
                                                     </td>

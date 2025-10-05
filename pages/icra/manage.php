@@ -12,7 +12,7 @@ $Icra = new IcraModel();
 
 $kisiler = $kisilerModel->SiteTumKisileri($site_id);
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0) ;
 $icraBilgileri = $Icra->IcraBilgileri($id);
 ?>
 <div class="page-header">
@@ -66,7 +66,7 @@ $icraBilgileri = $Icra->IcraBilgileri($id);
                 <div class="col-12">
                     <div class="card">
                         <form method="POST" id="icraForm" name="icraForm">
-                            <input type="hidden" name="icra_id" id="icra_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                            <input type="hidden" name="icra_id" id="icra_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
 
@@ -145,7 +145,7 @@ $icraBilgileri = $Icra->IcraBilgileri($id);
                                                 <div class="input-group-text"><i class="feather-calendar"></i></div>
                                                 <input type="text" class="form-control flatpickr"
                                                     name="baslangic_tarihi" id="baslangic_tarihi"
-                                                    value="<?= !empty($icraBilgileri->baslangic_tarihi) ? Date::dmY($icraBilgileri->baslangic_tarihi) : '' ?>">
+                                                    value="<?= !empty($icraBilgileri->icra_baslangic_tarihi) ? Date::dmY($icraBilgileri->icra_baslangic_tarihi) : '' ?>">
                                             </div>
                                         </div>
                                         <div class="col-lg-2">
@@ -184,47 +184,5 @@ $icraBilgileri = $Icra->IcraBilgileri($id);
     </div> <!-- /.row -->
 </div> <!-- /.main-content -->
 <!-- Ödeme Planı Modal -->
-<div class="modal fade" id="paymentPlanModal" tabindex="-1" aria-labelledby="paymentPlanModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentPlanModalLabel">Ödeme Planı Ekle</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="paymentPlanForm">
-                    <!-- Toplam Borç -->
-                    <div class="mb-3">
-                        <label for="totalDebt" class="form-label">Toplam Borç (₺)</label>
-                        <input type="number" class="form-control" id="totalDebt" name="totalDebt" required readonly value="12.500">
-                    </div>
-                    <!-- Kaç Aya Yayılacak -->
-                    <div class="mb-3">
-                        <label for="installments" class="form-label">Kaç Aya Yayılacak?</label>
-                        <input type="number" class="form-control" id="installments" name="installments" required min="1" max="12" placeholder="Örneğin 6, 12" value="6">
-                    </div>
-                    <!-- Aylık Ödeme -->
-                    <div class="mb-3">
-                        <label for="monthlyPayment" class="form-label">Aylık Ödeme (₺)</label>
-                        <input type="number" class="form-control" id="monthlyPayment" name="monthlyPayment" required readonly>
-                    </div>
-                    <!-- Ödeme Tarihi -->
-                    <div class="mb-3">
-                        <label for="paymentStartDate" class="form-label">İlk Ödeme Tarihi</label>
-                        <input type="date" class="form-control" id="paymentStartDate" name="paymentStartDate" required>
-                    </div>
-                    <!-- Açıklama -->
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">Açıklama</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Ödeme planıyla ilgili notlar veya açıklamalar..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                <button type="button" class="btn btn-primary" id="savePaymentPlan">Kaydet</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="src/kisi-bilgileri.js"></script>
+
+<script src="/src/kisi-bilgileri.js"></script>
