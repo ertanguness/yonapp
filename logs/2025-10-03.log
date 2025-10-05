@@ -1,0 +1,27 @@
+[2025-10-03 19:59:58] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"7151","gelen_tutar":200,"kullanici_id":147}
+[2025-10-03 19:59:58] [INFO] Ana tahsilat kaydı oluşturuldu ve kasaya eklendi. {"tahsilat_id":"1912","kasa_hareket_id":"SIAg0KWQBvlsUPhH9Z9i8JBgu0PiTYkTjaw8mYNDtw%2A%2A","tutar":200}
+[2025-10-03 19:59:58] [INFO] Artan tutar krediye eklendi. {"kisi_id":"182","kredi_tutari":200}
+[2025-10-03 20:01:06] [INFO] Kredi ID 77 için kullanım güncellendi: Kullanıldı mı: 1, Kullanılan Tutar: 0.7 TL 
+[2025-10-03 20:01:06] [INFO] Kredi ID 78 için kullanım güncellendi: Kullanıldı mı: 0, Kullanılan Tutar: 199.3 TL 
+[2025-10-03 20:01:06] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 200 TL 
+[2025-10-03 20:25:02] [INFO] Tahsilat ID 1913 için ilişkili kredi kullanımları silindi. 
+[2025-10-03 20:25:02] [INFO] Tahsilat ID 1913 için ilişkili kasa hareketleri silindi. 
+[2025-10-03 20:25:02] [INFO] Tahsilat ID 1913 için ilişkili tahsilat detayları silindi. 
+[2025-10-03 20:25:02] [INFO] Tahsilat ID 1913 kaydı ve ilişkili tüm veriler silindi. 
+[2025-10-03 20:27:58] [INFO] Kredi ID 77 için kullanım güncellendi: Kullanıldı mı: 1, Kullanılan Tutar: 0.7 TL 
+[2025-10-03 20:27:58] [INFO] Kredi ID 78 için kullanım güncellendi: Kullanıldı mı: 1, Kullanılan Tutar: 200 TL 
+[2025-10-03 20:27:58] [INFO] Kredi ID 79 için kullanım güncellendi: Kullanıldı mı: 1, Kullanılan Tutar: 10 TL 
+[2025-10-03 20:27:58] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 210.7 TL 
+[2025-10-03 20:56:12] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"7226","gelen_tutar":400,"kullanici_id":147}
+[2025-10-03 20:56:12] [INFO] Ana tahsilat kaydı oluşturuldu ve kasaya eklendi. {"tahsilat_id":"1915","kasa_hareket_id":"GxYVOB7alb8Q9GVjqhYdM4esndlqRcJ6mqZc91Y9Yw%2A%2A","tutar":400}
+[2025-10-03 20:56:12] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23064,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 217,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-10-03 20:56:12] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23064,"kalan_dagitilacak_tutar":400}
+[2025-10-03 20:56:12] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23064,"odenen_anapara":400}
+[2025-10-03 20:56:23] [INFO] Tahsilat-Borç eşleştirme işlemi başlatıldı {"onay_id":"7109","gelen_tutar":400,"kullanici_id":147}
+[2025-10-03 20:56:23] [INFO] Ana tahsilat kaydı oluşturuldu ve kasaya eklendi. {"tahsilat_id":"1916","kasa_hareket_id":"FHSBmesiFfzjnM_myW2WGawYLxXhLuJJzH5QfL7w1w%2A%2A","tutar":400}
+[2025-10-03 20:56:23] [INFO] Borç detayları alındı. {"borc_detay_bilgisi":"[\n    {\n        \"id\": 23788,\n        \"borc_tutari\": \"400.00\",\n        \"gun_farki\": 186,\n        \"gecikme_zammi\": \"0.00\",\n        \"ceza_orani\": \"0.00\",\n        \"toplam_borc\": \"400.00\",\n        \"toplam_odenen\": null,\n        \"anapara_tahsilat\": null,\n        \"gecikme_zammi_odemesi\": null,\n        \"kalan_toplam_borc\": \"400.00\",\n        \"kalan_gecikme_zammi\": \"0.00\"\n    }\n]"}
+[2025-10-03 20:56:23] [INFO] Borç kaydı işleniyor. {"borc_detay_id":23788,"kalan_dagitilacak_tutar":400}
+[2025-10-03 20:56:23] [INFO] Anapara için tahsilat detayı oluşturuldu. {"borc_detay_id":23788,"odenen_anapara":400}
+[2025-10-03 20:56:53] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 380 TL 
+[2025-10-03 21:00:14] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"186","borc_adi":"A\u0130DAT","kisi_id":"7","daire_id":7,"tutar":"400","baslangic_tarihi":"2025-04-01","bitis_tarihi":"2025-04-30","son_odeme_tarihi":"2025-04-30","ceza_orani":"","aciklama":"NISAN 2025 A\u0130DAT Kirac\u0131 yok"} 
+[2025-10-03 21:00:47] [INFO] Borçlandırma kaydı başarıyla oluşturuldu: {"id":0,"borclandirma_id":"190","borc_adi":"A\u0130DAT","kisi_id":"7","daire_id":7,"tutar":"400","baslangic_tarihi":"2025-05-01","bitis_tarihi":"2025-05-31","son_odeme_tarihi":"2025-05-31","ceza_orani":"","aciklama":"MAYIS 2025 A\u0130DAT Kirac\u0131 Yok"} 
