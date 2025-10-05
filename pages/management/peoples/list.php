@@ -49,9 +49,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                     Excelden Yükle
                 </a>
 
-                <a href="#" class="btn btn-primary route-link" 
-                
-                data-page="management/peoples/manage">
+                <a href="/site-sakini-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus"></i>
                     <span>Yeni Kişi Ekle</span>
                 </a>

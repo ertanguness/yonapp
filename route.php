@@ -40,6 +40,21 @@ $router->get('borclandirma-detayi/{id}', function ($id) {
     require 'pages/dues/debit/detail.php';
 });
 
+//Tekil Borçlandırma
+$router->get('borclandirma-kisi-ekle/{id}', function ($id) {
+    require 'pages/dues/debit/single-manage.php';
+});
+$router->get('borclandirma-kisi-duzenle/{id}/{detay_id}', function ($id, $detay_id) {
+    require 'pages/dues/debit/single-manage.php';
+});
+
+//Excelden borç yükleme
+$router->get('borclandirma-excelden-yukle/{id}', function ($id) {
+    require 'pages/dues/debit/upload-from-xls.php';
+});
+
+
+
 //Borçlarım
 $router->get('borclarim', function () {
     require 'pages/dues/user-payment/list.php';
@@ -61,6 +76,17 @@ $router->get('tahsilatlar', function () {
 $router->get('tahsilat-detayi/{id}', function ($id) {
     require 'pages/dues/collections/detail.php';
 });
+
+//eşleşmeyen tahsilatlar
+$router->get('eslesmeyen-odemeler', function () {
+    require 'pages/dues/payment/tahsilat-eslesmeyen.php';
+});
+
+//Excelden ödeme yükleme
+$router->get('excelden-odeme-yukle', function () {
+    require 'pages/dues/payment/upload-from-xls.php';
+});
+
 
 
 
@@ -113,6 +139,12 @@ $router->get('daire-duzenle/{id}', function ($id) {
 $router->get('site-sakinleri', function () {
     require 'pages/management/peoples/list.php';
 });
+
+//Site sakini ekle
+$router->get('site-sakini-ekle', function () {
+    require 'pages/management/peoples/manage.php';
+});
+
 //Site sakini düzenle
 $router->get('site-sakini-duzenle/{id}', function ($id) {
     require 'pages/management/peoples/manage.php';
@@ -169,6 +201,15 @@ $router->get('yetki-yonetimi/{id}', function ($role_id) {
 $router->get('kasa-listesi', function () {
     require 'pages/finans-yonetimi/kasa/list.php';
 });
+//Kasa Ekle
+$router->get('kasa-ekle', function () {
+    require 'pages/finans-yonetimi/kasa/duzenle.php';
+});
+
+//Kasa Düzenle
+$router->get('kasa-duzenle/{id}', function ($id) {
+    require 'pages/finans-yonetimi/kasa/duzenle.php';
+}); 
 
 //Kasa Hareketleri
 $router->get('kasa-hareketleri/{id}', function ($id) {
@@ -182,7 +223,10 @@ $router->get('gelir-gider-islemleri', function () {
     require 'pages/finans-yonetimi/gelir-gider/list.php';
 });
 
-
+//Gelir gider işlemleri belirli kasa
+$router->get('gelir-gider-islemleri/{id}', function ($id) {
+    require 'pages/finans-yonetimi/gelir-gider/list.php';
+});
 
 // Ziyaretciler
 $router->get('ziyaretci-listesi', function () {

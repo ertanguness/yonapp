@@ -98,7 +98,7 @@ $(document).on("click", "#upload_payment_file", function (e) {
         icon: data.status,
         confirmButtonText: "Tamam",
       }).then(() => {
-        window.location.href = "index?p=dues/payment/tahsilat-onay"; // Başarılı ise yönlendir
+        window.location.href = "/onay-bekleyen-tahsilatlar"; // Başarılı ise yönlendir
       });
       
     })

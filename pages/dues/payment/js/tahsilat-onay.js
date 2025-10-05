@@ -48,6 +48,7 @@ $(document).on("click", ".tahsilat-onayla", function (event) {
   formData.append("tahsilat_turu", tahsilat_turu);
   formData.append("action", "tahsilat_onayla");
 
+
   fetch(url, {
     method: "POST",
     body: formData,
@@ -75,6 +76,7 @@ $(document).on("click", ".tahsilat-onayla", function (event) {
       }
     });
 });
+
 $(document).on("input", ".islenecek-tutar", function () {
   // Eğer veri girildiyese, is-invalid sınıfını kaldır
   if ($(this).val() != "") {
@@ -120,3 +122,6 @@ $(document).on("click", ".onayli-tahsilat-sil", function () {
       }
     });
 });
+
+
+//

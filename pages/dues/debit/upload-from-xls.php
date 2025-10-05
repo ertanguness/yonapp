@@ -25,8 +25,9 @@ $BorcDetayModel = new BorclandirmaDetayModel();
 $site = $siteHelper->getCurrentSite();
 $site_adi = $site ? $site->site_adi : null;
 
-$id = Security::decrypt($_GET['id']) ?? null;
-$borc_detay_id = Security::decrypt($_GET["borc_detay_id"] ?? 0) ?? 0;
+$id = Security::decrypt($id) ?? null;
+$enc_id = Security::encrypt($id);
+$borc_detay_id = Security::decrypt($id) ?? 0;
 
 
 $borc = $BorcModel->find($id);
@@ -105,7 +106,7 @@ switch ($hedef_tipi) {
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items">
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <a href="index?p=dues/debit/detail&id=<?php echo $_GET['id'] ?>" class="btn btn-outline-secondary">
+                <a href="/borclandirma-detayi/<?php echo $enc_id ?>" class="btn btn-outline-secondary">
                     <i class="feather-arrow-left me-2"></i>Listeye Dön
                 </a>
             </div>

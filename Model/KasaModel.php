@@ -57,17 +57,17 @@ class KasaModel extends Model{
     /**
      * Kasaların gelir gider toplamlarını ve bakiyesini getirir
      * @param int $site_id
-     * @return array
+     * @return object|null
      */
-    public function KasaFinansalDurum($site_id)
+    public function KasaFinansalDurum($kasa_id)
     {
         $query = "SELECT * FROM {$this->view_kasa_finansal_durum} 
-                  WHERE site_id = :site_id
+                  WHERE kasa_id = :kasa_id
                   GROUP BY kasa_id";
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':site_id', $site_id, \PDO::PARAM_INT);
+        $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+        return $stmt->fetch(\PDO::FETCH_OBJ);
     }
 
     /** Varsayılan kasayı getirir

@@ -3,7 +3,7 @@
 namespace App\Helper;
 
 
-class Error 
+class Alert 
 {
     /**
      * PDOException hatalarını kontrol eder ve uygun bir mesaj döndürür.
@@ -37,6 +37,23 @@ class Error
             "message" => "Sayfa bulunamadı.",
         ];
        die();
+    }
+
+    public static function error($message)
+    {
+     echo json_encode([
+            "status" => "error",
+            "message" => $message,
+        ]);
+        die();
+    }
+    public static function success($message)
+    {
+     echo json_encode([
+            "status" => "success",
+            "message" => $message,
+        ]);
+        die();
     }
 
 }

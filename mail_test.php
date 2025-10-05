@@ -4,7 +4,7 @@ require_once  'configs/bootstrap.php';
 
 use App\Services\MailGonderService;
 
-$to = "beyzade83@gmail.com";
+$to = "bilgekazaz@gmail.com";
 $subject = "Gelen posta";
 $message = "Bu bir  mailidir.";
 

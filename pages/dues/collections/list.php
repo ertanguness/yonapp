@@ -54,9 +54,9 @@ Gate::authorizeOrDie('tahsilat_listele');
                 <div class="card-body">
                     <table id="tahsilatlarTable" class="table datatables" style="width:100%;">
                         <thead>
-                            <tr>
+                            <tr >
                                 <th>Makbuz No</th>
-                                <th>İşlem Tarihi</th>
+                                <th class="text-start">Ödeme Tarihi</th>
                                 <th>Kişi / Daire</th>
                                 <th>Açıklama / Kasa</th>
                                 <th class="text-end">Tutar</th>
@@ -243,17 +243,10 @@ Gate::authorizeOrDie('tahsilat_listele');
 
 
     $(document).on('click', '#delete-tahsilat', function() {
-        const id = $(this).data('id');
-        deleteTahsilat(id);
-
-    });
-
-    /**Tahsilatı Silme
-     * Bu fonksiyon, tahsilat silme işlemini gerçekleştirir.
-     * @param {string} tahsilatId - Silinecek tahsilatın ID'si (şifrelenmiş).
-     * @return {void}
-     */
-    function deleteTahsilat(tahsilatId) {
+        const tahsilatId = $(this).data('id');
+        row = $(this).closest('tr');
+       
+       
         swal.fire({
 
             title: 'Tahsilatı Sil',
@@ -273,19 +266,22 @@ Gate::authorizeOrDie('tahsilat_listele');
                         id: tahsilatId
                     },
                     success: function(response) {
+                        console.log('tahsilat silinme sonrası ' + response);
+                        
                         if (response.status === 'success') {
+                            row.remove();
                             swal.fire({
                                 icon: 'success',
                                 title: 'Başarılı',
                                 text: response.message
-                            }).then(() => {
-                                table.row()
-                                    .remove()
-                                    .draw(); // Tahsilat silindikten sonra tabloyu güncelle
-                            });
+                            })
                         
                         } else {
-                            alert('Hata: ' + response.message);
+                            swal.fire({
+                                icon: 'error',
+                                title: 'Hata',
+                                text: response.message
+                            });
                         }
                     },
                     error: function() {
@@ -299,6 +295,16 @@ Gate::authorizeOrDie('tahsilat_listele');
             }
         });
 
+
+    });
+
+    /**Tahsilatı Silme
+     * Bu fonksiyon, tahsilat silme işlemini gerçekleştirir.
+     * @param {string} tahsilatId - Silinecek tahsilatın ID'si (şifrelenmiş).
+     * @return {void}
+     */
+    function deleteTahsilat(tahsilatId) {
+        
 
     }
 </script>

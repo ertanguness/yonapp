@@ -7,7 +7,7 @@ use Model\SitelerModel;
 $Siteler = new SitelerModel();
 $Blocks = new BloklarModel();
 
-$id = Security::decrypt($id) ?? 0;
+$id = Security::decrypt($id ?? 0) ?? 0;
 $blocks = $Blocks->find($id  ?? null);
 
 $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
@@ -34,10 +34,10 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="management/peoples/list">
+                <a href="/site-sakinleri" type="button" class="btn btn-outline-secondary route-link me-2" data-page="management/peoples/list">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+</a>
                 <button type="button" class="btn btn-primary" id="savePeoples" class="dynamic-save-button">
                     <i class="feather-save me-2"></i>
                     Kaydet

@@ -344,11 +344,26 @@ class Model
     public function softDeleteByColumn($column, $value, $silen_kullanici_id = null)
     {
 
-        $sql = $this->db->prepare("UPDATE $this->table SET silinme_tarihi = NOW(), silen_kullanici = ? WHERE $column = ?");
+        if($silen_kullanici_id === null){
+            $silen_kullanici_id = $_SESSION['user']->id ?? null;
+        }
+
+        if (!$silen_kullanici_id) {
+            return new \Exception('Silen kullanıcı ID\'si belirtilmedi.');
+        }
+
+        if(!$value){
+            return new \Exception('Silinecek değer belirtilmedi.');
+        }
+
+
+        $sql = $this->db->prepare("UPDATE $this->table 
+                                          SET silinme_tarihi = NOW(), silen_kullanici = ? 
+                                          WHERE $column = ?");
         $sql->execute(array($silen_kullanici_id, $value));
 
         if ($sql->rowCount() === 0) {
-            return new \Exception('Kayıt bulunamadı veya silinemedi.');
+            throw new \Exception('Kayıt bulunamadı veya silinemedi.' . $this->table . ' - ' . $column . ' = ' . $value);
         }
         return true;
     }

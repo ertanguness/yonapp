@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App;
 
 class Router
@@ -9,8 +10,6 @@ class Router
     private $basePath = 'pages/';
     private $matchedPattern = null; // Eşleşen desen burada tutulacak
 
-    // get, setBasePath, prefix, group gibi diğer metotlarınız aynı kalabilir...
-
     // GET route ekle
     public function get($pattern, $callback)
     {
@@ -19,14 +18,24 @@ class Router
             $actualCallback = function () use ($callback) {
                 // Parametreleri bu fonksiyona aktarmak için argümanları al
                 $args = func_get_args();
-                // Değişkenleri yerel kapsama dahil et, böylece require edilen dosyada kullanılabilirler.
-                // Örneğin, $id değişkeni $args[0] içinde olacak.
+                
+                // Tüm parametreleri dinamik olarak tanımla
                 if (!empty($args)) {
-                    // Bu örnekte sadece tek parametre ($id) varsayıyoruz, 
-                    // daha karmaşık durumlar için farklı bir yapı gerekebilir.
-                    // En yaygın kullanım:
-                    $id = $args[0];
+                    // İlk 10 parametreyi tanımla (gerektiği kadar artırabilirsiniz)
+                    $id = $args[0] ?? null;
+                    $detay_id = $args[1] ?? null;
+                    $param3 = $args[2] ?? null;
+                    $param4 = $args[3] ?? null;
+                    $param5 = $args[4] ?? null;
+                    
+                    // Alternatif: Tüm parametreleri extract ile çıkar
+                    // extract() kullanarak parametreleri değişken olarak tanımla
+                    $paramNames = ['id', 'detay_id', 'param3', 'param4', 'param5'];
+                    for ($i = 0; $i < count($args) && $i < count($paramNames); $i++) {
+                        ${$paramNames[$i]} = $args[$i];
+                    }
                 }
+                
                 require $callback;
             };
         } else {
@@ -73,16 +82,15 @@ class Router
         ];
     }
 
-
-
     /**
      * YENİ VE ANAHTAR METOT:
      * Eşleşen desenin dinamik kısımlarını atarak temiz sayfa adını döndürür.
      * 
      * Örnekler:
      * - 'kasa-hareketleri/{id}' -> 'kasa-hareketleri'
-     * - 'kasa/hareket/{guid}'   -> 'kasa/hareket'
-     * - 'tahsilatlar'            -> 'tahsilatlar' (değişiklik olmaz)
+     * - 'borclandirma-kisi-ekle/{id}/{detay_id}' -> 'borclandirma-kisi-ekle'
+     * - 'kasa/hareket/{guid}' -> 'kasa/hareket'
+     * - 'tahsilatlar' -> 'tahsilatlar' (değişiklik olmaz)
      * 
      * @return string|null
      */
@@ -92,16 +100,9 @@ class Router
             return null;
         }
 
-        // Gelen veriyi görelim
-        //echo "GİRDİ: " . $this->matchedPattern . "<br>";
-
-        // preg_replace işleminin sonucunu görelim
-        $pageName = preg_replace('/\/\{[^\/]+\}$/', '', $this->matchedPattern);
-        // echo "İŞLEM SONUCU (\$pageName): " . $pageName . "<br>";
-
-        // Fonksiyonun ne döndürdüğünü görelim ve duralım
-        //die("DÖNDÜRÜLEN DEĞER: " . $pageName);
-
-        return $pageName ;
+        // Tüm parametreleri kaldır: /{parametre} formatındaki tüm kısımları temizle
+        $pageName = preg_replace('/\/\{[^\/]+\}/', '', $this->matchedPattern);
+        
+        return $pageName;
     }
 }

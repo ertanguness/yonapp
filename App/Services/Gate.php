@@ -127,4 +127,24 @@ class Gate
             exit;
         };
     }
+
+
+
+/**
+ * API'ler için yetki kontrolü yapar, yetkisi yoksa JSON döndürüp exit yapar
+ * @param string $permissionName
+ */
+public static function can(string $permissionName): void
+{
+    if (!self::allows($permissionName)) {
+        $res = [
+            "status" => "error",
+            "message" => "Bu işlemi yapmaya yetkiniz yok.",
+            "data" => []
+        ];
+        echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
 }

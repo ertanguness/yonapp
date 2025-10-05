@@ -8,6 +8,8 @@ use Model\KisilerModel;
 use Model\BorclandirmaModel;
 use Model\BorclandirmaDetayModel;
 use App\Helper\Debit;
+use App\Helper\KisiHelper;
+
 use App\Helper\Error;
 use App\Helper\Form;
 
@@ -19,11 +21,12 @@ $DueHelper = new Aidat();
 $KisiModel = new KisilerModel();
 $BorcModel = new BorclandirmaModel();
 $BorcDetayModel = new BorclandirmaDetayModel();
+$KisiHelper = new KisiHelper();
 
 
 
-$borc_id = Security::decrypt($_GET["id"] ?? 0) ?? 0;
-$borc_detay_id = Security::decrypt($_GET["detay_id"] ?? 0) ?? 0;
+$borc_id = Security::decrypt($id ?? 0) ?? 0;
+$borc_detay_id = Security::decrypt($detay_id ?? 0) ?? 0;
 
 
 $borc = $BorcModel->find($borc_id);
@@ -36,66 +39,18 @@ $borc_detay = $BorcDetayModel->BorclandirmaDetayByID($borc_detay_id);
 
 // 
 $adi_soyadi = $borc_detay->adi_soyadi ?? '';
+$kisi_id = $borc_detay->kisi_id ?? 0;
 $borc_adi = $borc_detay->borc_adi ?? '';
 
-echo "borc id: " . $borc_id . "<br>";
+$site_id = $_SESSION["site_id"];
 
+$blocks = [];
 
 $hedef_tipi = $borc->hedef_tipi ?? 'all'; // Hedef tipi, eğer borç detayında tanımlı değilse 'all' olarak varsayılır
 
 
-//Kişi borçlandırma yapılmışsa borçlandırma detayından kişi id'lerini al 
-switch ($hedef_tipi) {
-    case 'all':
-        //$hedef_kisi = $DebitHelper->getAllActiveUsers();
-        break;
-    case 'block':
-        //$hedef_kisi = $DebitHelper->getActiveUsersByBlock($borc->block_id ?? 0);
-        break;
-    case 'apartment_type':
-        //$hedef_kisi = $DebitHelper->getActiveUsersByApartmentType($borc->apartment_type_id ?? 0);
-        break;
-    case 'person':
-        $kisiListesi = $KisiModel->SiteTumKisileri($_SESSION["site_id"]);
-        //$optionsForSelect = array_column($kisiListesi, 'adi_soyadi', 'id');
 
-        // Orijinal dizi üzerinde dönün
-foreach ($kisiListesi as $kisi) {
-    // Yeni diziyi [id => "Adı Soyadı (Daire Kodu)"] formatında doldurun
-    $optionsForSelect[$kisi->id] = $kisi->daire_kodu . ' | ' . $kisi->adi_soyadi . ' | ' . $kisi->uyelik_tipi;
-}
-        
-        if ($borc_detay_id != 0) {
-
-            $seciliKisiler = $BorcDetayModel->getKisiIdsByBorcId($borc_id); // Borç detayında tanımlı hedef kişiler
-
-            // Veri tek bir ID olsa bile, onu bir diziye koyun.
-
-            // Eğer veriniz hiç olmayabilirse veya birden çok olabilirse, daha güvenli bir yapı:
-            $seciliKisiIdleri = [];
-            if (!empty($seciliKisiler)) {
-                $seciliKisiIdleri = [(string)$seciliKisiler];
-            }
-        }
-  
-        // echo "<pre>";
-        // print_r($kisiListesi);
-        // echo "</pre>";
-
-    default:
-        $hedef_kisi = [];
-}
-
-      
-
-
-
-
-
-
-
-
-Gate::authorizeOrDie('debit_add');
+//Gate::authorizeOrDie('debit_add');
 ?>
 
 <div class="page-header">
@@ -167,9 +122,11 @@ Gate::authorizeOrDie('debit_add');
             <div class="card">
 
                 <div class="card-body">
-                    <form id="debitForm" action="" method="POST">
-                        <input type="text" class="form-control d-none" name="borc_id" id="borc_id"
-                            value="<?php echo $_GET["id"] ?? 0 ?>">
+                    <form id="singleDebitForm" action="" method="POST">
+                        <input type="hidden" class="form-control d-non" name="borc_detay_id" id="borc_detay_id"
+                            value="<?php echo $detay_id ?? 0 ?>">
+                        <input type="hidden" class="form-control d-non" name="borc_id" id="borc_id"
+                            value="<?php echo $id ?? 0 ?>">
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
                                 <label for="title" class="fw-semibold">Borç Başlığı:</label>
@@ -185,7 +142,7 @@ Gate::authorizeOrDie('debit_add');
                             <div class="col-lg-2">
                                 <label for="tutar" class="fw-semibold">Tutar (₺) / Ceza Oranı (%):</label>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-lg-4">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-money-bill"></i></div>
                                     <input type="text" class="form-control money" name="tutar" id="tutar"
@@ -195,109 +152,57 @@ Gate::authorizeOrDie('debit_add');
                             </div>
 
                             <div class="col-lg-2">
-                                <div class="input-group">
-                                    <div class="input-group-text"><i class="fas fa-percentage"></i></div>
-                                    <input type="number" class="form-control" name="ceza_orani" id="ceza_orani"
-                                        placeholder="Ceza oranı" step="0.01" min="0"
-                                        value="<?php echo $borc_detay->ceza_orani ?? ''; ?>">
-                                </div>
+
                             </div>
                         </div>
 
 
-                        <div class="row mb-4 align-items-center">
-                            <div class="col-lg-2">
-                                <label for="hedef_tipi" class="fw-semibold">Kime Borçlandırılacak:</label>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="input-group flex-nowrap w-100">
-                                    <div class="input-group-text"><i class="fas fa-users"></i></div>
-                                    <?php
 
-                                    ?>
-                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all"); ?>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 ">
-                                <label for="block_id" class="fw-semibold blok-sec-label">Blok Seç:</label>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="input-group flex-nowrap w-100 blok-sec">
-                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
-                                    <select class="form-control select2-single" name="block_id" id="block_id" >
-                                        <option value="">Seçiniz</option>
-                                        <?php foreach ($blocks as $block): ?>
-                                            <option value="<?= $block->id ?>"><?= $block->name ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                                <div class="input-group flex-nowrap w-100 dairetipi-sec d-none">
-                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
-
-                                    <?php echo Helper::getApartmentTypesSelect($site_id) ?>
-                                </div>
-                            </div>
-
-                        </div>
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
                                 <label for="hedef_kisi" class="fw-semibold">Kişi(ler):</label>
                             </div>
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100">
-                                    <div class="input-group-text"><i class="fas fa-user-friends"></i></div>
-                                    <!-- <select name="hedef_kisi[]" id="hedef_kisi" multiple class="form-control select2">
-                                    </select> -->
-                                    <?php
-                                    echo Form::Select2Multiple(
-                                        'hedef_kisi[]',         // Form gönderildiğinde PHP'nin dizi olarak alması için name.
-                                        $optionsForSelect ?? [],           // SEÇENEKLER: Veritabanından gelen [id => Ad Soyad] dizisi.
-                                        $seciliKisiIdleri ?? [],      // SEÇİLİ OLANLAR: Seçili olacak kişi ID'lerini içeren bir DİZİ.
-                                        'form-select select2 w-100', // CSS Sınıfı
-                                        'hedef_kisi',            // JavaScript (Select2) için temiz bir ID.
-                                        "disabled" // İsteğe bağlı olarak "disabled" sınıfı ekleyebilirsiniz.
-                                    );
-                                    ?>
+                                    <div class="input-group-text"><i class="fas fa-users"></i></div>
 
-                                </div>
-
-                            </div>
-                            <div class="col-lg-2">
-                                <label for="block" class="fw-semibold">
-                                    Gün Bazında:
-                                    <i class="bi bi-info-circle  c-pointer text-primary" data-toggle="tooltip"
-                                        data-placement="top"
-                                        title="Seçili olduğu zaman seçtiğiniz dönem arasındaki, daireye giriş çıkış tarihleri dikkate alınarak hesaplama yapılacaktır."></i>
-                                </label>
-
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input " name="day_based"
-                                        id="day_based">
-                                    <label class="custom-control-label c-pointer text-muted" for="day_based"></label>
-
+                                    <?php echo $KisiHelper->KisiSelect("kisi_id", $kisi_id) ?>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row mb-4 align-items-center">
+
                             <div class="col-lg-2">
-                                <label for="aciklama" class="fw-semibold">Açıklama:</label>
+                                <label for="title" class="fw-semibold">Borç Başlığı:</label>
                             </div>
-                            <div class="col-lg-10">
+
+                            <div class="col-lg-4">
                                 <div class="input-group">
-                                    <div class="input-group-text"><i class="fas fa-info-circle"></i></div>
-                                    <textarea class="form-control" name="aciklama" id="aciklama" rows="3"
-                                        placeholder="Açıklama giriniz"><?php echo $borc_detay->aciklama ?? $borc->aciklama; ?></textarea>
+                                    <div class="input-group-text"><i class="fas fa-percentage"></i></div>
+                                    <input type="number" class="form-control" name="ceza_orani" id="ceza_orani"
+                                        placeholder="Ceza oranı" step="0.01" min="0"
+                                        value="<?php echo $borc_detay->ceza_orani ?? ''; ?>">
                                 </div>
-                            </div>
-                        </div>
+                </div>
 
-                    </form>
+
+            </div>
+
+            <div class="row mb-4 align-items-center">
+                <div class="col-lg-2">
+                    <label for="aciklama" class="fw-semibold">Açıklama:</label>
+                </div>
+                <div class="col-lg-10">
+                    <div class="input-group">
+                        <div class="input-group-text"><i class="fas fa-info-circle"></i></div>
+                        <textarea class="form-control" name="aciklama" id="aciklama" rows="3"
+                            placeholder="Açıklama giriniz"><?php echo $borc_detay->aciklama ?? $borc->aciklama; ?></textarea>
+                    </div>
                 </div>
             </div>
+
+            </form>
         </div>
     </div>
+</div>
+</div>
 </div>

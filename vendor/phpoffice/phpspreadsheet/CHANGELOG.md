@@ -3,30 +3,219 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com)
-and this project adheres to [Semantic Versioning](https://semver.org).
+and this project adheres to [Semantic Versioning](https://semver.org). Thia is always true of the master branch. Some earlier branches remain supported and security fixes are applied to them; if the security fix represents a breaking change, it may have to be applied as a minor or patch version.
 
-# 2025-06-22 - 3.9.2
-
-### Changed
-
-- Allow php-cs-fixer to Handle Implicit Backslashes.
+## TBD - 5.1.0
 
 ### Added
 
-- Allow spreadsheet to be serialized. [PR #4408](https://github.com/PHPOffice/PhpSpreadsheet/pull/4408)
+- Nothing yet.
+
+### Removed
+
+- Nothing yet.
+
+### Changed
+
+- Nothing yet.
+
+### Moved
+
+- Nothing yet.
+
+### Deprecated
+
+- Nothing yet.
 
 ### Fixed
 
-- TEXT and TIMEVALUE functions. [Issue #4249](https://github.com/PHPOffice/PhpSpreadsheet/issues/4249) [PR #4355](https://github.com/PHPOffice/PhpSpreadsheet/pull/4355)
-- Removing Columns/Rows Containing Merged Cells. Backport of [PR #4465](https://github.com/PHPOffice/PhpSpreadsheet/pull/4465)
-- Allow Xlsx Reader to Specify ParseHuge. [Issue #4260](https://github.com/PHPOffice/PhpSpreadsheet/issues/4260) [PR #4518](https://github.com/PHPOffice/PhpSpreadsheet/pull/4518)
+- Nothing yet.
 
-## 2025-02-07 - 3.9.1
+## 2025-08-10 - 5.0.0
+
+### Breaking Changes
+
+- Images will be loaded from an external source (e.g. http://example.com/img.png) only if the reader is explicitly set to allow it via `$reader->setAllowExternalImages(true)`. We do not believe that loading of external images is a widely used feature.
+- Deletion of items deprecated in Release 4. See "removed" below.
+- Move some properties from Base Reader to Html Reader. [PR #4551](https://github.com/PHPOffice/PhpSpreadsheet/pull/4551)
+- DefaultValueBinder will treat integers with more than 15 digits as strings. [Issue #4522](https://github.com/PHPOffice/PhpSpreadsheet/issues/4522) [PR #4527](https://github.com/PHPOffice/PhpSpreadsheet/pull/4527)
+
+### Removed
+
+- Theme public constants COLOR_SCHEME_2013_PLUS_NAME (use COLOR_SCHEME_2013_2022_NAME) and COLOR_SCHEME_2013_PLUS (use COLOR_SCHEME_2013_2022).
 
 ### Fixed
 
-- Xls writer Parser Mishandling True/False Argument. Backport of [PR #4333](https://github.com/PHPOffice/PhpSpreadsheet/pull/4333)
-- Xls writer Parser Parse By Character Not Byte. Backport of [PR #4344](https://github.com/PHPOffice/PhpSpreadsheet/pull/4344)
+- Additional floating-point precision changes. [Issue #1324](https://github.com/PHPOffice/PhpSpreadsheet/issues/1324) [PR #4575](https://github.com/PHPOffice/PhpSpreadsheet/pull/4575)
+- Header/Footer images expand location. [Issue #484](https://github.com/PHPOffice/PhpSpreadsheet/issues/484) [Issue #1318](https://github.com/PHPOffice/PhpSpreadsheet/issues/1318) [PR #4572](https://github.com/PHPOffice/PhpSpreadsheet/pull/4572)
+- Create uninitialized cell if used in calculation. [Issue #4558](https://github.com/PHPOffice/PhpSpreadsheet/issues/4558) [Issue #4530](https://github.com/PHPOffice/PhpSpreadsheet/issues/4530) [PR #4565](https://github.com/PHPOffice/PhpSpreadsheet/pull/4565)
+- Shared/Date::isDateTime handle cells which calculate as arrays. [Issue #4557](https://github.com/PHPOffice/PhpSpreadsheet/issues/4557) [PR #4562](https://github.com/PHPOffice/PhpSpreadsheet/pull/4562)
+- Xlsx Writer eliminate xml:space from non-text nodes. [Issue #4542](https://github.com/PHPOffice/PhpSpreadsheet/issues/4542) [PR #4556](https://github.com/PHPOffice/PhpSpreadsheet/pull/4556)
+
+## 2025-07-23 - 4.5.0
+
+### Added
+
+- Add to all readers the option to allow or forbid fetching external images. This is unconditionally allowed now. The default will be set to "allow", so no code changes are necessary. However, we are giving consideration to changing the default. [PR #4543](https://github.com/PHPOffice/PhpSpreadsheet/pull/4543)
+- Address Excel Inappropriate Number Format Substitution. [PR #4532](https://github.com/PHPOffice/PhpSpreadsheet/pull/4532)
+
+### Fixed
+
+- Html Writer Conditional Formatting Inline Css. [Issue #4539](https://github.com/PHPOffice/PhpSpreadsheet/issues/4539) [PR #4541](https://github.com/PHPOffice/PhpSpreadsheet/pull/4541)
+- Do not use htmlspecialchars when formatting XML. [Issue #4537](https://github.com/PHPOffice/PhpSpreadsheet/issues/4537) [PR #4540](https://github.com/PHPOffice/PhpSpreadsheet/pull/4540)
+- Writer Html/Pdf support RTL alignment of tables. [Issue #1104](https://github.com/PHPOffice/PhpSpreadsheet/issues/1104) [PR #4535](https://github.com/PHPOffice/PhpSpreadsheet/pull/4535)
+- Xlsx Reader use dynamic arrays if spreadsheet did so. [PR #4533](https://github.com/PHPOffice/PhpSpreadsheet/pull/4533)
+- Ods Reader Nested table-row. [Issue #4528](https://github.com/PHPOffice/PhpSpreadsheet/issues/4528) [Issue #2507](https://github.com/PHPOffice/PhpSpreadsheet/issues/2507) [PR #4531](https://github.com/PHPOffice/PhpSpreadsheet/pull/4531)
+- Recognize application/x-empty mimetype. [Issue #4521](https://github.com/PHPOffice/PhpSpreadsheet/issues/4521) [PR #4524](https://github.com/PHPOffice/PhpSpreadsheet/pull/4524)
+- Micro-optimization in getSheetByName. [PR #4499](https://github.com/PHPOffice/PhpSpreadsheet/pull/4499)
+- Bug in resizeMatricesExtend. [Issue #4451](https://github.com/PHPOffice/PhpSpreadsheet/issues/4451) [PR #4474](https://github.com/PHPOffice/PhpSpreadsheet/pull/4474)
+- Allow Replace of Dummy Function with Custom Function. [PR #4544](https://github.com/PHPOffice/PhpSpreadsheet/pull/4544)
+- Preserve 0x0a in Strings if Desired. [Issue #347](https://github.com/PHPOffice/PhpSpreadsheet/issues/347) [PR #4536](https://github.com/PHPOffice/PhpSpreadsheet/pull/4536)
+
+## 2025-06-22 - 4.4.0
+
+### Added
+
+- VSTACK and HSTACK. [Issue #4485](https://github.com/PHPOffice/PhpSpreadsheet/issues/4485) [PR #4492](https://github.com/PHPOffice/PhpSpreadsheet/pull/4492)
+- TOCOL and TOROW. [PR #4493](https://github.com/PHPOffice/PhpSpreadsheet/pull/4493)
+- Support Current Office Theme. [PR #4500](https://github.com/PHPOffice/PhpSpreadsheet/pull/4500)
+
+### Deprecated
+
+- Theme constants COLOR_SCHEME_2013_PLUS_NAME (use COLOR_SCHEME_2013_2022_NAME) and COLOR_SCHEME_2013_PLUS (use COLOR_SCHEME_2013_2022).
+
+### Fixed
+
+- Various Writers RichText TextElement Should Inherit Cell Style. [Issue #1154](https://github.com/PHPOffice/PhpSpreadsheet/issues/1154) [PR #4487](https://github.com/PHPOffice/PhpSpreadsheet/pull/4487)
+- Minor Changes to FILTER function. [PR #4491](https://github.com/PHPOffice/PhpSpreadsheet/pull/4491)
+- Allow Xlsx Reader/Writer to support Font Charset. [Issue #2760](https://github.com/PHPOffice/PhpSpreadsheet/issues/2760) [PR #4501](https://github.com/PHPOffice/PhpSpreadsheet/pull/4501)
+- AutoColor for LibreOffice Dark Mode [Discussion 4502](https://github.com/PHPOffice/PhpSpreadsheet/discussions/4502) [PR #4503](https://github.com/PHPOffice/PhpSpreadsheet/pull/4503)
+- Xlsx Style Writer Minor Refactoring. [PR #4508](https://github.com/PHPOffice/PhpSpreadsheet/pull/4508)
+- Allow Xlsx Reader to Specify ParseHuge. [Issue #4260](https://github.com/PHPOffice/PhpSpreadsheet/issues/4260) [PR #4515](https://github.com/PHPOffice/PhpSpreadsheet/pull/4515)
+
+## 2025-05-26 - 4.3.1
+
+### Fixed
+
+- Regression in Date::stringToExcel. [Issue #4488](https://github.com/PHPOffice/PhpSpreadsheet/issues/4488) [PR #4489](https://github.com/PHPOffice/PhpSpreadsheet/pull/4489)
+
+## 2025-05-25 - 4.3.0
+
+### Added
+
+- Xml Reader recognize indents. [Issue #4448](https://github.com/PHPOffice/PhpSpreadsheet/issues/4448) [PR #4449](https://github.com/PHPOffice/PhpSpreadsheet/pull/4449)
+
+### Changed
+
+- Phpstan Level 10.
+
+### Fixed
+
+- Micro-optimization for excelToDateTimeObject. [Issue #4438](https://github.com/PHPOffice/PhpSpreadsheet/issues/4438) [PR #4442](https://github.com/PHPOffice/PhpSpreadsheet/pull/4442)
+- Removing Columns/Rows Containing Merged Cells. [Issue #282](https://github.com/PHPOffice/PhpSpreadsheet/issues/282) [PR #4465](https://github.com/PHPOffice/PhpSpreadsheet/pull/4465)
+- Print Area and Row Break. [Issue #1275](https://github.com/PHPOffice/PhpSpreadsheet/issues/1275) [PR #4450](https://github.com/PHPOffice/PhpSpreadsheet/pull/4450)
+- Copy Styles after insertNewColumnBefore. [Issue #1425](https://github.com/PHPOffice/PhpSpreadsheet/issues/1425) [PR #4468](https://github.com/PHPOffice/PhpSpreadsheet/pull/4468)
+- Xls Writer Treat Hyperlink Starting with # as Internal. [Issue #56](https://github.com/PHPOffice/PhpSpreadsheet/issues/56) [PR #4453](https://github.com/PHPOffice/PhpSpreadsheet/pull/4453)
+- More Precision for Float to String Casts. [Issue #3899](https://github.com/PHPOffice/PhpSpreadsheet/issues/3899) [PR #4479](https://github.com/PHPOffice/PhpSpreadsheet/pull/4479)
+- Hyperlink Styles. [Issue #1632](https://github.com/PHPOffice/PhpSpreadsheet/issues/1632) [PR #4478](https://github.com/PHPOffice/PhpSpreadsheet/pull/4478)
+- ODS Handling of Ceiling and Floor. [Issue #477](https://github.com/PHPOffice/PhpSpreadsheet/issues/407) [PR #4466](https://github.com/PHPOffice/PhpSpreadsheet/pull/4466)
+- Xlsx Reader Do Not Process Printer Settings for Dataonly. [Issue #4477](https://github.com/PHPOffice/PhpSpreadsheet/issues/4477) [PR #4480](https://github.com/PHPOffice/PhpSpreadsheet/pull/4480)
+
+## 2025-04-16 - 4.2.0
+
+### Added
+
+- Add ability to add custom functions to Calculation. [PR #4390](https://github.com/PHPOffice/PhpSpreadsheet/pull/4390)
+- Add FormulaRange to IgnoredErrors. [PR #4393](https://github.com/PHPOffice/PhpSpreadsheet/pull/4393)
+- TextGrid improvements. [PR #4418](https://github.com/PHPOffice/PhpSpreadsheet/pull/4418)
+- Permit read to class which extends Spreadsheet. [Discussion #4402](https://github.com/PHPOffice/PhpSpreadsheet/discussions/4402) [PR #4404](https://github.com/PHPOffice/PhpSpreadsheet/pull/4404)
+- Conditional and table formatting support for html writer [PR #4412](https://github.com/PHPOffice/PhpSpreadsheet/pull/4412)
+
+### Changed
+
+- Phpstan Version 2. [PR #4384](https://github.com/PHPOffice/PhpSpreadsheet/pull/4384)
+- Start migration to Phpstan level 9. [PR #4396](https://github.com/PHPOffice/PhpSpreadsheet/pull/4396)
+- Calculation locale logic moved to separate class. [PR #4398](https://github.com/PHPOffice/PhpSpreadsheet/pull/4398)
+- TREND_POLYNOMIAL_* and TREND_BEST_FIT do not work, and are changed to throw Exceptions if attempted. (TREND_BEST_FIT_NO_POLY works.) An attempt to use an unknown trend type will now also throw an exception. [Issue #4400](https://github.com/PHPOffice/PhpSpreadsheet/issues/4400) [PR #4339](https://github.com/PHPOffice/PhpSpreadsheet/pull/4339)
+- Month parameter of DATE function will now return VALUE if an ordinal string (e.g. '3rd') is used, but will accept bool or null. [PR #4420](https://github.com/PHPOffice/PhpSpreadsheet/pull/4420)
+
+### Fixed
+
+- Ignore fractional part of Drawing Shadow Alpha. [Issue #4415](https://github.com/PHPOffice/PhpSpreadsheet/issues/4415) [PR #4417](https://github.com/PHPOffice/PhpSpreadsheet/pull/4417)
+- BIN2DEC, OCT2DEC, and HEX2DEC return numbers rather than strings. [Issue #4383](https://github.com/PHPOffice/PhpSpreadsheet/issues/4383) [PR #4389](https://github.com/PHPOffice/PhpSpreadsheet/pull/4389)
+- Fix TREND_BEST_FIT_NO_POLY. [Issue #4400](https://github.com/PHPOffice/PhpSpreadsheet/issues/4400) [PR #4339](https://github.com/PHPOffice/PhpSpreadsheet/pull/4339)
+- Ods Reader No DataType for Null Value. [Issue #4435](https://github.com/PHPOffice/PhpSpreadsheet/issues/4435) [PR #4436](https://github.com/PHPOffice/PhpSpreadsheet/pull/4436)
+- Column widths not preserved when using read filter. [Issue #4416](https://github.com/PHPOffice/PhpSpreadsheet/issues/4416) [PR #4423](https://github.com/PHPOffice/PhpSpreadsheet/pull/4423)
+- Fix typo in Style exportArray quotePrefix. [Issue #4422](https://github.com/PHPOffice/PhpSpreadsheet/issues/4422) [PR #4424](https://github.com/PHPOffice/PhpSpreadsheet/pull/4424)
+- Tweak Spreadsheet clone. [PR #4419](https://github.com/PHPOffice/PhpSpreadsheet/pull/4419)
+- Better handling of Chart DisplayBlanksAs. [Issue #4411](https://github.com/PHPOffice/PhpSpreadsheet/issues/4411) [PR #4414](https://github.com/PHPOffice/PhpSpreadsheet/pull/4414)
+
+## 2025-03-02 - 4.1.0
+
+### Added
+
+- Support Justify Last Line. [Issue #4374](https://github.com/PHPOffice/PhpSpreadsheet/issues/4374) [PR #4373](https://github.com/PHPOffice/PhpSpreadsheet/pull/4373)
+- Allow Spreadsheet clone. [PR #4370](https://github.com/PHPOffice/PhpSpreadsheet/pull/4370)
+
+### Changed
+
+- ListWorksheetInfo will now return sheetState (visible, hidden, veryHidden). [Issue #4345](https://github.com/PHPOffice/PhpSpreadsheet/issues/4345) [PR #4366](https://github.com/PHPOffice/PhpSpreadsheet/pull/4366)
+- Start migration to Phpstan 2. [PR #4359](https://github.com/PHPOffice/PhpSpreadsheet/pull/4359)
+- IOFactory identify can return, and createReader and CreateWriter can accept, a class name rather than a file type. [Issue #4357](https://github.com/PHPOffice/PhpSpreadsheet/issues/4357) [PR #4361](https://github.com/PHPOffice/PhpSpreadsheet/pull/4361)
+
+### Fixed
+
+- Refactor Helper/Html. [PR #4359](https://github.com/PHPOffice/PhpSpreadsheet/pull/4359)
+- Handle #REF! as Argument to AVERAGEIF/COUNTIF/SUMIF. [Issue #4381](https://github.com/PHPOffice/PhpSpreadsheet/issues/4381) [PR #4382](https://github.com/PHPOffice/PhpSpreadsheet/pull/4382)
+- Ignore ignoredErrors when not applicable. [Issue #4375](https://github.com/PHPOffice/PhpSpreadsheet/issues/4375) [PR #4377](https://github.com/PHPOffice/PhpSpreadsheet/pull/4377)
+- Better handling of defined names on sheets whose titles include apostrophes. [Issue #4356](https://github.com/PHPOffice/PhpSpreadsheet/issues/4356) [Issue #4362](https://github.com/PHPOffice/PhpSpreadsheet/issues/4362) [Issue #4376](https://github.com/PHPOffice/PhpSpreadsheet/issues/4376) [PR #4360](https://github.com/PHPOffice/PhpSpreadsheet/pull/4360)
+- Partial solution for removing rows or columns that include edge ranges. [Issue #1449](https://github.com/PHPOffice/PhpSpreadsheet/issues/1449) [PR #3528](https://github.com/PHPOffice/PhpSpreadsheet/pull/3528)
+- Prefer mb_str_split to str_split. [PR #3341](https://github.com/PHPOffice/PhpSpreadsheet/pull/3341)
+
+## 2025-02-08 - 4.0.0
+
+### BREAKING CHANGES
+
+- Data Validations will be stored by worksheet, not cell. Index can be one or more cells or cell ranges. [Issue #797](https://github.com/PHPOffice/PhpSpreadsheet/issues/797) [Issue #4091](https://github.com/PHPOffice/PhpSpreadsheet/issues/4091) [Issue #4206](https://github.com/PHPOffice/PhpSpreadsheet/issues/4206) [PR #4240](https://github.com/PHPOffice/PhpSpreadsheet/pull/4240)
+- Conditional Formatting adds Priority property and handles overlapping ranges better. [Issue #4312](https://github.com/PHPOffice/PhpSpreadsheet/issues/4312) [Issue #4318](https://github.com/PHPOffice/PhpSpreadsheet/issues/4318) [PR #4314](https://github.com/PHPOffice/PhpSpreadsheet/pull/4314)
+- Csv Reader will no longer auto-detect Mac line endings by default. Prior behavior can be explicitly enabled via `setTestAutoDetect(true)`, and it will not be possible at all with Php9+. [Issue #4092](https://github.com/PHPOffice/PhpSpreadsheet/issues/4092) [PR #4340](https://github.com/PHPOffice/PhpSpreadsheet/pull/4340)
+- Html Writer will now use "better boolean" logic. Booleans will now be output by default as TRUE/FALSE rather than 1/null-string. Prior behavior can be explicitly enabled via `setBetterBoolean(false)`. [PR #4340](https://github.com/PHPOffice/PhpSpreadsheet/pull/4340)
+- Xlsx Writer will now use false as the default for `forceFullCalc`. This affects writes with `preCalculateFormulas` set to false. Prior behavior can be explicitly enabled via `setForceFullCalc(null)`.[PR #4340](https://github.com/PHPOffice/PhpSpreadsheet/pull/4340)
+- Deletion of items deprecated in Release 3. See "removed" below.
+
+### Added
+
+- Pdf Charts and Drawings. [Discussion #4129](https://github.com/PHPOffice/PhpSpreadsheet/discussions/4129) [Discussion #4168](https://github.com/PHPOffice/PhpSpreadsheet/discussions/4168) [PR #4327](https://github.com/PHPOffice/PhpSpreadsheet/pull/4327)
+- Allow spreadsheet serialization. [Discussion #4324](https://github.com/PHPOffice/PhpSpreadsheet/discussions/4324) [Issue #1741](https://github.com/PHPOffice/PhpSpreadsheet/issues/1741) [Issue #1757](https://github.com/PHPOffice/PhpSpreadsheet/issues/1757) [PR #4326](https://github.com/PHPOffice/PhpSpreadsheet/pull/4326)
+
+### Removed
+
+- Worksheet::getStyles - no replacement. [PR #4330](https://github.com/PHPOffice/PhpSpreadsheet/pull/4330)
+- The following items were deprecated in release 3 and are now removed.
+- Drawing::setIsUrl - no replacement.
+- Settings::setLibXmlLoaderOptions() and Settings::getLibXmlLoaderOptions() - no replacement.
+- Worksheet::getHashCode - no replacement.
+- IReader::SKIP_EMPTY_CELLS - use its alias IGNORE_EMPTY_CELLS instead.
+- Worksheet::getProtectedCells - use getProtectedCellRanges instead.
+- Writer/Html::isMpdf property - use instanceof Mpdf instead.
+
+### Changed
+
+- Nothing yet.
+
+### Moved
+
+- Nothing yet.
+
+### Deprecated
+
+- Nothing yet.
+
+### Fixed
+
+- Xls writer Parser Mishandling True/False Argument. [Issue #4331](https://github.com/PHPOffice/PhpSpreadsheet/issues/4331) [PR #4333](https://github.com/PHPOffice/PhpSpreadsheet/pull/4333)
+- Xls writer Parser Parse By Character Not Byte. [PR #4344](https://github.com/PHPOffice/PhpSpreadsheet/pull/4344)
+- Minor changes to dynamic array calculations exposed by using explicit array return types in some tests. [PR #4328](https://github.com/PHPOffice/PhpSpreadsheet/pull/4328)
 
 ## 2025-01-26 - 3.9.0
 

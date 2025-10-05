@@ -2,7 +2,9 @@
 
 use App\Helper\Security;
 
+$enc_id = $id;
 $id =  Security::decrypt($id ?? 0);
+
 
 ?>
 <div class="page-header">
@@ -70,7 +72,7 @@ $id =  Security::decrypt($id ?? 0);
                             </div>
                         </div>
                         <form action='' id='apartmentForm'>
-                            <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                            <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $enc_id ?? 0; ?>">
 
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">

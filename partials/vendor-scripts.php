@@ -36,7 +36,7 @@ if (
     $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" ||
     $page == "site-sakini-ekle" || $page == "site-sakini-duzenle"  ||
     $page == "kullanici-gruplari" ||$page == "kullanici-listesi" ||
-    $page == "onay-bekleyen-tahsilatlar" ||
+    $page == "onay-bekleyen-tahsilatlar" || $page == "eslesmeyen-odemeler" ||
     $page == "ziyaretci-listesi" ||
     $page == "icralarim" || $page == "icra-detay" || $page == "icra-listesi" ||  $page == "icra-takibi" ||
 
@@ -52,6 +52,8 @@ if (
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
      <script src="/assets/vendors/js/dataTables.min.js"></script>
      <script src="/assets/vendors/js/dataTables.bs5.min.js"></script>	
+     <!-- DataTables Export için gerekli CDN'ler -->
+
      
      
 
@@ -116,11 +118,16 @@ if (
     <script src="/pages/dues/debit/js/debit.js"></script>
 
 <?php }
-if ($page == 'dues/debit/upload-from-xls') {
-    echo '<script src="pages/dues/debit/js/upload-from-xls.js"></script>';
+if ($page == 'excelden-odeme-yukle') {
+    echo '<script src="/pages/dues/payment/js/upload.js"></script>';
 }
-if ($page == 'dues/debit/detail') {
-    echo '<script src="pages/dues/debit/js/detail.js"></script>';
+if ($page == 'borclandirma-detayi') {
+    echo '<script src="/pages/dues/debit/js/detail.js"></script>';
+}
+
+//Tekil Borçlandırma Sayfası
+if ($page == 'borclandirma-kisi-ekle' || $page == 'borclandirma-kisi-duzenle') {
+    echo '<script src="/pages/dues/debit/js/single-manage.js"></script>';
 }
 
 
@@ -146,9 +153,9 @@ if (
 
 //*************APARTMENT******************************** */
 if (
-    $page == 'management/apartment/manage' ||   $page == 'management/apartment/list'
+    $page == 'daire-ekle' ||$page == 'daire-duzenle' ||   $page == 'daire-listesi'
 ) {
-    echo '<script src="pages/management/apartment/apartment.js"></script>';
+    echo '<script src="/pages/management/apartment/apartment.js"></script>';
 }
 // Apartment upload from excel
 if ($page == 'management/apartment/upload-from-xls') {
@@ -158,11 +165,11 @@ if ($page == 'management/apartment/upload-from-xls') {
 
 //*************PEOPLES BAŞLANGIÇ******************************** */
 if (
-    $page == 'management/peoples/manage' ||   $page == 'management/peoples/list'
+    $page == 'site-sakini-ekle' || $page== "site-sakini-duzenle" || $page == 'site-sakinileri'
 ) {
-    echo '<script src="pages/management/peoples/js/kisiBilgileri.js"></script>';
-    echo '<script src="pages/management/peoples/js/aracBilgileri.js"></script>';
-    echo '<script src="pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
+    echo '<script src="/pages/management/peoples/js/kisiBilgileri.js"></script>';
+    echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
+    echo '<script src="/pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
 }
 
 
@@ -243,6 +250,13 @@ if ($page == 'gelir-gider-islemleri') {
     echo '<script src="/pages/finans-yonetimi/gelir-gider/js/gelir-gider.js"></script>';
 }
 
+
+
+//KASA İŞLEMLERİ
+if ($page == 'kasa-ekle' || $page == 'kasa-duzenle' || $page == 'kasa-listesi') {
+    echo '<script src="/pages/finans-yonetimi/kasa/js/kasa.js"></script>';
+}
+
 //Payment upload from excel
 if ($page == 'dues/payment/upload-from-xls') {
     echo '<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mini.min.js"></script>';
@@ -254,6 +268,7 @@ if ($page == 'onay-bekleyen-tahsilatlar') {
 
 if($page == 'yonetici-aidat-odeme') {
     echo '<script src="pages/dues/payment/js/tahsilat-gir.js" defer></script>';
+    echo '<script src="pages/dues/payment/js/tahsilat-detay.js" defer></script>';
 }
 
 
@@ -301,3 +316,7 @@ if($page == "ana-sayfa")
 <!--<< All JS Plugins >>-->
 
 
+<script>
+    //Title değiştir
+   // document.title =$('.alert-title').text() + ' / YonApp';
+</script>

@@ -7,6 +7,9 @@ use App\Helper\Aidat;
 use Model\DairelerModel;
 use Model\TahsilatOnayModel;
 use Model\KisilerModel;
+use App\Helper\FinansalHelper;
+
+
 
 $DueHelper = new Aidat();
 $Daire = new DairelerModel();
@@ -16,20 +19,57 @@ $TahsilatOnay = new TahsilatOnayModel();
 
 $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id']);
 
+
+// //1. Önce session'dan kontrol et
+// if (isset($_SESSION["kasa_id"]) && !empty($_SESSION["kasa_id"])) {
+//     $kasa_id = $_SESSION["kasa_id"];
+// }
+
+// // 2. POST ile yeni seçim geldi mi?
+// if (isset($_POST['kasalar'])) {
+//     $kasa_id = Security::decrypt($_POST['kasalar']) ?? 0;
+//     $_SESSION["kasa_id"] = $kasa_id;
+//     //Helper::dd(($kasa_id));
+
+//     echo "<script>history.replaceState({}, '', '/onay-bekleyen-tahsilatlar');</script>";
+//     $id = null;
+// }
+
+// // 3. URL parametresi var mı?
+// if (isset($id) && !empty($id)) {
+//     $kasa_id = Security::decrypt($id);
+//     $_SESSION["kasa_id"] = $kasa_id;
+// }
+
+// // 4. Hiçbiri yoksa varsayılan kasayı al
+// if (!$kasa_id) {
+//     try {
+//         $varsayilanKasa = $Kasa->varsayilanKasa();
+//         $kasa_id = $varsayilanKasa ? $varsayilanKasa->id : 1;
+//         $_SESSION["kasa_id"] = $kasa_id;
+//     } catch (Exception $e) {
+//         // Hata durumunda fallback
+//         $kasa_id = 1;
+//         $_SESSION["kasa_id"] = $kasa_id;
+//     }
+// }
+
+
+
 ?>
 
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
-            <h5 class="m-b-10">Site Borç Listesi</h5>
+            <h5 class="m-b-10">Site Tahsilat Listesi</h5>
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
-            <li class="breadcrumb-item">Borç Listesi</li>
+            <li class="breadcrumb-item">Tahsilatlar</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
-        <div class="page-header-right-items">
+        <div class="page-header-right-items ">
             <div class="d-flex d-md-none">
                 <a href="javascript:void(0)" class="page-header-right-close-toggle">
                     <i class="feather-arrow-left me-2"></i>
@@ -37,13 +77,26 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
+                <div>
+                    <form method="post" id="kasalar">
 
-                <a href="/yonetici-aidat-odeme" class="btn btn-outline-secondary">
-                    <i class="feather-arrow-left me-2"></i>Listeye Dön
-                </a>
-                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-success">
-                    <i class="feather-file-plus me-2"></i>Toplu Onay
-                </a>
+                        <?php //echo FinansalHelper::KasaSelect("kasalar", $kasa_id) 
+                        ?>
+                    </form>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+
+
+                    <a href="/yonetici-aidat-odeme" class="btn btn-outline-secondary">
+                        <i class="feather-arrow-left me-2"></i>Listeye Dön
+                    </a>
+                    <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-success">
+                        <i class="feather-file-plus me-2"></i>Toplu Onay
+                    </a>
+                    <a href="/eslesmeyen-odemeler" class="btn btn-warning">
+                        <i class="feather-check-circle me-2"></i>Eşleşmeyen Ödemeler
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -83,8 +136,8 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                                             $enc_id = Security::encrypt($onay->id);
                                             $tahsilat_tutari = $onay->tutar ?? 0;
                                             // Bu veriyi optimize edilmiş SQL sorgusundan aldığımızı varsayıyoruz
-                                            $islenen_tutar = $onay->islenen_tutar ?? 0;
-                                            $kalan_tutar = $tahsilat_tutari - $islenen_tutar;
+                                            $islenen_tutar = $onay->onaylanan_toplam_tutar ?? 0;
+                                            $kalan_tutar = $onay->kalan_tutar ?? 0;
                                             $unique_id = 'onay-satiri-' . $onay->id;
                                         ?>
 
@@ -92,12 +145,22 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                                             <tr class="bekleyen-tahsilat-satiri">
                                                 <td><?php echo $index + 1 ?></td>
                                                 <td>
-                                                    <span class="badge bg-light-secondary"><?php echo Security::escape($onay->referans_no ?? '#'); ?></span>
+                                                    <span class="badge bg-light-secondary"><?php echo Security::escape($onay->id ?? '#'); ?></span>
                                                 </td>
                                                 <td>
                                                     <div class="fw-bold"><?php echo $onay->daire_kodu  . " | " . $onay->adi_soyadi; ?></div>
                                                     <div class="text-muted fs-12 mt-1">Ödeme Tarihi: <?php echo Date::dmY($onay->islem_tarihi); ?></div>
-                                                    <p class="fs-12 text-muted mt-1 fst-italic">"<?php echo htmlspecialchars($onay->aciklama) ?>"</p>
+                                                    <p class="fs-12 text-muted mt-1 fst-italic tasks-sort-desc">"<?php echo htmlspecialchars($onay->aciklama) ?>"</p>
+                                                    <div class="tasks-list-action d-flex align-items-center gap-3">
+
+                                                        <a href="javascript:void(0);"
+                                                            data-id="<?php echo Security::encrypt($onay->id); ?>"
+                                                            class="text-primary eslesmeyen-havuza-gonder">Eşleşmeyen Havuzuna Gönder</a> |
+                                                        <a href="javascript:void(0);"
+                                                            data-id="<?php echo Security::encrypt($onay->id); ?>"
+                                                            class="text-danger yuklenen-tahsilat-sil">Sil</a>
+
+                                                    </div>
                                                 </td>
                                                 <td class="text-end fw-bold"><?= Helper::formattedMoney($tahsilat_tutari) ?></td>
                                                 <td class="text-end text-success"><?php echo Helper::formattedMoney($islenen_tutar) ?></td>
@@ -140,39 +203,71 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
     </div>
 </div>
 
+<style>
+    table tr td[colspan="7"] {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+</style>
 
 
 <!-- Sayfanızın alt kısmına, örneğin </body> etiketinden önce -->
 
 <template id="borc-eslestirme-sablonu">
     <form class="borc-eslestirme-form" data-onay-id="{ONAY_ID}">
-        <h6 class="mb-3">İşlenecek Tutarı Borçlara Dağıtın</h6>
+        <div class="row">
+            <div class="alert alert-warning mt-2 fs-12 uyari-mesaji" style="display: none;">
+                Uyarı mesajı alanı...
+            </div>
+            <div class="col-xxl-8 col-lg-8">
+                <div class="card stretch stretch-full">
+                    <div class="card-header">
+                        <h5 class="card-title">İşlenecek Tutarı Borçlara Dağıtın</h5>
 
-        <!-- BORÇ LİSTESİ BURAYA EKLENECEK -->
-        <div class="borclar-checkbox-grubu mb-3">
-            <!-- Bu alan dinamik olarak doldurulacak -->
+                    </div>
+                    <div class="card-body custom-card-action">
+                        <ul class="list-unstyled mb-0 activity-feed-1 borclar-checkbox-grubu">
+                            <!-- Borç satırları buraya eklenecek -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Sağ Taraf - İşlem Alanı -->
+            <div class="col-md-4">
+                <div class="processing-area bg-white p-4 rounded-3">
+                    <!-- Seçilen Borç Toplamı - ÜSTTE -->
+                    <div class="mb-4">
+                        <span class="d-block fs-12 text-muted">Seçilen Borç Toplamı</span>
+                        <strong class="secilen-borc-toplami fs-4">0,00 ₺</strong>
+                    </div>
+
+                    <!-- İşlenecek Tutar - ORTADA -->
+                    <div class="mb-4">
+                        <label for="islenecek-tutar" class="form-label fs-12 text-muted">İşlenecek Tutar</label>
+                        <input type="text" class="form-control money islenecek-tutar-input" id="islenecek-tutar" value="400,00 TL">
+
+                        <input type="checkbox" class="form-check-input" id="artani-kredi-olarak-ekle" name="artani-kredi-olarak-ekle">
+                        <label class="form-check-label fs-12" for="artani-kredi-olarak-ekle">Artanı kredi olarak ekle</label>
+                    </div>
+
+                    <!-- Butonlar --->
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-secondary iptal-btn">İptal</button>
+                        <button type="submit" class="btn btn-success tahsilati-onayla-btn">
+                            <i class="feather-check me-1"></i>Onayla ve Kaydet
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
+
+
 
         <!-- İŞLEM ALANI -->
-        <div class="d-flex align-items-center justify-content-between bg-white p-3 rounded shadow-sm">
-            <div>
-                <label for="islenecek-tutar-{ONAY_ID}" class="form-label fs-12 text-muted">İşlenecek Tutar</label>
-                <input type="text" class="form-control form-control-sm money islenecek-tutar-input" style="width: 150px;" id="islenecek-tutar-{ONAY_ID}" value="{KALAN_TUTAR_FORMATLI}">
-            </div>
-            <div class="text-end">
-                <span class="d-block fs-12 text-muted">Seçilen Borç Toplamı</span>
-                <strong class="secilen-borc-toplami fs-5">0.00 ₺</strong>
-            </div>
-            <div class="hstack gap-2">
-                <button type="button" class="btn btn-sm btn-secondary iptal-btn">İptal</button>
-                <button type="submit" class="btn btn-sm btn-success tahsilati-onayla-btn">
-                    <i class="feather-check me-1"></i>Onayla ve Kaydet
-                </button>
-            </div>
-        </div>
-        <div class="alert alert-warning mt-2 fs-12 uyari-mesaji" style="display: none;">
-            Uyarı mesajı alanı...
-        </div>
+
     </form>
 </template>
 
@@ -185,6 +280,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
             <input type="hidden" name="kisi_id" id="kisi_id" value="{KISI_ID}">
             <span>
                 <strong>{BORC_ADI}</strong>
+                <small class="text-muted d-block">{ACIKLAMA}</small>
                 <small class="text-muted d-block">Son Ödeme: {SON_ODEME_TARIHI}</small>
             </span>
             <span class="text-end">
@@ -196,7 +292,14 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
 </template>
 
 <script>
+    let APIurl = "/pages/dues/payment/api/APItahsilat_onay.php";
     $(function() {
+
+        //#kasalar'da değişiklik olduğunda
+        $("#kasalar").on("change", function() {
+            //kasalar formunu submit et
+            $("#kasalar").submit();
+        });
 
         // =g=====================================================
         // 2. GEREKLİ TEMPLATE'LERİ SEÇME
@@ -211,81 +314,84 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
 
 
         // --- 1. MERKEZİ FONKSİYON: Bir satırın çocuk (child) bölümünü açar/kapatır ---
-    
+
         function toggleChildRow(mainRow) {
-        const $mainRow = $(mainRow); // jQuery nesnesi olduğundan emin ol
-        const $button = $mainRow.find('button.borclari-goster-btn');
-        const row = table.row($mainRow);
+            const $mainRow = $(mainRow); // jQuery nesnesi olduğundan emin ol
+            const $button = $mainRow.find('button.borclari-goster-btn');
+            const row = table.row($mainRow);
 
-        if (row.child.isShown()) {
-            // --- KAPATMA İŞLEMİ ---
-            row.child.hide();
-            $mainRow.removeClass('details-shown');
-            $button.html('<i class="feather-git-merge me-2"></i>Borçları Eşleştir')
-                   .removeClass('btn-secondary')
-                   .addClass('btn-primary');
-        } else {
-            // --- AÇMA İŞLEMİ ---
-            $button.html('<i class="feather-x me-2"></i>Kapat')
-                   .removeClass('btn-primary')
-                   .addClass('btn-secondary');
+            if (row.child.isShown()) {
+                // --- KAPATMA İŞLEMİ ---
+                row.child.hide();
+                $mainRow.removeClass('details-shown');
+                $button.html('<i class="feather-git-merge me-2"></i>Borçları Eşleştir')
+                    .removeClass('btn-secondary')
+                    .addClass('btn-primary');
+            } else {
+                // --- AÇMA İŞLEMİ ---
+                $button.html('<i class="feather-x me-2"></i>Kapat')
+                    .removeClass('btn-primary')
+                    .addClass('btn-secondary');
 
-            row.child('<div class="borc-listesi-wrapper p-3 text-center">Yükleniyor...</div>').show();
-            $mainRow.addClass('details-shown');
+                row.child('<div class="borc-listesi-wrapper text-center">Yükleniyor...</div>').show();
+                $mainRow.addClass('details-shown');
 
-            const kisiId = $button.data('kisi-id');
-            const onayId = $button.data('onay-id');
+                const kisiId = $button.data('kisi-id');
+                const onayId = $button.data('onay-id');
 
-            //console.log('Kişi ID:', kisiId, 'Onay ID:', onayId);
+                //console.log('Kişi ID:', kisiId, 'Onay ID:', onayId);
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    action: 'get_kisi_borclari',
-                    kisi_id: kisiId
-                },
-                success: function(response) {
-                    if (row.child.isShown()) { // Kullanıcı beklerken kapatmamışsa içeriği bas
-                        if (response.status === 'success') {
-                            const content = renderBorclarFormu(response.data, $mainRow, onayId);
-                            row.child(content).show();
-                        } else {
-                            row.child('<div class="alert alert-danger m-3">Hata: ' + response.message + '</div>').show();
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'get_kisi_borclari',
+                        kisi_id: kisiId
+                    },
+                    success: function(response) {
+                        if (row.child.isShown()) { // Kullanıcı beklerken kapatmamışsa içeriği bas
+                            if (response.status === 'success') {
+                                const content = renderBorclarFormu(response.data, $mainRow, onayId);
+                                row.child(content).show();
+                            } else {
+                                row.child('<div class="alert alert-danger m-3">Hata: ' + response.message + '</div>').show();
+                            }
+                        }
+                        console.log('Borçlar yüklendi:', response.data);
+                    },
+                    error: function() {
+                        if (row.child.isShown()) {
+                            row.child('<div class="alert alert-danger m-3">Borçlar yüklenirken bir sunucu hatası oluştu.</div>').show();
                         }
                     }
-                    console.log('Borçlar yüklendi:', response.data);
-                },
-                error: function() {
-                    if (row.child.isShown()) {
-                        row.child('<div class="alert alert-danger m-3">Borçlar yüklenirken bir sunucu hatası oluştu.</div>').show();
-                    }
-                }
-            });
+                });
+            }
         }
-    }
 
-    // --- 2. OLAY YÖNETİCİLERİ (EVENT HANDLERS) ---
+        // --- 2. OLAY YÖNETİCİLERİ (EVENT HANDLERS) ---
 
-    // a) "Borçları Eşleştir / Kapat" butonuna tıklandığında
-    $('#tahsilatOnayTable tbody').on('click', 'button.borclari-goster-btn', function() {
-        const mainRow = $(this).closest('tr');
-        toggleChildRow(mainRow); // Merkezi fonksiyonu çağır
-    });
+        // a) "Borçları Eşleştir / Kapat" butonuna tıklandığında
+        $('#tahsilatOnayTable tbody').on('click', 'button.borclari-goster-btn', function() {
+            const mainRow = $(this).closest('tr');
+            toggleChildRow(mainRow); // Merkezi fonksiyonu çağır
+        });
 
-    // b) Form içindeki "İptal" butonuna tıklandığında
-    $('#tahsilatOnayTable tbody').on('click', '.iptal-btn', function() {
-        // Önceki cevaptaki gibi, çocuk satırın bir önceki kardeşini (ana satırı) bul
-        const childRow = $(this).closest('tr');
-        const mainRow = childRow.prev('.dt-hasChild');
+        // b) Form içindeki "İptal" butonuna tıklandığında
+        $('#tahsilatOnayTable tbody').on('click', '.iptal-btn', function() {
+            // Önceki cevaptaki gibi, çocuk satırın bir önceki kardeşini (ana satırı) bul
+            const childRow = $(this).closest('tr');
+            const mainRow = childRow.prev('.dt-hasChild');
 
-        if (mainRow.length > 0) {
-            toggleChildRow(mainRow); // Yine aynı merkezi fonksiyonu çağır
-        } else {
-            console.error("Ana satır (.prev()) bulunamadı. DOM yapısını kontrol edin.");
-        }
-    });
+            if (mainRow.length > 0) {
+                toggleChildRow(mainRow); // Yine aynı merkezi fonksiyonu çağır
+            } else {
+                console.error("Ana satır (.prev()) bulunamadı. DOM yapısını kontrol edin.");
+            }
+        });
+
+
+
 
 
     });
@@ -327,6 +433,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                     .replace('{ONAY_ID}', onayId)
                     .replace('{KISI_ID}', borc.kisi_id)
                     .replace('{BORC_ADI}', borc.borc_adi)
+                    .replace('{ACIKLAMA}', borc.aciklama || '')
                     .replace('{SON_ODEME_TARIHI}', borc.son_odeme_tarihi)
                     .replace('{ANAPARA_TUTARI}', borc.anapara)
                     .replace('{GECIKME_ZAMMI}', borc.gecikme_zammi);
@@ -340,11 +447,12 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
         $formClone.find('.money').inputmask();
 
         // Oluşturulan formu bir wrapper div içinde döndür. Bu, child row'un stilini korur.
-        return $('<div class="borc-listesi-wrapper p-3 bg-light rounded"></div>').append($formClone);
+        return $('<div class="borc-listesi-wrapper bg-light rounded"></div>').append($formClone);
     }
 
     $(function() {
         let guncellemeIstegi; // Sadece debounce için kullanılacak.
+
 
         // =======================================================
         // CHECKBOX DEĞİŞİM OLAYI
@@ -449,12 +557,19 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
     }
 
 
+    //ctrl + s ile submitBtn'a tıkla
+    $(document).on('keydown', function(e) {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            $('.tahsilati-onayla-btn:visible').first().click();
+        }
+    });
+
     /**
      * Yapılan Tahsilatı borç ile eşleştirir ve kaydeder.
      */
     $('#tahsilatOnayTable tbody').on('submit', '.borc-eslestirme-form', function(e) {
         e.preventDefault();
-        let APIurl = "/pages/dues/payment/api/APItahsilat_onay.php";
 
         const $form = $(this);
         const onayId = $form.data('onay-id');
@@ -467,24 +582,24 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
         const $toplamGosterge = $form.find('.secilen-borc-toplami');
         const secilenToplam = parseFloat($toplamGosterge.data('raw-total')) || 0;
         console.log('Form gönderildi. Onay ID:', onayId, 'İşlenecek Tutar:', islenecekTutar, 'Seçilen Borç ID\'leri:', secilenBorcIdleri);
-       
-        if (secilenBorcIdleri.length === 0) {
+
+        if (secilenBorcIdleri.length === 0 && $form.find('#artani-kredi-olarak-ekle').is(':checked') === false) {
             Swal.fire('Uyarı', 'Lütfen en az bir borç seçin.', 'warning');
             return;
         }
-        if (islenecekTutar <= 0) {
+        if (islenecekTutar <= 0 && $form.find('#artani-kredi-olarak-ekle').is(':checked') === false) {
             Swal.fire('Uyarı', 'İşlenecek tutar sıfır veya negatif olamaz.', 'warning');
             return;
         }
-        if (islenecekTutar > secilenToplam) {
+        if (islenecekTutar > secilenToplam && $form.find('#artani-kredi-olarak-ekle').is(':checked') === false) {
             Swal.fire('Uyarı', 'İşlenecek tutar, seçilen borçların toplamından fazla olamaz.', 'warning');
             return;
         }
         $submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Kaydediliyor...');
         $iptalBtn.prop('disabled', true);
-       
-         // AJAX isteği
-        
+
+        // AJAX isteği
+
         $.ajax({
             url: APIurl,
             type: 'POST',
@@ -493,21 +608,39 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                 action: 'tahsilati_borc_ile_eslestir',
                 onay_id: onayId,
                 islenecek_tutar: islenecekTutar,
-                borc_idler: secilenBorcIdleri
+                borc_idler: secilenBorcIdleri,
+                artani_kredi_olarak_ekle: $form.find('#artani-kredi-olarak-ekle').is(':checked') ? 1 : 0
             },
             success: function(response) {
                 if (response.success) {
-
-                    Swal.fire('Başarılı', response.message, 'success').then(() => {
-                        console.log('Sunucudan gelen cevap:', response);
-                        
-                        // İşlem başarılı ise, ilgili satırı tablodan kaldır
-                        const $anaSatir = $form.closest('tr').prev('.dt-hasChild');
-                        if ($anaSatir.length > 0) {
-                            const row = table.row($anaSatir);
-                            row.remove().draw();
+                    Toastify({
+                        text: response.message,
+                        duration: 3000,
+                        className: "border-radius-10",
+                        close: true,
+                        gravity: "top", // `top` or `bottom`
+                        position: "center", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "#000"
                         }
-                    });
+                    }).showToast();
+
+                    // İşlem başarılı ise, ilgili satırı tablodan kaldır
+                    const $anaSatir = $form.closest('tr').prev('.dt-hasChild');
+                    if ($anaSatir.length > 0) {
+                        const row = table.row($anaSatir);
+                        //Eğer kalan_tutar 0 ise satırı kaldır
+                        if (response.data.kalan_tutar <= 0.0009) {
+                            row.remove().draw();
+                        } else {
+                            //Tablonun 
+                            // İşlenen tutarı güncelle
+                            $anaSatir.find('td').eq(4).text(response.data.islenen_tutar);
+                            // Kalan tutarı güncelle
+                            $anaSatir.find('td').eq(5).text(response.data.kalan_tutar);
+                        }
+                    }
                 } else {
                     const message = response.message || 'Tahsilat borçlara yansıtılırken bir hata oluştu.';
                     Swal.fire('Hata', message, 'error');
@@ -521,5 +654,119 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                 $iptalBtn.prop('disabled', false);
             }
         });
+    });
+
+
+    /**
+     * Eşleşmeyen havuzuna gönder
+     */
+    $(document).on('click', '.eslesmeyen-havuza-gonder', function() {
+        const tahsilatId = $(this).data('id');
+        row = table.row($(this).closest('tr'));
+
+        swal.fire({
+            title: 'Uyarı!',
+            text: "Bu tahsilatı eşleşmeyen havuzuna göndermek istediğinize emin misiniz?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, Gönder',
+            cancelButtonText: 'İptal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: APIurl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'eslesmeyen_havuza_gonder',
+                        tahsilat_id: tahsilatId
+                    },
+                    success: function(response) {
+
+                        if (response.status === 'success') {
+                            row.remove().draw();
+                            Toastify({
+                                text: response.message,
+                                duration: 3000,
+                                className: "border-radius-10",
+                                close: true,
+                                gravity: "top", // `top` or `bottom`
+                                position: "center", // `left`, `center` or `right`
+                                stopOnFocus: true, // Prevents dismissing of toast on hover
+                                style: {
+                                    background: "#000"
+                                }
+                            }).showToast();
+
+                            // İlgili satırı tablodan kaldır
+                        } else {
+                            const message = response.message || 'Eşleşmeyen havuza gönderilirken bir hata oluştu.';
+                            Swal.fire('Hata', message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Hata', 'Sunucuya ulaşılamadı veya bir hata oluştu.', 'error');
+                    }
+                });
+            }
+        });
+        // AJAX isteği
+
+    });
+
+    $(document).on('click', '.yuklenen-tahsilat-sil', function() {
+        const tahsilatId = $(this).data('id');
+        row = table.row($(this).closest('tr'));
+
+
+        Swal.fire({
+            title: 'Uyarı!',
+            text: "Bu tahsilatı silmek istediğinize emin misiniz?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, Sil',
+            cancelButtonText: 'İptal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: APIurl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'yuklenen_tahsilat_sil',
+                        tahsilat_id: tahsilatId
+                    },
+                    success: function(response) {
+
+                        if (response.status === 'success') {
+                            row.remove().draw();
+                            Toastify({
+                                text: response.message,
+                                duration: 3000,
+                                className: "border-radius-10",
+                                close: true,
+                                gravity: "top", // `top` or `bottom`
+                                position: "center", // `left`, `center` or `right`
+                                stopOnFocus: true, // Prevents dismissing of toast on hover
+                                style: {
+                                    background: "#000"
+                                }
+                            }).showToast();
+
+                            // İlgili satırı tablodan kaldır
+                        } else {
+                            const message = response.message || 'Tahsilat silinirken bir hata oluştu.';
+                            Swal.fire('Hata', message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Hata', 'Sunucuya ulaşılamadı veya bir hata oluştu.', 'error');
+                    }
+                });
+            }
+        });
+
     });
 </script>

@@ -1,14 +1,63 @@
 <?php
 
 use App\Helper\FinansalHelper;
+use App\Helper\KisiHelper;
 use App\Helper\Security;
 use App\Helper\Helper;
 use App\Services\Gate;
 use Model\KasaModel;
+use Model\KasaHareketModel;
+
 
 Gate::authorizeOrDie("income_expense_add_update");
 
 $Kasa = new KasaModel();
+$KasaHareket = new KasaHareketModel();
+$KisiHelper = new KisiHelper();
+
+// Kasa ID'yi belirle
+$kasa_id = null;
+
+//1. Önce session'dan kontrol et
+if (isset($_SESSION["kasa_id"]) && !empty($_SESSION["kasa_id"])) {
+    $kasa_id = $_SESSION["kasa_id"];
+}
+
+// 2. POST ile yeni seçim geldi mi?
+if (isset($_POST['kasalar'])) {
+    $kasa_id = Security::decrypt($_POST['kasalar']) ?? 0;
+    $_SESSION["kasa_id"] = $kasa_id;
+         //Helper::dd(($kasa_id));
+  
+    echo "<script>history.replaceState({}, '', '/gelir-gider-islemleri');</script>";
+    $id = null;
+}
+
+// 3. URL parametresi var mı?
+if (isset($id) && !empty($id)) {
+    $kasa_id = Security::decrypt($id);
+    $_SESSION["kasa_id"] = $kasa_id;
+}
+
+// 4. Hiçbiri yoksa varsayılan kasayı al
+if (!$kasa_id) {
+    try {
+        $varsayilanKasa = $Kasa->varsayilanKasa();
+        $kasa_id = $varsayilanKasa ? $varsayilanKasa->id : 1;
+        $_SESSION["kasa_id"] = $kasa_id;
+    } catch (Exception $e) {
+        // Hata durumunda fallback
+        $kasa_id = 1;
+        $_SESSION["kasa_id"] = $kasa_id;
+    }
+}
+
+// echo "id " . ($_SESSION['kasa_id'] ?? 0);
+
+$KasaFinansalDurum = $Kasa->KasaFinansalDurum($kasa_id);
+$kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
+
+
 
 
 ?>
@@ -28,10 +77,44 @@ $Kasa = new KasaModel();
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items d-flex align-items-center gap-2">
-            <a href="#" class="btn btn-icon btn-light-brand" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                title="Filtrele">
-                <i class="feather-filter"></i>
-            </a>
+            <div>
+                <form method="post" id="kasalar">
+                    <?php echo FinansalHelper::KasaSelect("kasalar", $kasa_id) ?>
+                </form>
+            </div>
+            <div class="dropdown">
+                <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 10" data-bs-auto-close="outside" aria-expanded="false">
+                    <i class="feather-paperclip"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" style="">
+                    <a href="javascript:void(0);" class="dropdown-item export" data-format="pdf">
+                        <i class="bi bi-filetype-pdf me-3"></i>
+                        <span>PDF</span>
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item export" data-format="csv">
+                        <i class="bi bi-filetype-csv me-3"></i>
+                        <span>CSV</span>
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item export" data-format="xml">
+                        <i class="bi bi-filetype-xml me-3"></i>
+                        <span>XML</span>
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item export" data-format="txt">
+                        <i class="bi bi-filetype-txt me-3"></i>
+                        <span>Text</span>
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item export" id="exportExcel" data-format="excel">
+                        <i class="bi bi-filetype-exe me-3"></i>
+                        <span>Excel</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="javascript:void(0);" class="dropdown-item export" data-format="print">
+                        <i class="bi bi-printer me-3"></i>
+                        <span>Print</span>
+                    </a>
+                </div>
+            </div>
+
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gelirGiderModal">
                 <i class="feather-plus me-2"></i> Yeni Gelir/Gider Ekle
             </button>
@@ -52,7 +135,7 @@ $Kasa = new KasaModel();
             <div class="card card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
-                        <h5 class="fs-4">₺15,000.00</h5>
+                        <h5 class="fs-4" id="toplamGelir"><?php echo Helper::formattedMoney($KasaFinansalDurum->toplam_gelir ?? 0); ?></h5>
                         <span class="text-muted">Toplam Gelir</span>
                     </div>
                     <div class="avatar-text avatar-lg bg-success text-white rounded">
@@ -66,7 +149,7 @@ $Kasa = new KasaModel();
             <div class="card card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
-                        <h5 class="fs-4">₺7,500.00</h5>
+                        <h5 class="fs-4" id="toplamGider"><?php echo Helper::formattedMoney($KasaFinansalDurum->toplam_gider ?? 0); ?></h5>
                         <span class="text-muted">Toplam Gider</span>
                     </div>
                     <div class="avatar-text avatar-lg bg-danger text-white rounded">
@@ -80,7 +163,7 @@ $Kasa = new KasaModel();
             <div class="card card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
-                        <h5 class="fs-4">₺7,500.00</h5>
+                        <h5 class="fs-4" id="netKalan"><?php echo Helper::formattedMoney(($KasaFinansalDurum->bakiye ?? 0)); ?></h5>
                         <span class="text-muted">Net Kalan</span>
                     </div>
                     <div class="avatar-text avatar-lg bg-primary text-white rounded">
@@ -145,7 +228,7 @@ $Kasa = new KasaModel();
             <div class="card">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover table-bordered text-center datatables">
+                        <table id="gelirGiderTable" class="table table-hover table-bordered datatables">
                             <thead class="table-light">
                                 <tr>
                                     <th>Sıra</th>
@@ -158,43 +241,36 @@ $Kasa = new KasaModel();
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>01.04.2025</td>
-                                    <td><span class="badge bg-success">Gelir</span></td>
-                                    <td>Aidat</td>
-                                    <td>Nisan Ayı Aidat Ödemesi</td>
-                                    <td class="text-success">₺3.000,00</td>
-                                    <td>
-                                        <div class="hstack gap-2 justify-content-center">
-                                            <a href="#" class="avatar-text avatar-md">
-                                                <i class="feather-edit"></i>
-                                            </a>
-                                            <a href="#" class="avatar-text avatar-md">
-                                                <i class="feather-trash-2"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>03.04.2025</td>
-                                    <td><span class="badge bg-danger">Gider</span></td>
-                                    <td>Elektrik</td>
-                                    <td>Ortak Alan Elektrik Gideri</td>
-                                    <td class="text-danger">₺1.250,00</td>
-                                    <td>
-                                        <div class="hstack gap-2 justify-content-center">
-                                            <a href="#" class="avatar-text avatar-md">
-                                                <i class="feather-edit"></i>
-                                            </a>
-                                            <a href="#" class="avatar-text avatar-md">
-                                                <i class="feather-trash-2"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Diğer satırlar buraya eklenecek -->
+                                <?php
+                                $i = 0;
+                                foreach ($kasa_hareketleri as $hareket):
+                                    $i++;
+                                    $enc_id = Security::encrypt($hareket->id);
+                                    $badge = $hareket->islem_tipi == 'gelir' ? 'success' : 'danger';
+                                    $gelirGiderGuncelle = $hareket->guncellenebilir == 1  ? "gelirGiderGuncelle" : 'GuncellemeYetkisiYok';
+                                    $gelirGiderSil = $hareket->guncellenebilir == 1  ? "gelirGiderSil" : 'SilmeYetkisiYok';
+
+                                ?>
+                                    <tr>
+                                        <td><?php echo $i; ?></td>
+                                        <td class="text-center"><?php echo $hareket->islem_tarihi; ?></td>
+                                        <td class="text-center"><span class="badge bg-<?php echo $badge; ?>"><?php echo $hareket->islem_tipi; ?></span></td>
+                                        <td><?php echo Helper::getOdemeKategori($hareket->kategori); ?></td>
+                                        <td class="text-left" style="width: 30%;"><?php echo $hareket->aciklama; ?></td>
+                                        <td class="text-success text-end"><?php echo Helper::formattedMoney($hareket->tutar); ?></td>
+                                        <td>
+                                            <div class="hstack gap-2 justify-content-center">
+                                                <a href="#" class="avatar-text avatar-md <?php echo $gelirGiderGuncelle; ?>" data-id="<?php echo $enc_id; ?>">
+                                                    <i class="feather-edit"></i>
+                                                </a>
+                                                <a href="#" class="avatar-text avatar-md <?php echo $gelirGiderSil; ?>" data-id="<?php echo $enc_id; ?>">
+                                                    <i class="feather-trash-2"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+
                             </tbody>
                         </table>
                     </div>
@@ -205,36 +281,6 @@ $Kasa = new KasaModel();
     <!-- Liste Tablosu Bitiş -->
 </div>
 
-
-<!-- Gelir Gider Modal -->
-
-<!-- <div class="modal fade" id="gelirGiderModal" tabindex="-1" aria-labelledby="gelirGiderModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="gelirGiderModalLabel">Gelir Gider İşlemleri</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="gelirGiderForm" method="post">
-                    <input type="hidden" name="id" id="icra_id" value="<?= $_GET['id'] ?? 0; ?>">
-
-                                  
-
-                   
-                    <div class="mb-3">
-                        <label for="aciklama" class="form-label">Açıklama</label>
-                        <textarea class="form-control" id="aciklama" name="aciklama" rows="3" placeholder="Gelir gider işlemleriyle ilgili notlar..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                <button type="button" class="btn btn-primary" id="gelirGiderKaydet">Kaydet</button>
-            </div>
-        </div>
-    </div>
-</div> -->
 <style>
     .option-card {
         border: 1px dashed #e0e0e0;
@@ -303,7 +349,6 @@ $Kasa = new KasaModel();
             </div>
             <div class="modal-body">
                 <form id="gelirGiderForm" method="post">
-                    <input type="hidden" name="id" id="icra_id" value="<?= $_GET['id'] ?? 0; ?>">
                     <input type="hidden" name="islem_id" id="islem_id" value="0">
 
                     <!-- İşlem Türü -->
@@ -336,12 +381,7 @@ $Kasa = new KasaModel();
                         </div>
                     </div>
 
-                    <!-- Kasa -->
-                    <div class="mb-3">
-                        <label for="kasa" class="form-label">Kasa *</label>
 
-                        <?php echo FinansalHelper::KasaSelect("kasa") ?>
-                    </div>
 
                     <!-- İşleme Tarihi -->
                     <div class="mb-3">
@@ -351,7 +391,7 @@ $Kasa = new KasaModel();
 
                                 <label for="islem_tarihi" class="form-label">İşlem Tarihi *</label>
                                 <input type="text" class="form-control flatpickr" name="islem_tarihi" id="islem_tarihi" required
-                                    value="<?= date('Y-m-d'); ?>">
+                                    value="<?= date('d-m-Y H:i'); ?>">
                             </div>
 
                             <div class="col-md-6">
@@ -368,8 +408,13 @@ $Kasa = new KasaModel();
                     <!-- Kategori -->
                     <div class="mb-3">
                         <label for="kategori" class="form-label">Kategori *</label>
-                        <?php echo Helper::getOdemeKategoriSelect("kategori") ?>
-                       
+                        <?php echo Helper::getOdemeKategoriSelect("kategori",6) ?>
+
+                    </div>
+                    <div class="mb-3 kisiler d-none">
+                        <label for="kisiler" class="form-label">Daire Sakini *</label>
+                        <?php echo $KisiHelper->KisiSelect("kisiler") ?>
+
                     </div>
 
                     <!-- Açıklama -->
@@ -405,51 +450,49 @@ $Kasa = new KasaModel();
     </div>
 </div>
 
+
 <!-- JavaScript için ek kod -->
 <script>
-    $(function(){
+    $(function() {
 
-   
-    document.addEventListener('DOMContentLoaded', function() {
-        const islemTuruSelect = document.getElementById('islem_turu');
-        const gelirKategorileri = document.getElementById('gelir_kategorileri');
-        const giderKategorileri = document.getElementById('gider_kategorileri');
-        const kategoriSelect = document.getElementById('kategori');
+        var myModalEl = document.getElementById('gelirGiderModal')
+        myModalEl.addEventListener('hidden.bs.modal', function(event) {
+            $("#islem_id").val(0);
+            $('#gelirGiderForm')[0].reset();
+        })
 
-        // İşlem türü değiştiğinde kategorileri güncelle
-        islemTuruSelect.addEventListener('change', function() {
-            gelirKategorileri.style.display = 'none';
-            giderKategorileri.style.display = 'none';
-            kategoriSelect.value = '';
+        //modali kapatınca sayfayı yenile
+        $('#gelirGiderModal').on('hidden.bs.modal', function() {
+            //location.reload();
+        });
 
-            if (this.value === 'gelir') {
-                gelirKategorileri.style.display = 'block';
-            } else if (this.value === 'gider') {
-                giderKategorileri.style.display = 'block';
+        //#kasalar'da değişiklik olduğunda
+        $("#kasalar").on("change", function() {
+            //kasalar formunu submit et
+            $("#kasalar").submit();
+        });
+
+        $("#kategori").on("change", function() {
+            if($(this).val() == '1')
+                $(".kisiler").removeClass("d-none").fadeIn(500);
+            else{
+                $(".kisiler").addClass("d-none").fadeOut(500);
             }
         });
 
-        // Form gönderme işlemi
-        document.getElementById('gelirGiderKaydet').addEventListener('click', function() {
-            const form = document.getElementById('gelirGiderForm');
+        //flatpickr
+        $("#islem_tarihi").flatpickr({
+            dateFormat: "d.m.Y H:i",
+            locale: "tr",
+            enableTime: true,
+        })
 
-            if (form.checkValidity()) {
-                // Form verilerini gönderme işlemi burada yapılacak
-                console.log('Form gönderiliyor...');
-                // AJAX veya normal form submit işlemi
-            } else {
-                form.reportValidity();
-            }
-        });
 
-        // Modal kapatıldığında formu temizle
-        document.getElementById('gelirGiderModal').addEventListener('hidden.bs.modal', function() {
-            document.getElementById('gelirGiderForm').reset();
-            gelirKategorileri.style.display = 'none';
-            giderKategorileri.style.display = 'none';
+        $(".modal .select2").select2({
+            dropdownParent: $("#gelirGiderModal")
         });
+        
     });
-     });
 </script>
 
 <style>
