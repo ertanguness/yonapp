@@ -31,8 +31,11 @@ const PERIOD = [
     public function getDues()
     {
         //Period alanını dizi olarak döndürmek için SQL sorgusunu güncelliyoruz 
-        $sql = $this->db->prepare("SELECT * FROM $this->table order by id DESC");
-        $sql->execute();
+        $sql = $this->db->prepare("SELECT * 
+                                            FROM $this->table 
+                                            WHERE site_id = ?
+                                            order by id DESC");
+        $sql->execute([$_SESSION['site_id'] ?? null]);
 
         //period alanını self::PERIOD dizisinden alıyoruz
         $dues = $sql->fetchAll(PDO::FETCH_OBJ);

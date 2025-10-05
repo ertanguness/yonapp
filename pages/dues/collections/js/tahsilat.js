@@ -2,6 +2,8 @@ let url = "/pages/dues/collections/api.php";
 
 $(document).on("click", ".tahsilat-detay-sil", function () {
   var detay_id = $(this).data("id");
+  alert (detay_id);
+  return false;
 
   handleDelete(url, "tahsilat_detay_sil", detay_id, this);
 });

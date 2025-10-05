@@ -28,10 +28,17 @@ $daireTipi = $Tanimlamalar->daireTipiGetir($id);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
+<<<<<<< HEAD
                 <a href="/daire-turu-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </a>
+=======
+                <a href="/daire-tipi-tanimlamalari" class="btn btn-outline-secondary route-link me-2">
+                    <i class="feather-arrow-left me-2"></i>
+                    Listeye Dön
+</a>
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                 <button type="button" class="btn btn-primary" id="saveApartmentType">
                     <i class="feather-save me-2"></i>
                     Kaydet

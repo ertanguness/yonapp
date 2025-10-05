@@ -77,27 +77,53 @@ public function KisiTahsilatlariWithDetails($kisi_id)
 {
     // SQL sorgusu, ana tahsilat bilgileri ile detayları birleştirir.
     // LEFT JOIN kullanıyoruz çünkü bir tahsilatın henüz detayı olmayabilir (nadir durum).
-    $sql = $this->db->prepare("
-        SELECT 
-            t.id AS tahsilat_id,
-            t.tutar AS toplam_tutar,
-            t.islem_tarihi,
-            t.aciklama AS ana_aciklama,
-            td.odenen_tutar AS detay_tutar,
-            td.aciklama AS detay_aciklama,
-            bd.borc_adi
-        FROM 
-            tahsilatlar t
-        LEFT JOIN 
-            tahsilat_detay td ON t.id = td.tahsilat_id
-        LEFT JOIN
-            borclandirma_detayi bd ON td.borc_detay_id = bd.id
-        WHERE 
-            t.kisi_id = ? AND t.silinme_tarihi IS NULL
-        ORDER BY 
-            t.islem_tarihi DESC, t.id DESC
-    ");
-    $sql->execute([$kisi_id]);
+    $sql = $this->db->prepare("SELECT 
+                                            t.id  AS tahsilat_id,
+                                            t.tutar  AS toplam_tutar,
+                                            t.islem_tarihi,
+                                            t.aciklama  AS ana_aciklama,
+                                            td.odenen_tutar  AS detay_tutar,
+                                            td.aciklama  AS detay_aciklama,
+                                            bd.aciklama  AS borc_adi
+                                        FROM tahsilatlar t
+                                        LEFT JOIN tahsilat_detay td  ON t.id = td.tahsilat_id
+                                        LEFT JOIN borclandirma_detayi bd  ON td.borc_detay_id = bd.id
+                                        WHERE t.kisi_id = ? AND t.silinme_tarihi IS NULL
+
+                                        UNION ALL 
+
+                                        SELECT 
+                                            tahsilat_id,
+                                            k.tutar AS toplam_tutar,
+                                            k.islem_tarihi,
+                                            k.aciklama AS ana_aciklama,
+                                            k.tutar AS detay_tutar,
+                                            k.aciklama AS detay_aciklama,
+                                            'Krediye aktarım' AS borc_adi
+                                        FROM kisi_kredileri k
+                                        WHERE k.kisi_id = ? AND k.silinme_tarihi IS NULL
+
+                                        ORDER BY islem_tarihi DESC, tahsilat_id DESC;");
+    // $sql = $this->db->prepare("SELECT 
+    //                                         t.id AS tahsilat_id,
+    //                                         t.tutar AS toplam_tutar,
+    //                                         t.islem_tarihi,
+    //                                         t.aciklama AS ana_aciklama,
+    //                                         td.odenen_tutar AS detay_tutar,
+    //                                         td.aciklama AS detay_aciklama,
+    //                                         bd.aciklama AS borc_adi
+    //                                     FROM 
+    //                                         tahsilatlar t
+    //                                     LEFT JOIN 
+    //                                         tahsilat_detay td ON t.id = td.tahsilat_id
+    //                                     LEFT JOIN
+    //                                         borclandirma_detayi bd ON td.borc_detay_id = bd.id
+    //                                     WHERE 
+    //                                         t.kisi_id = ? AND t.silinme_tarihi IS NULL
+    //                                     ORDER BY 
+    //                                         t.islem_tarihi DESC, t.id DESC
+    // ");
+    $sql->execute([$kisi_id, $kisi_id]);
     $results = $sql->fetchAll(PDO::FETCH_OBJ);
 
     // Şimdi sonuçları PHP'de tahsilat bazında gruplayalım.
@@ -215,7 +241,7 @@ public function tahsilatiSil(int $tahsilatId, int $silenKullaniciId)
                     d.daire_kodu,
                     kasa.kasa_adi,
                     kasa.id AS kasa_id,
-                    COALESCE(SUM(kk.kullanilan_tutar), 0) AS kullanilan_kredi
+                    COALESCE(SUM(kkk.kullanilan_tutar), 0) AS kullanilan_kredi
                  
                 FROM 
                     tahsilatlar t
@@ -228,7 +254,7 @@ public function tahsilatiSil(int $tahsilatId, int $silenKullaniciId)
                 LEFT JOIN 
                     kasa kasa ON t.kasa_id = kasa.id
                 LEFT JOIN 
-                    kisi_kredileri kk ON t.id = kk.kullanilan_tahsilat_id
+                    kisi_kredi_kullanimlari kkk ON t.id = kkk.tahsilat_id
                 WHERE 
                     t.silinme_tarihi IS NULL
                     -- Eğer site ID'si verilmişse, sadece o siteye ait kayıtları getir.

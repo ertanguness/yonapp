@@ -337,7 +337,7 @@ $router->get('daire-turu-duzenle/{id}', function ($id) {
 });
 
                             //AYARLAR
-//site ayarları
+//ayarlar
 $router->get('ayarlar', function () {
     require 'pages/ayarlar/manage.php';
 });

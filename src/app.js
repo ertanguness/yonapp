@@ -9,7 +9,7 @@ $(document).ready(function () {
       language: {
         url: "/assets/js/tr.json",
       },
-
+    
       ...getTableSpecificOptions(),
 
       initComplete: function (settings, json) {
@@ -333,8 +333,15 @@ function AlertConfirm(confirmMessage = "Emin misiniz?") {
   });
 }
 
+
+function getCurrentPageSlug() {
+  const path = window.location.pathname.replace(/\/+$/, '');
+  const parts = path.split('/').filter(Boolean);
+  return parts.pop() || '';
+}
+
 $(document).on("change", "#mySite", function () {
-  var page = new URLSearchParams(window.location.search).get("p");
+  var page =getCurrentPageSlug() || 'ana-sayfa';
   window.location = "set-session.php?p=" + page + "&site_id=" + $(this).val();
 });
 
@@ -502,3 +509,30 @@ function setupShortcut(shortcutKey, callback) {
   // Burada yapılacak işlemi tanımlıyoruz
   //$('#userSaveBtn').trigger('click');
 //});
+
+/**
+ * Buton loading durumunu kontrol eden genel fonksiyon
+ * @param {string} buttonSelector - Buton seçici (ID veya class)
+ * @param {boolean} isLoading - Yükleme durumu (true: yükleniyor, false: normal)
+ * @param {string} loadingText - Yükleme sırasında gösterilecek metin
+ * @param {string} normalText - Normal durumda gösterilecek metin
+ */
+function setButtonLoading(buttonSelector, isLoading = false, loadingText = 'Yükleniyor...', normalText = null) {
+    var $button = $(buttonSelector);
+    
+    if (isLoading) {
+        // Orijinal metni sakla (eğer normalText verilmemişse)
+        if (!normalText) {
+            $button.data('original-text', $button.html());
+        }
+        
+        // Yükleme durumunu ayarla
+        $button.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${loadingText}`);
+        $button.prop("disabled", true);
+    } else {
+        // Normal duruma döndür
+        var originalText = normalText || $button.data('original-text') || 'Kaydet';
+        $button.html(originalText);
+        $button.prop("disabled", false);
+    }
+}

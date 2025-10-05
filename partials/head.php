@@ -14,7 +14,7 @@
     <meta name="author" content="maryinpris" />
     <!--! The above 6 meta tags *must* come first in the head; any other head content must come *after* these tags !-->
     <!--! BEGIN: Apps Title-->
-    <title>Apartman / Site Yönetim Sistemi</title>
+    <title>YonApp / Site Yönetim</title>
     <!--! END:  Apps Title-->
     <!--! BEGIN: Favicon-->
     <link rel="shortcut icon" type="image/x-icon" href="/assets/images/logo/favicon.svg" />
@@ -28,6 +28,8 @@
     
     
     <link rel="stylesheet" type="text/css" href="/assets/vendors/css/vendors.min.css" />
+    <!-- Development version -->
+
     
     
     <?php 

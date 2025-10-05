@@ -13,6 +13,7 @@ use Model\UserPaymentModel;
 // Kullanıcı Ödemeleri
 $UserPayment = new UserPaymentModel();
 $user_id = $_SESSION['user']->kisi_id ?? 0;
+$user_id = 2;
 
 // Kullanıcının Gruplanmış Borç Başlıklarını ve Ödeme Durumlarını Getirir
 $BorcTahsilatDetay = $UserPayment->kisiBorcTahsilatDetay(user_id: $user_id);
@@ -223,152 +224,82 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
         <!-- Tab Navigation -->
         <ul class="tab-nav">
             <li class="active" data-tab="home">
-                <a href="#"><i class="bi bi-house"></i> Özet</a>
+                <a href="#"><i class="feather feather-home"></i> Özet</a>
             </li>
-            <li data-tab="messages">
-                <a href="#"><i class="bi bi-safe"></i>Finans</a>
+            <li data-tab="finans">
+                <a href="#"><i class="feather feather-credit-card"></i>Finans</a>
             </li>
-            <li data-tab="search">
-                <a href="#"><i class="bi bi-journal-arrow-up"></i> Taleplerim</a>
+            <li data-tab="taleplerim">
+                <a href="#"><i class="feather feather-file-text"></i> Taleplerim</a>
+            </li>
+            <li data-tab="dairelerim">
+                <a href="#"><i class="feather feather-database"></i> Dairelerim</a>
             </li>
 
-            <li data-tab="profile">
-                <a href="#"><i class="bi bi-list-ul"></i> Diğer</a>
+            <li data-tab="diger">
+                <a href="#"><i class="feather feather-list"></i> Diğer</a>
             </li>
         </ul>
 
         <!-- Tab Contents -->
         <div id="home" class="tab-content active">
-            <div class="card invoice-container">
-                <div class="card-header">
-                    <div>
-                        <h2 class="fs-16 fw-700 text-truncate-1-line mb-0 mb-sm-1">Dairelerim</h2>
-                        <div class="dropdown d-none d-sm-block">
-                            <a href="javascript:void(0)" class="dropdown-toggle d-flex align-items-center"
-                                data-bs-toggle="dropdown" data-bs-offset="0,25" aria-expanded="false">
-                                <span class="fs-11 fw-400 text-muted me-2">Daire Seç</span>
-                            </a>
-                            <ul class="dropdown-menu" style="">
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item active">Default</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item">Simple</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item">Classic</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item">Modern</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item">Untimate</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item">Essential</a>
-                                </li>
-                                <li class="dropdown-divider"></li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item">Create Template</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item">Delete Template</a>
-                                </li>
-                            </ul>
+
+            <div class="card-header">
+
+                <h5 class="card-title">Özet Bilgilerim</h5>
+
+
+            </div>
+            <div class="card-body p-0">
+                <div class="px-4 pt-4">
+                    <div class="d-sm-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <div class="fs-24 fw-bolder font-montserrat-alt text-uppercase">Dairem</div>
+                            <address class="text-muted">
+                                P.O. Box 18728,<br>
+                                DeLorean New York<br>
+                                VAT No: 2617 348 2752
+                            </address>
+
                         </div>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-center">
-                        <a href="javascript:void(0)" class="d-flex me-1" data-alert-target="invoicSendMessage">
-                            <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                title="" data-bs-original-title="Send Invoice">
-                                <i class="feather feather-send"></i>
+                        <div class="lh-lg pt-3 pt-sm-0 text-right">
+                            <h2 class="fs-4 fw-bold text-primary">Özet</h2>
+                            <div class="d-flex">
+                                <span class="fw-bold text-dark">BORÇ (₺) : </span>
+                                <h4><span class="counter text-danger"><?php echo $hesap_ozet->toplam_borc ?>
+                                        ₺</span></h4>
                             </div>
-                        </a>
-                        <a href="javascript:void(0)" class="d-flex me-1 printBTN">
-                            <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                title="" data-bs-original-title="Print Invoice" aria-label="Print Invoice"><i
-                                    class="feather feather-printer"></i></div>
-                        </a>
-                        <a href="javascript:void(0)" class="d-flex me-1">
-                            <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                title="" data-bs-original-title="Add Payment" aria-label="Add Payment"><i
-                                    class="feather feather-dollar-sign"></i></div>
-                        </a>
-                        <a href="javascript:void(0)" class="d-flex me-1 file-download">
-                            <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                title="" data-bs-original-title="Download Invoice" aria-label="Download Invoice"><i
-                                    class="feather feather-download"></i></div>
-                        </a>
-                        <a href="invoice-create.html" class="d-flex me-1">
-                            <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                title="" data-bs-original-title="Edit Invoice">
-                                <i class="feather feather-edit"></i>
+                            <div class="d-flex">
+                                <span class="fw-bold text-dark">ÖDENEN (₺) : </span>
+                                <h4><span
+                                        class="counter text-success"><?php echo $hesap_ozet->toplam_tahsilat ?>
+                                        ₺</span></h4>
                             </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="px-4 pt-4">
-                        <div class="d-sm-flex align-items-center justify-content-between mb-3">
-                            <div>
-                                <div class="fs-24 fw-bolder font-montserrat-alt text-uppercase">Dairem</div>
-                                <address class="text-muted">
-                                    P.O. Box 18728,<br>
-                                    DeLorean New York<br>
-                                    VAT No: 2617 348 2752
-                                </address>
+                            <div class="d-flex">
+                                <span class="fw-bold text-dark">KALAN (₺) : </span>
+                                <h4><span
+                                        class="counter text-<?php echo $bakiye_color ?>"><?php echo $hesap_ozet->bakiye ?>
+                                        ₺</span></h4>
 
-                            </div>
-                            <div class="lh-lg pt-3 pt-sm-0 text-right">
-                                <h2 class="fs-4 fw-bold text-primary">Özet</h2>
-                                <div class="d-flex">
-                                    <span class="fw-bold text-dark">BORÇ (₺) : </span>
-                                    <h4><span class="counter text-danger"><?php echo $hesap_ozet->toplam_borc ?>
-                                            ₺</span></h4>
-                                </div>
-                                <div class="d-flex">
-                                    <span class="fw-bold text-dark">ÖDENEN (₺) : </span>
-                                    <h4><span
-                                            class="counter text-success"><?php echo $hesap_ozet->toplam_tahsilat ?>
-                                            ₺</span></h4>
-                                </div>
-                                <div class="d-flex">
-                                    <span class="fw-bold text-dark">KALAN (₺) : </span>
-                                    <h4><span
-                                            class="counter text-<?php echo $bakiye_color ?>"><?php echo $hesap_ozet->bakiye ?>
-                                            ₺</span></h4>
-
-                                </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
+
+
             </div>
         </div>
 
 
 
 
-        <div id="messages" class="card tab-content">
-            <div class="card-header">
-                <h5 class="card-title">Özet Bilgilerim</h5>
-                <div class="card-header-action">
-                    <div class="card-header-btn">
+        <div id="finans" class="card tab-content">
 
-                        <div data-bs-toggle="tooltip" title="" data-bs-original-title="Refresh">
-                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning"
-                                data-bs-toggle="refresh"> </a>
-                        </div>
-                        <div data-bs-toggle="tooltip" title="" data-bs-original-title="Maximize/Minimize">
-                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success"
-                                data-bs-toggle="expand"> </a>
-                        </div>
-                    </div>
+            <h5 class="card-title">Gelir-Gider İşlemleri</h5>
 
-                </div>
-            </div>
+
             <div class="card-body custom-card-action">
+
                 <div class="accordion" id="weeklyBestsellerAccordion">
                     <?php
 
@@ -387,7 +318,7 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
                                         <div
                                             class="avatar-text avatar-lg bg-soft-<?php echo $color; ?> text-<?php echo $color; ?> border-soft-<?php echo $color; ?> rounded me-3">
                                             <?php echo Helper::getInitials($borc->borc_adi) ?>
-                                        </i>
+                                            </i>
                                         </div>
                                         <div>
                                             <a href="javascript:void(0);"><?php echo $borc->borc_adi  ?></a>
@@ -447,10 +378,10 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
 
                                                             </div>
                                                             <?php if ($detay->gecikme_zammi > 0) { ?>
-                                                            <div class="text-danger fs-12 text-muted text-truncate-2-line">
-                                                                <?php echo "Gecikme Zammı : " . ($detay->gecikme_zammi ?? 0); ?> ₺
-                                                            </div>
-                                                        <?php } ?>
+                                                                <div class="text-danger fs-12 text-muted text-truncate-2-line">
+                                                                    <?php echo "Gecikme Zammı : " . ($detay->gecikme_zammi ?? 0); ?> ₺
+                                                                </div>
+                                                            <?php } ?>
                                                         </div>
                                                         <span class="fs-10 fw-semibold text-muted">Bak.
                                                             <?php echo Helper::formattedMoneyWithoutCurrency($detay->yuruyen_bakiye ?? 0); ?>
@@ -472,13 +403,109 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
             </div>
         </div>
 
-        <div id="search" class="tab-content">
-            <h2>Search</h2>
-            <p>Find what you're looking for with our powerful search tools.</p>
+        <style>
+
+        </style>
+
+        <div id="taleplerim" class="tab-content">
+            <h5 class="card-title">Taleplerim</h5>
+            <div class="card-body custom-card-action p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>Konu</th>
+                                <th>Açıklama</th>
+                                <th>Durum</th>
+                                <th>Tarih</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-center">
+                                <td>1</td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;">
+                                        Su Faturası Hakkında
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;">
+                                        Su faturamda bir yanlışlık var, lütfen kontrol eder misiniz?
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-warning">Beklemede</span>
+                                </td>
+
+                                <td>2024-10-01</td>
+
+                                <td>
+                                    <div class="hstack gap-2 justify-content-center">
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-light-primary"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" title="Düzenle">
+                                            <i class="feather-edit"></i>
+                                        </a>
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-light-danger"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" title="Sil">
+                                            <i class="feather-trash-2"></i>
+                                        </a>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>    
+                </div>
+            </div>
+            <button class="btn btn-primary sticky-bottom-btn btn-block mt-5">Yeni Talep Ekle</button>
+        </div>
+
+        <div id="dairelerim" class="tab-content">
+            <h5 class="card-title">Dairelerim</h5>
+            <div class="card-body custom-card-action mt-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-text avatar-lg bg-soft-success text-success border-soft-success rounded">
+                            <i class="feather-shopping-bag"></i>
+                        </div>
+                        <div class="ms-3">
+                            <a href="javascript:void(0);" class="fw-semibold">A1D3</a>
+                            <div class="fs-12 text-muted fw-normal">A Blok Daire 3</div>
+                        </div>
+                    </div>
+                    <div class="avatar-text avatar-md">
+                        <i class="feather feather-arrow-right"></i>
+                    </div>
+                </div>
+                <hr class="border-dashed my-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary rounded">
+                            <i class="feather-clipboard"></i>
+                        </div>
+                        <div class="ms-3">
+                            <a href="javascript:void(0);" class="fw-semibold">A1D4</a>
+                            <div class="fs-12 text-muted fw-normal">A Blok Daire 4 </div>
+                        </div>
+                    </div>
+                    <div class="avatar-text avatar-md">
+                        <i class="feather feather-arrow-right"></i>
+                    </div>
+                </div>
+
+
+
+            </div>
         </div>
 
 
-        <div id="profile" class="tab-content">
+
+
+        <div id="diger" class="tab-content">
             <div class="card-body custom-card-action p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">

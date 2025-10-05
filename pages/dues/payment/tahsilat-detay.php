@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
+require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 
 use App\Helper\Date;
@@ -11,6 +11,7 @@ use Model\BorclandirmaDetayModel;
 use Model\FinansalRaporModel;
 
 use Model\KisilerModel;
+use Random\Engine\Secure;
 
 $Kisi = new KisilerModel();
 $BorcDetay = new BorclandirmaDetayModel();
@@ -25,7 +26,7 @@ $kisi = $Kisi->find($id);
 
 
 
-$finansalDurum = $BorcDetay->KisiFinansalDurum($id);
+$finansalDurum = $FinansalRapor->KisiFinansalDurum($id);
 $bakiye_color = $finansalDurum->bakiye < 0 ? 'text-danger' : 'text-success';
 
 //$borclandirmalar = $BorcDetay->KisiBorclandirmalari($id);
@@ -40,9 +41,10 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
     <div class="ms-auto">
 
         <div class="d-flex align-items-center justify-content-center">
-            <a href="javascript:void(0)" class="d-flex me-1" data-alert-target="invoicSendMessage">
+            <a href="javascript:void(0)" class="d-flex me-1 mesaj-gonder" data-alert-target="SendMessage"
+                data-id="<?php echo $kisi->id; ?>">
                 <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
-                    data-bs-original-title="Send Invoice">
+                    data-bs-original-title="Mesaj Gönder">
                     <i class="feather feather-send"></i>
                 </div>
             </a>
@@ -51,29 +53,27 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                     data-bs-original-title="Print Invoice" aria-label="Print Invoice"><i
                         class="feather feather-printer"></i></div>
             </a>
-            <a href="javascript:void(0)" class="d-flex me-1">
+
+            <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $kisi->id; ?>" class="d-flex me-1 file-download">
                 <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
-                    data-bs-original-title="Add Payment" aria-label="Add Payment"><i
-                        class="feather feather-dollar-sign"></i></div>
+                    data-bs-original-title="Download Invoice" aria-label="Download Invoice">
+                  <i class="fa-solid fa-file-pdf"></i>
+                    </div>
             </a>
-            <a href="javascript:void(0)" class="d-flex me-1 file-download">
+            <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $kisi->id; ?>&format=xlsx" class="d-flex me-1 file-download">
                 <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
-                    data-bs-original-title="Download Invoice" aria-label="Download Invoice"><i
-                        class="feather feather-download"></i></div>
-            </a>
-            <a href="invoice-create.html" class="d-flex me-1">
-                <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
-                    data-bs-original-title="Edit Invoice">
-                    <i class="feather feather-edit"></i>
+                    data-bs-original-title="Download Invoice" aria-label="Download Invoice">
+<i class="fa-regular fa-file-excel"></i>
                 </div>
             </a>
+
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
     </div>
 
 </div>
 <style>
-/* .card-body {
+    /* .card-body {
         margin: 0;
         padding: 0;
     } */
@@ -117,7 +117,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                             <a href="javascript:void(0);" class="fw-bold d-block">
                                 <span class="d-block">TAHSİLAT (TL)</span>
                                 <span class="fs-24 fw-bolder d-block text-success tahsilat-etiket">
-                                    <?php echo Helper::formattedMoney($finansalDurum->toplam_odeme); ?>
+                                    <?php echo Helper::formattedMoney($finansalDurum->toplam_tahsilat); ?>
                                 </span>
                             </a>
                         </div>
@@ -172,18 +172,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                     <i class="feather-more-vertical"></i>
                                 </div>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a href="javascript:void(0);" class="dropdown-item"><i
-                                        class="feather-at-sign"></i>New</a>
-                                <a href="javascript:void(0);" class="dropdown-item"><i
-                                        class="feather-calendar"></i>Event</a>
-                                <a href="javascript:void(0);" class="dropdown-item"><i
-                                        class="feather-bell"></i>Snoozed</a>
-                                <a href="javascript:void(0);" class="dropdown-item"><i
-                                        class="feather-trash-2"></i>Deleted</a>
-                                <div class="dropdown-divider"></div>
 
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -193,45 +182,40 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                             <table class="table table-hover mb-0">
                                 <tbody>
                                     <?php foreach ($kisi_borclar as $borc): ?>
-                                    <tr>
-                                        <td style="width:4%;">
-                                            <div class="avatar-text bg-gray-100">
-                                                <a href="javascript:void(0);">
-                                                    <?php echo Helper::getInitials($borc->borc_adi); ?>
-                                                </a>
-                                            </div>
+                                        <tr>
+                                            <td style="width:4%;">
+                                                <div class="avatar-text bg-gray-100">
+                                                    <a href="javascript:void(0);">
+                                                        <?php echo Helper::getInitials($borc->borc_adi); ?>
+                                                    </a>
+                                                </div>
 
-                                        </td>
-                                        <td>
-                                            <a href="javascript:void(0);"><?php echo $borc->borc_adi; ?> <span
-                                                    class="fs-12 fw-normal text-muted">
-                                                    <?php echo $borc->daire_kodu; ?> </span>
-                                                </span> </a>
-                                            <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
-                                                <?php echo $borc->aciklama; ?>
-                                            </p>
-                                            <div class="tickets-list-action d-flex align-items-center gap-3">
-                                                <a href="javascript:void(0);">View</a>
-                                                <span>|</span>
-                                                <a href="javascript:void(0);">View public form</a>
-                                                <span>|</span>
-                                                <a href="javascript:void(0);">Edit</a>
-                                                <span>|</span>
-                                                <a href="javascript:void(0);" class="text-danger">Delete</a>
-                                            </div>
-                                        </td>
-                                        <TD>
-                                            <div class="mt-2 mt-md-0 text-md-end mg-l-60 ms-md-0">
-                                                <a href="javascript:void(0);" class="fw-bold d-block">
-                                                    <?php echo Helper::formattedMoney($borc->tutar); ?>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:void(0);"><?php echo $borc->borc_adi; ?> <span
+                                                        class="fs-12 fw-normal text-muted">
+                                                        <?php echo $borc->daire_kodu; ?> </span>
+                                                    </span> </a>
+                                                <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
+                                                    <?php echo $borc->aciklama; ?>
+                                                </p>
+                                                <div class="tickets-list-action d-flex align-items-center gap-3">
 
-                                                </a>
-                                                <span class="fs-12 text-danger">
-                                                    <?php echo "G. Zammı : " . Helper::formattedMoney($borc->hesaplanan_gecikme_zammi); ?>
-                                                </span>
-                                            </div>
-                                        </TD>
-                                    </tr>
+                                                    <a href="javascript:void(0);" data-id="<?php echo Security::encrypt($borc->id); ?>" class="text-danger borc-sil">Sil</a>
+                                                </div>
+                                            </td>
+                                            <TD>
+                                                <div class="mt-2 mt-md-0 text-md-end mg-l-60 ms-md-0">
+                                                    <a href="javascript:void(0);" class="fw-bold d-block">
+                                                        <?php echo Helper::formattedMoney($borc->tutar); ?>
+
+                                                    </a>
+                                                    <span class="fs-12 text-danger">
+                                                        <?php echo "G. Zammı : " . Helper::formattedMoney($borc->hesaplanan_gecikme_zammi); ?>
+                                                    </span>
+                                                </div>
+                                            </TD>
+                                        </tr>
                                     <?php endforeach ?>
 
                                 </tbody>
@@ -243,10 +227,10 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
 
                 <!-- Kayıt yok ise  -->
                 <?php if (empty($kisi_borclar)): ?>
-                <div class="text-center text-muted">
-                    <p>Kayıt Bulunamadı!!!</p>
+                    <div class="text-center text-muted">
+                        <p>Kayıt Bulunamadı!!!</p>
 
-                </div>
+                    </div>
                 <?php endif ?>
 
 
@@ -274,18 +258,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                     <i class="feather-more-vertical"></i>
                                 </div>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a href="javascript:void(0);" class="dropdown-item"><i
-                                        class="feather-at-sign"></i>New</a>
-                                <a href="javascript:void(0);" class="dropdown-item"><i
-                                        class="feather-calendar"></i>Event</a>
-                                <a href="javascript:void(0);" class="dropdown-item"><i
-                                        class="feather-bell"></i>Snoozed</a>
-                                <a href="javascript:void(0);" class="dropdown-item"><i
-                                        class="feather-trash-2"></i>Deleted</a>
-                                <div class="dropdown-divider"></div>
 
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -295,57 +268,62 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                             <table class="table table-hover mb-0">
                                 <tbody>
                                     <?php foreach ($tahsilatlar as $tahsilat):
-                        $enc_id = Security::encrypt($tahsilat['id']);
-                    ?>
-                                    <tr class="cursor-pointer">
-                                        <td style="width:4%;">
-                                            <div class="avatar-text bg-gray-100">
-                                                <a href="javascript:void(0);">
-                                                    <i class="fa fa-money-bill-wave"></i>
-                                                    <!-- İkonu değiştirebilirsiniz -->
+                                        $enc_id = Security::encrypt($tahsilat['id']);
+                                    ?>
+                                        <tr class="cursor-pointer">
+                                            <td style="width:4%;">
+                                                <div class="avatar-text bg-gray-100">
+                                                    <a href="javascript:void(0);">
+                                                        <i class="fa fa-money-bill-wave"></i>
+                                                        <!-- İkonu değiştirebilirsiniz -->
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td style="width:60%; vertical-align: top;">
+                                                <!-- Ana Açıklama ve Eylemler -->
+                                                <a href="javascript:void(0);" class="fw-bold">
+                                                    Tahsilat Fişi #<?php echo $tahsilat['id']; ?>
                                                 </a>
-                                            </div>
-                                        </td>
-                                        <td style="width:60%; vertical-align: top;">
-                                            <!-- Ana Açıklama ve Eylemler -->
-                                            <a href="javascript:void(0);" class="fw-bold">
-                                                Tahsilat Fişi #<?php echo $tahsilat['id']; ?>
-                                            </a>
-                                            <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
-                                                <?php echo !empty($tahsilat['ana_aciklama']) ? $tahsilat['ana_aciklama'] : "Genel Tahsilat"; ?>
-                                            </p>
-                                            <div class="tickets-list-action d-flex align-items-center gap-3">
-                                                <a href="javascript:void(0);">Düzenle</a>
-                                                <span>|</span>
-                                                <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                    class="text-danger tahsilat-sil">Sil</a>
-                                            </div>
+                                                <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
+                                                    <?php echo !empty($tahsilat['ana_aciklama']) ? $tahsilat['ana_aciklama'] : "Genel Tahsilat"; ?>
+                                                </p>
+                                                <div class="tickets-list-action d-flex align-items-center gap-3">
 
-                                            <!-- TAHSİLAT DETAYLARI ALT LİSTESİ -->
-                                            <?php if (!empty($tahsilat['detaylar'])): ?>
-                                            <ul class="list-unstyled mt-2 fs-12 text-muted">
-                                                <?php foreach ($tahsilat['detaylar'] as $detay): ?>
-                                                <li>
-                                                    <i class="fa fa-check text-success me-1"></i>
-                                                    <?php echo htmlspecialchars($detay['borc_adi'] . ' - ' . $detay['aciklama']); ?>:
-                                                    <span
-                                                        class="fw-bold"><?php echo Helper::formattedMoney($detay['tutar']); ?></span>
-                                                </li>
-                                                <?php endforeach; ?>
-                                            </ul>
-                                            <?php endif; ?>
+                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
+                                                        class="text-primary makbuz-yazdir">Makbuz Yazdır</a>
+                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
+                                                        class="text-danger tahsilat-sil">Sil</a>
+                                                </div>
 
-                                        </td>
-                                        <td class="text-end" style="width: 35%; vertical-align: top;">
-                                            <!-- Toplam Tutar ve Tarih -->
-                                            <a href="javascript:void(0);" class="fw-bold d-block">
-                                                <?php echo Helper::formattedMoney($tahsilat['toplam_tutar']); ?>
-                                            </a>
-                                            <span class="fs-12 text-muted">
-                                                <?php echo Date::dmY($tahsilat['islem_tarihi']); ?>
-                                            </span>
-                                        </td>
-                                    </tr>
+                                                <!-- TAHSİLAT DETAYLARI ALT LİSTESİ -->
+                                                <?php if (!empty($tahsilat['detaylar'])): ?>
+                                                    <ul class="list-unstyled mt-2 fs-12 text-muted">
+                                                        <?php foreach ($tahsilat['detaylar'] as $detay): ?>
+                                                            <li class="mb-2">
+                                                                <div class="ps-3">
+                                                                    <i class="fa fa-check text-success me-1"></i>
+                                                                    <span class="fw-bold text-dark"><?php echo htmlspecialchars($detay['borc_adi']); ?></span>
+                                                                    <div class="ps-3 mt-1 text-muted">
+                                                                        <?php echo htmlspecialchars($detay['aciklama'] ) ; ?>
+                                                                        : <span class="fw-bold text-primary"><?php echo Helper::formattedMoney($detay['tutar']); ?></span>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+
+                                            </td>
+                                            <td class="text-end" style="width: 35%; vertical-align: top;">
+                                                <!-- Toplam Tutar ve Tarih -->
+                                                <a href="javascript:void(0);" class="fw-bold d-block">
+                                                    <?php echo Helper::formattedMoney($tahsilat['toplam_tutar']); ?>
+                                                </a>
+                                                <span class="fs-12 text-muted">
+                                                    <?php echo Date::dmY($tahsilat['islem_tarihi']); ?>
+                                                </span>
+                                            </td>
+                                        </tr>
                                     <?php endforeach ?>
                                 </tbody>
                             </table>
@@ -355,9 +333,9 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
 
                 <!-- Kayıt yok ise -->
                 <?php if (empty($tahsilatlar)): ?>
-                <div class="text-center text-muted p-4">
-                    <p>Bu kişiye ait herhangi bir tahsilat kaydı bulunamadı.</p>
-                </div>
+                    <div class="text-center text-muted p-4">
+                        <p>Bu kişiye ait herhangi bir tahsilat kaydı bulunamadı.</p>
+                    </div>
                 <?php endif; ?>
 
 

@@ -7,7 +7,12 @@ use Model\SitelerModel;
 $Siteler = new SitelerModel();
 $Blocks = new BloklarModel();
 
+<<<<<<< HEAD
 $id = Security::decrypt($id ?? 0) ;
+=======
+$enc_id = $id ?? 0;
+$id = Security::decrypt($id ?? 0) ?? 0;
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
 $blocks = $Blocks->find($id  ?? null);
 
 $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
@@ -32,11 +37,20 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
+<<<<<<< HEAD
                 <a href="/site-sakinleri" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </a>
                 </button>
+=======
+
+
+                <a href="/site-sakinleri" type="button" class="btn btn-outline-secondary route-link me-2" data-page="management/peoples/list">
+                    <i class="feather-arrow-left me-2"></i>
+                    Listeye Dön
+</a>
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                 <button type="button" class="btn btn-primary" id="savePeoples" class="dynamic-save-button">
                     <i class="feather-save me-2"></i>
                     Kaydet
@@ -93,7 +107,11 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                             </div>
                         </div>
                         <form action='' id='peoplesForm'>
+<<<<<<< HEAD
                             <input type="hidden" name="kisi_id" id="kisi_id" value='<?= Security::encrypt($id) ?? 0; ?>'>
+=======
+                        <input type="hidden" name="kisi_id" id="kisi_id" value="<?php echo $enc_id ?? 0; ?>">
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">

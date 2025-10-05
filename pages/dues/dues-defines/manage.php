@@ -1,9 +1,11 @@
 <?php
 
+use Model\DueModel;
+use App\Helper\Date;
+use App\Helper\Form;
 use App\Helper\Helper;
 use App\Helper\Security;
 use App\Helper\BlokHelper;
-use Model\DueModel;
 
 $Dues = new DueModel();
 $BlokHelper = new BlokHelper();
@@ -36,11 +38,10 @@ $due = $Dues->find($id ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="/aidat-turu-listesi" class="btn btn-outline-secondary route-link me-2"
-                    >
+                <a href="/aidat-turu-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-</a>
+                </a>
                 <button type="button" class="btn btn-primary" id="save_dues">
                     <i class="feather-save  me-2"></i>
                     Kaydet
@@ -118,8 +119,8 @@ $due = $Dues->find($id ?? null);
                                 <div class="input-group flex-nowrap w-100">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
                                     <?php echo $BlokHelper->blokSelect("block_id") ?>
-                                    
-                                    
+
+
                                 </div>
                             </div>
 
@@ -144,7 +145,7 @@ $due = $Dues->find($id ?? null);
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
                                     <input type="text" class="form-control flatpickr" name="start_date" id="start_date"
-                                        required value="<?php echo $due->start_date ?? ''; ?>">
+                                        required value="<?php echo Date::dmY($due->start_date ?? ''); ?>">
                                 </div>
                             </div>
 
@@ -152,7 +153,7 @@ $due = $Dues->find($id ?? null);
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
                                     <input type="text" class="form-control flatpickr" name="end_date" id="end_date"
-                                        value="<?php echo $due->end_date ?? ''; ?>">
+                                        value="<?php echo Date::dmY($due->end_date ?? ''); ?>">
                                 </div>
                             </div>
 
@@ -204,7 +205,65 @@ $due = $Dues->find($id ?? null);
 
 
                         </div>
+                        <div class="row mb-4 align-items-center auto-renew d-none">
+                             <div class="row mb-4 align-items-center">
+                            <div class="col-lg-2">
+                                <label for="hedef_tipi" class="fw-semibold">Kime Borçlandırılacak:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group flex-nowrap w-100">
+                                    <div class="input-group-text"><i class="fas fa-users"></i></div>
+                                    <?php
 
+                                    ?>
+                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all"); ?>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 ">
+                                <label for="block_id" class="fw-semibold blok-sec-label">Blok Seç:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group flex-nowrap w-100 blok-sec">
+                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
+                                    <select class="form-control select2-single" name="block_id" id="block_id" disabled>
+                                        <option value="">Seçiniz</option>
+                                        <?php foreach ($blocks as $block): ?>
+                                        <option value="<?= $block->id ?>"><?= $block->name ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                                <div class="input-group flex-nowrap w-100 dairetipi-sec d-none">
+                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
+
+                                    <?php echo Helper::getApartmentTypesSelect($site_id) ?>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row mb-4 align-items-center">
+                            <div class="col-lg-2">
+                                <label for="hedef_kisi" class="fw-semibold">Kişi(ler):</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group flex-nowrap w-100">
+                                    <div class="input-group-text"><i class="fas fa-user-friends"></i></div>
+                                    <!-- <select name="hedef_kisi[]" id="hedef_kisi" multiple class="form-control select2">
+                                        </select> -->
+                                    <?php
+                                        echo Form::Select2Multiple(
+                                            'hedef_kisi[]',         // Form gönderildiğinde PHP'nin dizi olarak alması için name.
+                                            $optionsForSelect ?? [],           // SEÇENEKLER: Veritabanından gelen [id => Ad Soyad] dizisi.
+                                            $seciliKisiIdleri ?? [],      // SEÇİLİ OLANLAR: Seçili olacak kişi ID'lerini içeren bir DİZİ.
+                                            'form-select select2 w-100', // CSS Sınıfı
+                                            'hedef_kisi'            // JavaScript (Select2) için temiz bir ID.
+                                        );
+                                        ?>
+
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -230,4 +289,12 @@ $due = $Dues->find($id ?? null);
             }
         })
     })
+
+    $('#auto_renew').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('.auto-renew').removeClass('d-none');
+        } else {
+            $('.auto-renew').addClass('d-none');
+        }
+    });
 </script>

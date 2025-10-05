@@ -4,10 +4,12 @@ $site_id = $_SESSION['site_id'] ?? 0;
 use Model\BloklarModel;
 use Model\DefinesModel;
 use Model\DairelerModel;
+use App\Helper\DefinesHelper;
 
 $Block = new BloklarModel();
 $daireModel = new DairelerModel();
 $definesModel = new DefinesModel();
+$DefinesHelper = new DefinesHelper();
 
 $blocks = $Block->SiteBloklari($site_id);
 $daire = $daireModel->DaireBilgisi($site_id, $id ?? 0);
@@ -34,6 +36,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"><i class="feather-trello"></i></div>
+
+               
                 <select class="form-select select2 w-100" id="blockName" name="blockName">
                     <option value="">Blok Seçiniz</option>
                     <?php foreach ($blocks as $block): ?>
@@ -74,15 +78,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         <div class="col-lg-4">
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"> <i class="feather-home"></i></div>
-                <select class="form-select select2 w-100" name="apartment_type" id="apartment_type">
-                    <option value="">Daire Tipi Seçin</option>
-                    <?php foreach ($apartmentTypes as $type): ?>
-                        <option value="<?= htmlspecialchars($type->id) ?>"
-                            <?= (isset($daire->daire_tipi) && $daire->daire_tipi == $type->id) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($type->define_name) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <?php echo $DefinesHelper->DaireTipiSelect("apartment_type", $daire->daire_tipi ?? null); ?>
+                
 
             </div>
         </div>

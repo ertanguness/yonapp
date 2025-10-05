@@ -35,7 +35,7 @@ $borclar = $Borc->getAll($site_id);
         </ul>
     </div>
     <div class="page-header-right ms-auto">
-        <a href="borclandirma-yap" class="btn btn-primary">
+        <a href="/borclandirma-yap" class="btn btn-primary">
             <i class="feather-plus me-2"></i>
             Borçlandırma Yap
         </a>
@@ -104,6 +104,9 @@ $borclar = $Borc->getAll($site_id);
                                                    if($borc_tipi == 'all'){
                                                       $borclandirma_tipi = "Tüm Site";
                                                       $borclandirma_detay =  "Site Üyeleri";
+                                                   }elseif($borc_tipi == 'evsahibi'){
+                                                        $borclandirma_tipi = "Ev Sahibi";
+                                                        $borclandirma_detay =  "Ev Sahiplerine Göre Borçlandırma Yapıldı";
                                                     }elseif($borc_tipi == 'block'){
                                                       $borclandirma_tipi = "Blok";
                                                       $borclandirma_detay =  $BorcDetay->BorclandirilmisBlokIsimleri($borc->id);

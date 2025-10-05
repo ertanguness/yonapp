@@ -210,7 +210,11 @@ class BorclandirmaDetayModel extends Model
                                 odeme.toplam_odeme - borc.toplam_borc AS bakiye
                             FROM
                                 (SELECT COALESCE(SUM(tutar), 0) AS toplam_borc FROM {$borcTablosu} WHERE kisi_id = :kisi_id_borc) AS borc,
-                                (SELECT COALESCE(SUM(tutar), 0) AS toplam_odeme FROM tahsilatlar WHERE kisi_id = :kisi_id_odeme) AS odeme;
+                                (SELECT COALESCE(SUM(tutar), 0) AS toplam_odeme 
+                                    FROM tahsilatlar 
+                                    WHERE kisi_id = :kisi_id_odeme
+                                    AND silinme_tarihi IS NULL
+                                ) AS odeme;
                             ");
 
         $sql->execute([

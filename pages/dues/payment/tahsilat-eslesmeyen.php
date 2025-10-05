@@ -1,13 +1,18 @@
-<?php 
+<?php
 
 use App\Helper\Form;
 use App\Helper\Date;
 use App\Helper\Helper;
+use App\Helper\KisiHelper;
+use App\Helper\Security;
 use Model\TahsilatHavuzuModel;
 use Model\DairelerModel;
 
 $DaireModel = new DairelerModel();
 $HavuzModel = new TahsilatHavuzuModel();
+$KisiHelper = new KisiHelper();
+
+$site_id = $_SESSION['site_id'] ?? 0;
 
 $tahsilat_havuzu = $HavuzModel->TahsilatHavuzu($site_id);
 
@@ -41,8 +46,11 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="index?p=dues/payment/list" class="btn btn-outline-secondary">
+                <a href="/yonetici-aidat-odeme" class="btn btn-outline-secondary">
                     <i class="feather-arrow-left me-2"></i>Listeye Dön
+                </a>
+                <a href="/onay-bekleyen-tahsilatlar" class="btn btn-outline-primary">
+                    <i class="feather-check-circle me-2"></i>Eşleşen Ödemeler
                 </a>
 
             </div>
@@ -64,122 +72,79 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                                     <table class="table table-hover datatables no-footer" id="projectList"
                                         aria-describedby="projectList_info">
                                         <thead>
-                                      
+
 
                                             <tr>
                                                 <th>İşlem Tarihi</th>
                                                 <th>Açıklama</th>
-                                                <th class="text-end">Tahsilat Tutarı  </th>
-                                                <th>Daire Kodu</th>
+                                                <th class="text-end">Tahsilat Tutarı </th>
+                                                <th>İşlenen Tutar</th>
+                                                <th>Kalan Tutar</th>
                                                 <th>Daire No</th>
-                                                <th>İşlem</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach($tahsilat_havuzu as $havuz) {?>
-                                            <tr class="single-item odd">
-                                                <td class="sorting_1">
-                                                    <?php echo Date::Ymd($havuz->islem_tarihi); ?>
-                                                </td>
-                                                <td class="project-name-td" data-bs-toggle="tooltip" data-bs-title="<?php echo $havuz->ham_aciklama; ?>">
-                                                    <div class="hstack gap-4">
-                                                      
-                                                        <div>
-                                                            <a href="projects-view.html"
-                                                                class="text-truncate-1-line">
-                                                            <?php echo $havuz->ham_aciklama; ?>
-                                                            </a>
-                                                            <p
-                                                                class="fs-12 text-muted mt-2 text-truncate-1-line project-list-desc">
-                                                                <?php echo $havuz->referans_no; ?>
-                                                                .</p>
-                                                            <div
-                                                                class="project-list-action fs-12 d-flex align-items-center gap-3 mt-2">
-                                                                <a href="javascript:void(0);">Esleşen Havuza Gönder</a>
-                                                                <span class="vr text-muted"></span>
-                                                               
+                                            <?php foreach ($tahsilat_havuzu as $havuz) {
+                                                $enc_id = Security::encrypt($havuz->id);
+                                                $kalan_tutar = $havuz->tahsilat_tutari - $havuz->islenen_tutar;
+                                            ?>
+                                                <tr class="single-item odd">
+                                                    <td class="sorting_1">
+                                                        <?php echo Date::Ymd($havuz->islem_tarihi); ?>
+                                                    </td>
+                                                    <td class="project-name-td">
+                                                        <div class="hstack gap-4">
+
+                                                            <div>
+                                                                <a href="#"
+                                                                    class="text-truncate-1-line description"
+                                                                    data-bs-popover="<?php echo $havuz->ham_aciklama; ?>">
+                                                                    <?php echo $havuz->ham_aciklama; ?>
+                                                                </a>
+
+                                                                <p
+                                                                    class="fs-12 text-muted mt-2 text-truncate-1-line project-list-desc">
+                                                                    <?php echo $havuz->referans_no; ?>
+                                                                    .</p>
+                                                                <div
+                                                                    class="project-list-action fs-12 d-flex align-items-center gap-3 mt-2">
+                                                                    <a href="javascript:void(0);" class="text-primary eslesen-havuza-gonder"
+                                                                        data-id="<?php echo $enc_id; ?>">Eşleşen Havuza Gönder</a>
+                                                                    <span class="vr text-muted"></span>
+                                                                    <a href="javascript:void(0);"
+                                                                        data-id="<?php echo $enc_id; ?>"
+                                                                        class="text-danger eslesmeyen-odeme-sil">Sil</a>
+
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                             
-                                                <td class="text-end">
-                                                    <?php echo Helper::formattedMoney($havuz->tahsilat_tutari) ; ?>
-                                                </td>
-                                                <td>
-                                                    <?php 
-                                                    echo Form::Select2(
-                                                        'daire_kodu', // name
-                                                        'daire_kodu' . uniqid(), // id
-                                                        $optionsForSelect, // options
-                                                        '', // selected value
-                                                        'form-select select2 w-100 daire_kodu'  // class                                                    
-                                                    )
-                                                   
-                                                   ?>
-                                                </td>
-                                                <td>
-                                                    <select class="form-control select2 daire_kisi"
-                                                        id="daire_kisi_<?php echo uniqid(); ?>" name="daire_kisi">
-                                                      
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <div class="hstack gap-2 justify-content-end">
-                                                        <a href="projects-view.html" class="avatar-text avatar-md">
-                                                            <i class="feather feather-eye"></i>
-                                                        </a>
-                                                        <div class="dropdown">
-                                                            <a href="javascript:void(0)" class="avatar-text avatar-md"
-                                                                data-bs-toggle="dropdown" data-bs-offset="0,21">
-                                                                <i class="feather feather-more-horizontal"></i>
-                                                            </a>
-                                                            <ul class="dropdown-menu">
-                                                                <li>
-                                                                    <a class="dropdown-item" href="javascript:void(0)">
-                                                                        <i class="feather feather-edit-3 me-3"></i>
-                                                                        <span>Edit</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item printBTN"
-                                                                        href="javascript:void(0)">
-                                                                        <i class="feather feather-printer me-3"></i>
-                                                                        <span>Print</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item" href="javascript:void(0)">
-                                                                        <i class="feather feather-clock me-3"></i>
-                                                                        <span>Remind</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li class="dropdown-divider"></li>
-                                                                <li>
-                                                                    <a class="dropdown-item" href="javascript:void(0)">
-                                                                        <i class="feather feather-archive me-3"></i>
-                                                                        <span>Archive</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item" href="javascript:void(0)">
-                                                                        <i
-                                                                            class="feather feather-alert-octagon me-3"></i>
-                                                                        <span>Report Spam</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li class="dropdown-divider"></li>
-                                                                <li>
-                                                                    <a class="dropdown-item" href="javascript:void(0)">
-                                                                        <i class="feather feather-trash-2 me-3"></i>
-                                                                        <span>Delete</span>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    </td>
+
+                                                    <td class="text-end">
+                                                        <?php echo Helper::formattedMoney($havuz->tahsilat_tutari); ?>
+                                                    </td>
+                                                    <td class="text-end" style="width:120px">
+                                                        <?php echo Helper::formattedMoney($havuz->islenen_tutar); ?>
+
+                                                    </td>
+                                                    <td class="text-end" style="width:120px">
+                                                        <input type="text" data-kalan-tutar="<?php echo Helper::formattedMoneyToNumber($kalan_tutar); ?>" class="form-control form-control-sm text-end money" placeholder="İşlenecek Tutar" value="<?php echo Helper::formattedMoney($kalan_tutar); ?>" />
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control kisi-ajax-select" style="width: 100%;">
+                                                            <!-- Başlangıçta boş olacak -->
+                                                        </select>
+
+                                                        <?php //echo $KisiHelper->KisiSelect(
+                                                        // "kisi_id" . uniqid(),
+                                                        ///   0,
+                                                        // false,
+                                                        // true) 
+                                                        ?>
+
+                                                    </td>
+
+                                                </tr>
                                             <?php } ?>
 
 
@@ -217,49 +182,373 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
     </div>
 </div>
 
-<script>
-var url = 'pages/dues/payment/api.php'; // Define the URL for the AJAX request
+<!-- Özel Açıklama Modal'i -->
+<div id="aciklama-modal" class="aciklama-modal" style="display: none;">
+    <div class="aciklama-modal-content">
+        <div class="aciklama-modal-header">
+            <h5>Ödeme Açıklaması</h5>
+            <button type="button" class="aciklama-modal-close">&times;</button>
+        </div>
+        <div class="aciklama-modal-body">
+            <p id="aciklama-text"></p>
+        </div>
+    </div>
+</div>
 
-$(document).ready(function() {
-    $('.daire_kodu').select2(); // Initialize select2 for .daire_kodu elements
+<!-- Modal için CSS -->
+<style>
+    .aciklama-modal {
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px);
+        animation: fadeIn 0.3s ease;
+    }
 
-    $(document).on('change', '.daire_kodu', function() {
-        var $this = $(this);
-        var daire_kisisi = $this.closest('tr').find('.daire_kisi');
+    .aciklama-modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 500px;
+        width: 90%;
+        max-height: 400px;
+        animation: slideIn 0.3s ease;
+    }
 
-        var formData = new FormData();
-        formData.append('daire_id', $this.val());
-        formData.append('action', 'get_daire_kisileri'); // Specify the action for the API
+    .aciklama-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+        background-color: #f8f9fa;
+        border-radius: 12px 12px 0 0;
+    }
 
+    .aciklama-modal-header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #495057;
+    }
 
+    .aciklama-modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #6c757d;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
 
-        for (var pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
+    .aciklama-modal-close:hover {
+        background-color: #e9ecef;
+        color: #495057;
+    }
+
+    .aciklama-modal-body {
+        padding: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .aciklama-modal-body p {
+        margin: 0;
+        line-height: 1.6;
+        color: #495057;
+        font-size: 14px;
+        word-wrap: break-word;
+    }
+
+    .description {
+        cursor: pointer;
+        text-decoration: none !important;
+        position: relative;
+        transition: color 0.2s ease;
+    }
+
+    .description:hover {
+        color: #0d6efd !important;
+    }
+
+    .description::after {
+        content: '🔍';
+        font-size: 12px;
+        margin-left: 5px;
+        opacity: 0.6;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
         }
 
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        }).then(response => response.json())
-        .then(data => {
-            console.log(data);
-            if (data.status === 'success') {
-                // Clear existing options
-                daire_kisisi.empty();
-                
-                // Add the new options
-                $.each(data.kisiler, function(index, kisi) {
-                    daire_kisisi.append(new Option(kisi.uyelik_tipi + " | " + kisi.adi_soyadi, kisi.id));
-                });
+        to {
+            opacity: 1;
+        }
+    }
 
-                // Reinitialize select2 for the updated element
-                daire_kisisi.select2();
-            } else {
-                console.error('Error fetching daire kisileri:', data.message);
-            }
-            
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -60%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 576px) {
+        .aciklama-modal-content {
+            width: 95%;
+            margin: 20px;
+        }
+
+        .aciklama-modal-header,
+        .aciklama-modal-body {
+            padding: 15px;
+        }
+    }
+</style>
+
+<script>
+    var url = 'pages/dues/payment/api.php'; // Define the URL for the AJAX request
+
+    $(function() {
+        $(document).on('click', '.description', function(e) {
+
+            e.preventDefault();
+            var $this = $(this);
+            var content = $this.data('bs-popover');
+
+            // Modal'ı göster
+            $('#aciklama-text').text(content);
+            $('#aciklama-modal').fadeIn(300);
+
+        });
+    })
+
+    // Modal'ı kapat - X butonu
+    $(document).on('click', '.aciklama-modal-close', function() {
+        $('#aciklama-modal').fadeOut(300);
+    });
+   
+    // Modal'ı kapat - dış alan tıklama
+    $(document).on('click', '#aciklama-modal', function(e) {
+        if (e.target === this) {
+            $('#aciklama-modal').fadeOut(300);
+        }
+    });
+
+    // ESC tuşu ile kapat
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape' && $('#aciklama-modal').is(':visible')) {
+            $('#aciklama-modal').fadeOut(300);
+        }
+    });
+
+    //Select2 kişileri getirme
+    $(function() {
+        $('.kisi-ajax-select').select2({
+            placeholder: 'Daire veya Kişi Ara...',
+            minimumInputLength: 2, // Arama yapmak için en az 2 karakter girilmesini sağla
+            ajax: {
+                url: url, // İstek yapılacak URL
+                dataType: 'json',
+                delay: 250, // Kullanıcı yazmayı bıraktıktan sonra 250ms bekle
+                type: 'POST',
+                data: function(params) {
+                    // Sunucuya gönderilecek veriler
+                    return {
+                        term: params.term, // Arama terimi
+                        action: 'kisi_ara' // API dosyasında hangi işlemi yapacağımızı belirtir
+                    };
+                },
+                processResults: function(data) {
+
+                    // Sunucudan gelen JSON verisini Select2 formatına dönüştür
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true // Tekrarlanan aramalar için sonuçları önbelleğe al
+            },
+            language: {
+                inputTooShort: function() {
+                    return "Arama yapmak için en az 2 karakter giriniz.";
+                }
+            } // Türkçe dil desteği için (isteğe bağlı)
         })
 
     });
-});
+
+
+    $(function() {
+        //inputta değişiklik olunca sadece rakam ve nokta kabul et
+        $('.money').on('blur', function() {
+            
+            var value = $(this).val();
+            let kalan_tutar = $(this).data('kalan-tutar');
+
+            //tutarlar tahsilat tutarlarından büyük olamaz
+            if (value > kalan_tutar) {
+                $(this).val(kalan_tutar);
+                Toastify({
+                    text: "İşlenecek tutar, tahsilat tutarından büyük olamaz!",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: "center", // `left`, `center` or `right`
+                    borderradius: "10px",
+                    style: {
+                        background: "linear-gradient(to right, #ff6b6b, #ff6b6b)",
+                        borderRadius: "6px",
+                    },
+                }).showToast();
+
+            }
+        });
+
+        $(document).on('click', '.eslesen-havuza-gonder', function() {
+            var $this = $(this);
+            var id = $this.data('id');
+            row = $this.closest('tr');
+            var daire_kisi = row.find('select').val();
+            var islenen_tutar = row.find('.money').val();
+
+
+            if (!daire_kisi) {
+                swal.fire(
+                    'Hata!',
+                    'Lütfen bir daire seçiniz.',
+                    'error'
+                );
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('id', id);
+            formData.append('kisi_id', daire_kisi);
+            formData.append('islenen_tutar', islenen_tutar);
+            formData.append('action', 'eslesen_havuza_gonder');
+
+            fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.status === 'success') {
+                        // İşlem başarılı, satırı kaldır
+                        if (data.status === 'success') {
+                            if (data.kalan_tutar == 0) {
+                                row.fadeOut(500, function() {
+                                    $(this).remove();
+                                    // table.row(row).remove().draw(true);
+                                });
+                            }else{
+                                //kalan tutarı güncelle 2.sutün
+                                row.find('td:nth-child(4)').text(data.islenen_tutar_formatted);
+                                row.find('.money').attr('data-kalan-tutar', data.kalan_tutar).val(data.kalan_tutar);
+                            }
+                            Toastify({
+                                text: "Tahsilat eşleşti ve havuza gönderildi.",
+                                duration: 3000,
+                                close: true,
+                                gravity: "top", // `top` or `bottom`
+                                position: "center", // `left`, `center` or `right`
+                                style: {
+                                    background: "linear-gradient(to right, #199b5aff, #199b5aff)",
+                                    borderRadius: "6px",
+                                },
+                            }).showToast();
+                        }
+
+                    } else {
+                        swal.fire(
+                            'Hata!',
+                            data.message,
+                            data.status
+                        );
+                    }
+
+                })
+        });
+
+        $(document).on('click', '.eslesmeyen-odeme-sil', function() {
+
+            var $this = $(this);
+            var id = $this.data('id');
+            var row = $this.closest('tr');
+
+
+
+            var formData = new FormData();
+            formData.append('id', id);
+            formData.append('action', 'eslesmeyen_odeme_sil');
+
+            swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu tahsilatı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, Sil!',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(url, {
+                            method: 'POST',
+                            body: formData
+                        }).then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            if (data.status === 'success') {
+                                //Eğer kalan tutar 0 ise
+                                // İşlem başarılı, satırı kaldır
+                                table.row(row).remove().draw(false);
+
+                                //tooltipleri kapat
+                                Toastify({
+                                    text: "Tahsilat silindi.",
+                                    duration: 3000,
+                                    close: true,
+                                    gravity: "top", // `top` or `bottom`
+                                    position: "center", // `left`, `center` or `right`
+                                    style: {
+                                        background: "linear-gradient(to right, #199b5aff, #199b5aff)",
+                                        borderRadius: "6px",
+                                    },
+                                }).showToast();
+                            } else {
+                                swal.fire(
+                                    'Hata!',
+                                    data.message,
+                                    data.status
+                                );
+                            }
+
+                        })
+                }
+            });
+
+
+        });
+    })
 </script>

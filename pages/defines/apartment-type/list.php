@@ -29,7 +29,11 @@
                 require_once 'pages/components/download.php';
                 ?>
 
+<<<<<<< HEAD
                 <a href="daire-turu-ekle" class="btn btn-primary route-link" >
+=======
+                <a href="/daire-tipi-ekle" class="btn btn-primary route-link">
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Daire Tipi</span>
                 </a>

@@ -17,7 +17,7 @@ $BorcDetay = new BorclandirmaDetayModel();
 $id = Security::decrypt($id);
 $borc = $Borc->findWithDueName($id);
 
-
+$enc_id = Security::encrypt($id);
 $borc_detay = $BorcDetay->BorclandirmaDetay($id);
 
 ?>
@@ -41,13 +41,13 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                 Listeye Dön
             </a>
 
-            <a href="index?p=dues/debit/upload-from-xls&id=<?php echo $id ?>" class="btn btn-outline-secondary">
+            <a href="/borclandirma-excelden-yukle/<?php echo $enc_id ?>" class="btn btn-outline-secondary">
                 <i class="feather-upload me-2"></i>
                 Excelden Yükle
             </a>
 
             
-            <a href="index?p=dues/debit/single-manage&id=<?php echo $id ?>" class="btn btn-primary">
+            <a href="/borclandirma-kisi-ekle/<?php echo $enc_id ?>" class="btn btn-primary">
                 <i class="feather-plus me-2"></i>
                 Yeni Ekle
             </a>
@@ -138,7 +138,7 @@ $borc_detay = $BorcDetay->BorclandirmaDetay($id);
                                             <td>
                                                 <div class="hstack gap-2">
                                                   
-                                                    <a href="index?p=dues/debit/single-manage&id=<?php echo $enc_id ."&detay_id=". $detay_id  ; ?>"
+                                                    <a href="/borclandirma-kisi-duzenle/<?php echo $enc_id ."/". $detay_id  ; ?>"
                                                         class="avatar-text avatar-md" title="Düzenle">
                                                         <i class="feather-edit"></i>
                                                     </a>

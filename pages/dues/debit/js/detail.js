@@ -1,4 +1,4 @@
-let url = "pages/dues/debit/api.php";
+let url = "/pages/dues/debit/api.php";
 
 //List sayfasından borçlandırma silmek için
 $(document).on("click", ".delete-debit-detail", function () {

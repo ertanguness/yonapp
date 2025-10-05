@@ -174,6 +174,40 @@
     <!-- Modal Bitiş -->
 
 
+<<<<<<< HEAD
+=======
+    <!--diğer sekmeyi aktif etme başlangıç -->
+
+    <!-- <script>
+        document.getElementById("sitesTabButton").addEventListener("click", function(event) {
+            event.preventDefault(); // Formun post edilmesini engelle
+
+            var requiredFields = document.querySelectorAll(".card-body.personal-info [required]");
+            var allFilled = true;
+
+            requiredFields.forEach(function(field) {
+                if (!field.value.trim()) {
+                    allFilled = false;
+                    field.classList.add("is-invalid");
+                } else {
+                    field.classList.remove("is-invalid");
+                }
+            });
+
+            if (allFilled) {
+                var blokBilgileriTab = document.querySelector('[data-bs-target="#blokbilgileriTab"]');
+                if (blokBilgileriTab) {
+                    new bootstrap.Tab(blokBilgileriTab).show();
+                }
+            } else {
+                var toast = new bootstrap.Toast(document.getElementById('warningToast'));
+                toast.show();
+            }
+        });
+    </script> -->
+    <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
+
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
     <script>
         $(document).ready(function() {
             $('#il').change(function() {
@@ -207,7 +241,7 @@
             if (selectedIl) {
                 $.ajax({
                     type: 'POST',
-                    url: 'api/il-ilce.php',
+                    url: '/api/il-ilce.php',
                     data: {
                         city_id: selectedIl,
                         selected_ilce: selectedIlce
@@ -233,7 +267,7 @@
             // Modal onayla butonuna tıklanınca seçilen logo önizleme ve inputa yazılsın
             $("#confirmLogo").on("click", function() {
                 if (selectedFileName !== "") {
-                    $("#logoPreview").attr("src", "assets/images/logo/" + selectedFileName);
+                    $("#logoPreview").attr("src", "/assets/images/logo/" + selectedFileName);
                     $("#selectedLogo").val(selectedFileName);
                 }
             });
@@ -247,7 +281,7 @@
                     formData.append("site_id", "<?= (empty($id) || $id == 0) ? $siteYeniID  : $id ?>"); // PHP'den alınan ID 1 artırılarak gönderiliyor
 
                     $.ajax({
-                        url: "pages/management/sites/content/upload_logo.php",
+                        url: "/pages/management/sites/content/upload_logo.php",
                         type: "POST",
                         data: formData,
                         processData: false,

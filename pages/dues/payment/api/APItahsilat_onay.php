@@ -3,6 +3,7 @@
 require_once dirname(__DIR__, levels: 4) . '/configs/bootstrap.php';
 
 use App\Helper\Helper;
+use App\Services\Gate;
 use App\Helper\Security;
 use Model\DairelerModel;
 use Model\BorclandirmaModel;
@@ -17,6 +18,7 @@ use Model\FinansalRaporModel;
 use Model\KasaModel;
 use Model\KasaHareketModel;
 use App\Helper\FinansalHelper;
+use App\Helper\Alert;
 use Database\Db;
 use PhpOffice\PhpSpreadsheet\Calculation\Engine\Logger;
 
@@ -45,17 +47,19 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
     $islenecekTutar = (float)($_POST['islenecek_tutar'] ?? 0);
     $borcIdleri = $_POST['borc_idler'] ?? [];
     $toplamIslenenTutar = 0;
+    $kasa_id = $Kasa->varsayilanKasa()->id ?? null;
+    $artani_kredi_olarak_ekle = $_POST['artani_kredi_olarak_ekle'];
 
     try {
         // --- 1. Girdi Doğrulaması ---
         if (empty($onayId)) {
             throw new Exception('Onay ID gönderilmedi.');
         }
-        if (empty($borcIdleri) || !is_array($borcIdleri)) {
-            throw new Exception('En az bir borç seçilmelidir.');
+        if (!$artani_kredi_olarak_ekle && (empty($borcIdleri) || !is_array($borcIdleri))) {
+            Alert::error('En az bir borç seçilmelidir.');
         }
         if ($islenecekTutar <= 0) {
-            throw new Exception('İşlenecek tutar sıfırdan büyük olmalıdır.');
+            Alert::error('İşlenecek tutar sıfırdan büyük olmalıdır.');
         }
 
         $logger->info("Tahsilat-Borç eşleştirme işlemi başlatıldı", [
@@ -78,9 +82,10 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
         $tahsilatData = [
             'kisi_id' => $onayKaydi->kisi_id,
             'tutar' => $islenecekTutar,
-            'islem_tarihi' => date('Y-m-d H:i:s'),
-            'kasa_id' => $varsayilanKasa->id,
-            'aciklama' => 'Yönetici onayı ile borçlara mahsup edildi.(Banka havuzundan)',
+            'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
+            'kasa_id' => $kasa_id,
+            'tahsilat_onay_id' => $onayId, // Toplam onaylanan tutarları almak için
+            'aciklama' => $onayKaydi->aciklama ?? 'Borç mahsubu',
             'olusturan' => $_SESSION['user']->id ?? null,
             'olusturulma_tarihi' => date('Y-m-d H:i:s'),
         ];
@@ -88,7 +93,73 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
         if (!$tahsilatId) throw new Exception('Ana tahsilat kaydı oluşturulamadı.');
         $tahsilatId = Security::decrypt($tahsilatId);
 
-        $logger->info("Ana tahsilat kaydı oluşturuldu.", ['tahsilat_id' => $tahsilatId]);
+
+
+        // Kasa hareketi ekle
+        $kasaHareketData = [
+            'id' => 0,
+            'kasa_id' => $kasa_id,
+            'tahsilat_id' => $tahsilatId,
+            'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
+            'tutar' => $islenecekTutar,
+            'aciklama' =>  $onayKaydi->aciklama ?? 'Banka Tahsilatı',
+            'kayit_yapan' => $_SESSION['user']->id ?? null,
+            'kaynak_tablo' => 'tahsilat_onay',
+            'kaynak_id' => $onayId
+        ];
+        $kasaHareketId = $KasaHareket->saveWithAttr($kasaHareketData);
+        if (!$kasaHareketId) throw new Exception('Kasa hareketi kaydı oluşturulamadı.');
+
+        $logger->info("Ana tahsilat kaydı oluşturuldu ve kasaya eklendi.", [
+            'tahsilat_id' => $tahsilatId,
+            'kasa_hareket_id' => $kasaHareketId,
+            'tutar' => $islenecekTutar
+        ]);
+
+
+
+        //eğer seçilen borç yoksa ve artanı kredi olarak ekle işaretli ise direk krediye ekle
+        if (empty($borcIdleri) && $artani_kredi_olarak_ekle) {
+            $krediData = [
+                'kisi_id' => $onayKaydi->kisi_id,
+                'tutar' => $islenecekTutar,
+                'aciklama' => 'Borç mahsubu sonrası artan tutar.',
+                'islem_tarihi' => date('Y-m-d H:i:s'),
+                'tahsilat_id' => $tahsilatId
+            ];
+            $KisiKredi->saveWithAttr($krediData);
+            $logger->info("Artan tutar krediye eklendi.", ['kisi_id' => $onayKaydi->kisi_id, 'kredi_tutari' => $islenecekTutar]);
+            //onay kaydını işlenmiş yap
+            $onay_data = [
+                'id' => $onayId,
+                'onay_durumu' => 1,
+                "onaylayan_yonetici" => $_SESSION['user']->id ?? null,
+                'onay_tarihi' => date('Y-m-d H:i:s'),
+                "onay_aciklamasi" => 'Borçlara mahsup edildi.',
+
+            ];
+
+            $TahsilatOnay->saveWithAttr($onay_data);
+            $db->commit();
+            echo json_encode([
+                'success' => true,
+                'message' => 'Tahsilat başarıyla krediye eklendi.',
+                'data' => [
+                    'onay_id' => $onayId,
+                    'bankaya_yatan' => $onayKaydi->tutar,
+                    'toplam_tahsilat' => $islenecekTutar,
+                    'borclara_islenen' => 0,
+                    'islenen_tutar' => 0,
+                    'kalan_tutar' => 0,
+                    'krediye_aktarilan' => round($islenecekTutar, 2),
+                ]
+            ]);
+            exit;
+        }
+
+
+
+
 
         // --- 5. Tahsilat Tutarını Borçlara Dağıtma Mantığı ---
         $kalanDagitilacakTutar = $islenecekTutar;
@@ -116,7 +187,7 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
             $kalanAnaPara = (float)($borcKaydi->kalan_toplam_borc ?? 0);
             $toplamKalanBuBorc = $kalanGecikmeZammi + $kalanAnaPara;
 
-           
+
             if ($toplamKalanBuBorc <= 0) {
                 $logger->info("Borç zaten ödenmiş, atlanıyor.", ['borc_detay_id' => $borcKaydi->id]);
                 continue;
@@ -171,15 +242,18 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
                 'kalan_gecikme_zammi' => $kalanGecikmeZammi - $gecikmeyeOdenen
             ];
             $BorcDetay->saveWithAttr($borc_data);
-            
 
+
+            //Eğer tutar kalan borca eşit veya büyükse, borç durumunu "ödendi" yap
+            $onay_durumu = $onayKaydi->tutar - $buBorcaUygulanacakTutar <= 0.01 ? 1 : 0; // 1: Tamamlandı, 0: Kısmi
 
             $onay_data = [
                 'id' => $onayId,
-                'onay_durumu' => 1,
+                'onay_durumu' => $onay_durumu,
                 "onaylayan_yonetici" => $_SESSION['user']->id ?? null,
                 'onay_tarihi' => date('Y-m-d H:i:s'),
-                "onay_aciklamasi" => 'Borçlara mahsup edildi.'
+                "onay_aciklamasi" => 'Borçlara mahsup edildi.',
+
             ];
 
             $TahsilatOnay->saveWithAttr($onay_data);
@@ -203,8 +277,8 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
             $logger->info("Artan tutar krediye eklendi.", ['kisi_id' => $onayKaydi->kisi_id, 'kredi_tutari' => $kalanDagitilacakTutar]);
         }
 
-        // --- 7. Onay Kaydını İşlendi Olarak Güncelle ---
-        // $TahsilatOnay->update($onayId, ['durum' => 'islem_tamamlandi', 'islenen_tutar' => $toplamIslenenTutar]);
+        // --- 7. Onay Kaydınının güncel bilgilerini tekrar al ---
+        $onaylanan_toplam_tutar = $TahsilatOnay->OnaylanmisTahsilatToplami($onayId);
 
         // --- 8. İşlemi Sonlandır ---
         $db->commit();
@@ -214,8 +288,11 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
             'message' => 'Tahsilat başarıyla borçlara yansıtıldı.',
             'data' => [
                 'onay_id' => $onayId,
+                'bankaya_yatan' => $onayKaydi->tutar,
                 'toplam_tahsilat' => $islenecekTutar,
-                'borclara_islenen' => $toplamIslenenTutar,
+                'borclara_islenen' => Helper::formattedMoney($toplamIslenenTutar),
+                'islenen_tutar' => Helper::formattedMoney($onaylanan_toplam_tutar),
+                'kalan_tutar' => ($onayKaydi->tutar - $onaylanan_toplam_tutar),
                 'krediye_aktarilan' => round($kalanDagitilacakTutar, 2),
             ]
         ]);
@@ -230,4 +307,123 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
         echo json_encode(['success' => false, 'message' => 'Hata: ' . $e->getMessage()]);
     }
     exit;
+}
+
+/**
+ * Eşleşmeyen havuzuna gönderir
+ * /
+ * / NOT: Bu işlem, tahsilat onay kaydını "işlendi" olarak işaretlemez.
+ */
+if ($_POST['action'] == 'eslesmeyen_havuza_gonder') {
+    $onayId = Security::decrypt($_POST['tahsilat_id'] ?? null);
+
+    try {
+        // --- 1. Girdi Doğrulaması ---
+        if (empty($onayId)) {
+            throw new Exception('Onay ID gönderilmedi.');
+        }
+
+        //eğer daha önce havuza gönderilmişse hata ver
+        $onay_kaydi = $TahsilatOnay->find($onayId);
+        if ($onay_kaydi->eslesmeyen_havuzunda == 1) {
+            throw new Exception('Bu tahsilat zaten eşleşmeyen havuzunda.');
+        }
+
+        $logger->info("Tahsilat eşleşmeyen havuzuna gönderme işlemi başlatıldı", [
+            'onay_id' => $onayId,
+            'kullanici_id' => $_SESSION['user']->id ?? null
+        ]);
+
+        // --- 2. Veritabanı Transaction Başlat ---
+        $db->beginTransaction();
+
+        // --- 3. Gerekli Kayıtları Kontrol Et ---
+        $onayKaydi = $TahsilatOnay->find($onayId);
+        if (!$onayKaydi) throw new Exception('Onay kaydı bulunamadı.');
+
+        // --- 4. Tahsilat Havuzu Kaydını Oluştur ---
+        $havuzData = [
+            'id' => 0,
+            'site_id' => $onayKaydi->site_id,
+            'tahsilat_tutari' => $onayKaydi->tutar,
+            'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
+            'aciklama' => 'Eşleşmeyen havuzuna aktarım - ' . ($onayKaydi->aciklama ?? ''),
+            'ham_aciklama' => $onayKaydi->aciklama,
+            'olusturulma_tarihi' => date('Y-m-d H:i:s'),
+            'tahsilat_onay_id' => $onayId // İleride referans için
+        ];
+        $havuzId = $TahsilatHavuzu->saveWithAttr($havuzData);
+        if (!$havuzId) throw new Exception('Tahsilat havuzu kaydı oluşturulamadı.');
+        $havuzId = Security::decrypt($havuzId);
+
+        $logger->info("Tahsilat havuzu kaydı oluşturuldu.", [
+            'tahsilat_havuzu_id' => $havuzId
+        ]);
+        // --- 5. Onay Kaydını "İşlendi" Olarak Güncelle ---
+        $onay_data = [
+            'id' => $onayId,
+            'eslesmeyen_havuzunda' => 1, // Tamamlandı
+            "havuza_gonderilme_tarihi" => date('Y-m-d H:i:s')
+        ];
+        $TahsilatOnay->saveWithAttr($onay_data);
+        $logger->info("Tahsilat onay kaydı güncellendi.", [
+            'onay_id' => $onayId,
+            'onay_durumu' => 1
+        ]);
+        // --- 6. İşlemi Sonlandır ---
+        $db->commit();
+        echo json_encode([
+            'status' => "success",
+            'message' => 'Tahsilat başarıyla eşleşmeyen havuzuna gönderildi.',
+            'data' => [
+                'onay_id' => $onayId,
+                'havuz_id' => $havuzId
+            ]
+        ]);
+    } catch (Exception $e) {
+        $db->rollback();
+        $logger->error("Tahsilat havuzuna gönderme hatası", [
+            'error' => $e->getMessage(),
+            'onay_id' => $onayId,
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ]);
+        echo json_encode(['status' => "error", 'message' => 'Hata: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
+
+
+/**
+ * Yüklenen tahsilat verisini sil
+ * Excelden yüklenen ve tahsilat onayında bekleyen verileri siler
+ */
+if ($_POST['action'] == 'yuklenen_tahsilat_sil') {
+
+
+    $id = Security::decrypt($_POST['tahsilat_id']);
+    Gate::can('tahsilat_ekle_sil');
+
+    try {
+        $tahsilatOnay = $TahsilatOnay->find($id);
+        if (!$tahsilatOnay) {
+            throw new Exception('Tahsilat onay kaydı bulunamadı.');
+        }
+
+        // Tahsilat onay kaydını sil
+        $TahsilatOnay->softDeleteByColumn('id', $id);
+
+        // Başarılı mesajı
+        $status = 'success';
+        $message = 'Tahsilat onay kaydı başarıyla silindi.';
+    } catch (Exception $e) {
+        $status = 'error';
+        $message = $e->getMessage();
+    }
+
+    echo json_encode([
+        'status' => $status,
+        'message' => $message,
+    ]);
 }

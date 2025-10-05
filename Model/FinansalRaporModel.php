@@ -13,6 +13,7 @@ class FinansalRaporModel extends Model
     //view_kisiler_hesap_ozet
     protected $vw_hesap_ozet = "view_kisiler_hesap_ozet"; // Eğer view kullanıyorsanız, bu satırı ekleyebilirsiniz.
 
+    protected $vw_hesap_hareket = "view_kisiler_hesap_hareket";
 
     public function __construct()
     {
@@ -41,16 +42,32 @@ class FinansalRaporModel extends Model
 
     public function getGuncelBorclarGruplu($site_id)
     {
-        $sql = $this->db->prepare("SELECT kisi_id,daire_kodu,adi_soyadi,uyelik_tipi, 
+        $sql = $this->db->prepare("SELECT kisi_id,daire_kodu,adi_soyadi,uyelik_tipi, kalan_kredi as kredi_tutari,
                                                 SUM(kalan_anapara) AS kalan_anapara,  
                                                 SUM(hesaplanan_gecikme_zammi) AS hesaplanan_gecikme_zammi,
-                                                SUM(toplam_kalan_borc) AS toplam_kalan_borc 
+                                                SUM(toplam_kalan_borc) AS toplam_kalan_borc
                                           FROM $this->table 
-                                          WHERE site_id = ? and toplam_kalan_borc > 0
+                                          WHERE site_id = ? 
                                           GROUP BY kisi_id, daire_kodu, adi_soyadi, uyelik_tipi");
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+
+
+
+    /** Kişi güncel borç özeti
+     * Kalan anapara, gecikme zammı toplamından kredi tutarını düşer.
+     * sp_kisi_borc procedüründen verileri getirir
+     * @param int $kisi_id
+     * @return object
+     */
+    public function getKisiGuncelBorcOzet($kisi_id)
+    {
+        $sql = $this->db->prepare("CALL sp_kisi_borc(?)");
+        $sql->execute([$kisi_id]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
+
 
 
     /**
@@ -64,7 +81,8 @@ class FinansalRaporModel extends Model
                                             * 
                                           FROM $this->table 
                                           WHERE kisi_id = ? 
-                                          AND toplam_kalan_borc > 0");
+                                          AND toplam_kalan_borc > 0
+                                          ORDER BY bitis_tarihi ASC");
         $sql->execute([$kisi_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
@@ -77,7 +95,8 @@ class FinansalRaporModel extends Model
     {
         $sql = $this->db->prepare("SELECT * 
                                           FROM $this->table 
-                                          WHERE kisi_id = ? ");
+                                          WHERE kisi_id = ? 
+                                          ORDER BY bitis_tarihi DESC");
         $sql->execute([$kisi_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
@@ -100,6 +119,60 @@ class FinansalRaporModel extends Model
         $sql->execute([$kisi_id]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
+
+
+    // /** Kişinin hesap hareketlerini (borçlandırma, tahsilat) getirir.
+    //  * @param int $kisi_id
+    //  * @return array
+    //  */
+    // public function kisiHesapHareketleri($kisi_id)
+    // {
+    //     $sql = $this->db->prepare("SELECT * 
+    //                                       FROM $this->vw_hesap_hareket 
+    //                                       WHERE kisi_id = ? 
+    //                                       ORDER BY islem_tarihi asc");
+    //     $sql->execute([$kisi_id]);
+    //     return $sql->fetchAll(PDO::FETCH_OBJ);
+    // }
+
+
+    /** Kişinin hesap hareketlerini (borçlandırma, tahsilat) getirir.
+     * @param int $kisi_id
+     * @return array
+     */
+    public function kisiHesapHareketleri($kisi_id)
+    {
+        $sql = $this->db->prepare("SELECT 
+                                                h.*,                                            -- 1. Calculate and alias the 'hareket_tutari' column (no rounding specified for this one)
+                                                ROUND((CASE 
+                                                    WHEN h.islem_tipi = 'Ödeme' 
+                                                    THEN - COALESCE(h.odenen, 0)
+                                                    ELSE COALESCE(h.anapara, 0) + COALESCE(h.gecikme_zammi, 0)
+                                                END),2) AS hareket_tutari,
+
+                                                -- 2. Calculate the 'yuruyen_bakiye' column, applying ROUND to the final SUM result
+                                                ROUND(
+                                                    SUM(
+                                                        CASE 
+                                                            WHEN h.islem_tipi = 'Ödeme' 
+                                                            THEN - COALESCE(h.odenen, 0)
+                                                            ELSE COALESCE(h.anapara, 0) + COALESCE(h.gecikme_zammi, 0)
+                                                        END
+                                                    ) OVER (
+                                                        PARTITION BY h.kisi_id
+                                                        ORDER BY h.islem_tarihi, h.islem_id
+                                                        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                                                    ),
+                                                    2 -- The number of decimal places for the ROUND function
+                                                ) AS yuruyen_bakiye
+                                          FROM $this->vw_hesap_hareket h
+                                          WHERE h.kisi_id = ? 
+                                          ORDER BY h.islem_tarihi");
+        $sql->execute([$kisi_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+
 
 
     

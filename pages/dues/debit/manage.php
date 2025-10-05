@@ -114,7 +114,7 @@ switch ($hedef_tipi) {
 <div class="main-content">
     <?php
 
-    Gate::authorizeOrDie('debit_add');
+    Gate::authorizeOrDie('borclandirma_ekle_sil');
     ?>
     <?php
     /* $title = $pageTitle;

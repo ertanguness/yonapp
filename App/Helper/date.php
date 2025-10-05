@@ -17,61 +17,127 @@ class Date
         return date($format, strtotime($date));
     }
 
-    public static function Ymd($date, $format = 'Ymd')
+   // 'Y-m-d' çıktısı
+    public static function Ymd(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
-        if ($date == null) {
-            return null;
-        }
-        return date($format, strtotime($date));
-    }
-
-    public static function YmdHIS($date, $format = 'YmdHis')
-    {
-        if ($date == null) {
+        if ($input === null || $input === '') {
             return '';
         }
-
-        return self::normalizeDate($date);
+        return self::parseToFormat($input, 'Y-m-d', $tz);
     }
 
-    public static function normalizeDate($date, $outputFormat = 'Y-m-d H:i:s')
+    public static function YmdHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
-        if (empty($date)) {
-            return '';
+        return self::parseToFormat($input, 'Y-m-d H:i:s', $tz);
+    }
+
+
+    // public static function normalizeDate($date, $outputFormat = 'Y-m-d H:i:s')
+    // {
+    //     if (empty($date)) {
+    //         return '';
+    //     }
+
+    //     // Önceden tanımlanmış yaygın formatlar
+    //     $commonFormats = [
+    //         'd/m/Y-H:i:s',    // 26/05/2025-14:02:40
+    //         'd.m.Y H:i:s',     // 26.05.2025 14:02:40
+    //         'Y-m-d H:i:s',     // 2025-05-26 14:02:40
+    //         'd/m/Y H:i:s',     // 26/05/2025 14:02:40
+    //         'm/d/Y H:i:s',     // 05/26/2025 14:02:40 (US format)
+    //         'Ymd His',         // 20250526 140240
+    //         'D M d Y H:i:s',   // Tue May 26 2025 14:02:40
+    //         DateTime::ATOM,     // 2025-05-26T14:02:40+00:00
+    //         DateTime::RFC2822,  // Tue, 26 May 2025 14:02:40 +0000
+    //     ];
+
+    //     // Önce DateTime objesi oluşturmayı dene
+    //     $datetime = date_create($date);
+
+    //     // Başarısız olursa, bilinen formatları dene
+    //     if ($datetime === false) {
+    //         foreach ($commonFormats as $format) {
+    //             $datetime = DateTime::createFromFormat($format, $date);
+    //             if ($datetime !== false) {
+    //                 break;
+    //             }
+    //         }
+    //     }
+
+    //     // Hala geçerli bir tarih yoksa, şimdiki zamanı dön
+    //     if ($datetime === false) {
+    //         return date($outputFormat);
+    //     }
+
+    //     return $datetime->format($outputFormat);
+    // }
+
+    /**
+     * Farklı yerel tarih formatlarını güvenle çözüp verilen çıktıya dönüştürür.
+     * Desteklenen örnekler:
+     * - 11/02/2025-12:39:03  (d/m/Y-H:i:s)
+     * - 11/02/2025 12:39     (d/m/Y H:i)
+     * - 11.02.2025 12:39:03  (d.m.Y H:i:s)
+     * - 2025-02-11 12:39:03  (Y-m-d H:i:s)
+     * - 11-02-2025           (d-m-Y)
+     * - Excel seri sayı (ör: 45567.5)
+     */
+    private static function parseToFormat(string|int|float $input, string $outputFormat, ?\DateTimeZone $tz = null): string
+    {
+        $tz = $tz ?: new \DateTimeZone(date_default_timezone_get() ?: 'Europe/Istanbul');
+
+        // Excel seri sayı ise dönüştür (1899-12-30 epoch)
+        if (is_numeric($input)) {
+            $serial = (float)$input;
+            $timestamp = (int)(($serial - 25569) * 86400);
+            $dt = (new \DateTime('@' . $timestamp))->setTimezone($tz);
+            return $dt->format($outputFormat);
         }
 
-        // Önceden tanımlanmış yaygın formatlar
-        $commonFormats = [
-            'd/m/Y-H:i:s',    // 26/05/2025-14:02:40
-            'd.m.Y H:i:s',     // 26.05.2025 14:02:40
-            'Y-m-d H:i:s',     // 2025-05-26 14:02:40
-            'd/m/Y H:i:s',     // 26/05/2025 14:02:40
-            'm/d/Y H:i:s',     // 05/26/2025 14:02:40 (US format)
-            'Ymd His',         // 20250526 140240
-            'D M d Y H:i:s',   // Tue May 26 2025 14:02:40
-            DateTime::ATOM,     // 2025-05-26T14:02:40+00:00
-            DateTime::RFC2822,  // Tue, 26 May 2025 14:02:40 +0000
+        $raw = trim((string)$input);
+
+        // Tarih-saat arası tire kullanılmışsa (11/02/2025-12:39:03) boşluk yapalım ki formatlar kolay eşleşsin
+        $norm = str_replace(['T'], ' ', $raw);
+        $norm = preg_replace('/([\/.])(\d{4})-/', '$1$2 ', $norm); // 11/02/2025-12:39:03 → 11/02/2025 12:39:03
+        $norm = str_replace('-', ' ', $norm); // bazı d-m-Y H:i durumları için
+
+        // Denenecek formatlar (öncelik: Türkiye d/m/Y)
+        $formats = [
+            'd/m/Y H:i:s',
+            'd/m/Y H:i',
+            'd.m.Y H:i:s',
+            'd.m.Y H:i',
+            'd-m-Y H:i:s',
+            'd-m-Y H:i',
+            'd/m/Y',
+            'd.m.Y',
+            'd-m-Y',
+            'Y-m-d H:i:s',
+            'Y-m-d H:i',
+            'Y-m-d',
+            'Y/m/d H:i:s',
+            'Y/m/d H:i',
+            'Y/m/d',
         ];
 
-        // Önce DateTime objesi oluşturmayı dene
-        $datetime = date_create($date);
-
-        // Başarısız olursa, bilinen formatları dene
-        if ($datetime === false) {
-            foreach ($commonFormats as $format) {
-                $datetime = DateTime::createFromFormat($format, $date);
-                if ($datetime !== false) {
-                    break;
+        foreach ($formats as $fmt) {
+            $dt = \DateTime::createFromFormat($fmt, $norm, $tz);
+            if ($dt instanceof \DateTimeInterface) {
+                // createFromFormat bazen hataları tolere eder; kontrol edelim
+                $errors = \DateTime::getLastErrors();
+                if (empty($errors['warning_count']) && empty($errors['error_count'])) {
+                    return $dt->format($outputFormat);
                 }
             }
         }
 
-        // Hala geçerli bir tarih yoksa, şimdiki zamanı dön
-        if ($datetime === false) {
-            return date($outputFormat);
+        // Son çare: strtotime (ABD yorumlayabilir; riskli)
+        $ts = strtotime($raw);
+        if ($ts !== false) {
+            return (new \DateTime('@' . $ts))->setTimezone($tz)->format($outputFormat);
         }
 
-        return $datetime->format($outputFormat);
+        throw new \InvalidArgumentException("Tarih çözümlenemedi: {$input}");
     }
 
 

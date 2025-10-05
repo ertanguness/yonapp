@@ -1,4 +1,16 @@
+<?php
 
+use Model\KasaModel;
+use App\Helper\Security;
+
+$KasaModel = new KasaModel();
+
+$enc_id = $id ?? 0;
+$id = Security::decrypt($id ?? 0);
+$pageTitle = $id > 0 ? "Kasa Bilgilerini Düzenle" : "Yeni Kasa Tanımlama";
+
+$kasa = $KasaModel->find($id);
+?>
 
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -7,7 +19,7 @@
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
-            <li class="breadcrumb-item">Kasa Listesi</li>
+            <li class="breadcrumb-item">Kasa Ekle</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
@@ -19,10 +31,10 @@
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="finans-yonetimi/kasa/list">
+                <a type="button" href="/kasa-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="kasa_kaydet">
                     <i class="feather-save  me-2"></i>
                     Kaydet
@@ -38,12 +50,12 @@
 </div>
 
 <div class="main-content">
-    <?php /*
+    <?php
     $title = $pageTitle;
-    $text = $pageTitle === 'Yeni Banka Tanımlama'
-        ? "Yeni banka bilgisi tanımlayabilirsiniz."
-        : "Seçtiğiniz banka bilgilerini güncelleyebilirsiniz.";
-    require_once 'pages/components/alert.php'; */
+    $text =  $id == 0
+        ? "Yeni kasa bilgisi tanımlayabilirsiniz."
+        : "Seçtiğiniz kasa bilgilerini güncelleyebilirsiniz.";
+    require_once 'pages/components/alert.php';
     ?>
     <div class="row">
         <div class="container-xl">
@@ -57,21 +69,19 @@
                                         <!-- Hidden Row -->
                                         <div class="row d-none">
                                             <div class="col-md-4">
-                                                <input type="text" name="id" class="form-control" value="<?= $bank->id ?? 0 ?>">
+                                                <input type="text" name="id" class="form-control" value="<?= $enc_id ?>">
                                             </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="action" value="saveBank" class="form-control">
-                                            </div>
+                                          
                                         </div>
                                         <!-- Hidden Row -->
 
                                         <div class="col-lg-2">
-                                            <label class="fw-semibold">Banka Adı:</label>
+                                            <label class="fw-semibold">Kasa Adı:</label>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-credit-card"></i></div>
-                                                <input type="text" class="form-control" name="bank_name" value="<?= $bank->bank_name ?? '' ?>">
+                                                <input type="text" class="form-control" name="kasa_adi" value="<?= $kasa->kasa_adi ?? '' ?>">
                                             </div>
                                         </div>
 
@@ -81,54 +91,11 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-hash"></i></div>
-                                                <input type="text" class="form-control" name="iban" id="iban" value="<?= $bank->iban ?? 'TR' ?>" maxlength="32" placeholder="IBAN giriniz">
-                                                </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-4 align-items-center">
-                                        <div class="col-lg-2">
-                                            <label class="fw-semibold">Şube Adı:</label>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <div class="input-group-text"><i class="feather-map-pin"></i></div>
-                                                <input type="text" class="form-control" name="branch_name" value="<?= $bank->branch_name ?? '' ?>">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-2">
-                                            <label class="fw-semibold">Şube Kodu:</label>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <div class="input-group-text"><i class="feather-hash"></i></div>
-                                                <input type="text" class="form-control" name="branch_code" value="<?= $bank->branch_code ?? '' ?>">
+                                                <input type="text" class="form-control" name="iban" id="iban" value="<?= $kasa->iban ?? 'TR' ?>" maxlength="32" placeholder="IBAN giriniz">
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="row mb-4 align-items-center">
-                                        <div class="col-lg-2">
-                                            <label class="fw-semibold">Hesap Sahibi:</label>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <div class="input-group-text"><i class="feather-user"></i></div>
-                                                <input type="text" class="form-control" name="account_owner" value="<?= $bank->account_owner ?? '' ?>">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-2">
-                                            <label class="fw-semibold">Hesap Numarası:</label>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <div class="input-group-text"><i class="feather-hash"></i></div>
-                                                <input type="text" class="form-control" name="account_number" value="<?= $bank->account_number ?? '' ?>">
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <div class="row mb-4 align-items-center">
                                         <div class="col-lg-2">
@@ -137,7 +104,7 @@
                                         <div class="col-lg-10">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-info"></i></div>
-                                                <textarea class="form-control" name="description" rows="3"><?= $bank->description ?? '' ?></textarea>
+                                                <textarea class="form-control" name="aciklama" rows="3"><?= $kasa->aciklama ?? '' ?></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -151,6 +118,8 @@
         </div>
     </div>
 </div>
+
+
 
 <!-- 
 <script>
@@ -226,4 +195,3 @@ document.getElementById("iban").addEventListener("input", function (e) {
 });
 
 </script> -->
-

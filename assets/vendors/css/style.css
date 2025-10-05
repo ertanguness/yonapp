@@ -21,6 +21,11 @@ body {
 .nxl-navbar{
   font-size: 1rem !important;
 }
+
+.nxl-container .nxl-content .main-content {
+    overflow-x: hidden;
+    padding: 15px 15px 5px !important;
+}
 .swal2-popup {
   border-radius: 16px !important;
 }
@@ -95,6 +100,9 @@ div:where(.swal2-icon-content) {
   color: #dc3545 !important;
 }
 
+/* .select2-container{
+  z-index: 1 !important;
+} */
 
 .select2-container
   .select2-selection--multiple

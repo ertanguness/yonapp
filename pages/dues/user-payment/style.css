@@ -73,16 +73,32 @@ body {
 .tab-content {
     display: none;
     background-color: var(--white);
+    min-height: calc(100vh - 345px);
     padding: 24px;
     border-radius: var(--radius);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     animation: fadeIn 0.3s ease;
-    margin-bottom: 20px;
 }
 
+/* Aktif tabı flex column yap: içerik üstte, buton en altta */
 .tab-content.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
+
+/* Butonu tab-content içinde dibe it ve tam genişlik ver */
+.tab-content .sticky-bottom-btn {
+    position: static !important;
+    margin-top: auto;
+    width: 100%;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+}
+
+
+    .btn-block { display: block; width: 100%; }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -90,9 +106,9 @@ body {
 }   
 
 /* Tab Content Styles */
-.tab-content h2 {
+/* .tab-content h2 {
     color: var(--primary);
-}
+} */
 
 .tab-content p {
     color: var(--text);
@@ -121,6 +137,10 @@ body {
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         gap: 0;
     }
+
+
+    /* İstersen: tam genişlik desteği (Bootstrap 5’te btn-block yok) */
+.btn-block { display: block; width: 100%; }
        
     .tab-nav a {
         padding: 6px 2px;
@@ -134,10 +154,13 @@ body {
     .tab-nav a span {
         font-size: 10px;
     } 
+    .tab-content{
+        min-height: calc(100vh - 155px);
+    }
     
     .tab-container {
         padding-bottom: 10px;
-        margin-bottom: 80px !important;
+        margin-bottom: 0px !important;
     }
     
     /* Diğer elementleri gizleme */
@@ -171,12 +194,20 @@ body {
     .nxl-container .nxl-content .main-content {
             padding:0px !important;
             top : 70px !important;
-            min-height: calc(100vh - 40px);
+            /* min-height: calc(100vh - 40px); */
         }
     @media (max-width: 575.98px) {
         .nxl-container .nxl-content .main-content {
             padding:0px !important;
             top : 70px !important;
+        }
+
+        .sticky-bottom-btn {
+            position: fixed;
+            bottom: 80px;
+            left: 10px;
+            right: 10px;
+            z-index: 1001;
         }
     }
 }

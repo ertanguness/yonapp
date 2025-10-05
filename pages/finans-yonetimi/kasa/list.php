@@ -23,7 +23,7 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items d-flex align-items-center gap-2">
-            <a href="#" class="btn btn-primary route-link" data-page="finans-yonetimi/kasa/duzenle">
+            <a href="/kasa-ekle" class="btn btn-primary route-link" >
                 <i class="feather-plus me-2"></i>
                 Yeni Kasa Ekle
             </a>
@@ -114,7 +114,7 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
                                         </a>
                                         <ul class="dropdown-menu">
                                             <li>
-                                                <a class="dropdown-item" href="javascript:void(0)">
+                                                <a class="dropdown-item" href="/kasa-duzenle/<?php echo $enc_id; ?>">
                                                     <i class="feather feather-edit-3 me-3"></i>
                                                     <span>Düzenle</span>
                                                 </a>
@@ -127,14 +127,14 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
                                             </li>
 
                                             <li>
-                                                <a class="dropdown-item" href="index?p=finans-yonetimi/kasa/hareketler&id=<?php echo $enc_id; ?>#kasa-hareketleri">
+                                                <a class="dropdown-item" href="/gelir-gider-islemleri/<?php echo $enc_id; ?>">
                                                     <i class="feather feather-alert-octagon me-3"></i>
                                                     <span>Hareketleri Göster</span>
                                                 </a>
                                             </li>
                                             <li class="dropdown-divider"></li>
                                             <li>
-                                                <a class="dropdown-item bg-danger text-white" id="kasa-sil"
+                                                <a class="dropdown-item bg-danger text-white kasa-sil" data-id="<?php echo $enc_id; ?>"
                                                     href="javascript:void(0)">
                                                     <i class="feather feather-trash-2 me-3"></i>
                                                     <span>Sil</span>

@@ -3,6 +3,7 @@
 namespace Model;
 
 use Model\Model;
+use PDO;
 
 class KasaHareketModel extends Model{
     protected $table = "kasa_hareketleri";
@@ -35,7 +36,10 @@ class KasaHareketModel extends Model{
      */
     public function getKasaHareketleri($kasa_id)
     {
-        $query = "SELECT * FROM {$this->table} WHERE kasa_id = :kasa_id ORDER BY islem_tarihi DESC";
+        $query = "SELECT * FROM $this->table
+                    WHERE kasa_id = :kasa_id 
+                    AND silinme_tarihi IS NULL
+                    ORDER BY islem_tarihi desc, id DESC";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
         $stmt->execute();
@@ -43,5 +47,5 @@ class KasaHareketModel extends Model{
     }
 
 
-    
+
 }

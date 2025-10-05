@@ -51,10 +51,10 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 <a href="/onay-bekleyen-tahsilatlar" class="btn btn-outline-success">
                     <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
                 </a>
-                <a href="index?p=dues/payment/tahsilat-eslesmeyen" class="btn btn-outline-secondary">
+                <a href="/eslesmeyen-odemeler" class="btn btn-outline-secondary">
                     <i class="feather-copy me-2"></i>Eşleşmeyen Ödemeler
                 </a>
-                <a href="index?p=dues/payment/upload-from-xls" class="btn btn-outline-primary">
+                <a href="/excelden-odeme-yukle" class="btn btn-outline-primary">
                     <i class="feather-file-plus me-2"></i>Excelden Ödeme Yükle
                 </a>
             </div>
@@ -88,6 +88,9 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                             <th class="text-end" style="width:11%">Borç Tutarı</th>
                                             <th class="text-end" style="width:11%">Gecikme Zammı</th>
                                             <th class="text-end" style="width:11%">Toplam Borç</th>
+                                            <th class="text-end" style="width:11%">Kredi Tutarı</th>
+                                            <th class="text-end" style="width:11%">Kalan Borç</th>
+
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
@@ -97,7 +100,8 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                         foreach ($guncel_borclar as $index => $borc):
                                             $enc_id = Security::encrypt($borc->kisi_id);
                                             $tahsilat_color = 'secondary';
-                                            //$color = $kalan_borc < 0 ? 'danger' : 'success';
+                                            $net_borc = $borc->kredi_tutari - $borc->toplam_kalan_borc;
+                                            $color = $net_borc < 0 ? 'danger' : 'success';
 
                                         ?>
                                         <tr>
@@ -125,6 +129,12 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                                 <?= Helper::formattedMoney($borc->hesaplanan_gecikme_zammi) ?>
                                             </td>
                                             <td class="text-end"><?= Helper::formattedMoney($borc->toplam_kalan_borc) ?>
+                                            </td>
+                                            <td>
+                                                <?= Helper::formattedMoney($borc->kredi_tutari ?? 0) ?>
+                                            </td>
+                                            <td class="text-end text-<?= $color ?>">
+                                                <?= Helper::formattedMoney(($net_borc  )  ) ?>
                                             </td>
                                             <td style="width:5%;">
                                                 <div class="hstack gap-2 ">
@@ -164,14 +174,20 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="tahsilatGir" tabindex="-1" data-bs-keyboard="false" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title" id="modalTitleId">Tahsilat Ekle</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body tahsilat-modal-body">
+        
+            <!-- Overlay (Modal içi) -->
+
+
 
             </div>
             <div class="modal-footer">
@@ -183,6 +199,16 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         </div>
     </div>
 </div>
+
+<!-- Mesaj gönderme modali -->
+<div class="modal fade" id="SendMessage" tabindex="-1" aria-labelledby="SendMessageLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content mesaj-gonder">
+           
+        </div>
+    </div>
+</div>
+
 <style>
 .borc-satiri.secili-satir {
     background-color: #f0f9ff;
@@ -193,6 +219,10 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 
 .table tr:hover {
     cursor: pointer;
+}
+
+#islem_tarihi .flatpickr-calendar{
+  position: static;
 }
 </style>
 <script>
@@ -247,11 +277,13 @@ $(document).on('click', '.tahsilat-gir', function() {
 
     }
         if ($("#islem_tarihi").length > 0) {
+            
         $("#islem_tarihi").flatpickr({
             dateFormat: "d.m.Y H:i",
             locale : "tr",
-           enableTime: true,
-           minuteIncrement :1,
+            enableTime: true,
+            minuteIncrement: 1,
+        
         })
     }
 
@@ -260,9 +292,25 @@ $(document).on('click', '.tahsilat-gir', function() {
     // Modal'ı göster
 });
 
+$(document).on('click', '.mesaj-gonder', function() {
+    var id = $(this).data('id');
+    kisiId = $(this).data('id');
+
+
+
+    $.get("pages/dues/payment/modal/modal_mesaj_gonder.php", {
+        id: id,
+        kisi_id: kisiId
+    }, function(data) {
+        // Verileri tabloya ekle
+        $('.modal-content.mesaj-gonder').html(data);
+        // Modal'ı göster
+        $('#SendMessage').modal('show');
+    });
+});
+
+
 $(document).ready(function() {
-
-
 
     /**
      * Sunucudan toplam tutarı getirir ve ekranı günceller.

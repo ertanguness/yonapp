@@ -10,6 +10,7 @@ use Model\BloklarModel;
 use Model\DairelerModel;
 use App\Helper\Security;
 use App\Helper\DefinesHelper;
+use PhpOffice\PhpSpreadsheet\Calculation\Financial\TreasuryBill;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Helper\Date as Date;
 
@@ -235,8 +236,19 @@ class KisilerModel extends Model
     }
     //----------------------------------------------------------------------------------------------------\\
 
-
-
+/** Kişi id'sine göre kişi bilgilerini getirir
+ * @param int $id Kişi ID'si.
+ * @return object|null Kişi bilgilerini içeren nesne veya bulunamazsa null döner.
+ */
+    public function getKisiByDaireId($id)
+    {
+        $sql = $this->db->prepare("SELECT k.*,d.daire_kodu 
+                                          FROM $this->table k 
+                                          LEFT JOIN daireler d ON d.id = k.daire_id
+                                          WHERE k.id = ?");
+        $sql->execute([$id]);
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
 
     /**************************************************************************************************** */
     /**Daire id'sinden, şu anda dairede oturan aktif kişiyi getirir
@@ -416,7 +428,9 @@ class KisilerModel extends Model
                 ' . Helper::formattedMoney($result->toplam_borc) . '
             </td>
             <td class="text-end">' . Helper::formattedMoney($result->toplam_tahsilat) . '</td>
+            <td class="text-end">' . Helper::formattedMoney($result->toplam_tahsilat) . '</td>
             <td class="text-end">' . Helper::formattedMoney($result->bakiye) . '</td>
+            <td class="text-end"></td>
             <td>
                 <div class="hstack gap-2">
                     <a href="javascript:void(0);" 
@@ -653,11 +667,19 @@ class KisilerModel extends Model
      * @param array $ids
      * @return array
      */
-    public function getKisilerByIds(array $ids): array
+    public function getKisilerByIds(array $ids, $encrypt = false): array
     {
         if (empty($ids)) {
             return [];
         }
+
+        //gelen id'lerin şifrelerini çözüp int'e çevir
+        if ($encrypt) {
+            $ids = array_map(function($id) {
+                return (int) Security::decrypt($id);
+            }, $ids);
+        }
+      
 
         // ID'leri virgülle ayır ve sorguyu hazırla
         $placeholders = implode(',', array_fill(0, count($ids), '?'));

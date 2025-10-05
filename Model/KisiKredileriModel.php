@@ -11,6 +11,8 @@ class KisiKredileriModel extends Model
 {
     protected $table = "kisi_kredileri";
 
+    protected $view_kisi_kredi_ozet = "view_kisi_kredi_ozet";
+
     public function __construct()
     {
         parent::__construct($this->table);
@@ -26,7 +28,8 @@ class KisiKredileriModel extends Model
         $sql = $this->db->prepare("SELECT sum(tutar) as toplam_kredi 
                                           FROM $this->table 
                                           WHERE kisi_id = ?
-                                          AND kullanildi_mi = ?");
+                                          AND kullanildi_mi = ?
+                                            AND silinme_tarihi IS NULL");
         $sql->execute([$kisi_id,0]);
         return $sql->fetch(PDO::FETCH_OBJ)->toplam_kredi ?? 0;
     }
@@ -161,12 +164,45 @@ class KisiKredileriModel extends Model
     {
         $sql = "SELECT SUM(kullanilan_tutar) as toplam_kullanilan_kredi
                 FROM {$this->table} 
-                WHERE tahsilat_id = :tahsilat_id AND silinme_tarihi IS NULL";
+                WHERE tahsilat_id = :tahsilat_id";
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':tahsilat_id' => $tahsilat_id]);
         
         return (float)($stmt->fetchColumn() ?? 0.0);
+    }
+
+
+
+
+    /** Kişinin kullanılabilir kredi miktarını döner */
+    public function getKullanilabilirKrediByKisiId(int $kisi_id): float
+    {
+        $sql = "SELECT kalan_kredi
+                FROM {$this->view_kisi_kredi_ozet} 
+                WHERE kisi_id = :kisi_id";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':kisi_id' => $kisi_id]);
+        
+        return (float)($stmt->fetchColumn() ?? 0.0);
+    }
+
+
+
+     /**
+     * Tahsilat ID'sine göre kredi kullanım kayıtları soft delete edilir
+     * @param int $tahsilat_id
+     */
+    public function softDeleteByTahsilatID(int $tahsilat_id)
+    {
+        $sql = "UPDATE $this->table 
+                SET silinme_tarihi = NOW(), silen_kullanici = :silen_kullanici 
+                WHERE tahsilat_id = :tahsilat_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':tahsilat_id', $tahsilat_id, PDO::PARAM_INT);
+        $stmt->bindParam(':silen_kullanici', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmt->execute();
     }
 
 }
