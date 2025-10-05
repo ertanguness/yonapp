@@ -1,4 +1,4 @@
-let aracEkleUrl = "pages/management/peoples/api/AracBilgileriApi.php";
+let aracEkleUrl = "/pages/management/peoples/api/AracBilgileriApi.php";
 
 $(document).on("click", "#AracEkle", function () {
   var form = $("#aracEkleForm");

@@ -17,10 +17,10 @@ if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
     $id = Security::decrypt($_POST["id"]);
     $kimlikNo = $_POST["tcPassportNo"] ?? null;
 
-    $dogumTarihi     = Date::Ymd($_POST["birthDate"] ?? null);
-    $satinAlmaTarihi = Date::Ymd($_POST["buyDate"] ?? null);
-    $girisTarihi     = Date::Ymd($_POST["entryDate"] ?? null);
-    $cikisTarihi     = Date::Ymd($_POST["exitDate"] ?? null);
+    $dogumTarihi     = Date::Ymd($_POST["birthDate"] );
+    $satinAlmaTarihi = Date::Ymd($_POST["buyDate"] );
+    $girisTarihi     = Date::Ymd($_POST["entryDate"] );
+    $cikisTarihi     = Date::Ymd($_POST["exitDate"] ) ?? null;
 
     // Sadece yeni kayıt eklenirken kimlik numarası kontrolü yap
     if (empty($id) || $id == 0) {

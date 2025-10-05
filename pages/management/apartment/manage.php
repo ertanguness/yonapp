@@ -2,7 +2,7 @@
 
 use App\Helper\Security;
 
-$enc_id = $id;
+$enc_id = $id ?? 0;
 $id =  Security::decrypt($id ?? 0);
 
 

@@ -176,7 +176,7 @@
 
     <!--diğer sekmeyi aktif etme başlangıç -->
 
-    <script>
+    <!-- <script>
         document.getElementById("sitesTabButton").addEventListener("click", function(event) {
             event.preventDefault(); // Formun post edilmesini engelle
 
@@ -202,7 +202,7 @@
                 toast.show();
             }
         });
-    </script>
+    </script> -->
     <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
 
     <script>
@@ -238,7 +238,7 @@
             if (selectedIl) {
                 $.ajax({
                     type: 'POST',
-                    url: 'api/il-ilce.php',
+                    url: '/api/il-ilce.php',
                     data: {
                         city_id: selectedIl,
                         selected_ilce: selectedIlce
@@ -264,7 +264,7 @@
             // Modal onayla butonuna tıklanınca seçilen logo önizleme ve inputa yazılsın
             $("#confirmLogo").on("click", function() {
                 if (selectedFileName !== "") {
-                    $("#logoPreview").attr("src", "assets/images/logo/" + selectedFileName);
+                    $("#logoPreview").attr("src", "/assets/images/logo/" + selectedFileName);
                     $("#selectedLogo").val(selectedFileName);
                 }
             });
@@ -278,7 +278,7 @@
                     formData.append("site_id", "<?= (empty($id) || $id == 0) ? $siteYeniID  : $id ?>"); // PHP'den alınan ID 1 artırılarak gönderiliyor
 
                     $.ajax({
-                        url: "pages/management/sites/content/upload_logo.php",
+                        url: "/pages/management/sites/content/upload_logo.php",
                         type: "POST",
                         data: formData,
                         processData: false,

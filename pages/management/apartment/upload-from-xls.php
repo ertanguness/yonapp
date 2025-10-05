@@ -26,7 +26,7 @@ $site_adi = $site ? $site->site_adi : null;
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items">
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <a href="index?p=management/apartment/list" class="btn btn-outline-secondary">
+                <a href="/site-daireleri" class="btn btn-outline-secondary">
                     <i class="feather-arrow-left me-2"></i>Listeye Dön
                 </a>
             </div>

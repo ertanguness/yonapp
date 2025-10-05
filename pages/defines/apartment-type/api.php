@@ -1,6 +1,6 @@
 <?php
-session_start();
-require_once '../../../vendor/autoload.php';
+require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
+
 
 use Model\DefinesModel;
 use App\Helper\Security;

@@ -7,6 +7,8 @@ use App\Helper\Cities;
 $Sites = new SitelerModel();
 $cities = new Cities();
 
+$enc_id = $id ?? 0;
+
 $id = Security::decrypt($id ?? 0);
 
 $site = $Sites->find($id  ?? null);
@@ -58,7 +60,7 @@ $siteYeniID= $Sites->siteSonID() ?? 0;
                 <div class="col-12">
                     <div class="card">
                         <form id="sitesForm" method="POST">
-                            <input type="hidden" name="sites_id" id="sites_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                            <input type="hidden" name="sites_id" id="sites_id" value="<?php echo $enc_id ?? 0; ?>">
                             <div class="row">
                                 <div class="container-xl">
                                     <div class="card">

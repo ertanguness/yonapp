@@ -21,7 +21,7 @@ if (
     $page == 'dues/debit/detail' || $page == 'dues/payment/list' || $page == 'dues/debit/list' ||
     $page == "management/peoples/list" || $page == "management/peoples/manage" ||
     $page == 'management/blocks/list' || $page == 'management/apartment/list' ||
-    $page == 'defines/apartment-type/list' ||
+    $page == 'daire-tipi-tanimlamalari' ||
     $page == 'dues/payment/tahsilat-onay' ||
     $page == "finans-yonetimi/kasa/list" ||
     $page == 'siteler' ||
@@ -39,9 +39,9 @@ if (
     $page == "onay-bekleyen-tahsilatlar" || $page == "eslesmeyen-odemeler" ||
     $page == "ziyaretci-listesi" ||
     $page == "icralarim" || $page == "icra-detay" || $page == "icra-listesi" ||  $page == "icra-takibi" ||
+    $page == "daire-tipi-tanimlama" ||
 
-
-    $page == 'management/sites/list' ||
+    $page == 'siteler' ||
     $page == "dues/collections/list" || $page == "dues/collections/detail" ||
     $page == "ziyaretci/list" || $page == "ziyaretci/guvenlik/list" ||
     $page == "ziyaretci/guvenlik/GorevYeri/list"  || $page == "ziyaretci/guvenlik/Vardiya/list" ||
@@ -100,9 +100,9 @@ if (
 //*************SITES******************************** */
 // Site Tanımlama sayfası
 if (
-    $page == 'management/sites/manage' ||   $page == 'management/sites/list'
+    $page == 'site-duzenle' || $page == "site-ekle"  || $page == 'management/sites/list'
 ) {
-    echo '<script src="pages/management/sites/sites.js"></script>';
+    echo '<script src="/pages/management/sites/sites.js"></script>';
 }
 
 //*************SITES******************************** */
@@ -143,11 +143,11 @@ if($page == 'tahsilat-detayi') {
 //*************BLOCKS******************************** */
 // Site Tanımlama sayfası
 if (
-    $page == 'management/blocks/manage' ||
-    $page == 'management/blocks/list' ||
-    $page == 'management/sites/manage'
+    $page == 'site-bloklari' ||
+    $page == 'blok-ekle' ||
+    $page == 'blok-duzenle' 
 ) {
-    echo '<script src="pages/management/blocks/blocks.js"></script>';
+    echo '<script src="/pages/management/blocks/blocks.js"></script>';
 }
 //*************BLOCKS******************************** */
 
@@ -173,8 +173,8 @@ if (
 }
 
 
-if ($page == 'management/peoples/upload-from-xls') {
-    echo '<script src="pages/management/peoples/js/upload-from-xls.js"></script>';
+if ($page == 'kisileri-excelden-yukle') {
+    echo '<script src="/pages/management/peoples/js/upload-from-xls.js"></script>';
 }
 //*************PEOPLES BİTİŞ******************************** */
 
@@ -220,9 +220,14 @@ if ($page == 'repair/cost/manage' || $page == 'repair/cost/list') {
 // Daire Tipi Tanımlama sayfası
 
 if (
-    $page == 'defines/apartment-type/manage' ||   $page == 'defines/apartment-type/list'
+    $page == 'daire-tipi-tanimlamalari' ||   $page == 'daire-tipi-ekle' || $page == 'daire-tipi-duzenle'
 ) {
-    echo '<script src="pages/defines/apartment-type/apartment-type.js"></script>';
+    echo '<script src="/pages/defines/apartment-type/apartment-type.js"></script>';
+}
+
+//Daireleri excelden yükleme
+if ($page == 'daireleri-excelden-yukle') {
+    echo '<script src="/pages/management/apartment/js/upload-from-xls.js"></script>';
 }
 //*************define APARTMENT TYPES******************************** */
 

@@ -133,6 +133,11 @@ $router->get('daire-duzenle/{id}', function ($id) {
     require 'pages/management/apartment/manage.php';
 });
 
+//Excelden Daire Yükle
+$router->get('daireleri-excelden-yukle', function () {
+    require 'pages/management/apartment/upload-from-xls.php';
+});
+
 //Site Sakinleri
 $router->get('site-sakinleri', function () {
     require 'pages/management/peoples/list.php';
@@ -146,6 +151,11 @@ $router->get('site-sakini-ekle', function () {
 //Site sakini düzenle
 $router->get('site-sakini-duzenle/{id}', function ($id) {
     require 'pages/management/peoples/manage.php';
+});
+
+//Excelden kişi yükle
+$router->get('kisileri-excelden-yukle', function () {
+    require 'pages/management/peoples/upload-from-xls.php';
 });
 
 
@@ -272,6 +282,25 @@ $router->get('index', function () {
 $router->get('onay-bekleyen-tahsilatlar', function () {
     require 'pages/dues/payment/tahsilat-onay.php';
 });
+
+
+
+//TANIMLAMALAR MENÜSÜ
+$router->get('daire-tipi-tanimlamalari', function () {
+    require 'pages/defines/apartment-type/list.php';
+});
+$router->get('daire-tipi-ekle', function () {
+    require 'pages/defines/apartment-type/manage.php';
+});
+
+
+
+
+
+
+
+
+
 
 
 

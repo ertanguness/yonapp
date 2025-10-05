@@ -20,8 +20,13 @@ class Date
    // 'Y-m-d' çıktısı
     public static function Ymd(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
+        if ($input === null || $input === '') {
+            return '';
+        }
         return self::parseToFormat($input, 'Y-m-d', $tz);
-    } public static function YmdHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
+    }
+
+    public static function YmdHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
         return self::parseToFormat($input, 'Y-m-d H:i:s', $tz);
     }

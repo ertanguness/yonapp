@@ -42,7 +42,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                // require_once 'pages/components/download.php'
                 ?>
            
-                <a href="index?p=management/peoples/upload-from-xls" 
+                <a href="/kisileri-excelden-yukle" 
                 data-tooltip="Kişileri Excelden Yükle"
                 class="btn btn-icon has-tooltip tooltip-bottom">
                     <i class="feather-upload me-2"></i>

@@ -7,6 +7,7 @@ use Model\SitelerModel;
 $Siteler = new SitelerModel();
 $Blocks = new BloklarModel();
 
+$enc_id = $id ?? 0;
 $id = Security::decrypt($id ?? 0) ?? 0;
 $blocks = $Blocks->find($id  ?? null);
 
@@ -94,7 +95,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                             </div>
                         </div>
                         <form action='' id='peoplesForm'>
-                        <input type="hidden" name="kisi_id" id="kisi_id" sssssssss">
+                        <input type="hidden" name="kisi_id" id="kisi_id" value="<?php echo $enc_id ?? 0; ?>">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">

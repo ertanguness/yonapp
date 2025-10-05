@@ -5,6 +5,7 @@ use App\Helper\Security;
 
 session_start();
 $page = $_GET["p"];
+
 $user_id = $_SESSION['user']->id;
 $user_role = $_SESSION['user']->user_roles;
 //get ile gelen firm_id değeri sessiona atanır
@@ -14,4 +15,4 @@ if ($site_id == null) {
 }
 $_SESSION['site_id'] = $site_id;
 
-header("Location: index.php?p=$page");
+header("Location: $page");

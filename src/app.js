@@ -333,8 +333,15 @@ function AlertConfirm(confirmMessage = "Emin misiniz?") {
   });
 }
 
+
+function getCurrentPageSlug() {
+  const path = window.location.pathname.replace(/\/+$/, '');
+  const parts = path.split('/').filter(Boolean);
+  return parts.pop() || '';
+}
+
 $(document).on("change", "#mySite", function () {
-  var page = new URLSearchParams(window.location.search).get("p");
+  var page =getCurrentPageSlug() || 'ana-sayfa';
   window.location = "set-session.php?p=" + page + "&site_id=" + $(this).val();
 });
 
