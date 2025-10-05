@@ -1,4 +1,4 @@
-let acilDurumKisiEkleUrl = "pages/management/peoples/api/AcilDurumKisileriApi.php";
+let acilDurumKisiEkleUrl = "/pages/management/peoples/api/AcilDurumKisileriApi.php";
 
 $(document).on("click", "#AcilDurumEkle", function () {
   var form = $("#acilDurumKisileriEkleForm");

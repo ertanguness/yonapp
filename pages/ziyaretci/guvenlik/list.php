@@ -36,11 +36,11 @@ $GorevYerleri = $GörevYeriModel->GorevYerleri();
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <a href="#" class="btn btn-primary route-link" data-page="ziyaretci/guvenlik/manage">
+                <a href="guvenlik-yeni-gorev-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Görev Ekle</span>
                 </a>
-                <a href="#" class="btn btn-info route-link" data-page="ziyaretci/guvenlik/Personel/manage">
+                <a href="personel-listesi" class="btn btn-info route-link" >
                     <i class="feather-user-plus me-2"></i>
                     <span>Personel Ekle</span>
                 </a>
@@ -142,7 +142,7 @@ $GorevYerleri = $GörevYeriModel->GorevYerleri();
                                 </td>
                                 <td>
                                     <div class="hstack gap-2">
-                                        <a href="index?p=ziyaretci/guvenlik/manage&id=<?= $enc_id; ?>" class="avatar-text avatar-md">
+                                        <a href="guvenlik-gorev-duzenle/<?= $enc_id; ?>" class="avatar-text avatar-md">
                                             <i class="feather-edit"></i>
                                         </a>
                                         <a href="javascript:void(0);"

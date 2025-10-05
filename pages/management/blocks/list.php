@@ -17,7 +17,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
             <h5 class="m-b-10">Yönetim</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Bloklar</li>
         </ul>
     </div>
@@ -35,7 +35,8 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                // require_once 'pages/components/download.php'
                 ?>
 
-                <a href="#" class="btn btn-primary route-link" data-page="/blok-ekle">
+             
+                <a href="blok-ekle" class="btn btn-primary route-link">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Blok Ekle</span>
                 </a>

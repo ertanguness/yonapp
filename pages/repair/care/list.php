@@ -29,11 +29,11 @@ $BakimListesi = $PeriyodikBakimlar->PeriyodikBakimlar();
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                 <a href="#" class="btn btn-success route-link" data-page="repair/cost/manage">
+                 <a href="maliyet-faturalandirma" class="btn btn-success route-link">
                     <i class="feather-file-plus me-2"></i>
                     <span>İşlem Makbuzu Ekle</span>
                 </a>
-                <a href="#" class="btn btn-primary route-link" data-page="repair/care/manage">
+                <a href="periyodik-bakim-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus me-2"></i>
                     <span>Yeni İşlem</span>
                 </a>
@@ -124,7 +124,7 @@ $BakimListesi = $PeriyodikBakimlar->PeriyodikBakimlar();
                                                     } else {
                                                         // Bakım günü geçmiş
                                                         echo '<span class="text-danger">
-                                                                <i class="feather-x-circle"></i> Bakım günü geçmiş (' . abs($days) . ' gün önce)
+                                                                <i class="feather-x-circle"></i> Bakım geçmiş (' . abs($days) . ' gün önce)
                                                             </span>';
                                                     }
                                                 } else {
@@ -143,7 +143,7 @@ $BakimListesi = $PeriyodikBakimlar->PeriyodikBakimlar();
                                             <td>
                                                 <div class="hstack gap-2">
                                                 
-                                                    <a href="index?p=repair/care/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                    <a href="periyodik-bakim-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                         <i class="feather-edit"></i>
                                                     </a>
                                                     <a href="javascript:void(0);"

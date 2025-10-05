@@ -6,7 +6,7 @@ use App\Helper\Security;
 use App\Services\FlashMessageService;
 use App\Controllers\AuthController; // AuthController'ı da kullanabiliriz
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0);
 $BakimMaliyetleri = new BakimMaliyetModel();
 $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
 
@@ -17,7 +17,7 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
             <h5 class="m-b-10">Maliyet ve Faturalandırma</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Maliyet Takip</li>
         </ul>
     </div>
@@ -30,10 +30,10 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="repair/cost/list">
+                <a href="/maliyet-faturalandirma" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="maliyet_kaydet">
                     <i class="feather-save me-2"></i>
                     Kaydet
@@ -56,7 +56,7 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                 <div class="col-12">
                     <div class="card">
                         <form id="maliyetForm" method="post">
-                            <input type="hidden" id="maliyet_id" name="maliyet_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                            <input type="hidden" id="maliyet_id" name="maliyet_id" value="<?php echo Security::encrypt($id ?? 0)  ?>">
                             <div class="card-body cost-info">
 
                                 <!-- Bakım Türü ve Fatura No -->
@@ -221,7 +221,7 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
             }
 
             $.ajax({
-                url: "pages/repair/cost/maliyetApi.php",
+                url: "/pages/repair/cost/maliyetApi.php",
                 type: "GET",
                 data: {
                     action: "get_talepler",

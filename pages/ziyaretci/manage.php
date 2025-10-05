@@ -14,7 +14,7 @@ $Kisiler = new KisilerModel();
 $Block = new BloklarModel();
 $Ziyaretciler = new ZiyaretciModel();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id =  Security::decrypt($id ?? 0) ;
 
 $ZiyaretciBilgileri = $Ziyaretciler->ZiyaretciBilgileri($id);
 
@@ -35,7 +35,7 @@ $daireKisileri = $Kisiler->DaireKisileri($kisiBilgileri->daire_id ?? null);
             <h5 class="m-b-10"> Güvenlik ve Ziyaretçi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Ziyaretçi Yönetimi</li>
         </ul>
     </div>
@@ -48,10 +48,10 @@ $daireKisileri = $Kisiler->DaireKisileri($kisiBilgileri->daire_id ?? null);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="ziyaretci/list">
+                <a href="/ziyaretci-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="ziyaretci_kaydet">
                     <i class="feather-save  me-2"></i>
                     Kaydet
@@ -69,7 +69,7 @@ $daireKisileri = $Kisiler->DaireKisileri($kisiBilgileri->daire_id ?? null);
 <div class="main-content">
     <div class="container-xl">
         <form id="ziyaretciForm" method="POST">
-            <input type="hidden" name="ziyaretci_id" id="ziyaretci_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+            <input type="hidden" name="ziyaretci_id" id="ziyaretci_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
 
             <!-- Ziyaretçi Bilgileri -->
             <div class="card mb-4">

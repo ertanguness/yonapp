@@ -12,7 +12,7 @@ $bugün = date('Ymd'); // Örn: 20250724
 $talepNo = "P" . $bugün . '-' . $Bakimlar->PeriyodikBakimSonID()['last_id'];
 // ------------------------------------------------------------------------------
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0);
 $bakim = $Bakimlar->PeriyodikBakimBilgileri($id);
 $Blok = $Bloklar->SiteBloklari($_SESSION['site_id']);
 ?>
@@ -22,7 +22,7 @@ $Blok = $Bloklar->SiteBloklari($_SESSION['site_id']);
             <h5 class="m-b-10"> Bakım ve Arıza Takip </h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Periyodik Bakım Takip</li>
         </ul>
     </div>
@@ -36,10 +36,10 @@ $Blok = $Bloklar->SiteBloklari($_SESSION['site_id']);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="repair/care/list">
+                <a href="/periyodik-bakim" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="periyodikBakim_kaydet">
                     <i class="feather-save  me-2"></i>
                     Kaydet
@@ -66,7 +66,7 @@ $Blok = $Bloklar->SiteBloklari($_SESSION['site_id']);
                 <div class="col-12">
                     <div class="card">
                         <form id="periyodikBakimForm" method="post">
-                            <input type="hidden" id="periyodikBakim_id" name="periyodikBakim_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                            <input type="hidden" id="periyodikBakim_id" name="periyodikBakim_id" value="<?php echo Security::encrypt($id ?? 0 ) ?>">
                             <div class="card-body care-info">
                                 <div class="row mb-4 align-items-center">
                                     <div class="col-lg-2">

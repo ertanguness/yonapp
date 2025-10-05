@@ -1,4 +1,4 @@
-let vardiyaurl = "pages/ziyaretci/guvenlik/Vardiya/VardiyaApi.php";
+let vardiyaurl = "/pages/ziyaretci/guvenlik/Vardiya/VardiyaApi.php";
 
 $(document).on("click", "#vardiyaKaydet", function () {
   var form = $("#VardiyaForm");

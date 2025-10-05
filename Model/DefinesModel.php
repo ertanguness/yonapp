@@ -6,11 +6,8 @@ use Model\Model;
 use PDO;
 
 class DefinesModel extends Model
-{
-    protected $table = "defines";
-    protected $site_id;
+{ protected $table = 'defines';
 
- 
     public function __construct()
     {
         parent::__construct($this->table);
@@ -18,16 +15,14 @@ class DefinesModel extends Model
 
 
     
-    public function daireTipiGetir($site_id, $type)
+    public function daireTipiGetir($type)
     {
+        $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE site_id = ? and id = ?");
         $sql->execute([$site_id, $type]);
         return $sql->fetch(PDO::FETCH_OBJ); // sadece bir satır bekleniyorsa
     }
     
-    
-    
-
     public function isApartmentTypeNameExists($site_id, $name)
     {
         $sql = $this->db->prepare("SELECT COUNT(*) FROM defines WHERE site_id = :site_id AND define_name = :name");
@@ -81,7 +76,5 @@ class DefinesModel extends Model
         
         return $result ? (int)$result->id : null; // Eğer sonuç varsa ID'yi döndür, yoksa null döndür
     }
-
-
 
 }

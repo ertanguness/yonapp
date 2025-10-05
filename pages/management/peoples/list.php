@@ -25,7 +25,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
             <h5 class="m-b-10">Site Yönetim</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Sakinler</li>
         </ul>
     </div>
@@ -42,18 +42,15 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                // require_once 'pages/components/download.php'
                 ?>
            
-                <a href="index?p=management/peoples/upload-from-xls" 
+                <a href="excelden-site-sakini-yukle" 
                 data-tooltip="Kişileri Excelden Yükle"
                 class="btn btn-icon has-tooltip tooltip-bottom">
                     <i class="feather-upload me-2"></i>
                     Excelden Yükle
                 </a>
-
-                <a href="#" class="btn btn-primary route-link" 
-                
-                data-page="management/peoples/manage">
-                    <i class="feather-plus"></i>
-                    <span>Yeni Kişi Ekle</span>
+                <a href="site-sakini-ekle" class="btn btn-primary route-link">
+                    <i class="feather-plus me-2"></i>
+                    <span>Site Sakini Ekle</span>
                 </a>
             </div>
         </div>

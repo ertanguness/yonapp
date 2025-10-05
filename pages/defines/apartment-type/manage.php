@@ -1,4 +1,14 @@
+<?php
 
+use App\Helper\Security;
+use Model\DefinesModel;
+
+$Tanimlamalar = new DefinesModel();
+
+$id = Security::decrypt($id ?? 0);
+
+$daireTipi = $Tanimlamalar->daireTipiGetir($id);
+?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -18,10 +28,10 @@
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="defines/apartment-type/list">
+                <a href="/daire-turu-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="saveApartmentType">
                     <i class="feather-save me-2"></i>
                     Kaydet
@@ -45,7 +55,7 @@
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
-                                    <input type="hidden" name="apartment-type_id" id="apartment-type_id" value="<?php echo $id ; ?>">
+                                    <input type="hidden" name="apartment-type_id" id="apartment-type_id" value="<?php echo Security::encrypt($id ?? 0)  ; ?>">
 
                                         <div class="col-lg-2">
                                             <label for="apartment_type_name" class="fw-semibold">Daire Tipi Adı: </label>
@@ -53,7 +63,7 @@
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-home"></i></div>
-                                                <input type="text" class="form-control" id="apartment_type_name" name="apartment_type_name">
+                                                <input type="text" class="form-control" id="apartment_type_name" name="apartment_type_name" value="<?php echo $daireTipi->define_name ?? ''; ?>">
                                             </div>
                                         </div>
                                         <div class="col-lg-1">
@@ -62,7 +72,7 @@
                                         <div class="col-lg-5">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-type"></i></div>
-                                                <textarea class="form-control" id="description" name="description" cols="30" rows="3"></textarea>
+                                                <textarea class="form-control" id="description" name="description" cols="30" rows="3"><?php echo $daireTipi->description ?? ''; ?></textarea>
                                             </div>
                                         </div>
                                     </div>

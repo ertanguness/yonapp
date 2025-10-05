@@ -1,4 +1,4 @@
-let peoplesurl = "pages/management/peoples/api/KisilerGenelBilgilerApi.php";
+let peoplesurl = "/pages/management/peoples/api/KisilerGenelBilgilerApi.php";
 
 $(document).on("click", "#save_peoples, #savePeoples", function () {
   var form = $("#peoplesForm");

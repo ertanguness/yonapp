@@ -15,7 +15,7 @@ $Bakim = $Bakimlar->Bakimlar();
             <h5 class="m-b-10">Bakım ve Arıza Takip</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Bakım Takip Listesi</li>
         </ul>
     </div>
@@ -28,15 +28,12 @@ $Bakim = $Bakimlar->Bakimlar();
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <?php
-                require_once 'pages/components/search.php';
-                require_once 'pages/components/download.php'
-                ?>
-                <a href="#" class="btn btn-success route-link" data-page="repair/cost/manage">
+               
+                <a href="maliyet-fatura-ekle" class="btn btn-success route-link" >
                     <i class="feather-file-plus me-2"></i>
                     <span>İşlem Makbuzu Ekle</span>
                 </a>
-                <a href="#" class="btn btn-primary route-link" data-page="repair/manage">
+                <a href="bakim-ariza-ekle" class="btn btn-primary route-link" > 
                     <i class="feather-plus me-2"></i>
                     <span>Yeni İşlem</span>
                 </a>
@@ -153,9 +150,11 @@ $Bakim = $Bakimlar->Bakimlar();
                                                 <td>
                                                     <div class="hstack gap-2">
 
-                                                        <a href="index?p=repair/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                    <a href="bakim-ariza-duzenle/<?php echo $enc_id; ?>"
+                                                            class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
+                                                    
                                                         <a href="javascript:void(0);"
                                                             data-name="<?php echo $item->talep_no ?>"
                                                             data-id="<?php echo $enc_id ?>"

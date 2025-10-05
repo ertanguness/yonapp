@@ -18,8 +18,8 @@ $site_adi = $site ? $site->site_adi : null;
             <h5 class="m-b-10">Daireler</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
-            <li class="breadcrumb-item"><a href="index?p=dues/payment/list">Daire Listesi</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="site-sakinleri">Site Sakinleri</a></li>
             <li class="breadcrumb-item">Excelden Daire Yükle</li>
         </ul>
     </div>

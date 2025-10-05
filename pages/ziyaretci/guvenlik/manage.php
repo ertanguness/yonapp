@@ -7,7 +7,7 @@ use Model\GuvenlikVardiyaModel;
 use Model\GuvenlikModel;
 use App\Helper\Date;
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0); ;
 
 $GorevYerleri = new GuvenlikGorevYeriModel();
 $Personeller = new GuvenlikPersonelModel();
@@ -28,7 +28,7 @@ $bugun = date('Y-m-d');
             <h5 class="m-b-10">Güvenlik ve Ziyaretçi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Güvenlik Yönetimi</li>
         </ul>
     </div>
@@ -41,9 +41,9 @@ $bugun = date('Y-m-d');
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="ziyaretci/guvenlik/list">
+                <a href="/guvenlik" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="guvenlik_kaydet">
                     <i class="feather-save me-2"></i>Kaydet
                 </button>
@@ -61,7 +61,7 @@ $bugun = date('Y-m-d');
     <div class="container-xl">
         <div class="card">
             <form id="guvenlikForm">
-                <input type="hidden" name="guvenlik_id" id="guvenlik_id" value="<?= $_GET['id'] ?? 0 ?>">
+                <input type="hidden" name="guvenlik_id" id="guvenlik_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
 
                 <div class="card-body security-info">
 
@@ -157,8 +157,8 @@ $bugun = date('Y-m-d');
                         <div class="input-group flex-nowrap w-100">
                             <div class="input-group-text"><i class="fas fa-toggle-on"></i></div>
                             <select class="form-select select2 w-100" name="durum" id="durum">
-                                <option value="1" <?= (isset($guvenlik->aciklama_durum) && $guvenlik->aciklama_durum == 1) ? 'selected' : '' ?>>Aktif</option>
-                                <option value="0" <?= (isset($guvenlik->aciklama_durum) && $guvenlik->aciklama_durum == 0) ? 'selected' : '' ?>>Pasif</option>
+                                <option value="1" <?= (isset($guvenlik->durum) && $guvenlik->durum == 1) ? 'selected' : '' ?>>Aktif</option>
+                                <option value="0" <?= (isset($guvenlik->durum) && $guvenlik->durum == 0) ? 'selected' : '' ?>>Pasif</option>
                             </select>
                         </div>
                     </div>

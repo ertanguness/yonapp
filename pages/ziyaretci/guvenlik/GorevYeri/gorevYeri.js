@@ -1,4 +1,4 @@
-let gorevYeriurl = "pages/ziyaretci/guvenlik/GorevYeri/GorevYeriApi.php";
+let gorevYeriurl = "/pages/ziyaretci/guvenlik/GorevYeri/GorevYeriApi.php";
 
 $(document).on("click", "#gorevYeriKaydet", function () {
   var form = $("#GorevYeriForm");

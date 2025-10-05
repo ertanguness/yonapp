@@ -1,12 +1,9 @@
 <?php
 
-
-
 use App\Router;
 
 // Router başlat
 $router = new Router();
-
 
 $router->get('aidat-turu-tanimlama', function () {
     require 'pages/dues/dues-defines/manage.php';
@@ -67,14 +64,20 @@ $router->get('ana-sayfa', function () {
 });
 
 
-//Site Yönetimi
+                        // SİTE YÖNETİMİ
+//site ekle
 $router->get('site-ekle', function () {
     require 'pages/management/sites/manage.php';
 });
+//site-duzenle
 $router->get('site-duzenle/{id}', function ($id) {
     require 'pages/management/sites/manage.php';
 });
 
+//siteler listesi
+$router->get('siteler', function () {
+    require 'pages/management/sites/list.php';
+});
 
 //Bloklar
 $router->get('site-bloklari', function () {
@@ -108,16 +111,125 @@ $router->get('daire-duzenle/{id}', function ($id) {
 $router->get('site-sakinleri', function () {
     require 'pages/management/peoples/list.php';
 });
+//Site sakini ekle
+$router->get('site-sakini-ekle', function () {
+    require 'pages/management/peoples/manage.php';
+});
 //Site sakini düzenle
 $router->get('site-sakini-duzenle/{id}', function ($id) {
     require 'pages/management/peoples/manage.php';
 });
-
-
-$router->get('siteler', function () {
-    require 'pages/management/sites/list.php';
+// Araç Yönetimi
+$router->get('arac-yonetimi', function () {
+    $_GET['tab'] = 'car';
+    require 'pages/management/peoples/manage.php';
 });
 
+// Acil Durum Yönetimi
+$router->get('acil-durum-yonetimi', function () {
+    $_GET['tab'] = 'emergency';
+    require 'pages/management/peoples/manage.php';
+});
+
+
+
+$router->get('excelden-site-sakini-yukle', function () {
+    require 'pages/management/peoples/upload-from-xls.php';
+});
+
+                        // REPAİR(BAKIM ONARIM)
+//Bakım ve arıza yönetimi
+$router->get('bakim-ariza-takip', function () {
+    require 'pages/repair/list.php';
+});
+$router->get('bakim-ariza-ekle', function () {
+    require 'pages/repair/manage.php';
+});
+$router->get('bakim-ariza-duzenle/{id}', function ($id) {
+    require 'pages/repair/manage.php';
+});
+//periyodik bakım
+$router->get('periyodik-bakim', function () {
+    require 'pages/repair/care/list.php';
+});
+$router->get('periyodik-bakim-ekle', function () {
+    require 'pages/repair/care/manage.php';
+});
+$router->get('periyodik-bakim-duzenle/{id}', function ($id) {
+    require 'pages/repair/care/manage.php';
+});
+//maliyet ve faturalandırma
+$router->get('maliyet-faturalandirma', function () {
+    require 'pages/repair/cost/list.php';
+});
+$router->get('maliyet-fatura-ekle', function () {
+    require 'pages/repair/cost/manage.php';
+});
+$router->get('maliyet-fatura-duzenle/{id}', function ($id) {
+    require 'pages/repair/cost/manage.php';
+});
+
+                                //GÜVENLİK VE ZİYARETÇİ 
+//Görev Yeri listesi
+$router->get('guvenlik-gorev-yerleri', function () {
+    require 'pages/ziyaretci/guvenlik/GorevYeri/list.php';
+});   
+//Görev Yeri ekle
+$router->get('guvenlik-gorev-yeri-ekle', function () {
+    require 'pages/ziyaretci/guvenlik/GorevYeri/manage.php';
+}); 
+//Görev Yeri duzenle
+$router->get('guvenlik-gorev-yeri-duzenle/{id}', function ($id) {
+    require 'pages/ziyaretci/guvenlik/GorevYeri/manage.php';
+});  
+//Güvenlik Yönetimi
+$router->get('guvenlik', function () {
+    require 'pages/ziyaretci/guvenlik/list.php';
+});                             
+                         
+// Güvenlik Görev Yeri Ekle 
+$router->get('guvenlik-yeni-gorev-ekle', function () {
+    require 'pages/ziyaretci/guvenlik/manage.php';
+}); 
+// Güvenlik Görev Yeri Duzenle 
+$router->get('guvenlik-gorev-duzenle/{id}', function ($id) {
+    require 'pages/ziyaretci/guvenlik/manage.php';
+}); 
+// Ziyaretciler
+$router->get('ziyaretci-listesi', function () {
+    require 'pages/ziyaretci/list.php';
+});
+// ziyaretci ekle
+$router->get('ziyaretci-ekle', function () {
+    require 'pages/ziyaretci/manage.php';
+});
+// ziyaretci duzenle
+$router->get('ziyaretci-duzenle/{id}', function ($id) {
+    require 'pages/ziyaretci/manage.php';
+});
+// Personel Listesi
+$router->get('personel-listesi', function () {
+    require 'pages/ziyaretci/guvenlik/Personel/list.php';
+});
+// Personel Ekle
+$router->get('personel-ekle', function () {
+    require 'pages/ziyaretci/guvenlik/Personel/manage.php';
+});
+// Personel Düzenle
+$router->get('personel-duzenle/{id}', function ($id) {
+    require 'pages/ziyaretci/guvenlik/Personel/manage.php';
+});
+// Vardiya listesi
+$router->get('vardiya-listesi', function () {
+    require 'pages/ziyaretci/guvenlik/Vardiya/list.php';
+});  
+$router->get('vardiya-ekle', function () {
+    require 'pages/ziyaretci/guvenlik/Vardiya/manage.php';
+});  
+$router->get('vardiya-duzenle/{id}', function ($id) {
+    require 'pages/ziyaretci/guvenlik/Vardiya/manage.php';
+});  
+                                    //KULLANICILAR 
 //Kullanıcı Ekle
 $router->get('kullanici-ekle' , function () {
     require 'pages/kullanici/duzenle.php';
@@ -179,10 +291,7 @@ $router->get('gelir-gider-islemleri', function () {
 
 
 
-// Ziyaretciler
-$router->get('ziyaretci-listesi', function () {
-    require 'pages/ziyaretci/list.php';
-});
+
 
 //----------------İCRA İŞLEMLERİ BAŞLANGIÇ----------------
 //Sakin İcraları listesi
@@ -213,8 +322,25 @@ $router->get('icra-duzenle/{id}', function ($id) {
     require 'pages/icra/manage.php';
 });
 
+                                //TANIMLAMALAR
+//Daire Tipi Tanımlama
+$router->get('daire-turu-listesi', function () {
+    require 'pages/defines/apartment-type/list.php';
+});
+//Daire Tipi Ekle
+$router->get('daire-turu-ekle', function () {
+    require 'pages/defines/apartment-type/manage.php';
+});
+//Daire Tipi Düzenle
+$router->get('daire-turu-duzenle/{id}', function ($id) {
+    require 'pages/defines/apartment-type/manage.php';
+});
 
-//----------------İCRA İŞLEMLERİ BİTİŞ----------------
+                            //AYARLAR
+//site ayarları
+$router->get('ayarlar', function () {
+    require 'pages/ayarlar/manage.php';
+});
 
 // ROUTES tanımla
 $router->get('index', function () {

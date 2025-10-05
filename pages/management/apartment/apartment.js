@@ -1,4 +1,4 @@
-let urlApartment = "pages/management/apartment/api.php";
+let urlApartment = "/pages/management/apartment/api.php";
 
 $(document).on("click", "#save_apartment", function () {
   var form = $("#apartmentForm");

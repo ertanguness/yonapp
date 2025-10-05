@@ -7,7 +7,7 @@ use Model\SitelerModel;
 $Siteler = new SitelerModel();
 $Blocks = new BloklarModel();
 
-$id = Security::decrypt($id) ?? 0;
+$id = Security::decrypt($id ?? 0) ;
 $blocks = $Blocks->find($id  ?? null);
 
 $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
@@ -19,7 +19,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             <h5 class="m-b-10">Site Yönetim</S></h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Site Sakinleri</li>
         </ul>
     </div>
@@ -32,11 +32,10 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-
-
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="management/peoples/list">
+                <a href="/site-sakinleri" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
+                </a>
                 </button>
                 <button type="button" class="btn btn-primary" id="savePeoples" class="dynamic-save-button">
                     <i class="feather-save me-2"></i>
@@ -73,7 +72,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                                         <i class="feather feather-alert-octagon fs-1"></i>
                                     </div>
                                     <div>
-                                        <?php if (empty($id) || $id == 0): ?>                                            
+                                        <?php if (empty($id) || $id == 0): ?>
                                             <p class="fw-bold mb-1 text-truncate-1-line alert-header">Yeni Site Sakini Ekle!</p>
                                             <p class="fs-12 fw-medium alert-description">
                                                 <strong>Genel Bilgiler</strong> sekmesinde yeni kişi ile ilgili bilgileri girebilirsiniz.<br>
@@ -94,7 +93,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                             </div>
                         </div>
                         <form action='' id='peoplesForm'>
-                        <input type="hidden" name="kisi_id" id="kisi_id" sssssssss">
+                            <input type="hidden" name="kisi_id" id="kisi_id" value='<?= Security::encrypt($id) ?? 0; ?>'>
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
@@ -202,27 +201,28 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
 </script>
 <script src="/src/daire-kisi.js"></script>
 <script src="/src/blok-daire.js"></script>
-<!-- Araç ve acil durum sekmesinin butonla aktif edilmesi -->
+<!-- Sekmeyi PHP’den gelen parametreye göre aktif et -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const tab = urlParams.get('tab');
+        // PHP'den gelen aktif sekme bilgisi
+        const currentTab = "<?= $_GET['tab'] ?? '' ?>";
 
+        // Sekme haritası
         const tabMap = {
             'general': '#peopleInfoTab',
             'car': '#peopleCarInfoTab',
             'emergency': '#peoplesEmergencyInfoTab'
         };
 
-        let activeTabSelector = '#peopleInfoTab'; // default
-        if (tab && tabMap[tab]) {
-            activeTabSelector = tabMap[tab];
+        // Varsayılan sekme
+        let activeTabSelector = '#peopleInfoTab';
+        if (currentTab && tabMap[currentTab]) {
+            activeTabSelector = tabMap[currentTab];
         }
 
-        // İlgili sekmenin başlığını seçelim (nav-link)
+        // İlgili sekmeyi aktif et
         const triggerEl = document.querySelector(`a[data-bs-target="${activeTabSelector}"]`);
         if (triggerEl) {
-            // Bootstrap tab instance yarat ve göster
             const tabTrigger = new bootstrap.Tab(triggerEl);
             tabTrigger.show();
         }

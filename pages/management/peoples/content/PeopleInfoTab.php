@@ -127,7 +127,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-check"></i></div>
                 <input type="text" class="form-control flatpickr" id="entryDate" name="entryDate" placeholder="Giriş Tarihi Giriniz" 
-                value="<?php echo Date::dmY($kisi->giris_tarihi)  ?? ''; ?>">
+                value="<?php echo isset($kisi->giris_tarihi) ? Date::dmY($kisi->giris_tarihi) : ''; ?>">
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Kişi kayıt yaptığında tarih girilmelidir. </small>
