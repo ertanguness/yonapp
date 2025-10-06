@@ -173,7 +173,7 @@ $sheet->getStyle('A9:' . $lastHeaderColumn . '9')->applyFromArray([
     ],
     'fill' => [
         'fillType' => Fill::FILL_SOLID,
-        'startColor' => ['rgb' => 'D1D3D4']
+        'startColor' => ['rgb' => '9CAFAA']
     ],
     'alignment' => [
         'horizontal' => Alignment::HORIZONTAL_CENTER,

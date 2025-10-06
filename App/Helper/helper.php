@@ -480,14 +480,16 @@ class Helper
      * @param int $site_id
      * @return string
      */
-    public static function getApartmentTypesSelect($site_id)
+    public static function getApartmentTypesSelect($name = 'apartment_type',$selected=[],$disabled = false)
     {
         $Defines = new DefinesModel();
         $apartmentTypes = $Defines->getAllByApartmentType(3);
-        $select = '<select id="apartment_type" multiple data-live-search="true" name="apartment_type[]"  class="form-select select2 w-100">';
+        $select = '<select id="' . $name . '" multiple data-live-search="true" name="' . $name . '[]"  class="form-select select2 w-100" '
+            . ($disabled ? 'disabled' : '') . '>';
         $select .= '<option value="">Daire Tipi Seçiniz</option>';
         foreach ($apartmentTypes as $type) {
-            $select .= '<option value="' . $type->id . '">' . $type->define_name . '</option>';
+            $isSelected = in_array($type->id, $selected) ? 'selected' : '';
+            $select .= '<option value="' . $type->id . '" ' . $isSelected . '>' . $type->define_name . '</option>';
         }
         $select .= '</select>';
         return $select;

@@ -6,14 +6,85 @@ use App\Helper\Form;
 use App\Helper\Helper;
 use App\Helper\Security;
 use App\Helper\BlokHelper;
+use Model\KisilerModel;
+use Mpdf\Tag\Pre;
 
 $Dues = new DueModel();
 $BlokHelper = new BlokHelper();
+$KisiModel = new KisilerModel();
 
 // Yeni eklemelerde 0 olarak gönderilmesi gerekir
 $enc_id = $id ?? 0;
 $id = Security::decrypt($id ?? 0) ?? 0;
 $due = $Dues->find($id ?? null);
+
+//Kime borçlandırılacak
+$hedef_tipi = $due->borclandirma_tipi ?? 'all'; // Hedef tipi, eğer borç detayında tanımlı değilse 'all' olarak varsayılır
+
+
+
+if($id == 0 ){
+    //blok_id, hedef_kisi[], disabled olaak
+    $disabled_blok_id = "disabled";
+    $disabled_hedef_kisi = "disabled";
+
+}
+
+
+switch ($hedef_tipi) {
+    case 'all':
+        //$hedef_kisi = $DebitHelper->getAllActiveUsers();
+        break;
+    case 'block':
+        //$hedef_kisi = $DebitHelper->getActiveUsersByBlock($borc->block_id ?? 0);
+        break;
+    case 'apartment_type':
+        //$hedef_kisi = $DebitHelper->getActiveUsersByApartmentType($borc->apartment_type_id ?? 0);
+        break;
+    case 'person':
+
+
+        //Kişi borçlandırma yapılmışsa borçlandırma detayından kişi id'lerini al 
+        $kisiListesi = $KisiModel->SiteAktifKisileri($_SESSION["site_id"]);
+        //column_key' i daire_kodu | adi_soyadi şeklinde yaz
+        $optionsForSelect = array_map(function ($kisi) {
+            return [
+                'kisi_id' => $kisi->kisi_id,
+                'label' => $kisi->daire_kodu . ' | ' . $kisi->adi_soyadi
+            ];
+        }, $kisiListesi);
+
+        $optionsForSelect = array_column($optionsForSelect, 'label', 'kisi_id');
+
+
+        //borclandirilacak kişiler $due->borclandirilacaklar
+        $borclandirilacaklarRaw = $due->borclandirilacaklar ?? '[]';
+
+        // JSON decode et
+        $seciliKisiler = json_decode($borclandirilacaklarRaw, true);
+
+        // Decode başarısızsa veya null geldiyse dizi yap
+        if (!is_array($seciliKisiler)) {
+            // Tek bir ID düz string olarak kaydedilmiş olabilir
+            if (is_numeric($seciliKisiler) || (is_string($seciliKisiler) && trim($seciliKisiler) !== '')) {
+                $seciliKisiler = [$seciliKisiler];
+            } else {
+                $seciliKisiler = [];
+            }
+        }
+
+        // Bütün ID’leri string’e normalize et (Form helper çoğunlukla string karşılaştırır)
+        $seciliKisiIdleri = array_map(fn($v) => (string)$v, $seciliKisiler);
+
+
+    default:
+        $hedef_kisi = [];
+}
+
+
+
+
+
 
 ?>
 
@@ -57,6 +128,33 @@ $due = $Dues->find($id ?? null);
 </div>
 
 <div class="main-content">
+    <div class="card">
+
+
+        <div class="row p-4">
+            <div class="col-lg-12">
+
+                <div class="alert alert-dismissible d-flex alert-soft-teal-message" role="alert">
+                    <div class="me-4 d-none d-md-block">
+                        <i class="feather feather-alert-octagon fs-1"></i>
+                    </div>
+                    <div>
+                        <p class="fw-bold mb-1 text-truncate-1-line alert-header">Borç Ekleme!</p>
+                        <p class="fs-12 fw-medium text-truncate-1-line alert-description">
+                            Tüm Sakinler seçildiğinde, şu anda sitede oturan <strong>AKTİF</strong> ev sahibi ve
+                            kiracılara
+                            borclandırma yapılacaktır.
+
+                        </p>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <form id="duesForm" method="POST">
         <input type="hidden" name="dues_id" id="dues_id" value="<?php echo $enc_id ?? 0; ?>">
         <div class="row">
@@ -113,32 +211,6 @@ $due = $Dues->find($id ?? null);
                     <div class="card-body aidat-info">
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
-                                <label for="block" class="fw-semibold">Blok:</label>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="input-group flex-nowrap w-100">
-                                    <div class="input-group-text"><i class="fas fa-building"></i></div>
-                                    <?php echo $BlokHelper->blokSelect("block_id") ?>
-
-
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2">
-                                <label for="amount" class="fw-semibold">Aidat Tutarı (₺):</label>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="input-group">
-                                    <div class="input-group-text"><i class="fas fa-money-bill"></i></div>
-                                    <input type="text" class="form-control money" name="amount" id="amount"
-                                        placeholder="Aidat Tutarı Giriniz" value="<?php echo Helper::formattedMoneyWithoutCurrency($due->amount ?? 0) ?? ''; ?>"
-                                        required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4 align-items-center">
-                            <div class="col-lg-2">
                                 <label for="start_date" class="fw-semibold">Başlangıç/Bitiş Tarihi:</label>
                             </div>
                             <div class="col-lg-2">
@@ -156,11 +228,18 @@ $due = $Dues->find($id ?? null);
                                         value="<?php echo Date::dmY($due->end_date ?? ''); ?>">
                                 </div>
                             </div>
-
                             <div class="col-lg-2">
-                                <label for="penalty_rate" class="fw-semibold">Ceza Oranı (%):</label>
+                                <label for="amount" class="fw-semibold">Aidat Tutarı/ Ceza Oranı:</label>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-2">
+                                <div class="input-group">
+                                    <div class="input-group-text"><i class="fas fa-money-bill"></i></div>
+                                    <input type="text" class="form-control money" name="amount" id="amount"
+                                        placeholder="Aidat Tutarı Giriniz" value="<?php echo Helper::formattedMoneyWithoutCurrency($due->amount ?? 0) ?? ''; ?>"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fas fa-percentage"></i></div>
                                     <input type="number" class="form-control" name="penalty_rate" id="penalty_rate"
@@ -168,6 +247,13 @@ $due = $Dues->find($id ?? null);
                                         required step="0.01" min="0">
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row mb-4 align-items-center">
+
+
+
+
                         </div>
 
                         <div class="row mb-4 align-items-center">
@@ -180,17 +266,7 @@ $due = $Dues->find($id ?? null);
                                     <?php echo Helper::PeriodSelect(); ?>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
-                                <label for="block" class="fw-semibold">Gün Bazında:</label>
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input " name="day_based"
-                                        id="day_based" <?php echo isset($_POST['day_based']) ? 'checked' : ''; ?>>
-                                    <label class="custom-control-label c-pointer text-muted" for="day_based"></label>
 
-                                </div>
-                            </div>
                             <div class="col-lg-2">
                                 <label for="block" class="fw-semibold">Otomatik Yenileme:</label>
                             </div>
@@ -204,9 +280,23 @@ $due = $Dues->find($id ?? null);
                             </div>
 
 
+
                         </div>
                         <div class="row mb-4 align-items-center auto-renew d-none">
-                             <div class="row mb-4 align-items-center">
+                              <div class="col-lg-2">
+                                <label for="block" class="fw-semibold">Her dönemin </label>
+                            </div>
+                            <div class="col-lg-4 d-flex align-items-center">
+                                <input type="number" class="form-control" name="day_of_period" id="day_of_period"
+                                    placeholder="Örn:Ayın 1. günü" value="<?php echo $due->day_of_period ?? 1; ?>"
+                                    min="1" max="28"> 
+
+                            </div>
+
+                        </div>
+
+                        <div class="row mb-4 align-items-center auto-renew d-none">
+
                             <div class="col-lg-2">
                                 <label for="hedef_tipi" class="fw-semibold">Kime Borçlandırılacak:</label>
                             </div>
@@ -225,23 +315,20 @@ $due = $Dues->find($id ?? null);
                             <div class="col-lg-4">
                                 <div class="input-group flex-nowrap w-100 blok-sec">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
-                                    <select class="form-control select2-single" name="block_id" id="block_id" disabled>
-                                        <option value="">Seçiniz</option>
-                                        <?php foreach ($blocks as $block): ?>
-                                        <option value="<?= $block->id ?>"><?= $block->name ?></option>
-                                        <?php endforeach; ?>
+                                    <select class="form-control select2" multiple name="block_id[]" id="block_id">
+                                     
                                     </select>
                                 </div>
 
                                 <div class="input-group flex-nowrap w-100 dairetipi-sec d-none">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
 
-                                    <?php echo Helper::getApartmentTypesSelect($site_id) ?>
+                                    <?php echo Helper::getApartmentTypesSelect("apartment_type") ?>
                                 </div>
                             </div>
 
                         </div>
-                        <div class="row mb-4 align-items-center">
+                        <div class="row mb-4 align-items-center auto-renew d-none">
                             <div class="col-lg-2">
                                 <label for="hedef_kisi" class="fw-semibold">Kişi(ler):</label>
                             </div>
@@ -251,14 +338,14 @@ $due = $Dues->find($id ?? null);
                                     <!-- <select name="hedef_kisi[]" id="hedef_kisi" multiple class="form-control select2">
                                         </select> -->
                                     <?php
-                                        echo Form::Select2Multiple(
-                                            'hedef_kisi[]',         // Form gönderildiğinde PHP'nin dizi olarak alması için name.
-                                            $optionsForSelect ?? [],           // SEÇENEKLER: Veritabanından gelen [id => Ad Soyad] dizisi.
-                                            $seciliKisiIdleri ?? [],      // SEÇİLİ OLANLAR: Seçili olacak kişi ID'lerini içeren bir DİZİ.
-                                            'form-select select2 w-100', // CSS Sınıfı
-                                            'hedef_kisi'            // JavaScript (Select2) için temiz bir ID.
-                                        );
-                                        ?>
+                                    echo Form::Select2Multiple(
+                                        'hedef_kisi[]',         // Form gönderildiğinde PHP'nin dizi olarak alması için name.
+                                        $optionsForSelect ?? [],           // SEÇENEKLER: Veritabanından gelen [id => Ad Soyad] dizisi.
+                                        $seciliKisiIdleri ?? [],      // SEÇİLİ OLANLAR: Seçili olacak kişi ID'lerini içeren bir DİZİ.
+                                        'form-select select2 w-100', // CSS Sınıfı
+                                        'hedef_kisi'            // JavaScript (Select2) için temiz bir ID.
+                                    );
+                                    ?>
 
                                 </div>
 

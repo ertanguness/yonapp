@@ -53,4 +53,13 @@ const PERIOD = [
         return $sql->fetch(PDO::FETCH_OBJ)->due_name;
     }
 
+    /*Otomatik yenileme özelliği açık aidatları getirir */
+    public function getAutoRenewDues($site_id)
+    {
+        $site_id = $site_id ?? $_SESSION['site_id'] ?? null;
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE site_id = ? AND auto_renew = 1");
+        $sql->execute([$site_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }   
+
 }
