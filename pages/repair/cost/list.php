@@ -17,7 +17,7 @@ $Maliyetler = $BakimMaliyet->MaliyetKayitlari();
             <h5 class="m-b-10">Maliyet ve Faturalandırma</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Maliyet Takip</li>
         </ul>
     </div>
@@ -30,10 +30,8 @@ $Maliyetler = $BakimMaliyet->MaliyetKayitlari();
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <?php
-                require_once 'pages/components/download.php';
-                ?>
-                <a href="#" class="btn btn-primary route-link" data-page="repair/cost/manage">
+              
+                <a href="maliyet-fatura-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus me-2"></i>
                     <span>Yeni İşlem Ekle</span>
                 </a>
@@ -121,7 +119,7 @@ $Maliyetler = $BakimMaliyet->MaliyetKayitlari();
                                                             <i class="feather-file-text"></i>
                                                         </a>
 
-                                                        <a href="index?p=repair/cost/manage&id=<?php echo $enc_id; ?>" class="avatar-text avatar-md">
+                                                        <a href="maliyet-fatura-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);"

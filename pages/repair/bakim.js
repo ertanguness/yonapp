@@ -1,4 +1,4 @@
-let bakimurl = "pages/repair/api.php";
+let bakimurl = "/pages/repair/api.php";
 
 $(document).on("click", "#bakim_kaydet", function () {
   var form = $("#bakimForm");

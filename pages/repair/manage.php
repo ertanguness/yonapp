@@ -4,7 +4,8 @@ use Model\BakimModel;
 use App\Helper\Security;
 
 $Bakimlar = new BakimModel();
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0);
+
 
 // -------------Bakım ve Arıza Takip Sistemi için talep numarası oluşturma------------
 $bugün = date('Ymd'); // Örn: 20250724
@@ -19,7 +20,7 @@ $bakim=$Bakimlar->BakimBilgileri($id);
             <h5 class="m-b-10"> Bakım ve Arıza Takip </h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Bakım ve Arıza Takip</li>
         </ul>
     </div>
@@ -33,10 +34,10 @@ $bakim=$Bakimlar->BakimBilgileri($id);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="repair/list">
+                <a href="/bakim-ariza-takip" class="btn btn-outline-secondary route-link me-2" > 
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="bakim_kaydet">
                     <i class="feather-save  me-2"></i>
                     Kaydet
@@ -64,7 +65,7 @@ $bakim=$Bakimlar->BakimBilgileri($id);
                 <div class="col-12">
                     <div class="card">
                         <form  id="bakimForm" method="POST">
-                            <input type="hidden" id="bakim_id" name="bakim_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                            <input type="hidden" id="bakim_id" name="bakim_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
                             <div class="card-body repair-info">
                                 <div class="row mb-4 align-items-center">
                                     <div class="col-lg-2">

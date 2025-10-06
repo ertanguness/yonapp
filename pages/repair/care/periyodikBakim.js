@@ -1,4 +1,4 @@
-let periyodikBakimurl = "pages/repair/care/periyodikBakimApi.php";
+let periyodikBakimurl = "/pages/repair/care/periyodikBakimApi.php";
 
 $(document).on("click", "#periyodikBakim_kaydet", function () {
   var form = $("#periyodikBakimForm");

@@ -27,7 +27,7 @@ $Ziyaretciler = $Ziyaretci->Ziyaretciler();
             <h5 class="m-b-10">Güvenlik ve Ziyaretçi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Ziyaretçi Yönetimi</li>
         </ul>
     </div>
@@ -42,7 +42,7 @@ $Ziyaretciler = $Ziyaretci->Ziyaretciler();
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
 
-                <a href="#" class="btn btn-primary route-link" data-page="ziyaretci/manage">
+                <a href="ziyaretci-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Ziyaretçi Ekle</span>
                 </a>
@@ -113,7 +113,7 @@ $Ziyaretciler = $Ziyaretci->Ziyaretciler();
                                 </td>
                                 <td>
                                     <div class="hstack gap-2">
-                                        <a href="index?p=ziyaretci/manage&id=<?= $enc_id; ?>" class="avatar-text avatar-md">
+                                        <a href="ziyaretci-duzenle/<?= $enc_id; ?>" class="avatar-text avatar-md">
                                             <i class="feather-edit"></i>
                                         </a>
                                         <a href="javascript:void(0);"

@@ -33,7 +33,7 @@ if ($_POST["action"] == "guvenlik_kaydetme") {
         "baslama_tarihi"    => $baslama_tarihi,
         "bitis_tarihi"      => $bitis_tarihi,
         "aciklama"          => $_POST["aciklama"] ?? '',
-        "durum" => !empty($bitis_tarihi) ? 0 : ($_POST["durum"] ?? ''),
+        "durum" =>          !empty($bitis_tarihi) ? 0 : ($_POST["durum"] ?? ''),
         "kayit_tarihi"      => date('Y-m-d H:i:s'),
     ];
     if (!empty($id)) {

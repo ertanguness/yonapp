@@ -1,4 +1,4 @@
-let guvenlikPersonelurl = "pages/ziyaretci/guvenlik/Personel/guvenlikPersonelApi.php";
+let guvenlikPersonelurl = "/pages/ziyaretci/guvenlik/Personel/guvenlikPersonelApi.php";
 
 $(document).on("click", "#guvenlikPersonel_kaydet", function () {
   var form = $("#guvenlikPersonelForm");

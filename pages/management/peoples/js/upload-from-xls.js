@@ -1,4 +1,4 @@
-let url = "pages/management/peoples/api.php";
+let url = "/pages/management/peoples/api.php";
 document
   .getElementById("peoples_file")
   .addEventListener("change", function (event) {

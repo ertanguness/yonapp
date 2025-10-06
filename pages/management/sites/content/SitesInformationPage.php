@@ -174,6 +174,8 @@
     <!-- Modal Bitiş -->
 
 
+<<<<<<< HEAD
+=======
     <!--diğer sekmeyi aktif etme başlangıç -->
 
     <!-- <script>
@@ -205,6 +207,7 @@
     </script> -->
     <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
 
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
     <script>
         $(document).ready(function() {
             $('#il').change(function() {

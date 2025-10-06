@@ -1,6 +1,10 @@
 <?php
+<<<<<<< HEAD
+require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
+=======
 require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
 
 use Model\DefinesModel;
 use App\Helper\Security;
@@ -9,7 +13,8 @@ $Defines = new DefinesModel();
 $site_id = $_SESSION["site_id"] ?? null;
 
 if ($_POST["action"] == "saveApartmentType") {
-    $id = isset($_POST["id"]) ? Security::decrypt($_POST["id"]) : null;
+
+    $id = Security::decrypt($_POST["id"]);
     $apartment_type_name = trim($_POST["apartment_type_name"]);
     $description = trim($_POST["description"]);
 
@@ -24,9 +29,9 @@ if ($_POST["action"] == "saveApartmentType") {
         exit;
     }
     if ($_POST["action"] == "saveApartmentType") {
-        $id = Security::decrypt($_POST["id"]);
     
         $data = [
+            "id" => $id,
             "site_id" => $site_id,
             "define_name" =>  $apartment_type_name,
             "description" => $description,

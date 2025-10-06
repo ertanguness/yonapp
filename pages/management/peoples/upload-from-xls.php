@@ -18,15 +18,15 @@ $site_adi = $site ? $site->site_adi : null;
             <h5 class="m-b-10">Kişiler</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
-            <li class="breadcrumb-item"><a href="index?p=dues/payment/list">Kişi Listesi</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="site-sakinleri">Site Sakinleri</a></li>
             <li class="breadcrumb-item">Excelden Kişi Yükle</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items">
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <a href="index?p=dues/payment/list" class="btn btn-outline-secondary">
+                <a href="site-sakinleri" class="btn btn-outline-secondary">
                     <i class="feather-arrow-left me-2"></i>Listeye Dön
                 </a>
             </div>

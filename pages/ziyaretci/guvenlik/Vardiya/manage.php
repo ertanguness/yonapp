@@ -9,7 +9,7 @@ use App\Helper\Date;
 $GorevYerleri = new GuvenlikGorevYeriModel();
 $Vardiyalar = new GuvenlikVardiyaModel();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0) ;
 $gorevYeri = $GorevYerleri->GorevYerleri();
 $vardiya = $Vardiyalar->VardiyaBilgileri($id);
 ?>
@@ -20,17 +20,17 @@ $vardiya = $Vardiyalar->VardiyaBilgileri($id);
             <h5 class="m-b-10">Güvenlik ve Ziyaretçi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Vardiya Ekle</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items">
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="ziyaretci/guvenlik/Vardiya/list">
+                <a href="/vardiya-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="vardiyaKaydet">
                     <i class="feather-save me-2"></i>
                     Kaydet
@@ -51,7 +51,7 @@ $vardiya = $Vardiyalar->VardiyaBilgileri($id);
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
                                         <!-- HIDDEN FIELDS -->
-                                        <input type="hidden" name="vardiya_id" id="vardiya_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                                        <input type="hidden" name="vardiya_id" id="vardiya_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
 
                                         <!-- Görev Yeri -->
                                         <div class="col-lg-2">

@@ -19,14 +19,14 @@ $Vardiyalar = $Vardiya->Vardiyalar();
             <h5 class="m-b-10">Güvenlik ve Ziyaretçi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Vardiya Tanımları</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items">
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <a href="#" class="btn btn-primary route-link" data-page="ziyaretci/guvenlik/Vardiya/manage">
+                <a href="vardiya-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Vardiya</span>
                 </a>
@@ -90,7 +90,7 @@ $Vardiyalar = $Vardiya->Vardiyalar();
                                             <td><?= !empty($vardiya->kayit_tarihi) ? Date::dmY($vardiya->kayit_tarihi) : '-'; ?></td>
                                             <td>
                                                 <div class="hstack gap-2">
-                                                    <a href="index?p=ziyaretci/guvenlik/Vardiya/manage&id=<?= $enc_id; ?>" class="avatar-text avatar-md">
+                                                    <a href="vardiya-duzenle/<?= $enc_id; ?>" class="avatar-text avatar-md">
                                                         <i class="feather-edit"></i>
                                                     </a>
                                                     <a href="javascript:void(0);"

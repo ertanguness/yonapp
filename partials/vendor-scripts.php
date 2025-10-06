@@ -11,22 +11,18 @@ if (
     $page == 'reports/list' ||
     $page == 'kullanici/list' ||
     $page == 'kullanici-gruplari' ||
-    $page == 'persons/list' ||
-    $page == 'persons/manage' ||
-    $page == 'persons/manage' ||
-    $page == 'repair/list' || $page == 'repair/care/list' || $page == 'repair/care/list' || $page == 'repair/cost/list' ||
+    $page == 'bakim-ariza-takip' || $page == 'periyodik-bakim' ||  $page == 'maliyet-faturalandirma' ||
     $page == 'missions/list' || $page == 'missions/process/list' ||
     $page == 'missions/headers/manage' || $page == 'missions/headers/list' ||
     $page == "uye/list"  ||
     $page == 'dues/debit/detail' || $page == 'dues/payment/list' || $page == 'dues/debit/list' ||
     $page == "management/peoples/list" || $page == "management/peoples/manage" ||
     $page == 'management/blocks/list' || $page == 'management/apartment/list' ||
-    $page == 'daire-tipi-tanimlamalari' ||
+    $page == 'defines/apartment-type/list' ||
     $page == 'dues/payment/tahsilat-onay' ||
     $page == "finans-yonetimi/kasa/list" ||
     $page == 'siteler' ||
     $page == "dues/collections/list" || $page == "dues/collections/detail" ||
-    
     $page == "aidat-turu-listesi" ||
     $page == "yonetici-aidat-odeme"  || $page == "tahsilatlar"  ||  $page == "borclandirma" || 
     $page == "kasa-hareketleri"  || $page == "kasa-listesi" ||
@@ -36,24 +32,21 @@ if (
     $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" ||
     $page == "site-sakini-ekle" || $page == "site-sakini-duzenle"  ||
     $page == "kullanici-gruplari" ||$page == "kullanici-listesi" ||
-    $page == "onay-bekleyen-tahsilatlar" || $page == "eslesmeyen-odemeler" ||
+    $page == "onay-bekleyen-tahsilatlar" ||
     $page == "ziyaretci-listesi" ||
     $page == "icralarim" || $page == "icra-detay" || $page == "icra-listesi" ||  $page == "icra-takibi" ||
-    $page == "daire-tipi-tanimlama" ||
 
-    $page == 'siteler' ||
+
+    $page == 'management/sites/list' ||
     $page == "dues/collections/list" || $page == "dues/collections/detail" ||
-    $page == "ziyaretci/list" || $page == "ziyaretci/guvenlik/list" ||
-    $page == "ziyaretci/guvenlik/GorevYeri/list"  || $page == "ziyaretci/guvenlik/Vardiya/list" ||
-    $page == "ziyaretci/guvenlik/Personel/list" 
-    
-
+    $page == "ziyaretci-listesi" ||    $page == "ziyaretci-ekle" ||    $page == "ziyaretci-duzenle" ||
+    $page == "guvenlik" ||  $page == "guvenlik-gorev-yerleri"  ||
+    $page == "vardiya-listesi" || 
+    $page == "personel-listesi" 
 ) { ?>
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
      <script src="/assets/vendors/js/dataTables.min.js"></script>
      <script src="/assets/vendors/js/dataTables.bs5.min.js"></script>	
-     <!-- DataTables Export için gerekli CDN'ler -->
-
      
      
 
@@ -100,9 +93,9 @@ if (
 //*************SITES******************************** */
 // Site Tanımlama sayfası
 if (
-    $page == 'site-duzenle' || $page == "site-ekle"  || $page == 'management/sites/list'
+    $page == 'management/sites/manage' ||   $page == 'management/sites/list'
 ) {
-    echo '<script src="/pages/management/sites/sites.js"></script>';
+    echo '<script src="pages/management/sites/sites.js"></script>';
 }
 
 //*************SITES******************************** */
@@ -136,16 +129,14 @@ if($page == 'tahsilat-detayi') {
     echo '<script src="/pages/dues/collections/js/tahsilat.js"></script>';
 }
 
-
-
 //*************DEBIT******************************** */
 
 //*************BLOCKS******************************** */
 // Site Tanımlama sayfası
 if (
-    $page == 'site-bloklari' ||
-    $page == 'blok-ekle' ||
-    $page == 'blok-duzenle' 
+    $page == 'management/blocks/manage' ||
+    $page == 'management/blocks/list' ||
+    $page == 'management/sites/manage'
 ) {
     echo '<script src="/pages/management/blocks/blocks.js"></script>';
 }
@@ -153,7 +144,7 @@ if (
 
 //*************APARTMENT******************************** */
 if (
-    $page == 'daire-ekle' ||$page == 'daire-duzenle' ||   $page == 'daire-listesi'
+    $page == 'management/apartment/manage' ||   $page == 'management/apartment/list'
 ) {
     echo '<script src="/pages/management/apartment/apartment.js"></script>';
 }
@@ -165,7 +156,7 @@ if ($page == 'management/apartment/upload-from-xls') {
 
 //*************PEOPLES BAŞLANGIÇ******************************** */
 if (
-    $page == 'site-sakini-ekle' || $page== "site-sakini-duzenle" || $page == 'site-sakinileri'
+    $page == 'management/peoples/manage' ||   $page == 'management/peoples/list'
 ) {
     echo '<script src="/pages/management/peoples/js/kisiBilgileri.js"></script>';
     echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
@@ -173,63 +164,55 @@ if (
 }
 
 
-if ($page == 'kisileri-excelden-yukle') {
-    echo '<script src="/pages/management/peoples/js/upload-from-xls.js"></script>';
+if ($page == 'management/peoples/upload-from-xls') {
+    echo '<script src="pages/management/peoples/js/upload-from-xls.js"></script>';
 }
 //*************PEOPLES BİTİŞ******************************** */
 
 //*************BAKIM ONARIM ARIZA BAŞLANGIÇ******************************** */
-if ($page == 'repair/manage' || $page == 'repair/list') {
-    echo '<script src="pages/repair/bakim.js"></script>';
+if ($page == 'bakim-ariza-ekle' || $page == 'bakim-ariza-duzenle' || $page == 'bakim-ariza-takip') {
+    echo '<script src="/pages/repair/bakim.js"></script>';
 }
-//************PERİYODİK BAKIM ONARIM ARIZA BİTİŞ************************************ */
-if ($page == 'repair/care/manage' || $page == 'repair/care/list') {
-    echo '<script src="pages/repair/care/periyodikBakim.js"></script>';
+if ($page == 'periyodik-bakim-ekle' || $page == 'periyodik-bakim-duzenle' || $page == 'periyodik-bakim') {
+    echo '<script src="/pages/repair/care/periyodikBakim.js"></script>';
+}
+if ($page == 'maliyet-fatura-ekle' || $page == 'maliyet-fatura-duzenle' || $page == 'maliyet-faturalandirma') {
+    echo '<script src="/pages/repair/cost/maliyet.js"></script>';
 }
 //************PERİYODİK BAKIM ONARIM ARIZA BİTİŞ************************************ */
 
+
 //*************ZİYARETÇİ BAŞLANGIÇ******************************** */
-if ($page == 'ziyaretci/manage' || $page == 'ziyaretci/list') {
-    echo '<script src="pages/ziyaretci/ziyaretci.js"></script>';
+if ($page == 'ziyaretci-ekle' || $page == 'ziyaretci-duzenle' || $page == 'ziyaretci-listesi') {
+    echo '<script src="/pages/ziyaretci/ziyaretci.js"></script>';
 }
 //************ ZİYARETÇİ BİTİŞ************************************ */
 
 //*************GÜVENLİK BAŞLANGIÇ******************************** */
-if ($page == 'ziyaretci/guvenlik/manage' || $page == 'ziyaretci/guvenlik/list') {
-    echo '<script src="pages/ziyaretci/guvenlik/guvenlik.js"></script>';
+if ($page == 'guvenlik-yeni-gorev-ekle' || $page == 'guvenlik-gorev-duzenle' || $page == 'guvenlik') {
+    echo '<script src="/pages/ziyaretci/guvenlik/guvenlik.js"></script>';
 }
-if ($page == 'ziyaretci/guvenlik/GorevYeri/manage' || $page == 'ziyaretci/guvenlik/GorevYeri/list') {
-    echo '<script src="pages/ziyaretci/guvenlik/GorevYeri/gorevYeri.js"></script>';
+if ($page == 'guvenlik-gorev-yeri-ekle' || $page == 'guvenlik-gorev-yeri-duzenle' || $page == 'guvenlik-gorev-yerleri') {
+    echo '<script src="/pages/ziyaretci/guvenlik/GorevYeri/gorevYeri.js"></script>';
 }
-if ($page == 'ziyaretci/guvenlik/Vardiya/manage' || $page == 'ziyaretci/guvenlik/Vardiya/list') {
-    echo '<script src="pages/ziyaretci/guvenlik/Vardiya/vardiya.js"></script>';
+if ($page == 'vardiya-ekle' || $page == 'vardiya-duzenle' || $page == 'vardiya-listesi' ) {
+    echo '<script src="/pages/ziyaretci/guvenlik/Vardiya/vardiya.js"></script>';
 }
-if ($page == 'ziyaretci/guvenlik/Personel/manage' || $page == 'ziyaretci/guvenlik/Personel/list') {
-    echo '<script src="pages/ziyaretci/guvenlik/Personel/guvenlikPersonel.js"></script>';
+if ($page == 'personel-ekle' || $page == 'personel-duzenle' || $page == 'personel-listesi') {
+    echo '<script src="/pages/ziyaretci/guvenlik/Personel/guvenlikPersonel.js"></script>';
 }
 
 //************ GÜVENLİK BİTİŞ************************************ */
 
-//************MALİYET / FATURALANDIRMA BAŞLANGIÇ************************************ */
-if ($page == 'repair/cost/manage' || $page == 'repair/cost/list') {
-    echo '<script src="pages/repair/cost/maliyet.js"></script>';
-}
-//************MALİYET / FATURALANDIRMA BİTİŞ************************************ */
 
-//*************Define APARTMENT TYPES******************************** */
+
+//************* TANIMLAMALAR ******************************** */
 // Daire Tipi Tanımlama sayfası
-
 if (
-    $page == 'daire-tipi-tanimlamalari' ||   $page == 'daire-tipi-ekle' || $page == 'daire-tipi-duzenle'
+    $page == 'defines/apartment-type/manage' ||   $page == 'defines/apartment-type/list'
 ) {
-    echo '<script src="/pages/defines/apartment-type/apartment-type.js"></script>';
+    echo '<script src="pages/defines/apartment-type/apartment-type.js"></script>';
 }
-
-//Daireleri excelden yükleme
-if ($page == 'daireleri-excelden-yukle') {
-    echo '<script src="/pages/management/apartment/js/upload-from-xls.js"></script>';
-}
-//*************define APARTMENT TYPES******************************** */
 
 
 
@@ -273,6 +256,10 @@ if($page == 'yonetici-aidat-odeme') {
     echo '<script src="pages/dues/payment/js/tahsilat-detay.js" defer></script>';
 }
 
+//**************************AYARLAR ******************************/
+if ($page == 'ayarlar') {
+    echo '<script src="/pages/ayarlar/ayarlar.js"></script>';
+}
 
 if ($page == 'ana-sayfa') {
     // //echo '<script src="./dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>';

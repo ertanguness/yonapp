@@ -1,4 +1,4 @@
-let ziyaretciurl = "pages/ziyaretci/api.php";
+let ziyaretciurl = "/pages/ziyaretci/api.php";
 
 $(document).on("click", "#ziyaretci_kaydet", function () {
   var form = $("#ziyaretciForm");

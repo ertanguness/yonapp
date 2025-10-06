@@ -1,4 +1,4 @@
-let maliyeturl = "pages/repair/cost/maliyetApi.php";
+let maliyeturl = "/pages/repair/cost/maliyetApi.php";
 
 $(document).on("click", "#maliyet_kaydet", function () {
   var form = $("#maliyetForm")[0]; // raw DOM element lazım

@@ -10,7 +10,7 @@ use App\Helper\Date;
 $Personeller = new GuvenlikPersonelModel();
 $GorevYerleri = new GuvenlikGorevYeriModel();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id = Security::decrypt($id ?? 0);
 
 $Personel = $Personeller->PersonelBilgileri($id);
 $gorevYeri = $GorevYerleri->GorevYerleri();
@@ -36,10 +36,10 @@ $gorevYeri = $GorevYerleri->GorevYerleri();
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="ziyaretci/guvenlik/Personel/list">
+                <a href="/personel-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="guvenlikPersonel_kaydet">
                     <i class="feather-save  me-2"></i>
                     Kaydet
@@ -60,7 +60,7 @@ $gorevYeri = $GorevYerleri->GorevYerleri();
         <div class="card">
             <div class="card-body blocks-info">
                 <form method="POST" id="guvenlikPersonelForm">
-                    <input type="hidden" name="guvenlikPersonel_id" id="guvenlikPersonel_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                    <input type="hidden" name="guvenlikPersonel_id" id="guvenlikPersonel_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
 
                     <div class="card">
                         <div class="card-header p-0">

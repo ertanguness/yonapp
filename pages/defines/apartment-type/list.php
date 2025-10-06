@@ -11,7 +11,7 @@
             <h5 class="m-b-10">Tanımlamalar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Daire Tipi Tanımlama</li>
         </ul>
     </div>
@@ -29,7 +29,11 @@
                 require_once 'pages/components/download.php';
                 ?>
 
+<<<<<<< HEAD
+                <a href="daire-turu-ekle" class="btn btn-primary route-link" >
+=======
                 <a href="/daire-tipi-ekle" class="btn btn-primary route-link">
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Daire Tipi</span>
                 </a>
@@ -79,7 +83,7 @@
                                                 <td><?= $type->create_at ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 justify-content-center">
-                                                        <a href="index?p=defines/apartment-type/manage&id=<?= $enc_id ?>" class="avatar-text avatar-md">
+                                                        <a href="daire-turu-duzenle/<?= $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);" data-name="<?php echo $type->define_name; ?>" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md delete-apartment-type" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $type->define_name; ?>">

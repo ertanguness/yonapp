@@ -32,7 +32,7 @@ $GorevYerleri = $GuvenlikGorevYeri->GorevYerleri();
             <h5 class="m-b-10">Güvenlik ve Ziyaretçi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Ziyaretçi Yönetimi</li>
         </ul>
     </div>
@@ -47,7 +47,7 @@ $GorevYerleri = $GuvenlikGorevYeri->GorevYerleri();
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
 
-                <a href="#" class="btn btn-primary route-link" data-page="ziyaretci/guvenlik/Personel/manage">
+                <a href="personel-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Personel Ekle</span>
                 </a>
@@ -133,7 +133,7 @@ $GorevYerleri = $GuvenlikGorevYeri->GorevYerleri();
                                 <td><?= htmlspecialchars($item->acil_telefon); ?></td>
                                 <td>
                                     <div class="hstack gap-2">
-                                        <a href="index?p=ziyaretci/guvenlik/Personel/manage&id=<?= $enc_id; ?>" class="avatar-text avatar-md">
+                                        <a href="personel-duzenle/<?= $enc_id; ?>" class="avatar-text avatar-md">
                                             <i class="feather-edit"></i>
                                         </a>
                                         <a href="javascript:void(0);"

@@ -7,7 +7,7 @@ use Model\SitelerModel;
 $Siteler = new SitelerModel();
 $Bloklar = new BloklarModel();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
+$id =  Security::decrypt($id ?? 0);
 $blok = $Bloklar->find($id  ?? null);
 
 $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
@@ -20,7 +20,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             <h5 class="m-b-10">Tanımlamalar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Bloklar</li>
         </ul>
     </div>
@@ -59,7 +59,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                 <div class="col-12">
                     <div class="card">
                         <form action='' id='blocksForm'>
-                            <input type="hidden" name="blok_id" id="blok_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                            <input type="hidden" name="blok_id" id="blok_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
 
                             <div class="row">
                                 <div class="container-xl">

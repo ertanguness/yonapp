@@ -7,9 +7,7 @@ use App\Helper\Date;
 
 $GorevYerleri = new GuvenlikGorevYeriModel();
 
-$id = isset($_GET['id']) ? Security::decrypt($_GET['id']) : 0;
-
-
+$id =  Security::decrypt($id ?? 0) ;
 $gorevYeri = $GorevYerleri->GorevYeriBilgileri($id);
 
 ?>
@@ -19,7 +17,7 @@ $gorevYeri = $GorevYerleri->GorevYeriBilgileri($id);
             <h5 class="m-b-10">Güvenlik ve Ziyaretçi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Görev Yeri Ekle</li>
         </ul>
     </div>
@@ -32,10 +30,10 @@ $gorevYeri = $GorevYerleri->GorevYeriBilgileri($id);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="ziyaretci/guvenlik/GorevYeri/list">
+                <a href="/guvenlik-gorev-yerleri" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="gorevYeriKaydet">
                     <i class="feather-save me-2"></i>
                     Kaydet
@@ -61,7 +59,7 @@ $gorevYeri = $GorevYerleri->GorevYeriBilgileri($id);
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
                                         <!-- HIDDEN FIELDS -->
-                                        <input type="hidden" name="gorevYeri_id" id="gorevYeri_id" value="<?php echo $_GET['id'] ?? 0; ?>">
+                                        <input type="hidden" name="gorevYeri_id" id="gorevYeri_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
                               
                                         <!-- Görev Yeri Adı -->
                                         <div class="col-lg-2">

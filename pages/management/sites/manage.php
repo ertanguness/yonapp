@@ -12,7 +12,7 @@ $enc_id = $id ?? 0;
 $id = Security::decrypt($id ?? 0);
 
 $site = $Sites->find($id  ?? null);
-$siteYeniID= $Sites->siteSonID() ?? 0;
+$siteYeniID = $Sites->siteSonID() ?? 0;
 
 ?>
 <div class="page-header">
@@ -21,7 +21,7 @@ $siteYeniID= $Sites->siteSonID() ?? 0;
             <h5 class="m-b-10">Yönetim</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Siteler</li>
         </ul>
     </div>
@@ -38,7 +38,7 @@ $siteYeniID= $Sites->siteSonID() ?? 0;
                 <a href="/siteler" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-</a>
+                </a>
                 <button type="button" class="btn btn-primary" id="save_sites">
                     <i class="feather-save  me-2"></i>
                     Kaydet
@@ -60,7 +60,11 @@ $siteYeniID= $Sites->siteSonID() ?? 0;
                 <div class="col-12">
                     <div class="card">
                         <form id="sitesForm" method="POST">
+<<<<<<< HEAD
+                            <input type="hidden" name="sites_id" id="sites_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
+=======
                             <input type="hidden" name="sites_id" id="sites_id" value="<?php echo $enc_id ?? 0; ?>">
+>>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                             <div class="row">
                                 <div class="container-xl">
                                     <div class="card">
@@ -77,7 +81,7 @@ $siteYeniID= $Sites->siteSonID() ?? 0;
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </form>
                     </div>
                 </div>
