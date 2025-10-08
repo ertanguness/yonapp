@@ -35,12 +35,7 @@ $Bloklar = $Blocks->SiteBloklari($_SESSION['site_id'] ?? null);
                // require_once 'pages/components/download.php'
                 ?>
 
-<<<<<<< HEAD
-             
-                <a href="blok-ekle" class="btn btn-primary route-link">
-=======
                 <a href="/blok-ekle" class="btn btn-primary route-link">
->>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Blok Ekle</span>
                 </a>

@@ -1,10 +1,5 @@
 <?php
-<<<<<<< HEAD
 require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
-=======
-require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
-
->>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
 
 use Model\DefinesModel;
 use App\Helper\Security;

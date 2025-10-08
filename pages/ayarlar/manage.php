@@ -1,3 +1,22 @@
+<?php
+
+use App\Helper\Security;
+use Model\BloklarModel;
+use Model\SitelerModel;
+use Model\AyarlarModel;
+
+$Ayarlar = new AyarlarModel();
+$Sites = new SitelerModel();
+$Bloklar = new BloklarModel();
+
+$site_id = $_SESSION["site_id"] ?? null;
+
+
+$SiteBilgileri = $Sites->SiteBilgileri($site_id);
+$BlokSayisi = $Bloklar->BlokSayisi($site_id);
+$AyarlarBilgileri = $Ayarlar->Ayarlar();
+
+?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -10,7 +29,7 @@
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items">
-            <button type="button" class="btn btn-primary" id="saveSettings">
+            <button type="button" class="btn btn-primary" id="ayarlar_kaydet" name="ayarlar_kaydet">
                 <i class="feather-save me-2"></i>
                 Kaydet
             </button>
@@ -24,7 +43,8 @@
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <form action='' id='settingsForm'>
+                        <form method="Post" id='ayarlarForm' name="ayarlarForm">
+                        <input type="hidden" name="ayarlar_id" id="ayarlar_id" value="<?php echo Security::encrypt($id ?? 0) ?? 0; ?>">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body">
                                     <div class="row mb-4 align-items-center">
@@ -37,10 +57,7 @@
                                                 <li class="nav-item flex-fill border-top" role="presentation">
                                                     <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab" data-bs-target="#notificationSettingsTab" role="tab">Bildirim Ayarları</a>
                                                 </li>
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab" data-bs-target="#paymentSettingsTab" role="tab">Banka Ayarları</a>
-                                                </li>
-                                                
+                                               
                                             </ul>
                                         </div>
                                         <div class="tab-content">
@@ -56,14 +73,7 @@
                                                 <?php
                                                 require_once 'pages/ayarlar/icerik/BildirimAyarlari.php';
                                                 ?>
-                                            </div>
-
-                                            <!-- Ödeme Ayarları Tab -->
-                                            <div class="tab-pane fade" id="paymentSettingsTab" role="tabpanel">
-                                                <?php
-                                                require_once 'pages/ayarlar/icerik/BankaAyarlari.php';
-                                                ?>
-                                            </div>                                            
+                                            </div>                                           
                                         </div>
                                     </div>
                                 </div>

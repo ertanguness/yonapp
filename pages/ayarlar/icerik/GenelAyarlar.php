@@ -3,48 +3,48 @@
     <h6 class="mb-3"><i class="fas fa-info-circle"></i> Site Bilgileri</h6>
     <div class="row mb-3 align-items-center">
         <div class="col-lg-2">
-            <label for="siteName" class="fw-semibold">Site Adı:</label>
+            <label for="siteAdi" class="fw-semibold">Site Adı:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text">
                     <i class="fas fa-home"></i>
                 </div>
-                <input type="text" class="form-control" id="siteName" name="siteName" placeholder="Site adı yazınız" required>
+                <input type="text" class="form-control" id="siteAdi" name="siteAdi" value="<?php echo $SiteBilgileri->site_adi ?? ''; ?>"  readonly>
             </div>
         </div>
 
         <div class="col-lg-2">
-            <label for="blockCount" class="fw-semibold">Blok Sayısı:</label>
+            <label for="blokSayisi" class="fw-semibold">Blok Sayısı:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text">
                     <i class="fas fa-th-large"></i>
                 </div>
-                <input type="number" class="form-control" id="blockCount" name="blockCount" placeholder="Blok sayısı yazınız" required>
+                <input type="number" class="form-control" id="blokSayisi" name="blokSayisi" value="<?php echo $BlokSayisi['blok_sayisi'] ?? 0; ?>" readonly>
             </div>
         </div>
     </div>
 
     <div class="row mb-3 align-items-center">
         <div class="col-lg-2">
-            <label for="apartmentCount" class="fw-semibold">Daire Sayısı:</label>
+            <label for="daireSayisi" class="fw-semibold">Daire Sayısı:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text">
                     <i class="fas fa-building"></i>
                 </div>
-                <input type="number" class="form-control" id="apartmentCount" name="apartmentCount" placeholder="Daire sayısı yazınız">
+                <input type="number" class="form-control" id="daireSayisi" name="daireSayisi" value="<?php echo $BlokSayisi['toplam_daire'] ?? 0; ?>" readonly>
             </div>
         </div>
 
         <div class="col-lg-2">
-            <label for="address" class="fw-semibold">Adres:</label>
+            <label for="adres" class="fw-semibold">Adres:</label>
         </div>
         <div class="col-lg-4">
-            <textarea class="form-control" id="address" name="address" rows="3" placeholder="Site adresini yazınız" required></textarea>
+            <textarea class="form-control" id="adres" name="adres" rows="3" placeholder="Site adresini yazınız" readonly><?php echo $SiteBilgileri->tam_adres ?? ''; ?></textarea>
         </div>
     </div>
 </div>
@@ -54,43 +54,41 @@
     <h6 class="mb-3"><i class="fas fa-phone-alt"></i> İletişim Bilgileri</h6>
     <div class="row mb-3 align-items-center">
         <div class="col-lg-2">
-            <label for="email" class="fw-semibold">E-posta:</label>
+            <label for="eposta" class="fw-semibold">E-posta:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text">
                     <i class="fas fa-envelope"></i>
                 </div>
-                <input type="email" class="form-control" id="email" name="email" placeholder="E-posta adresi yazınız" required>
+                <input type="email" class="form-control" id="eposta" name="eposta" placeholder="E-posta adresi yazınız" value="<?php echo $AyarlarBilgileri->eposta ?? ''; ?>">
             </div>
         </div>
 
         <div class="col-lg-2">
-            <label for="phone" class="fw-semibold">Telefon:</label>
+            <label for="telefon" class="fw-semibold">Telefon:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text">
                     <i class="fas fa-phone"></i>
                 </div>
-                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Telefon numarası yazınız" required>
+                <input type="tel" class="form-control" id="telefon" name="telefon" placeholder="Telefon numarası yazınız" value="<?php echo $AyarlarBilgileri->telefon ?? ''; ?>">
             </div>
         </div>
     </div>
 
     <div class="row mb-3 align-items-center">
         <div class="col-lg-2">
-            <label for="emergencyContact" class="fw-semibold">Acil İletişim:</label>
+            <label for="acilIletisim" class="fw-semibold">Acil İletişim:</label>
         </div>
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <input type="tel" class="form-control" id="emergencyContact" name="emergencyContact" placeholder="Acil iletişim numarası">
+                <input type="tel" class="form-control" id="acilIletisim" name="acilIletisim" placeholder="Acil iletişim numarası" value="<?php echo $AyarlarBilgileri->acil_iletisim ?? ''; ?>">
             </div>
-        </div>
+        </div>       
     </div>
 </div>
-
-

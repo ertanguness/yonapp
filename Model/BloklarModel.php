@@ -79,5 +79,29 @@ class BloklarModel extends Model
     }
 
   
-    
+    /**
+     * Verilen site_id'ye göre kaç tane blok olduğunu döndürür
+     * @param int $site_id
+     * @return int
+     */
+    public function BlokSayisi($site_id)
+    {
+        // Blok sayısını döndür
+        $sql = $this->db->prepare("SELECT COUNT(*) as count FROM {$this->table} WHERE site_id = ?");
+        $sql->execute([$site_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        $blok_sayisi = $result ? (int)$result->count : 0;
+
+        // Daire sayısını topla
+        $sql2 = $this->db->prepare("SELECT SUM(daire_sayisi) as toplam_daire FROM {$this->table} WHERE site_id = ?");
+        $sql2->execute([$site_id]);
+        $result2 = $sql2->fetch(PDO::FETCH_OBJ);
+        $toplam_daire = $result2 ? (int)$result2->toplam_daire : 0;
+
+        // Hem blok sayısını hem toplam daire sayısını döndür
+        return [
+            'blok_sayisi' => $blok_sayisi,
+            'toplam_daire' => $toplam_daire
+        ];
+    }
 }

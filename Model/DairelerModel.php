@@ -393,4 +393,5 @@ class DairelerModel extends Model
         
         return $result ? (int)$result->id : null;  // Eğer sonuç varsa id'yi döndür, yoksa null döndür
     }
+
 }

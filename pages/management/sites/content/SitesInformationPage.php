@@ -171,43 +171,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Bitiş -->
-
-
-<<<<<<< HEAD
-=======
-    <!--diğer sekmeyi aktif etme başlangıç -->
-
-    <!-- <script>
-        document.getElementById("sitesTabButton").addEventListener("click", function(event) {
-            event.preventDefault(); // Formun post edilmesini engelle
-
-            var requiredFields = document.querySelectorAll(".card-body.personal-info [required]");
-            var allFilled = true;
-
-            requiredFields.forEach(function(field) {
-                if (!field.value.trim()) {
-                    allFilled = false;
-                    field.classList.add("is-invalid");
-                } else {
-                    field.classList.remove("is-invalid");
-                }
-            });
-
-            if (allFilled) {
-                var blokBilgileriTab = document.querySelector('[data-bs-target="#blokbilgileriTab"]');
-                if (blokBilgileriTab) {
-                    new bootstrap.Tab(blokBilgileriTab).show();
-                }
-            } else {
-                var toast = new bootstrap.Toast(document.getElementById('warningToast'));
-                toast.show();
-            }
-        });
-    </script> -->
-    <!-- Zorunlu alan kontro ve diğer sekmeyi aktif etme bitiş -->
-
->>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
+  
     <script>
         $(document).ready(function() {
             $('#il').change(function() {

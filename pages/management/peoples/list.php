@@ -38,30 +38,16 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <?php
-               // require_once 'pages/components/download.php'
-                ?>
-           
-<<<<<<< HEAD
+              
                 <a href="excelden-site-sakini-yukle" 
-=======
-                <a href="/kisileri-excelden-yukle" 
->>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                 data-tooltip="Kişileri Excelden Yükle"
                 class="btn btn-icon has-tooltip tooltip-bottom">
                     <i class="feather-upload me-2"></i>
                     Excelden Yükle
                 </a>
-<<<<<<< HEAD
                 <a href="site-sakini-ekle" class="btn btn-primary route-link">
                     <i class="feather-plus me-2"></i>
                     <span>Site Sakini Ekle</span>
-=======
-
-                <a href="/site-sakini-ekle" class="btn btn-primary route-link" >
-                    <i class="feather-plus"></i>
-                    <span>Yeni Kişi Ekle</span>
->>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
                 </a>
             </div>
         </div>
