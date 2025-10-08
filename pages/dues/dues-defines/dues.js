@@ -1,4 +1,5 @@
 let url = "/pages/dues/dues-defines/api.php";
+import { getBlocksBySite,getPeoplesBySite,getApartmentTypes } from "/assets/js/utils/debit.js";
 
 $(document).on("click", "#save_dues", function () {
   var form = $("#duesForm");
@@ -7,7 +8,7 @@ $(document).on("click", "#save_dues", function () {
   formData.append("action", "save_dues");
   formData.append("id", $("#dues_id").val());
 
-  addCustomValidationMethods(allowZero = true); //validNumber methodu için
+  addCustomValidationMethods(true); //validNumber methodu için
   var validator = $("#duesForm").validate({
     rules: {
       due_days: {
@@ -88,4 +89,167 @@ $(document).on("click", ".delete-dues", function () {
           });
       }
     });
+});
+
+
+
+$(document).ready(function () {
+  const $targetType = $("#hedef_tipi");
+  const $targetPerson = $("#hedef_kisi");
+  const $blockSelect = $("#block_id");
+  const $targetDaireTipi = $("#daire_tipi");
+  const $alertDescription = $(".alert-description");
+
+  function updateAlertMessage(message) {
+    $alertDescription.fadeOut(200, function () {
+      $(this).text(message).fadeIn(200);
+    });
+  }
+
+  function toggleElements(options) {
+    $targetPerson
+      .prop("disabled", options.targetPersonDisabled)
+      .val(null)
+      .trigger("change");
+    $blockSelect
+      .prop("disabled", options.blockSelectDisabled)
+      .val(null)
+      .trigger("change");
+    $targetDaireTipi
+      .prop("disabled", options.targetDaireTipiDisabled)
+      .val(null)
+      .trigger("change");
+    $(".dairetipi-sec").toggleClass("d-none", options.hideDaireTipi);
+    $(".blok-sec").toggleClass("d-none", options.hideBlokSec);
+    $(".blok-sec-label").text(options.blokSecLabel || "Blok Seç:");
+  }
+
+   toggleElements({
+          targetPersonDisabled: true,
+          blockSelectDisabled: true,
+          hideDaireTipi: true,
+          hideBlokSec: false,
+        });
+
+  $targetType.on("change", function () {
+    const type = $(this).val();
+
+    switch (type) {
+      case "0":
+        toggleElements({
+          targetPersonDisabled: true,
+          blockSelectDisabled: true,
+          hideDaireTipi: true,
+          hideBlokSec: true,
+        });
+        updateAlertMessage("Borçlandırma yapmak için listeden seçim yapınız.");
+        break;
+
+      case "person":
+        toggleElements({
+          targetPersonDisabled: false,
+          blockSelectDisabled: true,
+          hideDaireTipi: true,
+          hideBlokSec: false,
+        });
+        updateAlertMessage(
+          "Kişiler listesinden seçtiğiniz kişilere borclandırma yapılacaktır."
+        );
+
+        getPeoplesBySite();
+        break;
+
+      case "all":
+        const allValues = $targetPerson
+          .find("option")
+          .map(function () {
+            return $(this).val();
+          })
+          .get();
+        $targetPerson.val(allValues).trigger("change");
+        toggleElements({
+          targetPersonDisabled: true,
+          blockSelectDisabled: true,
+          hideDaireTipi: true,
+          hideBlokSec: false,
+        });
+        updateAlertMessage(
+          "Tüm Sakinler seçildiğinde, şu anda sitede oturan <strong>aktif</strong> ev sahibi ve kiracılara borclandırma yapılacaktır."
+        );
+        break;
+
+      case "evsahibi":
+        toggleElements({
+          targetPersonDisabled: true,
+          blockSelectDisabled: true,
+          hideDaireTipi: true,
+          hideBlokSec: false,
+        });
+        updateAlertMessage(
+          "Yalnızca Ev sahiplerine borclandırma yapılacaktır."
+        );
+        break;
+
+      case "dairetipi":
+        toggleElements({
+          targetPersonDisabled: true,
+          blockSelectDisabled: true,
+          hideDaireTipi: false,
+          hideBlokSec: true,
+          blokSecLabel: "Daire Tipi Seç:",
+        });
+        updateAlertMessage(
+          "Daire tiplerine göre borclandırma yapılacaktır.(Dükkan,3+1, 2+1, vb.)"
+        );
+        //Define tablosundan daire tiplerini getir
+        getApartmentTypes();
+        break;
+
+      case "block":
+        //assets/js/utils/debit.js'den fonksiyon
+        getBlocksBySite();
+        toggleElements({
+          targetPersonDisabled: true,
+          blockSelectDisabled: false,
+          hideDaireTipi: true,
+          hideBlokSec: false,
+        });
+        updateAlertMessage(
+          "Seçtiğiniz bloktaki kişilere veya ayrıca sadece seçilen kişilere borclandırma yapılacaktır."
+        );
+        break;
+
+      default:
+        toggleElements({
+          targetPersonDisabled: true,
+          blockSelectDisabled: true,
+          hideDaireTipi: true,
+          hideBlokSec: true,
+        });
+        break;
+    }
+  });
+
+  $blockSelect.on("change", function () {
+    const selectedBlock = $(this).val();
+    $targetPerson.val(null).trigger("change");
+    $targetPerson
+      .find("option")
+      .hide()
+      .filter(function () {
+        return $(this).data("block") == selectedBlock;
+      })
+      .show();
+  });
+
+  $(".select2-single").select2({
+    placeholder: "Seçiniz",
+    width: "100%",
+    minimumResultsForSearch: Infinity,
+  });
+
+  $(".select2-multiple").select2({
+    placeholder: "Kişi seçiniz",
+    width: "100%",
+  });
 });

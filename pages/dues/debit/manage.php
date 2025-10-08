@@ -252,7 +252,7 @@ switch ($hedef_tipi) {
                                 <div class="input-group flex-nowrap w-100 dairetipi-sec d-none">
                                     <div class="input-group-text"><i class="fas fa-building"></i></div>
 
-                                    <?php echo Helper::getApartmentTypesSelect($site_id) ?>
+                                    <?php echo Helper::getApartmentTypesSelect() ?>
                                 </div>
                             </div>
 

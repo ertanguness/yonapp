@@ -75,7 +75,7 @@ if ($page == 'users/auths/auths') {
 // Dues Tanımlama sayfası
 if (
     $page == 'aidat-turu-tanimlama' ||   $page == 'aidat-turu-listesi' || $page == 'aidat-turu-duzenle') {
-        echo '<script src="/pages/dues/dues-defines/dues.js"></script>';
+        echo '<script type="module" src="/pages/dues/dues-defines/dues.js"></script>';
     }
 
 //*************DUES******************************** */
