@@ -21,9 +21,7 @@ if (
     $page == 'missions/headers/manage' || $page == 'missions/headers/list' ||
     $page == "uye/list"  ||
     $page == 'dues/debit/detail' || $page == 'dues/payment/list' || $page == 'dues/debit/list' ||
-    $page == "management/peoples/list" || $page == "management/peoples/manage" ||
-    $page == 'management/blocks/list' || $page == 'management/apartment/list' ||
-    $page == 'defines/apartment-type/list' ||
+    $page == 'daire-turu-listesi' ||
     $page == 'dues/payment/tahsilat-onay' ||
     $page == "finans-yonetimi/kasa/list" ||
     $page == 'siteler' ||
@@ -37,12 +35,8 @@ if (
     $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" ||
     $page == "site-sakini-ekle" || $page == "site-sakini-duzenle"  ||
     $page == "kullanici-gruplari" ||$page == "kullanici-listesi" ||
-    $page == "ziyaretci-listesi" ||
+    $page == "onay-bekleyen-tahsilatlar" ||
     $page == "icralarim" || $page == "icra-detay" || $page == "icra-listesi" ||  $page == "icra-takibi" ||
-    $page == "onay-bekleyen-tahsilatlar" || $page == "eslesmeyen-odemeler" ||
-
-
-    $page == 'management/sites/list' ||
     $page == "dues/collections/list" || $page == "dues/collections/detail" ||
     $page == "ziyaretci-listesi" ||    $page == "ziyaretci-ekle" ||    $page == "ziyaretci-duzenle" ||
     $page == "guvenlik" ||  $page == "guvenlik-gorev-yerleri"  ||
@@ -52,10 +46,6 @@ if (
      <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
      <script src="/assets/vendors/js/dataTables.min.js"></script>
      <script src="/assets/vendors/js/dataTables.bs5.min.js"></script>	
-     
-     
-
-    
 <?php  }
 
 //*************USERS********************************* */
@@ -98,9 +88,9 @@ if (
 //*************SITES******************************** */
 // Site Tanımlama sayfası
 if (
-    $page == 'management/sites/manage' ||   $page == 'management/sites/list'
-) {
-    echo '<script src="pages/management/sites/sites.js"></script>';
+    $page == 'site-ekle' ||   $page == 'siteler' || $page == 'site-duzenle') 
+    {
+    echo '<script src="/pages/management/sites/sites.js"></script>';
 }
 
 //*************SITES******************************** */
@@ -117,16 +107,11 @@ if (
 <?php  versionedScript('/pages/dues/debit/js/debit.js', true); ?>
 
 <?php }
-if ($page == 'excelden-odeme-yukle') {
-    echo '<script src="/pages/dues/payment/js/upload.js"></script>';
+if ($page == 'dues/debit/upload-from-xls') {
+    echo '<script src="pages/dues/debit/js/upload-from-xls.js"></script>';
 }
-if ($page == 'borclandirma-detayi') {
-    echo '<script src="/pages/dues/debit/js/detail.js"></script>';
-}
-
-//Tekil Borçlandırma Sayfası
-if ($page == 'borclandirma-kisi-ekle' || $page == 'borclandirma-kisi-duzenle') {
-    echo '<script src="/pages/dues/debit/js/single-manage.js"></script>';
+if ($page == 'dues/debit/detail') {
+    echo '<script src="pages/dues/debit/js/detail.js"></script>';
 }
 
 
@@ -140,9 +125,7 @@ if($page == 'tahsilat-detayi') {
 //*************BLOCKS******************************** */
 // Site Tanımlama sayfası
 if (
-    $page == 'management/blocks/manage' ||
-    $page == 'management/blocks/list' ||
-    $page == 'management/sites/manage'
+    $page == 'blok-ekle' || $page == 'site-bloklari' ||  $page == 'blok-duzenle'
 ) {
     echo '<script src="/pages/management/blocks/blocks.js"></script>';
 }
@@ -150,7 +133,7 @@ if (
 
 //*************APARTMENT******************************** */
 if (
-    $page == 'daire-ekle' ||   $page == 'daire-duzenle' || $page == 'site-daireleri' 
+    $page == 'daire-ekle' ||   $page == 'daire-duzenle'  ||   $page == 'site-daireleri'
 ) {
     echo '<script src="/pages/management/apartment/apartment.js"></script>';
 }
@@ -162,7 +145,7 @@ if ($page == 'excelden-daire-yukle') {
 
 //*************PEOPLES BAŞLANGIÇ******************************** */
 if (
-    $page == 'site-sakini-ekle' ||   $page == 'site-sakini-duzenle' || $page == 'site-sakinleri'
+    $page == 'site-sakinleri' ||   $page == 'site-sakini-ekle' || $page == 'site-sakini-duzenle' 
 ) {
     echo '<script src="/pages/management/peoples/js/kisiBilgileri.js"></script>';
     echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
@@ -171,7 +154,7 @@ if (
 
 
 if ($page == 'management/peoples/upload-from-xls') {
-    echo '<script src="pages/management/peoples/js/upload-from-xls.js"></script>';
+    echo '<script src="/pages/management/peoples/js/upload-from-xls.js"></script>';
 }
 //*************PEOPLES BİTİŞ******************************** */
 
@@ -215,9 +198,9 @@ if ($page == 'personel-ekle' || $page == 'personel-duzenle' || $page == 'persone
 //************* TANIMLAMALAR ******************************** */
 // Daire Tipi Tanımlama sayfası
 if (
-    $page == 'defines/apartment-type/manage' ||   $page == 'defines/apartment-type/list'
+    $page == 'daire-turu-ekle' || $page == 'daire-turu-duzenle' ||  $page == 'daire-turu-listesi'
 ) {
-    echo '<script src="pages/defines/apartment-type/apartment-type.js"></script>';
+    echo '<script src="/pages/defines/apartment-type/apartment-type.js"></script>';
 }
 
 
@@ -241,13 +224,6 @@ if ($page == 'gelir-gider-islemleri') {
     echo '<script src="/pages/finans-yonetimi/gelir-gider/js/gelir-gider.js"></script>';
 }
 
-
-
-//KASA İŞLEMLERİ
-if ($page == 'kasa-ekle' || $page == 'kasa-duzenle' || $page == 'kasa-listesi') {
-    echo '<script src="/pages/finans-yonetimi/kasa/js/kasa.js"></script>';
-}
-
 //Payment upload from excel
 if ($page == 'dues/payment/upload-from-xls') {
     echo '<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mini.min.js"></script>';
@@ -259,7 +235,6 @@ if ($page == 'onay-bekleyen-tahsilatlar') {
 
 if($page == 'yonetici-aidat-odeme') {
     echo '<script src="pages/dues/payment/js/tahsilat-gir.js" defer></script>';
-    echo '<script src="pages/dues/payment/js/tahsilat-detay.js" defer></script>';
 }
 
 //**************************AYARLAR ******************************/
@@ -311,7 +286,3 @@ if($page == "ana-sayfa")
 <!--<< All JS Plugins >>-->
 
 
-<script>
-    //Title değiştir
-   // document.title =$('.alert-title').text() + ' / YonApp';
-</script>

@@ -7,7 +7,8 @@ use Model\SitelerModel;
 $Siteler = new SitelerModel();
 $Blocks = new BloklarModel();
 
-$id = Security::decrypt($id ?? 0) ;
+$enc_id = $id ?? 0;
+$id = Security::decrypt($id ?? 0) ?? 0;
 $blocks = $Blocks->find($id  ?? null);
 
 $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);

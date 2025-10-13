@@ -24,16 +24,8 @@
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <?php
-                require_once 'pages/components/search.php';
-                require_once 'pages/components/download.php';
-                ?>
-
-<<<<<<< HEAD
-                <a href="daire-turu-ekle" class="btn btn-primary route-link" >
-=======
-                <a href="/daire-tipi-ekle" class="btn btn-primary route-link">
->>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
+              
+                <a href="/daire-turu-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Daire Tipi</span>
                 </a>

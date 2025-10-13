@@ -26,7 +26,6 @@ protected $table = "sites";
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
-    //aidat tablosundaki verileri alır
     public function getSites()
     {
         $sql = $this->db->prepare("SELECT * FROM sites");
