@@ -1,7 +1,12 @@
 <?php
 
 
-
+function versionedScript($relPath, $module = false) {
+    $fs = rtrim($_SERVER['DOCUMENT_ROOT'], '\\/') . $relPath;
+    $ver = file_exists($fs) ? filemtime($fs) : time();
+    $type = $module ? ' type="module"' : '';
+    echo '<script' . $type . ' src="' . $relPath . '?v=' . $ver . '"></script>' . PHP_EOL;
+}
 
 //$page = isset($_GET['p']) ? $_GET['p'] : '';
 
@@ -32,9 +37,9 @@ if (
     $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" ||
     $page == "site-sakini-ekle" || $page == "site-sakini-duzenle"  ||
     $page == "kullanici-gruplari" ||$page == "kullanici-listesi" ||
-    $page == "onay-bekleyen-tahsilatlar" ||
     $page == "ziyaretci-listesi" ||
     $page == "icralarim" || $page == "icra-detay" || $page == "icra-listesi" ||  $page == "icra-takibi" ||
+    $page == "onay-bekleyen-tahsilatlar" || $page == "eslesmeyen-odemeler" ||
 
 
     $page == 'management/sites/list' ||
@@ -108,7 +113,8 @@ if (
     $page == 'borclandirma' ||
     $page == 'borclandirma-duzenle' 
 ) { ?>
-    <script src="/pages/dues/debit/js/debit.js"></script>
+
+<?php  versionedScript('/pages/dues/debit/js/debit.js', true); ?>
 
 <?php }
 if ($page == 'excelden-odeme-yukle') {
@@ -144,19 +150,19 @@ if (
 
 //*************APARTMENT******************************** */
 if (
-    $page == 'management/apartment/manage' ||   $page == 'management/apartment/list'
+    $page == 'daire-ekle' ||   $page == 'daire-duzenle' || $page == 'site-daireleri' 
 ) {
     echo '<script src="/pages/management/apartment/apartment.js"></script>';
 }
 // Apartment upload from excel
-if ($page == 'management/apartment/upload-from-xls') {
+if ($page == 'excelden-daire-yukle') {
     echo '<script src="pages/management/apartment/js/upload-from-xls.js"></script>';
 }
 //*************APARTMENT******************************** */
 
 //*************PEOPLES BAŞLANGIÇ******************************** */
 if (
-    $page == 'management/peoples/manage' ||   $page == 'management/peoples/list'
+    $page == 'site-sakini-ekle' ||   $page == 'site-sakini-duzenle' || $page == 'site-sakinleri'
 ) {
     echo '<script src="/pages/management/peoples/js/kisiBilgileri.js"></script>';
     echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';

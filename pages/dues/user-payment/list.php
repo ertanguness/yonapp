@@ -13,7 +13,7 @@ use Model\UserPaymentModel;
 // Kullanıcı Ödemeleri
 $UserPayment = new UserPaymentModel();
 $user_id = $_SESSION['user']->kisi_id ?? 0;
-$user_id = 2;
+$user_id = 82;
 
 // Kullanıcının Gruplanmış Borç Başlıklarını ve Ödeme Durumlarını Getirir
 $BorcTahsilatDetay = $UserPayment->kisiBorcTahsilatDetay(user_id: $user_id);
@@ -295,7 +295,15 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
 
         <div id="finans" class="card tab-content">
 
-            <h5 class="card-title">Gelir-Gider İşlemleri</h5>
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Gelir-Gider İşlemleri</h5>
+                <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $user_id; ?>&format=pdf" class="printBTN">
+                    <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title="Yazdır">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                </a>
+            </div>
 
 
             <div class="card-body custom-card-action">

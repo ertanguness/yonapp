@@ -234,6 +234,7 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
                                     <th>Sıra</th>
                                     <th>Tarih</th>
                                     <th>İşlem Türü</th>
+                                    <th>Hesap Adı</th>
                                     <th>Kategori</th>
                                     <th>Açıklama</th>
                                     <th>Tutar</th>
@@ -255,6 +256,7 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
                                         <td><?php echo $i; ?></td>
                                         <td class="text-center"><?php echo $hareket->islem_tarihi; ?></td>
                                         <td class="text-center"><span class="badge bg-<?php echo $badge; ?>"><?php echo $hareket->islem_tipi; ?></span></td>
+                                        <td><?php echo $hareket->adi_soyadi; ?></td> 
                                         <td><?php echo Helper::getOdemeKategori($hareket->kategori); ?></td>
                                         <td class="text-left" style="width: 30%;"><?php echo $hareket->aciklama; ?></td>
                                         <td class="text-success text-end"><?php echo Helper::formattedMoney($hareket->tutar); ?></td>
@@ -390,7 +392,7 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
                             <div class="col-md-6">
 
                                 <label for="islem_tarihi" class="form-label">İşlem Tarihi *</label>
-                                <input type="text" class="form-control flatpickr" name="islem_tarihi" id="islem_tarihi" required
+                                <input type="text" class="form-control flatpickr flatpickr-time-input" name="islem_tarihi" id="islem_tarihi" required
                                     value="<?= date('d-m-Y H:i'); ?>">
                             </div>
 
@@ -485,6 +487,7 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
             dateFormat: "d.m.Y H:i",
             locale: "tr",
             enableTime: true,
+            minuteIncrement: 1
         })
 
 

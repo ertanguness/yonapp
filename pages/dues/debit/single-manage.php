@@ -127,6 +127,25 @@ $hedef_tipi = $borc->hedef_tipi ?? 'all'; // Hedef tipi, eğer borç detayında 
                             value="<?php echo $detay_id ?? 0 ?>">
                         <input type="hidden" class="form-control d-non" name="borc_id" id="borc_id"
                             value="<?php echo $id ?? 0 ?>">
+
+
+                        <div class="row  mb-4 align-items-center">
+                            <div class="col-lg-2">
+                                <label for="title" class="fw-semibold">Borçlandırma Tarihi:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group flex-nowrap w-100">
+                                    <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+                                    <input type="text" class="form-control flatpickr flatpickr-time-input" name="borclandirma_tarihi"
+                                        id="borclandirma_tarihi"
+                                        value="<?php echo Date::dmY($borc_detay->borclandirma_tarihi ?? date('Y-m-d H:i')); ?>"
+                                        placeholder="Borçlandırma tarihi" required>
+                                </div>
+                            </div>
+
+
+                        </div>
+
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
                                 <label for="title" class="fw-semibold">Borç Başlığı:</label>
@@ -182,27 +201,38 @@ $hedef_tipi = $borc->hedef_tipi ?? 'all'; // Hedef tipi, eğer borç detayında 
                                         placeholder="Ceza oranı" step="0.01" min="0"
                                         value="<?php echo $borc_detay->ceza_orani ?? ''; ?>">
                                 </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="row mb-4 align-items-center">
+                            <div class="col-lg-2">
+                                <label for="aciklama" class="fw-semibold">Açıklama:</label>
+                            </div>
+                            <div class="col-lg-10">
+                                <div class="input-group">
+                                    <div class="input-group-text"><i class="fas fa-info-circle"></i></div>
+                                    <textarea class="form-control" name="aciklama" id="aciklama" rows="3"
+                                        placeholder="Açıklama giriniz"><?php echo $borc_detay->aciklama ?? $borc->aciklama; ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
                 </div>
-
-
             </div>
-
-            <div class="row mb-4 align-items-center">
-                <div class="col-lg-2">
-                    <label for="aciklama" class="fw-semibold">Açıklama:</label>
-                </div>
-                <div class="col-lg-10">
-                    <div class="input-group">
-                        <div class="input-group-text"><i class="fas fa-info-circle"></i></div>
-                        <textarea class="form-control" name="aciklama" id="aciklama" rows="3"
-                            placeholder="Açıklama giriniz"><?php echo $borc_detay->aciklama ?? $borc->aciklama; ?></textarea>
-                    </div>
-                </div>
-            </div>
-
-            </form>
         </div>
     </div>
 </div>
-</div>
-</div>
+
+<script>
+    $(document).ready(function () {
+    $("#borclandirma_tarihi").flatpickr({
+        dateFormat: "d.m.Y H:i",
+        locale: "tr",
+           enableTime: true,
+            minuteIncrement: 1,
+    });
+});
+</script>

@@ -36,10 +36,12 @@ class KasaHareketModel extends Model{
      */
     public function getKasaHareketleri($kasa_id)
     {
-        $query = "SELECT * FROM $this->table
-                    WHERE kasa_id = :kasa_id 
-                    AND silinme_tarihi IS NULL
-                    ORDER BY islem_tarihi desc, id DESC";
+        $query = "SELECT kh.*, k.adi_soyadi AS adi_soyadi FROM $this->table kh
+                    LEFT JOIN kisiler k ON kh.kisi_id = k.id
+                    WHERE kh.kasa_id = :kasa_id 
+                    AND kh.silinme_tarihi IS NULL
+                    AND kh.tutar != 0
+                    ORDER BY kh.islem_tarihi desc, kh.id DESC";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
         $stmt->execute();

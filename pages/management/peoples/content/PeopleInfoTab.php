@@ -2,14 +2,18 @@
 $site_id = $_SESSION['site_id'] ?? 0;
 
 use App\Helper\Date;
+use App\Helper\Helper;
 use Model\BloklarModel;
 use Model\DairelerModel;
 use Model\KisilerModel;
+use Psr\Log\Test\DummyTest;
 
 $Block = new BloklarModel();
 $Daireler = new DairelerModel();
 $Kisiler = new KisilerModel();
 
+
+$enc_id = $id ?? 0;
 $blocks = $Block->SiteBloklari($site_id);
 $kisi = $Kisiler->KisiBilgileri($id);
 $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
@@ -92,14 +96,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"><i class="fas fa-user"></i></div>
-                <select class="form-select select2 w-100" id="residentType" name="residentType">
-                    <option value="">Seçiniz</option>
-                    <option value="1" <?= (isset($kisi->uyelik_tipi) && $kisi->uyelik_tipi == '1') ? 'selected' : '' ?>>Kat Maliki</option>
-                    <option value="2" <?= (isset($kisi->uyelik_tipi) && $kisi->uyelik_tipi == '2') ? 'selected' : '' ?>>Kiracı</option>
-                    <option value="3" <?= (isset($kisi->uyelik_tipi) && $kisi->uyelik_tipi == '3') ? 'selected' : '' ?>>Çalışan</option>
-                    <option value="4" <?= (isset($kisi->uyelik_tipi) && $kisi->uyelik_tipi == '4') ? 'selected' : '' ?>>Misafir</option>
-                    <option value="5" <?= (isset($kisi->uyelik_tipi) && $kisi->uyelik_tipi == '5') ? 'selected' : '' ?>>Mirasçı</option>
-                </select>
+               <?php echo Helper::ikametTuruSelect('residentType', $kisi->uyelik_tipi ?? '0'); ?>
             </div>
             <small id="sakinTürü" class="form-text text-muted">
             </small>
@@ -126,13 +123,8 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-check"></i></div>
-<<<<<<< HEAD
-                <input type="text" class="form-control flatpickr" id="entryDate" name="entryDate" placeholder="Giriş Tarihi Giriniz" 
-                value="<?php echo isset($kisi->giris_tarihi) ? Date::dmY($kisi->giris_tarihi) : ''; ?>">
-=======
                 <input type="text" class="form-control flatpickr" id="entryDate" autocomplete="off" name="entryDate" placeholder="Giriş Tarihi Giriniz" 
                 value="<?php echo Date::dmY($kisi->giris_tarihi ?? null)  ?? ''; ?>">
->>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Kişi kayıt yaptığında tarih girilmelidir. </small>
@@ -144,7 +136,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-times"></i></div>
-                <input type="text" class="form-control flatpickr" id="exitDate" name="exitDate" placeholder="Çıkış Tarihi Giriniz" value="<?php echo $kisi->cikis_tarihi ?? ''; ?>">
+                <input type="text" class="form-control flatpickr" id="exitDate" name="exitDate" placeholder="Çıkış Tarihi Giriniz" value="<?php echo Date::dmY($kisi->cikis_tarihi ?? null)  ?? ''; ?>">
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Kişi çıkış yaptığında tarih girilmelidir. </small>
@@ -191,7 +183,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
-                <input type="text" class="form-control flatpickr" id="birthDate" name="birthDate" placeholder="Doğum Tarihi Giriniz" value="<?php echo $kisi->dogum_tarihi ?? ''; ?>">
+                <input type="text" class="form-control flatpickr" id="birthDate" name="birthDate" placeholder="Doğum Tarihi Giriniz" value="<?php echo Date::dmY($kisi->dogum_tarihi ?? null)  ?? ''; ?>">
             </div>
         </div>
 

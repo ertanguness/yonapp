@@ -70,13 +70,35 @@ class Helper
 
     const TARGETTYPE = [
         '0' => 'Seçiniz',
-        'all' => 'Tüm Sakinler',
-        'evsahibi' => 'Ev Sahipleri',
+        'all' => 'Tüm Sakinler(İşyeri Dahil)',
+        "sakinler"=> "Sakinler(Ev)",
+        "isyerisakinleri"=> "Sakinler(İşyeri)",
+        'evsahibi' => 'Sahipler(Ev)',
+        "isyerisahipleri"=> "Sahipler(İşyeri)",
         'block' => 'Blok Seçerek',
         'person' => 'Kişi Borçlandırma',
         'dairetipi' => 'Daire Tipine Göre',
     ];
-
+  // Yeni: Gruplu seçenekler (optgroup desteği için)
+    const TARGETTYPE_GROUPED = [
+        'Genel' => [
+            'all' => 'Tüm Sakinler (İşyeri Dahil)',
+        ],
+        'Ev' => [
+            'sakinler'  => 'Evde Oturanlar(Ev Sahibi / Kiracı)',
+            'evsahibi'  => 'Sahipler (Ev Sahibi)',
+        ],
+        'İşyeri' => [
+            'isyerisakinleri'  => 'İşyeri Sakinleri(İşyeri Sahibi / Kiracı)',
+            'isyerisahipleri'  => 'Sahipler (İşyeri)',
+        ],
+        'Seçerek' => [
+            'block'     => 'Blok Seçerek',
+            'person'    => 'Kişi Borçlandırma',
+            'dairetipi' => 'Daire Tipine Göre',
+        ],
+    ];
+    
     const  RELATIONSHIP = [
         '1' => 'Anne',
         '2' => 'Baba',
@@ -190,6 +212,23 @@ class Helper
         $select .= '</select>';
         return $select;
     }
+
+
+
+/** İkamet Türü Select'ini oluştur
+ * @param string $name
+ */
+    public static function ikametTuruSelect($name = 'ikamet_turu', $selected = '1')
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+        foreach (self::ikametTuru as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
+        }
+        $select .= '</select>';
+        return $select;
+    }
+
 
 
     public static function short($value, $lenght = 21)
@@ -412,12 +451,35 @@ class Helper
 
     public static function targetTypeSelect($name = 'target_type', $selected = '0', $disabled = false)
     {
-        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" '
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100"  '
             . ($disabled ? 'disabled' : '') . '>';
         foreach (self::TARGETTYPE as $key => $value) {
             $selectedAttr = $selected == $key ? 'selected' : '';
             $select .= "<option value='$key' $selectedAttr>$value</option>";
         }
+        $select .= '</select>';
+        return $select;
+    }
+
+    // Yeni: Optgroup destekli versiyon (mevcudu bozmadan ayrı fonksiyon)
+    public static function targetTypeSelectGrouped($name = 'target_type', $selected = '0', $disabled = false)
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" '
+            . ($disabled ? 'disabled' : '') . '>';
+
+        // Üstte tek "Seçiniz" opsiyonu
+        $select .= '<option value="0"' . ($selected == '0' ? ' selected' : '') . '>Seçiniz</option>';
+
+        foreach (self::TARGETTYPE_GROUPED as $groupLabel => $options) {
+            $select .= '<optgroup label="' . htmlspecialchars($groupLabel, ENT_QUOTES) . '">';
+            foreach ($options as $key => $label) {
+                $selectedAttr = ($selected == $key) ? ' selected' : '';
+                $select .= '<option value="' . htmlspecialchars($key, ENT_QUOTES) . '"' . $selectedAttr . '>'
+                    . htmlspecialchars($label, ENT_QUOTES) . '</option>';
+            }
+            $select .= '</optgroup>';
+        }
+
         $select .= '</select>';
         return $select;
     }

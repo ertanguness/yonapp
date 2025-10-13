@@ -15,6 +15,12 @@ $router->get('aidat-turu-duzenle/{id}', function ($id) {
 });
 
 
+
+
+$router->get('ssp-test', function () {
+    require 'pages/server_processing.php';
+});
+
 $router->get('aidat-turu-listesi', function () {
     require 'pages/dues/dues-defines/list.php';
 });
@@ -37,6 +43,17 @@ $router->get('borclandirma-detayi/{id}', function ($id) {
     require 'pages/dues/debit/detail.php';
 });
 
+
+//Borçlandirma kisi ekle
+$router->get('borclandirma-kisi-ekle/{id}', function ($id) {
+    require 'pages/dues/debit/single-manage.php';
+});
+
+//Borçlandirma kisi düzenle
+$router->get('borclandirma-kisi-duzenle/{id}/{detay_id}', function ($id, $detay_id) {
+    require 'pages/dues/debit/single-manage.php';
+});
+
 //Borçlarım
 $router->get('borclarim', function () {
     require 'pages/dues/user-payment/list.php';
@@ -46,6 +63,17 @@ $router->get('borclarim', function () {
 //Yönetici aidat ödeme sayfası
 $router->get('yonetici-aidat-odeme', function () {
     require 'pages/dues/payment/list.php';
+});
+
+
+//Eşleşmeyen Ödemeler
+$router->get('eslesmeyen-odemeler', function () {
+    require 'pages/dues/payment/tahsilat-eslesmeyen.php';
+});
+
+//Excelden Ödeme Yükle
+$router->get('excelden-odeme-yukle', function () {
+    require 'pages/dues/payment/upload-from-xls.php';
 });
 
 //Yapılan tahsilatlar sayfası
@@ -289,9 +317,17 @@ $router->get('gelir-gider-islemleri', function () {
     require 'pages/finans-yonetimi/gelir-gider/list.php';
 });
 
+//Gelir Gider Hareketleri
+$router->get('gelir-gider-islemleri/{id}', function ($id) {
+    require 'pages/finans-yonetimi/gelir-gider/list.php';
+});
 
 
 
+//Ayarlar
+$router->get('ayarlar', function () {
+    require 'pages/settings/manage.php';
+});
 
 //----------------İCRA İŞLEMLERİ BAŞLANGIÇ----------------
 //Sakin İcraları listesi

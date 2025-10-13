@@ -157,6 +157,9 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                                                             data-id="<?php echo Security::encrypt($onay->id); ?>"
                                                             class="text-primary eslesmeyen-havuza-gonder">Eşleşmeyen Havuzuna Gönder</a> |
                                                         <a href="javascript:void(0);"
+                                                            data-aciklama="<?php echo $onay->aciklama; ?>"
+                                                            class="text-success aciklamayi-kopyala">Açıklamayı Kopyala</a> | 
+                                                        <a href="javascript:void(0);"
                                                             data-id="<?php echo Security::encrypt($onay->id); ?>"
                                                             class="text-danger yuklenen-tahsilat-sil">Sil</a>
 
@@ -294,6 +297,47 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
 <script>
     let APIurl = "/pages/dues/payment/api/APItahsilat_onay.php";
     $(function() {
+
+        // Mevcut .aciklamayi-kopyala click handler'ını değiştir (satır ~250 civarı):
+
+$(".aciklamayi-kopyala").on("click", function() {
+    let aciklama = $(this).data("aciklama");
+    console.log(aciklama);
+    
+    // Basit try-catch ile güvenli kopyalama
+    try {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(aciklama).then(function() {
+                alert("Açıklama kopyalandı: " + aciklama);
+            });
+        } else {
+            // Fallback - geçici textarea yöntemi
+            const textArea = document.createElement("textarea");
+            textArea.value = aciklama;
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            Toastify({
+                        text: "Açıklama kopyalandı: " + aciklama,
+                        duration: 3000,
+                        className: "border-radius-10",
+                        close: true,
+                        gravity: "top", // `top` or `bottom`
+                        position: "center", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "#000"
+                        }
+                    }).showToast();
+        }
+    } catch (err) {
+        console.error('Kopyalama hatası:', err);
+        alert('Kopyalama başarısız oldu');
+    }
+});
 
         //#kasalar'da değişiklik olduğunda
         $("#kasalar").on("change", function() {

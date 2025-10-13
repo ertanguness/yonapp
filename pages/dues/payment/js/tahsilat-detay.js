@@ -1,3 +1,5 @@
+
+
 $(document).on('click', '.borc-sil', function () {
     let id = $(this).data('id');
     row = $(this).parents('tr');

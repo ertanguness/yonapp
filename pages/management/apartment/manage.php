@@ -72,11 +72,7 @@ $id =  Security::decrypt($id ?? 0);
                             </div>
                         </div>
                         <form action='' id='apartmentForm'>
-<<<<<<< HEAD
-                            <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
-=======
                             <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $enc_id ?? 0; ?>">
->>>>>>> 54e1d7af44c96de2a80bf780cc6779b061892563
 
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">

@@ -221,7 +221,17 @@ switch ($hedef_tipi) {
                                 </div>
                             </div>
                         </div>
+<style>
+    .select2-results {
+	height: 400px !important;
+	max-height: 600px !important;
+}
 
+.select2-container--default .select2-results > .select2-results__options {
+	height: 400px !important;
+	max-height: 600px !important;
+}
+</style>
                         <div class="row mb-4 align-items-center">
                             <div class="col-lg-2">
                                 <label for="hedef_tipi" class="fw-semibold">Kime Borçlandırılacak:</label>
@@ -232,7 +242,7 @@ switch ($hedef_tipi) {
                                     <?php
 
                                     ?>
-                                    <?php echo Helper::targetTypeSelect('hedef_tipi', $borc->hedef_tipi ?? "all", $disabled); ?>
+                                    <?php echo Helper::targetTypeSelectGrouped('hedef_tipi', $borc->hedef_tipi ?? "all", $disabled); ?>
                                 </div>
                             </div>
                             <div class="col-lg-2 ">

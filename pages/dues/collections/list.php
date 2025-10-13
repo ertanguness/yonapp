@@ -39,7 +39,20 @@ Gate::authorizeOrDie('tahsilat_listele');
         </a>
     </div>
 </div>
-<!-- ... (page-header kısmı aynı kalabilir) ... -->
+
+
+<style>
+
+table tr td:has(> .p-3.border.rounded.text-center) {
+    margin: 0 !important;
+    padding:  5px 0 !important;
+
+}
+table tr td .p-3.border.rounded.text-center {
+    background: #f2f5fa !important;
+}
+
+</style>
 
 <div class="main-content">
     <?php
@@ -83,7 +96,7 @@ Gate::authorizeOrDie('tahsilat_listele');
                                         <div><?= htmlspecialchars($tahsilat->aciklama ?: 'Genel Tahsilat') ?></div>
                                         <small class="text-muted" data-bs-toggle="tooltip" data-bs-original-title="Hareketleri Görüntüle">
                                         <a href="kasa-hareketleri/<?= ($kasa_id) ?>">
-                                                <i class="bi bi-wallet2 me-1"></i><?= htmlspecialchars($tahsilat->kasa_adi) ?>
+                                                <i class="bi bi-safe me-1"></i><?= htmlspecialchars($tahsilat->kasa_adi) ?>
                                             </a>
                                         </small>
                                     </td>

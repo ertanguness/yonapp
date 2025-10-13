@@ -136,7 +136,7 @@ if ($_POST["action"] == "borclandir") {
                 $kiracilar = []; // Kiracıları bir dizi olarak topla
 
                 foreach ($sakinler as $sakin) {
-                    if ($sakin->uyelik_tipi == 'Ev Sahibi' || $sakin->uyelik_tipi == 'Kat Malik' || $sakin->uyelik_tipi == 1) {
+                    if ($sakin->uyelik_tipi == 'Ev Sahibi' || $sakin->uyelik_tipi == 'Kat Maliki' || $sakin->uyelik_tipi == 1) {
                         $evSahibi = $sakin;
                     } else if ($sakin->uyelik_tipi == 'Kiracı' || $sakin->uyelik_tipi == 2) {
                         $kiracilar[] = $sakin; // Her kiracıyı diziye ekle
@@ -588,6 +588,7 @@ if ($_POST["action"] == "save_debit_single") {
             "son_odeme_tarihi" => $borc->bitis_tarihi,
             'ceza_orani' => $_POST["ceza_orani"],
             'aciklama' => $_POST["aciklama"],
+            'borclandirma_tarihi' => $_POST["borclandirma_tarihi"] ?? date('Y-m-d H:i:s'),
 
 
         ];
@@ -840,4 +841,67 @@ if ($_POST["action"] == "excel_upload_debits") {
             "message" => $result['message']
         ]);
     }
+}
+
+
+/* Sitede yapılan borçlandırmaların bilgilerini getirir
+* @param borclandirma_id (şifreli)
+*/
+if ($_POST["action"] == "get_borclandirma_info") {
+    $borclandirma_id = $_POST["id"];
+
+    $data = $Borc->find($borclandirma_id);
+
+    if (empty($data)) {
+        $res = [
+            "status" => "error",
+            "message" => "Borçlandırma bilgisi bulunamadı!"
+        ];
+
+        echo json_encode($res);
+        exit;
+    }
+   
+    //id'yi şifreli hale getiriyoruz
+    $data->id = Security::encrypt($data->id);
+    $data->baslangic_tarihi = Date::dmy($data->baslangic_tarihi);
+    $data->bitis_tarihi = Date::dmy($data->bitis_tarihi);
+
+    $res = [
+        "status" => "success",
+        "data" => $data
+    ];
+
+    echo json_encode($res);
+}
+
+
+
+//Borcu düzenlemek için borç bilgisini döndürür
+if ($_POST['action'] == 'get_borclandirma_detay') {
+    //Gate::can('borclandirma_bilgisi_getir');
+    try {
+        if (empty($_POST['id'])) {
+            throw new Exception("Borç Detay ID'si gönderilmedi.");
+        }
+
+        $borcDetayId = Security::decrypt($_POST['id']);
+        $borcDetay = $BorcDetay->find($borcDetayId);
+        if (!$borcDetay) {
+            throw new Exception("Borç Detay kaydı bulunamadı.");
+        }
+        $status = "success";
+        $message = "Borç Detay bilgisi başarıyla getirildi.";
+    } catch (Exception $e) {
+        http_response_code(400); // Hata durumunda uygun bir HTTP kodu gönder
+        $status = "error";
+        $message = $e->getMessage();
+    }
+    $res = [
+        "status" => $status,
+        "message" => $message,
+        "data" => $borcDetay ?? null
+    ];
+    echo json_encode($res);
+    exit;
 }

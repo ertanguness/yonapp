@@ -299,7 +299,7 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
                                         <div class="input-group-text">
                                             <i class="feather-file-text"></i>
                                         </div>
-                                        <textarea id="note-has-description" name="tahsilat_aciklama"
+                                        <textarea id="tahsilat_aciklama" name="tahsilat_aciklama"
                                             class="form-control" placeholder="Açıklama giriniz.(Referans No vb."
                                             rows="5"></textarea>
 
@@ -343,4 +343,13 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
             removeMaskOnSubmit: true,
         });
     });
+
+     $("#kasa_id").on('change', function() {
+        var kasaAdi = $("#kasa_id option:selected").text(); // Seçili option'ın değeri
+        if(kasaAdi.includes("Önceki Yönetim")){
+            $("#tahsilat_aciklama").val("Önceki Yönetime Ödenen");
+        }else{
+            $("#tahsilat_aciklama").val("");
+        }
+});
 </script>

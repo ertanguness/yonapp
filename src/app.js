@@ -7,7 +7,7 @@ $(document).ready(function () {
       //stateSave: true,
       responsive: false,
       language: {
-        url: "/assets/js/tr.json",
+        //url: "/assets/js/tr.json",
       },
     
       ...getTableSpecificOptions(),
@@ -61,7 +61,7 @@ $(document).ready(function () {
         });
 
         // Responsive resize olayı
-        table.on("responsive-resize", function (e, datatable, columns) {
+        api.on("responsive-resize", function (e, datatable, columns) {
           $("#" + tableId + " .search-input-row th").each(function (index) {
             if (columns[index]) {
               $(this).show();
@@ -72,7 +72,7 @@ $(document).ready(function () {
         });
 
         // State yükleme
-        var state = table.state.loaded();
+        var state = api.state.loaded();
         if (state && state.sTableId === tableId) {
           console.log("State loaded for table:", tableId);
           var inputs = $("thead input");
@@ -87,10 +87,12 @@ $(document).ready(function () {
             }
           });
 
-          table.draw();
+          api.draw();
         } else {
-          table.state.clear();
+          api.state.clear();
         }
+      
+      
       },
     });
   }
@@ -421,7 +423,7 @@ if ($(".money").length > 0) {
   });
 
   //Tarih formatı için inputmask kullan
-  $(document).on("focus", ".flatpickr", function () {
+  $(document).on("focus", ".flatpickr:not(.flatpickr-time-input)", function () {
     $(this).inputmask("99.99.9999", {
       placeholder: "gg.aa.yyyy",
       clearIncomplete: true,

@@ -57,13 +57,13 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
             <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $kisi->id; ?>" class="d-flex me-1 file-download">
                 <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
                     data-bs-original-title="Download Invoice" aria-label="Download Invoice">
-                  <i class="fa-solid fa-file-pdf"></i>
-                    </div>
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
             </a>
             <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $kisi->id; ?>&format=xlsx" class="d-flex me-1 file-download">
                 <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
                     data-bs-original-title="Download Invoice" aria-label="Download Invoice">
-<i class="fa-regular fa-file-excel"></i>
+                    <i class="fa-regular fa-file-excel"></i>
                 </div>
             </a>
 
@@ -156,25 +156,19 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
             <div class="card widget-tickets-content">
                 <div class="card-header">
                     <h5 class="card-title">Borçlar</h5>
-                    <div class="card-header-action">
-                        <div class="card-header-btn">
 
-                            <div data-bs-toggle="tooltip" title="" data-bs-original-title="Refresh">
-                                <a href="#" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
-                            </div>
-                            <div data-bs-toggle="tooltip" title="" data-bs-original-title="Maximize/Minimize">
-                                <a href="#" class="avatar-text avatar-xs bg-success" data-bs-toggle="expand"> </a>
-                            </div>
+                    <div class="d-flex gap-3 align-items-center borc-ekle" 
+                            data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"  
+                            
+                            >
+                        <div>
+                            <div class="fw-semibold text-dark">Yeni Borç</div>
                         </div>
-                        <div class="dropdown">
-                            <a href="#" class="avatar-text avatar-sm" data-bs-toggle="dropdown" data-bs-offset="25, 25">
-                                <div data-bs-toggle="tooltip" title="" data-bs-original-title="Options">
-                                    <i class="feather-more-vertical"></i>
-                                </div>
-                            </a>
-
+                        <div class="avatar-text" accesskey="0">
+                            <i class="feather feather-plus"></i>
                         </div>
                     </div>
+              
                 </div>
                 <div class="overflow-auto tasks-items-wrapper" style="height: 340px;">
                     <div class="card-body custom-card-action p-0">
@@ -201,6 +195,10 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                 </p>
                                                 <div class="tickets-list-action d-flex align-items-center gap-3">
 
+                                                    <a href="javascript:void(0);" 
+                                                    data-id="<?php echo Security::encrypt($borc->id); ?>" 
+                                                    data-kisi-id="<?php echo Security::encrypt($kisi->id ?? 0); ?>"
+                                                    class="text-secondary borc-duzenle">Düzenle</a> |
                                                     <a href="javascript:void(0);" data-id="<?php echo Security::encrypt($borc->id); ?>" class="text-danger borc-sil">Sil</a>
                                                 </div>
                                             </td>
@@ -290,9 +288,20 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                 <div class="tickets-list-action d-flex align-items-center gap-3">
 
                                                     <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                        class="text-primary makbuz-yazdir">Makbuz Yazdır</a>
+                                                        class="text-primary makbuz-yazdir">
+                                                        <i class="fa fa-print"></i>
+                                                        Makbuz Yazdır
+                                                    </a> |
+                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>" data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
+                                                        class="text-secondary mesaj-gonder">
+                                                        <i class="fa fa-comment"></i>
+                                                        Mesaj Gönder
+                                                    </a> |
                                                     <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                        class="text-danger tahsilat-sil">Sil</a>
+                                                        class="text-danger tahsilat-sil">
+                                                        <i class="fa fa-trash"></i>
+                                                        Sil
+                                                    </a>
                                                 </div>
 
                                                 <!-- TAHSİLAT DETAYLARI ALT LİSTESİ -->
@@ -304,7 +313,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                                     <i class="fa fa-check text-success me-1"></i>
                                                                     <span class="fw-bold text-dark"><?php echo htmlspecialchars($detay['borc_adi']); ?></span>
                                                                     <div class="ps-3 mt-1 text-muted">
-                                                                        <?php echo htmlspecialchars($detay['aciklama'] ) ; ?>
+                                                                        <?php echo htmlspecialchars($detay['aciklama']); ?>
                                                                         : <span class="fw-bold text-primary"><?php echo Helper::formattedMoney($detay['tutar']); ?></span>
                                                                     </div>
                                                                 </div>

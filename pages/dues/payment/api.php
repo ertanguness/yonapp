@@ -5,6 +5,7 @@ require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 
 use Database\Db;
+use App\Helper\Alert;
 use App\Helper\Date;
 use Model\KasaModel;
 use App\Helper\Error;
@@ -93,14 +94,14 @@ if ($_POST['action'] == 'payment_file_upload') {
 
 
         $islem_tarihi = Date::YmdHIS($data[0]);  // İşlem tarihi
-       
-    // Tutar artık temizlenmiş durumda gelmeli
-    $tutar = is_numeric($data[1]) ? floatval($data[1]) : Helper::formattedMoneyToNumber($data[1]);
+
+        // Tutar artık temizlenmiş durumda gelmeli
+        $tutar = is_numeric($data[1]) ? floatval($data[1]) : Helper::formattedMoneyToNumber($data[1]);
 
         global $logger;
         $logger->info("Tahsilat Onay Kaydı: islem_tarihi: $islem_tarihi, tutar: $tutar, daire_id: $daire_id");
 
-     
+
         $tahsilat_tipi = $data[4] ?? '';  // Tahsilat tipi (Ödeme Türü)
         $aciklama = $data[5] ?? '';  // Açıklama alanı, varsa kullanılır
 
@@ -160,24 +161,28 @@ if ($_POST['action'] == 'payment_file_upload') {
             $daire_kodu = $data[2] ?? '';  // Daire kodu
             $iyelik_tipi = $data[3] ?? 'Ev Sahibi';  // Ödeyen tipi (Ev Sahibi, Kiracı)
             $aciklama = $data[5];
-              // TUTAR GÜVENLİ DÖNÜŞÜMÜ
-        $tutarHam = trim($data[1] ?? '0');
-        
-        // Debug için log ekle
-        $logger->info("Excel'den okunan tutar: " . $tutarHam . " (Tip: " . gettype($tutarHam) . ")");
-        
-        // Bilimsel gösterim kontrolü ve temizlik
-        if (is_string($tutarHam)) {
-            // Bilimsel gösterim var mı kontrol et (E+ veya e+ içeriyor mu)
-            if (stripos($tutarHam, 'E') !== false) {
-                // Bilimsel gösterimden normal sayıya çevir
-                $tutarHam = sprintf("%.2f", floatval($tutarHam));
+            // TUTAR GÜVENLİ DÖNÜŞÜMÜ
+            $tutarHam = trim($data[1] ?? '0');
+            $tutar = round((float) str_replace(',', '.', $tutarHam), 2);
+            // Debug için log ekle
+            $logger->info("Excel'den okunan tutar: " . $tutar . " (Tip: " . gettype($tutar) . ")");
+
+
+            // Bilimsel gösterim kontrolü ve temizlik
+            if (is_string($tutar)) {
+                // Bilimsel gösterim var mı kontrol et (E+ veya e+ içeriyor mu)
+                if (stripos($tutar, 'E') !== false) {
+                    // Bilimsel gösterimden normal sayıya çevir
+                    $tutar = sprintf("%.2f", floatval($tutar));
+                }
+
+                // Türkçe formatlı sayı temizliği
+                $tutar = str_replace([' ', '.'], ['', ''], $tutar); // Binlik ayırıcıları temizle
+                $tutar = str_replace(',', '.', $tutar); // Virgülü noktaya çevir
             }
-            
-            // Türkçe formatlı sayı temizliği
-            $tutarHam = str_replace([' ', '.'], ['', ''], $tutarHam); // Binlik ayırıcıları temizle
-            $tutarHam = str_replace(',', '.', $tutarHam); // Virgülü noktaya çevir
-        }
+
+
+
 
             // Öncelikle doğrudan daire kodu ile eşleşme dene
             if (!empty($daire_kodu)) {
@@ -226,6 +231,7 @@ if ($_POST['action'] == 'payment_file_upload') {
                     : ('Bilgi var ' . ($aciklama ?? ''));
                 kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk);
                 $eslesmeyen_daireler[] = $daireKodu ?? $daire_kodu;
+                $logger->info("Eşleşmeyen kayıt havuza kaydedildi: " . json_encode($data));
                 $eşleşmeyen_kayıtlar++;
             }
         } catch (Exception $e) {
@@ -528,6 +534,7 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
             'site_id' => $_SESSION['site_id'], // Site ID'si
             'kasa_id' => $kasa_id,
             'tahsilat_id' => Security::decrypt($tahsilatId), // Tahsilat ID'si
+            'kisi_id' => $kisi_id, // Kişi ID'si
             'tutar' => $odenen_toplam_tutar,
             'islem_tarihi' => $islem_tarihi,
             'islem_tipi' => 'gelir', // Tahsilat geliri
@@ -560,7 +567,7 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
         ],
         'rowData' => [
             'data' => $rowData,
-            'kalan_anapara' =>'<i class="feather-trending-down fw-bold text-danger me-1"></i>'. Helper::formattedMoney($rowData->kalan_anapara ?? 0),
+            'kalan_anapara' => '<i class="feather-trending-down fw-bold text-danger me-1"></i>' . Helper::formattedMoney($rowData->kalan_anapara ?? 0),
             'hesaplanan_gecikme_zammi' => Helper::formattedMoney($rowData->hesaplanan_gecikme_zammi ?? 0),
             'toplam_kalan_borc' => Helper::formattedMoney($rowData->kalan_anapara ?? 0),
             'kredi_tutari' => Helper::formattedMoney($rowData->kredi_tutari ?? 0),
@@ -677,7 +684,7 @@ if ($_POST['action'] == 'tahsilat-sil') {
         'bakiye' => $bakiye ?? '0,00',
         'rowData' => [
             'data' => $rowData,
-            'kalan_anapara' => '<i class="feather-trending-down fw-bold text-danger me-1"></i>'. Helper::formattedMoney($rowData->kalan_anapara ?? 0),
+            'kalan_anapara' => '<i class="feather-trending-down fw-bold text-danger me-1"></i>' . Helper::formattedMoney($rowData->kalan_anapara ?? 0),
             'hesaplanan_gecikme_zammi' => Helper::formattedMoney($rowData->hesaplanan_gecikme_zammi ?? 0),
             'toplam_kalan_borc' => Helper::formattedMoney($rowData->toplam_kalan_borc ?? 0),
             'kredi_tutari' => Helper::formattedMoney($rowData->kredi_tutari ?? 0),
@@ -843,12 +850,15 @@ if ($_POST['action'] == 'borc_sil') { {
 
             //bu id ile tahsilat_detay tablosunda kayıt var mı kontrol et
             $tahsilatDetay = $TahsilatDetay->findWhere(['borc_detay_id' => $id]);
+            //Tahsilat detayını sil
             if ($tahsilatDetay) {
-                echo json_encode([
-                    'status' => 'warning',
-                    'message' => 'Bu borçlandırma detayı ile ilişkili tahsilat işlemleri bulunduğu için silinemez.'
-                ]);
-                exit;
+                $TahsilatDetay->softDeleteByColumn('borc_detay_id', $id);
+
+                // echo json_encode([
+                //     'status' => 'warning',
+                //     'message' => 'Bu borçlandırma detayı ile ilişkili tahsilat işlemleri bulunduğu için silinemez.'
+                // ]);
+                // exit;
             }
 
 
@@ -917,14 +927,14 @@ if ($_POST['action'] == 'eslesen_havuza_gonder') {
             'islem_tarihi' => $havuzKaydi->islem_tarihi,
             'daire_id' => $daire_id,
             'tutar' => $islenen_tutar,
-            'tahsilat_tipi' => "Eşleşmeyen havuzundan aktarıldı." ,
+            'tahsilat_tipi' => "Eşleşmeyen havuzundan aktarıldı.",
             'aciklama' =>  $havuzKaydi->ham_aciklama
         ];
         $lastInsertId = $TahsilatOnay->saveWithAttr($data);
 
         //tekrar havuz kaydını bul
         $havuzKaydi = $TahsilatHavuzu->find($id);
-       
+
 
         //kalan tutari al
         $toplam_islenen =  $islenen_tutar + $havuzKaydi->islenen_tutar;
@@ -935,14 +945,14 @@ if ($_POST['action'] == 'eslesen_havuza_gonder') {
         if ($kalan_tutar == 0) {
             // Havuz kaydını sil
             $TahsilatHavuzu->delete($_POST['id']);
-         }else{
+        } else {
             // Havuz kaydını güncelle
             $data = [
                 'id' => $havuzKaydi->id,
                 'islenen_tutar' => $toplam_islenen,
             ];
             $TahsilatHavuzu->saveWithAttr($data);
-         }
+        }
 
 
         $db->commit();
@@ -998,6 +1008,61 @@ if ($_POST['action'] == 'eslesmeyen_odeme_sil') {
     ]);
 }
 
+
+/* Yapılan ödemeyi kasaya aktarma işlemi */
+if ($_POST['action'] == 'kasaya_aktar') {
+    $id = Security::decrypt($_POST['id']);
+    $kasa_id = $Kasa->varsayilanKasa()->id;
+
+
+    try {
+        //Gate::can('eslesmeyen_odeme_sil');
+
+        $db->beginTransaction();
+
+        $havuzKaydi = $TahsilatHavuzu->find($id);
+        if (!$havuzKaydi) {
+            throw new Exception('Havuz kaydı bulunamadı.');
+        }
+
+        $islem_tipi = $havuzKaydi->tahsilat_tutari >= 0 ? 'gelir' : 'gider';
+
+        // Tahsilatı kasa hareketi olarak kaydet
+        $data = [
+            'id' => 0,
+            'site_id' => $_SESSION['site_id'], // Site ID'si
+            'kasa_id' => $kasa_id,
+            'tahsilat_id' => 0, // Eşleşmeyen tahsilat olduğu için null
+            'kisi_id' => 0, // Kişi ID'si yok
+            'tutar' => $havuzKaydi->tahsilat_tutari,
+            'islem_tarihi' => $havuzKaydi->islem_tarihi,
+            'islem_tipi' => $islem_tipi,
+            'kaynak_tablo' => 'tahsilat_havuzu', // Kaynak tablo
+            'kaynak_id' => $havuzKaydi->id, // Havuz kaydı ID'si
+            'kayit_yapan' => $_SESSION['user']->id, // Kayıt yapan kullanıcı ID'si
+            'guncellenebilir' => 1,
+            'aciklama' => $havuzKaydi->ham_aciklama ?: 'Kasaya aktarım',
+        ];
+        $KasaHareket->saveWithAttr($data);
+
+        // Havuz kaydını sil
+        $TahsilatHavuzu->softDelete($_POST['id']);
+
+        $db->commit();
+        $status = 'success';
+        $message = 'Ödeme başarıyla kasaya aktarıldı.';
+    } catch (Exception $e) {
+        $db->rollBack();
+        $status = 'error';
+        $message = 'İşlem sırasında bir hata oluştu: ' . $e->getMessage();
+    }
+
+    echo json_encode([
+        'status' => $status,
+        'message' => $message
+    ]);
+}
+
 /** Eşleşmeyen tahsilat sayfasında tahsilatı eşleştirmek için kişi arama işlemi */
 if (isset($_POST['action']) && $_POST['action'] == 'kisi_ara') {
     // Güvenlik kontrollerinizi burada yapın (oturum kontrolü vb.)
@@ -1024,3 +1089,66 @@ if (isset($_POST['action']) && $_POST['action'] == 'kisi_ara') {
     echo json_encode(['results' => $results]);
     exit;
 }
+
+
+/* Borc detay modalinden borç ekle modali açılarak borç ekleme işlemi */
+if ($_POST['action'] == 'borc_ekle') {
+    $id = Security::decrypt($_POST['borc_detay_id']);
+    $kisi_id = Security::decrypt($_POST['kisi_id']);
+    $borclandirma_id = $_POST['borclandirmalar'];
+    $borclandirma_tarihi = Date::YmdHIS($_POST['borc_islem_tarihi']);
+    $aciklama = $_POST['borc_aciklama'] ?? '';
+    $tutar = Helper::formattedMoneyToNumber($_POST['borc_tutar'] ?? 0);
+
+    $borc = $Borc->findWithDueName($borclandirma_id);
+
+    $kisi = $Kisi->find($kisi_id);
+
+
+    if (!$borc) {
+        Alert::error('Lütfen önce bir borçlandırma seçiniz.');
+    }
+
+    if (empty($kisi_id)) {
+        Alert::error('Lütfen önce bir kişi seçiniz.');
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $data = [
+            'id' => $id,
+            'borclandirma_id' => $borclandirma_id,
+            'borclandirma_tarihi' => $borclandirma_tarihi,
+            'borc_adi' => $borc->borc_adi,
+            'aciklama' => $aciklama ?: $borc->aciklama,
+            'baslangic_tarihi' => $borc->baslangic_tarihi,
+            'bitis_tarihi' => $borc->bitis_tarihi,
+            'son_odeme_tarihi' => $borc->bitis_tarihi,
+            'tutar' => $tutar,
+            'kisi_id' => $kisi_id,
+            'daire_id' => $kisi->daire_id,
+
+        ];
+
+
+        $lastInsertId = $BorcDetay->saveWithAttr($data);
+
+
+        $db->commit();
+        $status = "success";
+        $message = "Borçlandırma detayı başarıyla eklendi.";
+    } catch (PDOException $ex) {
+        $db->rollBack();
+        $status = "error";
+        $message = $ex->getMessage();
+    }
+
+    $res = [
+        'status' => $status,
+        'message' => $message
+    ];
+    echo json_encode($res);
+}
+
+

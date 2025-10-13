@@ -94,15 +94,15 @@ public function KisiTahsilatlariWithDetails($kisi_id)
 
                                         SELECT 
                                             tahsilat_id,
-                                            k.tutar AS toplam_tutar,
+                                            t2.tutar AS toplam_tutar,
                                             k.islem_tarihi,
                                             k.aciklama AS ana_aciklama,
                                             k.tutar AS detay_tutar,
                                             k.aciklama AS detay_aciklama,
                                             'Krediye aktarım' AS borc_adi
                                         FROM kisi_kredileri k
+                                        LEFT JOIN tahsilatlar t2 ON k.tahsilat_id = t2.id
                                         WHERE k.kisi_id = ? AND k.silinme_tarihi IS NULL
-
                                         ORDER BY islem_tarihi DESC, tahsilat_id DESC;");
     // $sql = $this->db->prepare("SELECT 
     //                                         t.id AS tahsilat_id,
@@ -279,6 +279,17 @@ public function tahsilatiSil(int $tahsilatId, int $silenKullaniciId)
     }
 
 
+    /* Tahsilatın işlenen tutarını getirir */
+    public function getIslenenTutar($tahsilat_onay_id)
+    {
+        $sql = $this->db->prepare("SELECT SUM(tutar) as toplam_tutar 
+                                          FROM $this->table 
+                                          WHERE tahsilat_onay_id = ? 
+                                          AND silinme_tarihi IS NULL");
+        $sql->execute([$tahsilat_onay_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? (float)$result->toplam_tutar : 0.0; 
+    }
 
 
 }

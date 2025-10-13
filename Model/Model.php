@@ -4,11 +4,12 @@
 namespace Model;
 
 use App\Helper\Security;
+use Model\SSPModel;
 use Override;
 use PDO;
 
 
-class Model
+class Model extends SSPModel
 {
     protected $table;
     protected $primaryKey = 'id';
@@ -421,4 +422,172 @@ class Model
 
         return true;
     }
+
+
+
+// Mevcut BaseModel'e ekle:
+
+/**
+ * DataTables server-side processing için veri döndürür
+ */
+public function dataTablesResponse($request, $columns) 
+{
+    $bindings = array();
+    
+    // Filtreleme
+    $where = $this->buildDataTablesWhere($request, $columns, $bindings);
+    
+    // Sıralama
+    $order = $this->buildDataTablesOrder($request, $columns);
+    
+    // Sayfalama
+    $limit = $this->buildDataTablesLimit($request);
+    
+    // Ana veri sorgusu
+    $sql = "SELECT * FROM {$this->table} {$where} {$order} {$limit}";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($bindings);
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Formatter'ları uygula
+    $data = $this->applyDataTablesFormatters($data, $columns);
+    
+    // Toplam kayıt sayısı
+    $totalRecords = $this->getTotalRecords();
+    $filteredRecords = $this->getFilteredRecords($where, $bindings);
+    
+    return [
+        "draw" => intval($request['draw'] ?? 0),
+        "recordsTotal" => $totalRecords,
+        "recordsFiltered" => $filteredRecords,
+        "data" => array_values($data)
+    ];
+}
+
+private function applyDataTablesFormatters($data, $columns) 
+{
+    foreach ($data as $rowIndex => &$row) {
+        foreach ($columns as $column) {
+            if (isset($column['formatter']) && is_callable($column['formatter'])) {
+                $field = $column['db'];
+                if (isset($row[$field])) {
+                    $row[$field] = $column['formatter']($row[$field], $row);
+                }
+            }
+        }
+    }
+    return $data;
+}
+
+
+private function buildDataTablesWhere($request, $columns, &$bindings) 
+{
+    $where = '';
+    $conditions = [];
+    
+    // Global arama
+    if (isset($request['search']['value']) && !empty($request['search']['value'])) {
+        $searchValue = $request['search']['value'];
+        $searchConditions = [];
+        
+        foreach ($columns as $column) {
+            if (isset($column['db']) && !empty($column['db'])) {
+                $searchConditions[] = "`{$column['db']}` LIKE ?";
+                $bindings[] = "%{$searchValue}%";
+            }
+        }
+        
+        if (!empty($searchConditions)) {
+            $conditions[] = '(' . implode(' OR ', $searchConditions) . ')';
+        }
+    }
+    
+    // Kolon bazlı arama
+    if (isset($request['columns'])) {
+        foreach ($request['columns'] as $i => $requestColumn) {
+            if (isset($requestColumn['search']['value']) && !empty($requestColumn['search']['value'])) {
+                $column = $columns[$i] ?? null;
+                if ($column && isset($column['db'])) {
+                    $conditions[] = "`{$column['db']}` LIKE ?";
+                    $bindings[] = "%{$requestColumn['search']['value']}%";
+                }
+            }
+        }
+    }
+    
+    if (!empty($conditions)) {
+        $where = 'WHERE ' . implode(' AND ', $conditions);
+    }
+    
+    return $where;
+}
+
+private function buildDataTablesOrder($request, $columns) 
+{
+    $order = '';
+    
+    if (isset($request['order']) && !empty($request['order'])) {
+        $orderBy = [];
+        
+        foreach ($request['order'] as $orderItem) {
+            $columnIndex = $orderItem['column'];
+            $direction = $orderItem['dir'] === 'desc' ? 'DESC' : 'ASC';
+            
+            if (isset($columns[$columnIndex]['db'])) {
+                $orderBy[] = "`{$columns[$columnIndex]['db']}` {$direction}";
+            }
+        }
+        
+        if (!empty($orderBy)) {
+            $order = 'ORDER BY ' . implode(', ', $orderBy);
+        }
+    }
+    
+    return $order;
+}
+
+private function buildDataTablesLimit($request) 
+{
+    $limit = '';
+    
+    if (isset($request['start']) && isset($request['length']) && $request['length'] != -1) {
+        $start = intval($request['start']);
+        $length = intval($request['length']);
+        $limit = "LIMIT {$start}, {$length}";
+    }
+    
+    return $limit;
+}
+
+private function getTotalRecords() 
+{
+    $stmt = $this->db->prepare("SELECT COUNT(*) FROM {$this->table}");
+    $stmt->execute();
+    return $stmt->fetchColumn();
+}
+
+private function getFilteredRecords($where, $bindings) 
+{
+    $sql = "SELECT COUNT(*) FROM {$this->table} {$where}";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($bindings);
+    return $stmt->fetchColumn();
+}
+
+/**
+ * SSP sınıfını kullanarak DataTables response'u oluşturur
+ */
+public function getSSPResponse($request, $columns, $whereResult = null, $whereAll = null)
+{
+    // Mevcut DB bağlantısını SSP için uygun formata çevir
+    $conn = $this->db;
+    
+    if ($whereResult || $whereAll) {
+        return parent::complex($request, $conn, $this->table, $this->primaryKey, $columns, $whereResult, $whereAll);
+    } else {
+        return parent::simple($request, $conn, $this->table, $this->primaryKey, $columns);
+    }
+}
+
+
 }

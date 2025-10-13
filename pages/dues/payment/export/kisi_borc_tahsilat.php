@@ -51,8 +51,8 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
 // Tüm spreadsheet için varsayılan fontu ayarla
-$spreadsheet->getDefaultStyle()->getFont()->setName('Source Sans Pro');
-$spreadsheet->getDefaultStyle()->getFont()->setSize(11);
+$spreadsheet->getDefaultStyle()->getFont()->setName('DejaVu Sans');
+$spreadsheet->getDefaultStyle()->getFont()->setSize(10);
 
 
 
@@ -81,7 +81,7 @@ $sheet->mergeCells('A1:K3');
 $sheet->setCellValue('A1', 'Kişi Hesap Hareketleri');
 
 //Font Size ve Bold yap
-$sheet->getStyle('A1')->getFont()->setSize(16)->setBold(true);
+//$sheet->getStyle('A1')->getFont()->setSize(16)->setBold(true);
 
 //Ortala
 $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -93,21 +93,21 @@ $sheet->getStyle('A1')->getBorders()->getAllBorders()->setBorderStyle(Border::BO
 /**A4 Hücresine Daire No: ekle, Sağa yasla */
 $sheet->mergeCells('A4:B4');
 $sheet->setCellValue('A4', 'Adı Soyadı:');
-$sheet->getStyle('A4')->getFont()->setBold(true);
+// $sheet->getStyle('A4')->getFont()->setBold(true);
 $sheet->getStyle('A4:B4')->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_LEFT)
     ->setVertical(Alignment::VERTICAL_CENTER);
 
 //C4
-$sheet->mergeCells('C4:H4');
+$sheet->mergeCells('C4:F4');
 $sheet->setCellValue('C4', $kisi->adi_soyadi ?? '');
-$sheet->getStyle('C4')->getFont()->setBold(true);
 
-$sheet->mergeCells('I4:J4');
-$sheet->setCellValue('I4', 'Toplam Borç:  ');
+
+$sheet->mergeCells('G4:J4');
+$sheet->setCellValue('G4', 'Toplam Borç:  ');
 $sheet->setCellValue('K4', Helper::formattedMoney($kisiFinansalDurum->toplam_borc ?? '0,00'));
 //Bold yap
-$sheet->getStyle('K4')->getFont()->setBold(true);
+
 $sheet->getStyle('I4:J4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 $sheet->getStyle('K4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
@@ -115,32 +115,32 @@ $sheet->getStyle('K4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT
 $sheet->getStyle('C5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 $sheet->mergeCells('A5:B5');
 $sheet->setCellValue('A5', 'Daire Kodu:');
-$sheet->mergeCells('C5:H5');
+$sheet->mergeCells('C5:F5');
 $sheet->setCellValue('C5', $kisi->daire_kodu ?? '');
-$sheet->getStyle('C5')->getFont()->setBold(true);
 
-$sheet->mergeCells('I5:J5');
-$sheet->setCellValue('I5', 'Toplam Ödenen:  ');
+
+$sheet->mergeCells('G5:J5');
+$sheet->setCellValue('G5', 'Toplam Ödenen:  ');
 $sheet->setCellValue('K5', Helper::formattedMoney($kisiFinansalDurum->toplam_tahsilat ?? '0,00'));
-$sheet->getStyle('I5:J5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+$sheet->getStyle('G5:J5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 $sheet->getStyle('K5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-$sheet->getStyle('K5')->getFont()->setBold(true);
+
 
 
 
 $sheet->mergeCells('A6:B6');
-$sheet->mergeCells('C6:H6');
+$sheet->mergeCells('C6:F6');
 
 $sheet->setCellValue('A6', 'Oturum Şekli:');
 $sheet->setCellValue('C6', $kisi->uyelik_tipi ?? '');
 
-$sheet->mergeCells('I6:J6');
-$sheet->setCellValue('I6', 'Bakiye:  ');
+$sheet->mergeCells('G6:J6');
+$sheet->setCellValue('G6', 'Bakiye:  ');
 $sheet->setCellValue('K6', Helper::formattedMoney($kisiFinansalDurum->bakiye ?? '0,00'));
 
 $sheet->getStyle('I6:J6')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 $sheet->getStyle('K6')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-$sheet->getStyle('K6')->getFont()->setBold(true);
+//$sheet->getStyle('K6')->getFont()->setBold(true);
 
 $sheet->mergeCells('A7:B7');
 $sheet->mergeCells('C7:K7');
@@ -154,7 +154,7 @@ $sheet->getStyle('A1:K8')->getBorders()->getAllBorders()->setBorderStyle(Border:
 
 //Satır yüksekliği 5 yap
 $sheet->getRowDimension(8)->setRowHeight(5);
-$sheet->getStyle('A2:K8')->getFont()->setSize(10);
+$sheet->getStyle('A2:K8')->getFont()->setSize(8);
 
 
 $sheet->mergeCells('H9:K9');
@@ -166,10 +166,9 @@ $lastHeaderColumn = 'K'; // 'A1'den 'G1'e kadar başlıklarınız var
 // Başlık satırını formatla
 $sheet->getStyle('A9:' . $lastHeaderColumn . '9')->applyFromArray([
     'font' => [
-        'bold' => true,
+        'bold' => false,
         'color' => ['rgb' => '000000'],
         'size' => 9,
-        'name' => 'Source Sans Pro'
     ],
     'fill' => [
         'fillType' => Fill::FILL_SOLID,
@@ -195,7 +194,7 @@ $row = 10;
 foreach ($kisiHareketler as $hareket) {
     $sheet->setCellValue('A' . $row, $hareket->islem_id); // 'islem_id' daha mantıklı olabilir
     $sheet->setCellValue('B' . $row, date('d.m.Y H:i', strtotime($hareket->islem_tarihi)));
-    $sheet->setCellValue('C' . $row, ucfirst($hareket->islem_tipi));
+    $sheet->setCellValue('C' . $row, ucfirst($hareket->borc_adi));
     $sheet->setCellValue('D' . $row, number_format((float)$hareket->anapara, 2, ',', '.')); // Float'a çevirme
     $sheet->setCellValue('E' . $row, number_format((float)$hareket->gecikme_zammi, 2, ',', '.')); // Float'a çevirme
     $sheet->setCellValue('F' . $row, number_format((float)$hareket->odenen, 2, ',', '.')); // Float'a çevirme
@@ -214,7 +213,6 @@ foreach ($kisiHareketler as $hareket) {
                 'startColor' => ['rgb' => 'F8F9FA']
             ],
             'font' => [
-                'name' => 'Source Sans Pro',
                 'size' => 9,
             ]
         ]);
@@ -222,7 +220,6 @@ foreach ($kisiHareketler as $hareket) {
         // Tek satırlar için de font ayarla
         $sheet->getStyle('A' . $row . ':' . $lastHeaderColumn . $row)->applyFromArray([
             'font' => [
-                'name' => 'Source Sans Pro',
                 'size' => 9,
             ]
         ]);
@@ -233,8 +230,8 @@ foreach ($kisiHareketler as $hareket) {
 
 // // Sütun genişliklerini ayarla (sadece kullanılan sütunlar için)
 // $sheet->getColumnDimension('A')->setWidth(15); // ID için artırıldı
-$sheet->getColumnDimension('B')->setWidth(13); // İşlem Tarihi
-$sheet->getColumnDimension('C')->setWidth(12); // İşlem Tipi
+$sheet->getColumnDimension('B')->setWidth(15); // İşlem Tarihi
+$sheet->getColumnDimension('C')->setWidth(13); // İşlem Tipi
 $sheet->getColumnDimension('D')->setWidth(10); // Anapara
 $sheet->getColumnDimension('E')->setWidth(10); // Gecikme Zammı
 $sheet->getColumnDimension('F')->setWidth(10); // Ödenen
@@ -275,8 +272,9 @@ $sheet->getStyle('A9:' . $lastHeaderColumn . ($row - 1))->applyFromArray([ // Bu
 ]);
 
 
-// Print ayarları - Başlık satırını her sayfada tekrarla
-$sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(start: 1, end: 9);
+// Print ayarları - Başlık satırını her sayfada yinele
+//$sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(start: 1, end: 9);
+
 
 $spreadsheet->getActiveSheet()->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
 $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
@@ -284,7 +282,7 @@ $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENT
 
 
 // Dosya adı
-$filename = 'hesap_ozeti_' . date('Y-m-d_H-i-s');
+$filename = $kisi->adi_soyadi . ' hesap_ozeti_' . date('Y-m-d_H-i-s');
 
 // Format'a göre export yap
 try {
@@ -321,9 +319,9 @@ try {
             header('Cache-Control: max-age=0');
 
             //Fontu ayarla
-            $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setBold(true);
-            $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setName('Source Sans Pro');
-            $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setSize(12);
+            // $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setName('DejaVu Sans');
+            $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setSize(10);
 
 
 
@@ -345,26 +343,37 @@ try {
 
             //Sayfayı yatay yap
             $spreadsheet->getActiveSheet()->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
-            $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+            $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
+        
+             // 1. Başlık tekrarını ayarla (bu satır bold sorununu tetikliyor)
+            $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 9);
+
+            // 2. Tekrarlanan tüm başlık alanını (A1:K9) ÖNCE normale (bold=false) zorla.
+            $sheet->getStyle('A1:K9')->getFont()->setBold(false);
 
 
-            // PDF case içinde (writer'dan önce):
 
-            $sheet->getStyle('A8:K' . ($row - 1))->applyFromArray([
+            $sheet->getStyle('A3:K' . ($row - 1))->applyFromArray([
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_LEFT,
+                    'vertical' => Alignment::VERTICAL_CENTER,
                     'indent' => 1,
                     'wrapText' => true
                 ]
             ]);
+            $sheet->getStyle('A3:K8')->applyFromArray([
+                'font' => [
+                    'bold' => false,
+                ]
+            ]);
 
-            $sheet->getStyle('K4:K6')->getFont()->setBold(true);
+            //$sheet->getStyle('K4:K6')->getFont()->setBold(true);
 
             $sheet->getStyle('A9:' . $lastHeaderColumn . '9')->applyFromArray([
                 'font' => [
-                    'bold' => true,
+                    'regular' => true,
                     'color' => ['rgb' => '000000'],
-                    'size' => 10,
+                    'size' => 8,
                 ]
             ]);
 
@@ -373,6 +382,14 @@ try {
             $sheet->getStyle('D10:G' . ($row - 1))
                 ->getAlignment()
                 ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+            $sheet->getStyle('A10:H' . ($row - 1))
+                ->applyFromArray([
+                   'font' => [
+                       'size' => 8,
+                       'name' => 'DejaVu Sans',
+                   ]
+                ]);
 
             $writer = IOFactory::createWriter($spreadsheet, 'Pdf');
             $writer->save('php://output');

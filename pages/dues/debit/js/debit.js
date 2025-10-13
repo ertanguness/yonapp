@@ -1,3 +1,5 @@
+import { getBlocksBySite, getPeoplesBySite, getPeoplesByBlock,getDueInfo } from "/assets/js/utils/debit.js";
+
 let url = "/pages/dues/debit/api.php";
 
 //Borçlandırma kaydet
@@ -17,11 +19,11 @@ $(document).on("click", "#save_debit", function (e) {
   formData.append("id", $("#borc_id").val());
   formData.append("borc_adi", $("#borc_baslik option:selected").text());
 
-//   for (let pair of formData.entries()) {
-//     console.log(pair[0] + ", " + pair[1]);
-//   }
-// return
-  
+  //   for (let pair of formData.entries()) {
+  //     console.log(pair[0] + ", " + pair[1]);
+  //   }
+  // return
+
   addCustomValidationMethods(); //validNumber methodu için
   var validator = $("#debitForm").validate({
     rules: {
@@ -58,7 +60,7 @@ $(document).on("click", "#save_debit", function (e) {
 
         var title = data.status == "success" ? "Başarılı" : "Hata";
         preloader.hide(); // Yükleme overlay'ini gizle
-       console.log(data);
+        console.log(data);
         swal.fire({
           title: title,
           text: data.message,
@@ -69,8 +71,8 @@ $(document).on("click", "#save_debit", function (e) {
         console.error("Fetch error:", error);
         preloader.hide(); // Yükleme overlay'ini gizle
         button
-        .prop("disabled", false)
-        .html('<i class="feather-save  me-2"></i>Kaydet');
+          .prop("disabled", false)
+          .html('<i class="feather-save  me-2"></i>Kaydet');
         swal.fire({
           title: "Hata",
           text: "Bir hata oluştu. Lütfen tekrar deneyin.",
@@ -104,7 +106,7 @@ $(document).on("click", ".delete-debit", function (e) {
       Pace.track(() => {
         fetch(url, {
           method: "POST",
-            body: formData,
+          body: formData,
         })
           .then((response) => {
             return response.json();
@@ -215,7 +217,6 @@ $(document).on("change", "#borc_baslik", function () {
   createDescription(); // Açıklamayı oluştur
 });
 
-//Aidat adı değiştiğinde, aidatın güncel verilerini getir
 $(document).on("change", "#block_id", function () {
   getPeoplesByBlock($(this).val());
 });
@@ -275,42 +276,7 @@ $(document).ready(function () {
         updateAlertMessage(
           "Kişiler listesinden seçtiğiniz kişilere borclandırma yapılacaktır."
         );
-
-        formData = new FormData();
-        //sitenin aktif kişilerini getir
-        formData.append("action", "get_people_by_site");
-
-        fetch(url, {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.status == "success") {
-              $("#hedef_kisi").empty();
-              $("#hedef_kisi").append(
-                $("<option disabled>Kişi Seçiniz</option>")
-              );
-              $.each(data.data, function (index, person) {
-                $("#hedef_kisi").append(
-                  $("<option></option>")
-                    .val(person.id)
-                    .text(person.adi_soyadi)
-                    .attr("data-block", person.block_id)
-                );
-              });
-              if (
-                $.fn.select2 &&
-                $("#hedef_kisi").hasClass("select2-hidden-accessible")
-              ) {
-                $("#hedef_kisi").select2("destroy");
-              }
-
-              $("#hedef_kisi").select2({
-                minimumResultsForSearch: 0,
-              });
-            }
-          });
+        getPeoplesBySite();
 
         break;
 
@@ -356,12 +322,11 @@ $(document).ready(function () {
         updateAlertMessage(
           "Daire tiplerine göre borclandırma yapılacaktır.(Dükkan,3+1, 2+1, vb.)"
         );
-       
+
 
         break;
 
       case "block":
-        getBlocksBySite();
         toggleElements({
           targetPersonDisabled: false,
           blockSelectDisabled: false,
@@ -371,6 +336,11 @@ $(document).ready(function () {
         updateAlertMessage(
           "Seçtiğiniz bloktaki kişilere veya ayrıca sadece seçilen kişilere borclandırma yapılacaktır."
         );
+        getBlocksBySite();
+        console.log($("#block_id option:selected").val());
+        getPeoplesByBlock($("#block_id option:selected").val());
+
+
         break;
 
       default:
@@ -423,9 +393,9 @@ $(document).on("change", "#baslangic_tarihi", function () {
     $("#bitis_tarihi").val(endDate);
 
 
-    
+
     createDescription(); // Açıklamayı oluştur
-    
+
   }
 
 
@@ -440,10 +410,10 @@ function createDescription() {
   let $aciklama = $("#aciklama");
   const [gun, ay, yil] = tarih.split(".");
   const tarihObjesi = new Date(`${yil}-${ay}-${gun}`);
-  
+
   // Ay adını Türkçe almak için Intl kullanılır:
   const ayAdi = new Intl.DateTimeFormat('tr-TR', { month: 'long' }).format(tarihObjesi).toUpperCase();
-  
+
   $aciklama.val(`${ayAdi} ${yil} ${borc_adi}`);
 }
 //burayı daha sonra açacağım

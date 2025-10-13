@@ -87,6 +87,8 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                                             <?php foreach ($tahsilat_havuzu as $havuz) {
                                                 $enc_id = Security::encrypt($havuz->id);
                                                 $kalan_tutar = $havuz->tahsilat_tutari - $havuz->islenen_tutar;
+                                                $olarak_aktar = $havuz->tahsilat_tutari > 0 ? "Gelir olarak" : "Gider olarak";
+                                                $aktar_color = $havuz->tahsilat_tutari > 0 ? "success" : "danger";
                                             ?>
                                                 <tr class="single-item odd">
                                                     <td class="sorting_1">
@@ -110,6 +112,9 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                                                                     class="project-list-action fs-12 d-flex align-items-center gap-3 mt-2">
                                                                     <a href="javascript:void(0);" class="text-primary eslesen-havuza-gonder"
                                                                         data-id="<?php echo $enc_id; ?>">Eşleşen Havuza Gönder</a>
+                                                                    <span class="vr text-muted"></span>
+                                                                    <a href="javascript:void(0);" class="text-<?php echo $aktar_color; ?> kasaya-aktar"
+                                                                        data-id="<?php echo $enc_id; ?>"> <?php echo $olarak_aktar; ?> kasaya Aktar</a>
                                                                     <span class="vr text-muted"></span>
                                                                     <a href="javascript:void(0);"
                                                                         data-id="<?php echo $enc_id; ?>"
@@ -349,7 +354,7 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
     $(document).on('click', '.aciklama-modal-close', function() {
         $('#aciklama-modal').fadeOut(300);
     });
-   
+
     // Modal'ı kapat - dış alan tıklama
     $(document).on('click', '#aciklama-modal', function(e) {
         if (e.target === this) {
@@ -403,7 +408,7 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
     $(function() {
         //inputta değişiklik olunca sadece rakam ve nokta kabul et
         $('.money').on('blur', function() {
-            
+
             var value = $(this).val();
             let kalan_tutar = $(this).data('kalan-tutar');
 
@@ -463,7 +468,7 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                                     $(this).remove();
                                     // table.row(row).remove().draw(true);
                                 });
-                            }else{
+                            } else {
                                 //kalan tutarı güncelle 2.sutün
                                 row.find('td:nth-child(4)').text(data.islenen_tutar_formatted);
                                 row.find('.money').attr('data-kalan-tutar', data.kalan_tutar).val(data.kalan_tutar);
@@ -550,5 +555,64 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
 
 
         });
+
+        $(document).on('click', '.kasaya-aktar', function() {
+            var $this = $(this);
+            var id = $this.data('id');
+            row = $this.closest('tr');
+
+
+            var formData = new FormData();
+            formData.append('id', id);
+            formData.append('action', 'kasaya_aktar');
+
+            fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.status === 'success') {
+                        // İşlem başarılı, satırı kaldır
+                        if (data.status === 'success') {
+
+                            row.fadeOut(500, function() {
+                                $(this).remove();
+                                // table.row(row).remove().draw(true);
+                            });
+
+                            Toastify({
+                                text: "Tahsilat kasaya aktarıldı.",
+                                duration: 3000,
+                                close: true,
+                                gravity: "top", // `top` or `bottom`
+                                position: "center", // `left`, `center` or `right`
+                                style: {
+                                    background: "linear-gradient(to right, #199b5aff, #199b5aff)",
+                                    borderRadius: "6px",
+                                },
+                            }).showToast();
+                        }
+
+                    } else {
+                        swal.fire(
+                            'Hata!',
+                            data.message,
+                            data.status
+                        );
+                    }
+
+                }).catch(error => {
+                    console.error('Hata:', error);
+                    swal.fire(
+                        'Hata!',
+                        'İstek sırasında bir hata oluştu.',
+                        'error'
+                    );
+                });
+
+        });
+
+
     })
 </script>

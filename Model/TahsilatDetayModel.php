@@ -142,6 +142,7 @@ class TahsilatDetayModel extends Model
                                             LEFT JOIN daireler d ON d.id = k.daire_id
                                             LEFT JOIN kasa ks ON ks.id = t.kasa_id
                                             WHERE borc_detay_id IN (SELECT id FROM borclandirma_detayi WHERE borclandirma_id = ?)
+                                            and td.silinme_tarihi IS NULL
                                          ");
 
         $sql->execute([$borclandirma_id]);

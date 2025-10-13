@@ -100,6 +100,7 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
             'id' => 0,
             'kasa_id' => $kasa_id,
             'tahsilat_id' => $tahsilatId,
+            'kisi_id' => $onayKaydi->kisi_id,
             'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
             'tutar' => $islenecekTutar,
             'aciklama' =>  $onayKaydi->aciklama ?? 'Banka Tahsilatı',
@@ -124,7 +125,7 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
                 'kisi_id' => $onayKaydi->kisi_id,
                 'tutar' => $islenecekTutar,
                 'aciklama' => 'Borç mahsubu sonrası artan tutar.',
-                'islem_tarihi' => date('Y-m-d H:i:s'),
+                'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
                 'tahsilat_id' => $tahsilatId
             ];
             $KisiKredi->saveWithAttr($krediData);
@@ -198,6 +199,12 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
 
             // 2. Ödemeyi önce gecikme zammına, kalanı anaparaya dağıt.
             $gecikmeyeOdenen = min($buBorcaUygulanacakTutar, $kalanGecikmeZammi);
+
+            $logger->info("işlenecek tutarlar hesaplanıyor.", [
+                'borc_detay_id' => $borcKaydi->id,
+                'kalan_gecikme_zammi' => $kalanGecikmeZammi,
+                'gecikmeye_odenebilecek' => $gecikmeyeOdenen
+            ]);
             $anaParayaOdenen = $buBorcaUygulanacakTutar - $gecikmeyeOdenen;
 
 
@@ -270,7 +277,7 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
                 'kisi_id' => $onayKaydi->kisi_id,
                 'tutar' => $kalanDagitilacakTutar,
                 'aciklama' => 'Borç mahsubu sonrası artan tutar.',
-                'islem_tarihi' => date('Y-m-d H:i:s'),
+                'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
                 'tahsilat_id' => $tahsilatId
             ];
             $KisiKredi->saveWithAttr($krediData);
@@ -341,11 +348,22 @@ if ($_POST['action'] == 'eslesmeyen_havuza_gonder') {
         $onayKaydi = $TahsilatOnay->find($onayId);
         if (!$onayKaydi) throw new Exception('Onay kaydı bulunamadı.');
 
+        // İşlenen tutarları hesapla
+        $islenen_tutar = $Tahsilat->getIslenenTutar($onayId) ?? 0;
+       //if (!$islenen_tutar) throw new Exception('İşlenen tutar bulunamadı.');
+
+        $logger->info("Onay kaydı ve işlenen tutar doğrulandı.", [
+            'onay_id' => $onayId,
+            'islenen_tutar' => $islenen_tutar
+        ]);
+
+
         // --- 4. Tahsilat Havuzu Kaydını Oluştur ---
         $havuzData = [
             'id' => 0,
             'site_id' => $onayKaydi->site_id,
             'tahsilat_tutari' => $onayKaydi->tutar,
+            'islenen_tutar' => $islenen_tutar,
             'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
             'aciklama' => 'Eşleşmeyen havuzuna aktarım - ' . ($onayKaydi->aciklama ?? ''),
             'ham_aciklama' => $onayKaydi->aciklama,

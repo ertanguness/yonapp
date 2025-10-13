@@ -17,6 +17,11 @@ class Date
         return date($format, strtotime($date));
     }
 
+   public static function dmYHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
+    {
+        return self::parseToFormat($input, 'd.m.Y H:i:s', $tz);
+    }
+
    // 'Y-m-d' çıktısı
     public static function Ymd(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
@@ -29,6 +34,11 @@ class Date
     public static function YmdHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
         return self::parseToFormat($input, 'Y-m-d H:i:s', $tz);
+    }
+
+    public static function now($format = 'Y-m-d H:i:s')
+    {
+        return date($format);
     }
 
 

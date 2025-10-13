@@ -1,8 +1,8 @@
 {
     "source sans pro": {
         "normal": "C:\\xampp\\htdocs\\yonapp-1\\vendor\\dompdf\\dompdf\/lib\/fonts\/SourceSans3-Regular",
-        "bold": "C:\\xampp\\htdocs\\yonapp-1\\vendor\\dompdf\\dompdf\/lib\/fonts\/SourceSans3-Regular",
-        "italic": "C:\\xampp\\htdocs\\yonapp-1\\vendor\\dompdf\\dompdf\/lib\/fonts\/SourceSans3-Regular",
-        "bold_italic": "C:\\xampp\\htdocs\\yonapp-1\\vendor\\dompdf\\dompdf\/lib\/fonts\/SourceSans3-Regular"
+        "bold": "C:\\xampp\\htdocs\\yonapp-1\\vendor\\dompdf\\dompdf\/lib\/fonts\/SourceSans3-Bold",
+        "italic": "C:\\xampp\\htdocs\\yonapp-1\\vendor\\dompdf\\dompdf\/lib\/fonts\/SourceSans3-Italic",
+        "bold_italic": "C:\\xampp\\htdocs\\yonapp-1\\vendor\\dompdf\\dompdf\/lib\/fonts\/SourceSans3-BoldItalic"
     }
 }

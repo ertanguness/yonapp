@@ -120,7 +120,10 @@ class KisilerModel extends Model
     // Bloğun kişilerini getir
     public function BlokKisileri($block_id)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE blok_id = ?");
+        $sql = $this->db->prepare("SELECT k.*, d.daire_kodu 
+                                          FROM $this->table k
+                                          LEFT JOIN daireler d ON d.id = k.daire_id
+                                          WHERE K.blok_id = ?");
         $sql->execute([$block_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
@@ -172,6 +175,20 @@ class KisilerModel extends Model
     }
     //----------------------------------------------------------------------------------------------------\\
 
+
+    /** isExistsEmail
+     * Email kontrolü
+     * @param string $email Kontrol edilecek email adresi.
+     */
+    public function isExistsEmail($email)
+    {
+        $query = "SELECT COUNT(*) FROM $this->table WHERE eposta = ?";
+  
+        $sql = $this->db->prepare($query);
+        $sql->execute([$email]);
+        return $sql->fetchColumn() > 0 ? true : false;
+    }
+    
 
 
     /**************************************************************************************************** */
