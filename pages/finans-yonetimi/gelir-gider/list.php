@@ -27,8 +27,8 @@ if (isset($_SESSION["kasa_id"]) && !empty($_SESSION["kasa_id"])) {
 if (isset($_POST['kasalar'])) {
     $kasa_id = Security::decrypt($_POST['kasalar']) ?? 0;
     $_SESSION["kasa_id"] = $kasa_id;
-         //Helper::dd(($kasa_id));
-  
+    //Helper::dd(($kasa_id));
+
     echo "<script>history.replaceState({}, '', '/gelir-gider-islemleri');</script>";
     $id = null;
 }
@@ -38,6 +38,7 @@ if (isset($id) && !empty($id)) {
     $kasa_id = Security::decrypt($id);
     $_SESSION["kasa_id"] = $kasa_id;
 }
+
 
 // 4. Hiçbiri yoksa varsayılan kasayı al
 if (!$kasa_id) {
@@ -54,8 +55,51 @@ if (!$kasa_id) {
 
 // echo "id " . ($_SESSION['kasa_id'] ?? 0);
 
-$KasaFinansalDurum = $Kasa->KasaFinansalDurum($kasa_id);
-$kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
+// Eğer şifreli token geldiyse çöz ve $_GET'e uygula
+if (isset($_GET['token']) && $_GET['token'] !== '') {
+    try {
+        $decoded = Security::decrypt($_GET['token']);
+        $arr = json_decode($decoded, true);
+        if (is_array($arr)) {
+            foreach ($arr as $k => $v) {
+                $_GET[$k] = $v;
+            }
+        }
+    } catch (\Throwable $e) {
+        // token hatalıysa sessizce yok say
+    }
+}
+
+// Filtre parametrelerini oku (GET – form submit)
+$startDateIn = $_GET['startDate'] ?? null; // d.m.Y
+$endDateIn   = $_GET['endDate'] ?? null;   // d.m.Y
+$incExpType  = $_GET['incExpType'] ?? 'all'; // all|income|expense
+
+// d.m.Y -> Y-m-d dönüşümü
+$toYmd = function($val) {
+    if (!$val) return null;
+    $dt = DateTime::createFromFormat('d.m.Y', $val);
+    return $dt ? $dt->format('Y-m-d') : null;
+};
+
+$startYmd = $toYmd($startDateIn);
+$endYmd   = $toYmd($endDateIn);
+
+// Eski yapıya dön: hareketleri modelden al ve sunucu tarafında render et
+if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) {
+    $yon = '';
+    if ($incExpType === 'income') { $yon = 'Gelir'; }
+    elseif ($incExpType === 'expense') { $yon = 'Gider'; }
+    // Tarihler yoksa ay için mantıklı varsayılan atayalım
+    $startYmd = $startYmd ?: date('Y-m-01');
+    $endYmd   = $endYmd   ?: date('Y-m-t');
+    $kasa_hareketleri = $KasaHareket->getKasaHareketleriByDateRange($kasa_id, $startYmd, $endYmd, $yon);
+    // Finansal özet de aynı filtrelerle
+    $KasaFinansalDurum = $Kasa->KasaFinansalDurumByDateRange($kasa_id, $startYmd, $endYmd, $yon);
+} else {
+    $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
+    $KasaFinansalDurum = $Kasa->KasaFinansalDurum($kasa_id);
+}
 
 
 
@@ -82,9 +126,22 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
                     <?php echo FinansalHelper::KasaSelect("kasalar", $kasa_id) ?>
                 </form>
             </div>
-            <div class="dropdown">
+            
+            <div class="dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtre Uygula">
+                <a href="javascript:void(0);" class="btn btn-icon btn-light-brand" id="filterBtn">
+                    <i class="feather-filter"></i>
+                </a>
+            </div>
+            <script>
+                $(function() {
+                    $('#filterBtn').on('click', function() {
+                        $('#collapseOne').collapse("toggle");
+                    });
+                });
+            </script>
+            <div class="dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="Verileri Dışa Aktar">
                 <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 10" data-bs-auto-close="outside" aria-expanded="false">
-                    <i class="feather-paperclip"></i>
+                    <i class="feather-download"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end" style="">
                     <a href="javascript:void(0);" class="dropdown-item export" data-format="pdf">
@@ -114,8 +171,13 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
                     </a>
                 </div>
             </div>
+            
+            <a href="/excelden-gelir-gider-yukle" class="btn btn-icon btn-light-brand" id="excelImportBtn"
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Excel'den Gider Yükle">
+                <i class="feather-upload"></i>
+            </a>
 
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gelirGiderModal">
+            <button type="button" class="btn btn-primary" id="btnGelirGiderEkle">
                 <i class="feather-plus me-2"></i> Yeni Gelir/Gider Ekle
             </button>
         </div>
@@ -177,102 +239,124 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
 
     <!-- [Filtreleme] start -->
     <div class="row ">
-        <div class="card-footer">
             <div id="collapseOne" class="accordion-collapse collapse page-header-collapse">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Raporları Filtrele</h5>
                         <form id="filterForm">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label for="startDate" class="form-label">Başlangıç Tarihi</label>
-                                    <input type="date" id="startDate" class="form-control">
+                                    <input type="text" id="startDate" name="startDate" class="form-control flatpickr"
+                                    value="<?php echo htmlspecialchars($_GET['startDate'] ?? date("01.m.Y")); ?>">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label for="endDate" class="form-label">Bitiş Tarihi</label>
-                                    <input type="date" id="endDate" class="form-control">
+                                    <input type="text" id="endDate" name="endDate" class="form-control flatpickr"
+                                    value="<?php echo htmlspecialchars($_GET['endDate'] ?? date("t.m.Y")); ?>">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label for="incExpType" class="form-label">Gelir/Gider Türü</label>
-                                    <select id="incExpType" class="form-select">
-                                        <option value="all">Tümü</option>
-                                        <option value="income">Gelir</option>
-                                        <option value="expense">Gider</option>
+                                    <select id="incExpType" name="incExpType" class="form-control select2">
+                                        <?php $selType = $_GET['incExpType'] ?? 'all'; ?>
+                                        <option value="all" <?php echo ($selType==='all')?'selected':''; ?>>Tümü</option>
+                                        <option value="income" <?php echo ($selType==='income')?'selected':''; ?>>Gelir</option>
+                                        <option value="expense" <?php echo ($selType==='expense')?'selected':''; ?>>Gider</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div class="mt-3 text-end">
-                                <button type="submit" class="btn btn-primary">Filtrele</button>
+                                <div class="col-md-3">
+                                    <label for="ara" class="form-label">Ara</label>
+                                    <button type="submit" class="btn btn-primary">Filtrele</button>
+                                </div>
                             </div>
                         </form>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Gelir ve Gider Grafiği</h5>
-                                    <canvas id="incomeExpenseChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
-            </div>
         </div>
     </div>
     <!-- [Filtreleme] bitiş -->
 
     <!-- Liste Tablosu -->
-    <div class="row row-deck row-cards">
+    <div class="row row-deck row-cards mb-5">
         <div class="col-12">
             <div class="card">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table id="gelirGiderTable" class="table table-hover table-bordered datatables">
+                        <table id="gelirGiderTable" class="table table-hover table-bordered datatables no-footer">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Sıra</th>
                                     <th>Tarih</th>
                                     <th>İşlem Türü</th>
+                                    <th>Daire Kodu</th>
                                     <th>Hesap Adı</th>
-                                    <th>Kategori</th>
-                                    <th>Açıklama</th>
                                     <th>Tutar</th>
+                                    <th>Bakiye</th>
+                                    <th>Kategori</th>
+                                    <th>Makbuz No</th>
+                                    <th>Açıklama</th>
                                     <th>İşlemler</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                $i = 0;
-                                foreach ($kasa_hareketleri as $hareket):
-                                    $i++;
-                                    $enc_id = Security::encrypt($hareket->id);
-                                    $badge = $hareket->islem_tipi == 'gelir' ? 'success' : 'danger';
-                                    $gelirGiderGuncelle = $hareket->guncellenebilir == 1  ? "gelirGiderGuncelle" : 'GuncellemeYetkisiYok';
-                                    $gelirGiderSil = $hareket->guncellenebilir == 1  ? "gelirGiderSil" : 'SilmeYetkisiYok';
+                                <?php if (!empty($kasa_hareketleri)): ?>
+                                    <?php foreach ($kasa_hareketleri as $hareket): ?>
+                                        <?php
+                                        $enc_id = Security::encrypt($hareket->id);
+                                        // Tarih
+                                        $tarih = date('d.m.Y H:i', strtotime($hareket->islem_tarihi));
+                                        // İşlem tipi
+                                        $islemTipiHtml = ($hareket->islem_tipi === 'gelir')
+                                            ? '<span class="badge bg-success">Gelir</span>'
+                                            : '<span class="badge bg-danger">Gider</span>';
 
-                                ?>
+                                        $daireKodu = $hareket->daire_kodu ? htmlspecialchars($hareket->daire_kodu) : '-';
+                                        $hesapAdi = $hareket->adi_soyadi ? htmlspecialchars($hareket->adi_soyadi) : '-';
+                                        // Tutar
+                                        $tutarHtml = ($hareket->islem_tipi === 'gelir')
+                                            ? '<span class="text-success fw-bold">+' . Helper::formattedMoney($hareket->tutar) . '</span>'
+                                            : '<span class="text-danger">' . Helper::formattedMoney($hareket->tutar) . '</span>';
+
+                                        $bakiyeHtml = ($hareket->yuruyen_bakiye ?? 0) >= 0
+                                            ? '<span class="text-success fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>'
+                                            : '<span class="text-danger fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>';
+
+                                        // Kategori ve açıklama
+                                        $kategori = $hareket->kategori ?? '-';
+                                        $makbuzNo = $hareket->makbuz_no ?? '-';
+                                        $aciklama = $hareket->aciklama ?? '-';
+                                        // İşlemler
+                                        $encrypted_id = Security::encrypt($hareket->id);
+                                        $gelirGiderGuncelle = $hareket->guncellenebilir == 1 ? 'gelirGiderGuncelle' : 'GuncellemeYetkisiYok';
+                                        $gelirGiderSil = $hareket->guncellenebilir == 1 ? 'gelirGiderSil' : 'SilmeYetkisiYok';
+                                        ?>
+                                        <tr>
+                                            <td><?= $tarih ?></td>
+                                            <td><?= $islemTipiHtml ?></td>
+                                            <td><?= htmlspecialchars($daireKodu) ?></td>
+                                            <td><?= htmlspecialchars($hesapAdi) ?></td>
+                                            <td><?= $tutarHtml ?></td>
+                                            <td><?= $bakiyeHtml ?></td>
+                                            <td><?= htmlspecialchars($kategori) ?></td>
+                                            <td><?= htmlspecialchars($makbuzNo) ?></td>
+                                            <td style="width: 200px;white-space: wrap;"><?= htmlspecialchars($aciklama) ?></td>
+                                            <td>
+                                                <div class="hstack gap-2 justify-content-center">
+                                                    <a href="#" class="avatar-text avatar-md <?php echo $gelirGiderGuncelle; ?>" data-id="<?php echo $enc_id; ?>">
+                                                        <i class="feather-edit"></i>
+                                                    </a>
+                                                    <a href="#" class="avatar-text avatar-md <?php echo $gelirGiderSil; ?>" data-id="<?php echo $enc_id; ?>">
+                                                        <i class="feather-trash-2"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
                                     <tr>
-                                        <td><?php echo $i; ?></td>
-                                        <td class="text-center"><?php echo $hareket->islem_tarihi; ?></td>
-                                        <td class="text-center"><span class="badge bg-<?php echo $badge; ?>"><?php echo $hareket->islem_tipi; ?></span></td>
-                                        <td><?php echo $hareket->adi_soyadi; ?></td> 
-                                        <td><?php echo Helper::getOdemeKategori($hareket->kategori); ?></td>
-                                        <td class="text-left" style="width: 30%;"><?php echo $hareket->aciklama; ?></td>
-                                        <td class="text-success text-end"><?php echo Helper::formattedMoney($hareket->tutar); ?></td>
-                                        <td>
-                                            <div class="hstack gap-2 justify-content-center">
-                                                <a href="#" class="avatar-text avatar-md <?php echo $gelirGiderGuncelle; ?>" data-id="<?php echo $enc_id; ?>">
-                                                    <i class="feather-edit"></i>
-                                                </a>
-                                                <a href="#" class="avatar-text avatar-md <?php echo $gelirGiderSil; ?>" data-id="<?php echo $enc_id; ?>">
-                                                    <i class="feather-trash-2"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        <td colspan="7" class="text-center text-muted">Kayıt bulunamadı.</td>
                                     </tr>
-                                <?php endforeach; ?>
-
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -344,109 +428,11 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
 <!-- Gelir Gider Modal -->
 <div class="modal fade" id="gelirGiderModal" tabindex="-1" aria-labelledby="gelirGiderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="gelirGiderModalLabel">Gelir Gider İşlemleri</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="gelirGiderForm" method="post">
-                    <input type="hidden" name="islem_id" id="islem_id" value="0">
-
-                    <!-- İşlem Türü -->
-                    <div class="">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="option-card" id="standardOption">
-                                    <label class="radio-label">
-                                        <input type="radio" name="islem_tipi" value="gelir" checked>
-                                        <div class="radio-content">
-                                            <div class="option-header">
-                                                <span class="option-title">Gelir</span>
-                                            </div>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="option-card" id="expressOption">
-                                    <label class="radio-label">
-                                        <input type="radio" name="islem_tipi" value="gider">
-                                        <div class="radio-content">
-                                            <div class="option-header">
-                                                <span class="option-title">Gider</span>
-                                            </div>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-                    <!-- İşleme Tarihi -->
-                    <div class="mb-3">
-                        <div class="row">
-
-                            <div class="col-md-6">
-
-                                <label for="islem_tarihi" class="form-label">İşlem Tarihi *</label>
-                                <input type="text" class="form-control flatpickr flatpickr-time-input" name="islem_tarihi" id="islem_tarihi" required
-                                    value="<?= date('d-m-Y H:i'); ?>">
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label for="tutar" class="form-label">Tutar (₺) *</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control money" id="tutar" name="tutar"
-                                        placeholder="0.00" required>
-                                    <span class="input-group-text">₺</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Kategori -->
-                    <div class="mb-3">
-                        <label for="kategori" class="form-label">Kategori *</label>
-                        <?php echo Helper::getOdemeKategoriSelect("kategori",6) ?>
-
-                    </div>
-                    <div class="mb-3 kisiler d-none">
-                        <label for="kisiler" class="form-label">Daire Sakini *</label>
-                        <?php echo $KisiHelper->KisiSelect("kisiler") ?>
-
-                    </div>
-
-                    <!-- Açıklama -->
-                    <div class="mb-3">
-                        <label for="aciklama" class="form-label">Açıklama</label>
-                        <textarea class="form-control" id="aciklama" name="aciklama" rows="3"
-                            placeholder="Gelir gider işlemleriyle ilgili detaylı açıklama..."></textarea>
-                    </div>
-
-                    <!-- Ödeme Yöntemi -->
-                    <div class="mb-3">
-                        <label for="odeme_yontemi" class="form-label">Ödeme Yöntemi</label>
-                        <?php echo Helper::getOdemeYontemiSelect("odeme_yontemi") ?>
-                    </div>
-
-                    <!-- Belge No -->
-                    <div class="mb-3">
-                        <label for="belge_no" class="form-label">Belge No</label>
-                        <input type="text" class="form-control" id="belge_no" name="belge_no"
-                            placeholder="Fatura, fiş veya belge numarası">
-                    </div>
-
-                    <div class="alert alert-info">
-                        <small><strong>*</strong> işaretli alanlar zorunludur.</small>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                <button type="button" class="btn btn-primary" id="gelirGiderKaydet">Kaydet</button>
+        <div class="modal-content gelir-gider-modal-content">
+            <div class="text-center my-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Yükleniyor...</span>
+                </div>
             </div>
         </div>
     </div>
@@ -456,16 +442,35 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
 <!-- JavaScript için ek kod -->
 <script>
     $(function() {
+    // Re-entrancy guard for export double-click issues
+    let __export_in_flight = false;
 
-        var myModalEl = document.getElementById('gelirGiderModal')
-        myModalEl.addEventListener('hidden.bs.modal', function(event) {
-            $("#islem_id").val(0);
-            $('#gelirGiderForm')[0].reset();
-        })
 
-        //modali kapatınca sayfayı yenile
+
+        $("#btnGelirGiderEkle").on("click", function() {
+            $.get('/pages/finans-yonetimi/gelir-gider/modal/gelir_gider_modal.php', function(data) {
+                $('.gelir-gider-modal-content').html(data);
+                $('#gelirGiderModal').modal('show');
+
+                //Modaldaki select2'leri başlat
+                $(".modal .select2").select2({
+                    dropdownParent: $("#gelirGiderModal"),
+                });
+                $("#islem_tarihi").flatpickr({
+                    dateFormat: "d.m.Y H:i",
+                    locale: "tr",
+                    enableTime: true,
+                    minuteIncrement: 1,
+                    allowInput: true
+                })
+                
+            });
+        });
+
+
+        // Modali kapatınca sayfayı yenile (sunucu tarafı render)
         $('#gelirGiderModal').on('hidden.bs.modal', function() {
-            //location.reload();
+            //window.location.reload();
         });
 
         //#kasalar'da değişiklik olduğunda
@@ -474,27 +479,106 @@ $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
             $("#kasalar").submit();
         });
 
-        $("#kategori").on("change", function() {
-            if($(this).val() == '1')
-                $(".kisiler").removeClass("d-none").fadeIn(500);
-            else{
-                $(".kisiler").addClass("d-none").fadeOut(500);
-            }
-        });
-
-        //flatpickr
+        //flatpickr (modal tarih)
         $("#islem_tarihi").flatpickr({
             dateFormat: "d.m.Y H:i",
             locale: "tr",
             enableTime: true,
-            minuteIncrement: 1
+            minuteIncrement: 1,
+            allowInput: true
         })
+
+        // Filtre formundaki tarih alanları
+        $(".flatpickr").flatpickr({
+            dateFormat: "d.m.Y",
+            locale: "tr",
+            allowInput: true
+        });
 
 
         $(".modal .select2").select2({
-            dropdownParent: $("#gelirGiderModal")
+            dropdownParent: $("#gelirGiderModal"),
+            tags: true
         });
-        
+
+        // Filtre formunu şifreli (token) GET ile gönder (double-bind önleme)
+        $('#filterForm').off('submit.filter').on('submit.filter', async function(e){
+            e.preventDefault();
+            const payload = {
+                startDate: $('#startDate').val(),
+                endDate: $('#endDate').val(),
+                incExpType: ($('#incExpType').val() || 'all')
+            };
+            try {
+                const res = await fetch('/pages/finans-yonetimi/gelir-gider/token.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data && data.ok) {
+                    window.location.href = '/gelir-gider-islemleri?token=' + encodeURIComponent(data.token);
+                    return;
+                }
+            } catch(err) {
+                // düşerse normal GET'e geri dön
+            }
+            const qs = new URLSearchParams(payload).toString();
+            window.location.href = '/gelir-gider-islemleri?' + qs;
+        });
+
+        // Dışa aktar menüsü: filtrelere göre indir (token ile) – double-download önleme
+        $(document).off('click.export').on('click.export', '.export', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (__export_in_flight) { return false; }
+            __export_in_flight = true;
+            const format = $(this).data('format') || 'xlsx';
+            const sd = ($('#startDate').val() || '').trim();
+            const ed = ($('#endDate').val() || '').trim();
+            const typeSel = ($('#incExpType').val() || 'all');
+            const toIso = (dmy) => {
+                const m = dmy.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+                return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+            };
+            const payload = {
+                startDate: sd,
+                endDate: ed,
+                incExpType: typeSel,
+                // Ek sağlamlık için ISO da ekle (sunucu iki formatı da destekler)
+                start: toIso(sd),
+                end: toIso(ed),
+                type: typeSel
+            };
+            // Header aramaları
+            const headerMap = ['q_date','q_islem','q_daire','q_hesap','q_tutar','q_bakiye','q_kategori','q_makbuz','q_aciklama'];
+            const headerInputs = $('#gelirGiderTable thead').find('input, select');
+            headerInputs.each(function(idx){
+                const v = ($(this).val() || '').toString().trim();
+                if (v && headerMap[idx]) payload[headerMap[idx]] = v;
+            });
+            try {
+                const res = await fetch('/pages/finans-yonetimi/gelir-gider/token.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data && data.ok) {
+                    const url = '/pages/finans-yonetimi/gelir-gider/export.php?format=' + encodeURIComponent(format) + '&token=' + encodeURIComponent(data.token);
+                    window.location.href = url;
+                    setTimeout(() => { __export_in_flight = false; }, 2000);
+                    return false;
+                }
+            } catch(err) {
+                // yoksa plain GET ile devam
+            }
+            const params = new URLSearchParams({ format, ...payload });
+            window.location.href = '/pages/finans-yonetimi/gelir-gider/export.php?' + params.toString();
+            setTimeout(() => { __export_in_flight = false; }, 2000);
+            return false;
+        });
+
     });
 </script>
 

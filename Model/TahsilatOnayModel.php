@@ -56,7 +56,8 @@ class TahsilatOnayModel extends Model
     public function OnaylanmisTahsilatToplami($tahsilat_onay_id)
     {
         $sql = $this->db->prepare("SELECT SUM(tutar) as toplam_tutar FROM tahsilatlar 
-                                            WHERE tahsilat_onay_id = ?");
+                                            WHERE tahsilat_onay_id = ?
+                                            AND silinme_tarihi IS NULL");
         $sql->execute([$tahsilat_onay_id]);
         $result = $sql->fetch(PDO::FETCH_OBJ);
         return $result ? $result->toplam_tutar : 0.0; // Eğer sonuç varsa toplam tutarı döndür, yoksa 0 döndür

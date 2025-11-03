@@ -31,6 +31,8 @@ if (FlashMessageService::hasMessages()) {
     </div>
 </div>
 <?php
+    unset($_SESSION['flash_messages']);
+
     } // foreach döngüsü biter
 } // if biter
 ?>

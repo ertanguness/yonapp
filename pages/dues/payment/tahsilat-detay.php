@@ -9,6 +9,7 @@ use App\Helper\Helper;
 use Model\TahsilatModel;
 use Model\BorclandirmaDetayModel;
 use Model\FinansalRaporModel;
+use Model\SitelerModel;
 
 use Model\KisilerModel;
 use Random\Engine\Secure;
@@ -17,6 +18,7 @@ $Kisi = new KisilerModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $Tahsilat = new TahsilatModel();
 $FinansalRapor = new FinansalRaporModel();
+$SiteModel = new SitelerModel();
 
 
 
@@ -42,13 +44,56 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
 
         <div class="d-flex align-items-center justify-content-center">
             <a href="javascript:void(0)" class="d-flex me-1 mesaj-gonder" data-alert-target="SendMessage"
-                data-id="<?php echo $kisi->id; ?>">
+                data-id="<?php echo $kisi->id; ?>"
+                data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>">
                 <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
                     data-bs-original-title="Mesaj Gönder">
                     <i class="feather feather-send"></i>
                 </div>
             </a>
-            <a href="javascript:void(0)" class="d-flex me-1 printBTN">
+
+
+            <?php
+            $site_id = $_SESSION['site_id'];
+            $site = $SiteModel->find($site_id);
+            // WhatsApp mesajı oluştur (URL encode edilmiş)
+            $wa_telefon = preg_replace('/[^0-9]/', '', '5079432723'); // Sadece rakamlar
+            if (substr($wa_telefon, 0, 1) === '0') {
+                $wa_telefon = '90' . substr($wa_telefon, 1); // 0 varsa 90 ile değiştir (Türkiye kodu)
+            } elseif (strlen($wa_telefon) === 10) {
+                $wa_telefon = '90' . $wa_telefon; // 10 hane ise başına 90 ekle
+            }
+
+            // Mesaj metni oluştur
+            $wa_mesaj_ham = "Sayın {$kisi->adi_soyadi},
+
+    Güncel bakiye bilginiz aşağıdaki gibidir:
+
+    📊 Bakiye: " . Helper::formattedMoney($finansalDurum->bakiye) . ";
+
+    Saygılarımızla,
+    {$site->site_adi} YÖNETİMİ";
+
+            // URL encode (WhatsApp formatında %0A = satır atla)
+            $wa_mesaj = urlencode($wa_mesaj_ham);
+            $wa_link = "https://wa.me/{$wa_telefon}?text={$wa_mesaj}";
+            ?>
+
+            <!-- WhatsApp'tan mesaj gönder -->
+            <a href="<?php echo $wa_link; ?>" target="_blank" class="d-flex me-1 whatsapp-mesaj-gonder"
+                data-bs-toggle="tooltip" title="WhatsApp'tan Mesaj Gönder"
+                data-id="<?php echo $kisi->id; ?>"
+                data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>">
+                <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover"
+                    data-bs-original-title="WhatsApp'tan Mesaj Gönder">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+            </a>
+
+
+
+            <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $kisi->id; ?>&&format=html"
+                target="_blank" class="d-flex me-1 printBTN">
                 <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
                     data-bs-original-title="Print Invoice" aria-label="Print Invoice"><i
                         class="feather feather-printer"></i></div>
@@ -157,10 +202,8 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                 <div class="card-header">
                     <h5 class="card-title">Borçlar</h5>
 
-                    <div class="d-flex gap-3 align-items-center borc-ekle" 
-                            data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"  
-                            
-                            >
+                    <div class="d-flex gap-3 align-items-center borc-ekle"
+                        data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>">
                         <div>
                             <div class="fw-semibold text-dark">Yeni Borç</div>
                         </div>
@@ -168,9 +211,9 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                             <i class="feather feather-plus"></i>
                         </div>
                     </div>
-              
+
                 </div>
-                <div class="overflow-auto tasks-items-wrapper" style="height: 340px;">
+                <div class="overflow-auto tasks-items-wrapper" style="height: calc(100vh - 400px);">
                     <div class="card-body custom-card-action p-0">
                         <div class="table-responsive tickets-items-wrapper">
                             <table class="table table-hover mb-0">
@@ -195,10 +238,10 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                 </p>
                                                 <div class="tickets-list-action d-flex align-items-center gap-3">
 
-                                                    <a href="javascript:void(0);" 
-                                                    data-id="<?php echo Security::encrypt($borc->id); ?>" 
-                                                    data-kisi-id="<?php echo Security::encrypt($kisi->id ?? 0); ?>"
-                                                    class="text-secondary borc-duzenle">Düzenle</a> |
+                                                    <a href="javascript:void(0);"
+                                                        data-id="<?php echo Security::encrypt($borc->id); ?>"
+                                                        data-kisi-id="<?php echo Security::encrypt($kisi->id ?? 0); ?>"
+                                                        class="text-secondary borc-duzenle">Düzenle</a> |
                                                     <a href="javascript:void(0);" data-id="<?php echo Security::encrypt($borc->id); ?>" class="text-danger borc-sil">Sil</a>
                                                 </div>
                                             </td>
@@ -260,7 +303,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                         </div>
                     </div>
                 </div>
-                <div class="overflow-auto tasks-items-wrapper" style="height: 340px;">
+                <div class="overflow-auto tasks-items-wrapper" style="height: calc(100vh - 380px);">
                     <div class="card-body custom-card-action p-0">
                         <div class="table-responsive tickets-items-wrapper">
                             <table class="table table-hover mb-0">
@@ -283,16 +326,21 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                     Tahsilat Fişi #<?php echo $tahsilat['id']; ?>
                                                 </a>
                                                 <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
-                                                    <?php echo !empty($tahsilat['ana_aciklama']) ? $tahsilat['ana_aciklama'] : "Genel Tahsilat"; ?>
+                                                    <?php echo !empty($tahsilat['ana_aciklama']) ? Helper::short($tahsilat['ana_aciklama'],60) : "Genel Tahsilat"; ?>
                                                 </p>
                                                 <div class="tickets-list-action d-flex align-items-center gap-3">
 
-                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                        class="text-primary makbuz-yazdir">
+                                                    <a href="javascript:void(0);"
+                                                        data-id="<?php echo $enc_id ?>"
+                                                        data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
+                                                        class="text-primary makbuz-goster">
                                                         <i class="fa fa-print"></i>
                                                         Makbuz Yazdır
                                                     </a> |
-                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>" data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
+                                                    <a href="javascript:void(0);"
+                                                        data-id="<?php echo $enc_id ?>"
+                                                        data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
+                                                        data-makbuz-bildirim="true"
                                                         class="text-secondary mesaj-gonder">
                                                         <i class="fa fa-comment"></i>
                                                         Mesaj Gönder
@@ -311,9 +359,9 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                             <li class="mb-2">
                                                                 <div class="ps-3">
                                                                     <i class="fa fa-check text-success me-1"></i>
-                                                                    <span class="fw-bold text-dark"><?php echo htmlspecialchars($detay['borc_adi']); ?></span>
+                                                                    <span class="fw-bold text-dark"><?php echo htmlspecialchars(Helper::short($detay['borc_adi'], 30)); ?></span>
                                                                     <div class="ps-3 mt-1 text-muted">
-                                                                        <?php echo htmlspecialchars($detay['aciklama']); ?>
+                                                                        <?php echo Helper::short($detay['aciklama'], 30); ?>
                                                                         : <span class="fw-bold text-primary"><?php echo Helper::formattedMoney($detay['tutar']); ?></span>
                                                                     </div>
                                                                 </div>
@@ -328,8 +376,8 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                 <a href="javascript:void(0);" class="fw-bold d-block">
                                                     <?php echo Helper::formattedMoney($tahsilat['toplam_tutar']); ?>
                                                 </a>
-                                                <span class="fs-12 text-muted">
-                                                    <?php echo Date::dmY($tahsilat['islem_tarihi']); ?>
+                                                <span class="fs-12 text-muted text-wrap">
+                                                    <?php echo Date::dmYHis($tahsilat['islem_tarihi']); ?>
                                                 </span>
                                             </td>
                                         </tr>

@@ -25,8 +25,7 @@ $user = $_SESSION['user'];
 $user_id = $user->id;
 $email = $user->email;
 
-
-
+use App\Services\FlashMessageService;
 use Model\SitelerModel;
 
 // use Model\MyFirmModel;
@@ -38,14 +37,20 @@ use Model\SitelerModel;
 //Kullanıcının sitelerin getir
 $Site= new SitelerModel();
 $mySites = $Site->Sitelerim(); // Kullanıcının sitelerini getir
+// echo count($mySites);
+// exit;
 
-if (count($mySites) <= 1) {
+if (count($mySites) == 1) {
     if (count($mySites) === 1) {
         $_SESSION['site_id'] = $mySites[0]->id;
     }
     $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'ana-sayfa';
     header("Location: $redirectUri");
     exit();
+}elseif(count($mySites) < 1){
+    $_SESSION['site_id'] = null;
+    FlashMessageService::add('info', 'Bilgi', 'Lütfen önce bir site ekleyiniz.');
+    header("Location: site-ekle");
 }
 
 // Seçim sonrası yönlendirme

@@ -149,7 +149,7 @@ $bekleyen_tahsilatlar = $TahsilatOnay->BekleyenTahsilatlar($_SESSION['site_id'])
                                                 </td>
                                                 <td>
                                                     <div class="fw-bold"><?php echo $onay->daire_kodu  . " | " . $onay->adi_soyadi; ?></div>
-                                                    <div class="text-muted fs-12 mt-1">Ödeme Tarihi: <?php echo Date::dmY($onay->islem_tarihi); ?></div>
+                                                    <div class="text-muted fs-12 mt-1">Ödeme Tarihi: <?php echo Date::dmYHis($onay->islem_tarihi); ?></div>
                                                     <p class="fs-12 text-muted mt-1 fst-italic tasks-sort-desc">"<?php echo htmlspecialchars($onay->aciklama) ?>"</p>
                                                     <div class="tasks-list-action d-flex align-items-center gap-3">
 
@@ -670,6 +670,7 @@ $(".aciklamayi-kopyala").on("click", function() {
                         }
                     }).showToast();
 
+                    console.log('Tahsilat başarıyla kaydedildi:', response);
                     // İşlem başarılı ise, ilgili satırı tablodan kaldır
                     const $anaSatir = $form.closest('tr').prev('.dt-hasChild');
                     if ($anaSatir.length > 0) {

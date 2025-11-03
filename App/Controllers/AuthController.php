@@ -108,7 +108,11 @@ class AuthController
     public static function checkAuthentication(): void
     {
         
-
+        //kayit-ol sayfafında oturum kontrolü yapma
+        $currentUrl = $_SERVER['REQUEST_URI'];
+        if (strpos($currentUrl, 'kayit-ol') !== false) {
+            return;
+        }
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
         $logger = \getLogger();

@@ -1,20 +1,15 @@
 <?php
-// Bu dosya projenin en başında çalışır.
-
-
+ob_start();
+if(session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-session_start();
-
 define("ROOT", __DIR__);
 date_default_timezone_set('Europe/Istanbul');
-
-ob_start();
 // Gerekli sınıfları dahil et
-
 // Projenin kök dizinini tanımla
 define('PROJECT_ROOT', dirname(__DIR__));
-
 // Composer Autoloader'ı dahil et
 require_once PROJECT_ROOT . '/vendor/autoload.php';
 

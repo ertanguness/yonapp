@@ -59,58 +59,64 @@ if (!$kisi) {
 //Toplam Borcun Yüzdelik hesaplanması
 $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
 
-
+$dnone = $kredi <= 0 ? 'd-none' : '';
 
 ?>
 
+<style>
+    .tahsilat-modal-body{
+        padding-bottom: 0px !important;
+    }
+</style>
+
 
 <div class="row">
-                <!-- Overlay (Modal içi) -->
+    <!-- Overlay (Modal içi) -->
 
-    <div class="hstack justify-content-between border border-dashed rounded-3 p-3 mb-3">
-        <div class="hstack gap-3">
-            <div class="avatar-image">
-                <img src="assets/images/avatar/1.png" alt="" class="img-fluid">
-            </div>
-            <div>
-                <a href="javascript:void(0);">
-                    <h5 class="mb-0"><?php echo $kisi->adi_soyadi ?></h5>
-                </a>
-                <div class="fs-11 text-muted">
+    <div class="d-flex mb-3">
+        <div class="col-md-4">
 
-                    <?php echo $Daire->DaireKodu($kisi->daire_id) ?>
-                    <h6 class="fs-14 text-truncate-1-line">Toplam Borç
-                        <span class="text-dark fw-medium">:
+            <div class="hstack gap-3">
+                <div class="avatar-image">
+                    <img src="assets/images/avatar/1.png" alt="" class="img-fluid">
+                </div>
+                <div>
+                    <a href="javascript:void(0);">
+                        <h5 class="mb-0"><?php echo $kisi->adi_soyadi ?></h5>
+                    </a>
+                    <div class="fs-11 text-muted">
 
-                            <?php echo Helper::formattedMoney($bakiye); ?>
-                        </span>
-                    </h6>
+                        <?php echo $Daire->DaireKodu($kisi->daire_id) ?>
+                        <h6 class="fs-14 text-truncate-1-line">Toplam Borç
+                            <span class="text-dark fw-medium">:
+
+                                <?php echo Helper::formattedMoney($bakiye); ?>
+                            </span>
+                        </h6>
 
 
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
 
-        <div class="hstack justify-content-between gap-4">
-            <div class="cursor-pointer">
-                <h6 class="fs-14 text-truncate-1-line">Kullanılabilir Kredi</h6>
-                <div class="fs-14 text-muted kredi-kullan" data-kredi="<?php echo $kredi ?>"><span class="text-dark fw-medium">Kullan :</span>
-                    <?php echo Helper::formattedMoney($kredi); ?> </div>
-            </div>
-            <div class="d-column">
 
-                <h6 class="fs-14 text-truncate-1-line">Kullanılacak Kredi</h6>
-                <div class="fs-14">
-                    <input type="text" class="form-control w-50" id="kullanilacak_kredi" name="kullanilacak_kredi"
+            <div class="row text-center justify-content-around">
+
+                <h6 class="fs-14 text-truncate-1-line">Kullanılabilir Kredi : <?php echo Helper::formattedMoney($kredi); ?></h6>
+                <div class="fs-14 text-muted kredi-kullan  <?php echo $dnone ?>" data-kredi="<?php echo $kredi ?>"><span class="text-dark fw-medium">Kullanmak için buraya tıklayınız :</span>
+
+                </div>
+                <div class="col-6  <?php echo $dnone ?>">
+
+                    <input type="text" class="form-control" id="kullanilacak_kredi" name="kullanilacak_kredi"
                         value="0">
+
                 </div>
             </div>
-
-
         </div>
-
-        <div class="float-end text-end">
-
+        <div class="col-md-4 float-end text-end">
             <div>
                 <a href="javascript:void(0);" class="fw-bold" id="secilen-tahsilat-tutari">0,00 TL</a>
             </div>
@@ -224,7 +230,7 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card widget-tickets-content">
+        <div class="card widget-tickets-content" style="height: 472px;">
             <div class="card-header">
                 <h5 class="card-title">Tahsilat Bilgileri</h5>
                 <div class="card-header-action">
@@ -318,6 +324,7 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
     </div>
 </div>
 
+
 <script>
     // $(document).on("focus", ".flatpickr", function() {
     //     $(this).inputmask("99.99.9999", {
@@ -344,12 +351,12 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
         });
     });
 
-     $("#kasa_id").on('change', function() {
+    $("#kasa_id").on('change', function() {
         var kasaAdi = $("#kasa_id option:selected").text(); // Seçili option'ın değeri
-        if(kasaAdi.includes("Önceki Yönetim")){
+        if (kasaAdi.includes("Önceki Yönetim")) {
             $("#tahsilat_aciklama").val("Önceki Yönetime Ödenen");
-        }else{
+        } else {
             $("#tahsilat_aciklama").val("");
         }
-});
+    });
 </script>

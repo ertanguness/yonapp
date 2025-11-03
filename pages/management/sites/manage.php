@@ -58,6 +58,11 @@ $siteYeniID = $Sites->siteSonID() ?? 0;
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
+                     <?php
+                    // --- TEK SATIRDA FLASH MESAJLARI GÖSTERME ---
+                    include_once  'partials/_flash_messages.php';
+                   
+                    ?>
                     <div class="card">
                         <form id="sitesForm" method="POST">
                             <input type="hidden" name="sites_id" id="sites_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">

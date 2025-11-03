@@ -20,7 +20,7 @@ $siteler = $SiteModel->all();
 
 foreach ($siteler as $site) {
     //Her site için işlemleri yap
-    $logger->info("Processing site: " . $site->site_adi . " (ID: " . $site->id . ")");
+    $logger->info("Processing site: " . $site->site_adi . " (ID: " . $site->id . ")" . "\n");
 
     //sitenin auto_renew özelliği açık borçlandırmalarını getir
     $auto_renew_dues = $Due->getAutoRenewDues($site->id);

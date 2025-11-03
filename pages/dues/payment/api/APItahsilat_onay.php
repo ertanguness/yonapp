@@ -103,6 +103,7 @@ if ($_POST['action'] == 'tahsilati_borc_ile_eslestir') {
             'kisi_id' => $onayKaydi->kisi_id,
             'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
             'tutar' => $islenecekTutar,
+            'kategori' => "AİDAT", // Özel kategori
             'aciklama' =>  $onayKaydi->aciklama ?? 'Banka Tahsilatı',
             'kayit_yapan' => $_SESSION['user']->id ?? null,
             'kaynak_tablo' => 'tahsilat_onay',
@@ -367,7 +368,6 @@ if ($_POST['action'] == 'eslesmeyen_havuza_gonder') {
             'islem_tarihi' => $onayKaydi->islem_tarihi ?? date('Y-m-d H:i:s'),
             'aciklama' => 'Eşleşmeyen havuzuna aktarım - ' . ($onayKaydi->aciklama ?? ''),
             'ham_aciklama' => $onayKaydi->aciklama,
-            'olusturulma_tarihi' => date('Y-m-d H:i:s'),
             'tahsilat_onay_id' => $onayId // İleride referans için
         ];
         $havuzId = $TahsilatHavuzu->saveWithAttr($havuzData);

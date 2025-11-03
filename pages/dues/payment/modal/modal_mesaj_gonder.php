@@ -19,13 +19,13 @@
          <div class="mb-3">
              <label for="recipient" class="form-label">Alıcı</label>
              <input type="text" class="form-control" id="recipient" name="recipient"
-                 value="<?php echo $kisi->adi_soyadi; ?>" >
+                 value="<?php echo $kisi->adi_soyadi ?? ''; ?>" >
          </div>
 
          <label for="message" class="form-label">Telefon numarası</label>
          <div class="mb-3">
              <input type="text" class="form-control" id="recipient" name="recipient"
-                 value="<?php echo $kisi->telefon; ?>" >
+                 value="<?php echo $kisi->telefon ?? ''; ?>" >
          </div>
 
          <div class="mb-3">

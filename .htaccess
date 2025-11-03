@@ -1,6 +1,38 @@
+
 RewriteEngine On
+# Eğer istek kayit-ol ise yönlendirme yapma
+RewriteCond %{REQUEST_URI} ^/kayit-ol$
+RewriteRule ^ - [L]
+
+# Sadece .php uzantısı olmayan ve gerçek dosya/dizin olmayan istekleri yönlendir
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !\.js$
+RewriteCond %{REQUEST_URI} !\.css$
+RewriteCond %{REQUEST_URI} !\.png$
+RewriteCond %{REQUEST_URI} !\.jpg$
+RewriteCond %{REQUEST_URI} !\.jpeg$
+RewriteCond %{REQUEST_URI} !\.gif$
+RewriteCond %{REQUEST_URI} !\.svg$
+RewriteCond %{REQUEST_URI} !\.ico$
+RewriteCond %{REQUEST_URI} !\.woff$
+RewriteCond %{REQUEST_URI} !\.woff2$
+RewriteCond %{REQUEST_URI} !\.ttf$
+RewriteCond %{REQUEST_URI} !\.eot$
+RewriteCond %{REQUEST_URI} !\.map$
+RewriteCond %{REQUEST_URI} !\.json$
+RewriteCond %{REQUEST_URI} !\.xml$
+RewriteCond %{REQUEST_URI} !\.txt$
+RewriteCond %{REQUEST_URI} !\.pdf$
+RewriteCond %{REQUEST_URI} !\.csv$
+RewriteCond %{REQUEST_URI} !\.zip$
+RewriteCond %{REQUEST_URI} !\.tar$
+RewriteCond %{REQUEST_URI} !\.gz$
+RewriteCond %{REQUEST_URI} !\.mp4$
+RewriteCond %{REQUEST_URI} !\.webm$
+RewriteCond %{REQUEST_URI} !\.ogg$
+RewriteCond %{REQUEST_URI} !\.mp3$
+RewriteCond %{REQUEST_URI} !\.php$
 RewriteRule ^(.*)$ index.php?p=$1 [QSA,L]
 
 

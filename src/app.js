@@ -9,7 +9,19 @@ $(document).ready(function () {
       language: {
         //url: "/assets/js/tr.json",
       },
-    
+      drawCallback: function (settings) {
+        // Sadece tablonun içindeki tooltip'leri yenile (daha performanslı)
+        $('#gelirGiderTable [data-bs-toggle="tooltip"]').each(function () {
+          // Eski tooltip instance'ı varsa dispose et
+          var existingTooltip = bootstrap.Tooltip.getInstance(this);
+          if (existingTooltip) {
+            existingTooltip.dispose();
+          }
+          // Yeni tooltip oluştur
+          new bootstrap.Tooltip(this);
+        });
+      },
+
       ...getTableSpecificOptions(),
 
       initComplete: function (settings, json) {
@@ -91,8 +103,8 @@ $(document).ready(function () {
         } else {
           api.state.clear();
         }
-      
-      
+
+
       },
     });
   }
@@ -158,8 +170,8 @@ $(document).ready(function () {
   }
 });
 
-if ($(".flatpickr").length > 0) {
-  $(".flatpickr").flatpickr({
+if ($(".flatpickr:not(.time-input)").length > 0) {
+  $(".flatpickr:not(.time-input)").flatpickr({
     dateFormat: "d.m.Y",
     locale: "tr", // locale for this instance only
   });
@@ -189,7 +201,7 @@ if ($(".select2").length > 0) {
   });
 }
 
-function dtSearchInput(tableId, column, value) {}
+function dtSearchInput(tableId, column, value) { }
 
 //Geri dönüş yapmadan kayıt silme işlemi
 function deleteRecord(
@@ -337,14 +349,13 @@ function AlertConfirm(confirmMessage = "Emin misiniz?") {
 
 
 function getCurrentPageSlug() {
-  const path = window.location.pathname.replace(/\/+$/, '');
-  const parts = path.split('/').filter(Boolean);
-  return parts.pop() || '';
+  const slug = window.location.pathname.match(/\/([^\/=]+)(?:\/|=|$)/);
+  return slug ? slug[1] : '';
 }
 
 $(document).on("change", "#mySite", function () {
-  var page =getCurrentPageSlug() || 'ana-sayfa';
-  window.location = "set-session.php?p=" + page + "&site_id=" + $(this).val();
+  var page = getCurrentPageSlug() || 'ana-sayfa';
+  window.location = "/set-session.php?p=" + page + "&site_id=" + $(this).val();
 });
 
 //İl seçildiğinde ilçeleri getir
@@ -423,7 +434,7 @@ if ($(".money").length > 0) {
   });
 
   //Tarih formatı için inputmask kullan
-  $(document).on("focus", ".flatpickr:not(.flatpickr-time-input)", function () {
+  $(document).on("focus", ".flatpickr:not(.time-input)", function () {
     $(this).inputmask("99.99.9999", {
       placeholder: "gg.aa.yyyy",
       clearIncomplete: true,
@@ -495,7 +506,7 @@ function addCustomValidationValidValue() {
  * Kısayol Tuşları atamak için fonksiyon
  */
 function setupShortcut(shortcutKey, callback) {
-  $(document).on('keydown', function(event) {
+  $(document).on('keydown', function (event) {
     // Ctrl + <shortcutKey> kombinasyonunu kontrol et
     if (event.ctrlKey && event.key.toLowerCase() === shortcutKey.toLowerCase()) {
       event.preventDefault(); // Varsayılan işlemi engelle
@@ -508,8 +519,8 @@ function setupShortcut(shortcutKey, callback) {
 }
 // Kullanım örneği:
 //setupShortcut('s', function() {
-  // Burada yapılacak işlemi tanımlıyoruz
-  //$('#userSaveBtn').trigger('click');
+// Burada yapılacak işlemi tanımlıyoruz
+//$('#userSaveBtn').trigger('click');
 //});
 
 /**
@@ -520,21 +531,21 @@ function setupShortcut(shortcutKey, callback) {
  * @param {string} normalText - Normal durumda gösterilecek metin
  */
 function setButtonLoading(buttonSelector, isLoading = false, loadingText = 'Yükleniyor...', normalText = null) {
-    var $button = $(buttonSelector);
-    
-    if (isLoading) {
-        // Orijinal metni sakla (eğer normalText verilmemişse)
-        if (!normalText) {
-            $button.data('original-text', $button.html());
-        }
-        
-        // Yükleme durumunu ayarla
-        $button.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${loadingText}`);
-        $button.prop("disabled", true);
-    } else {
-        // Normal duruma döndür
-        var originalText = normalText || $button.data('original-text') || 'Kaydet';
-        $button.html(originalText);
-        $button.prop("disabled", false);
+  var $button = $(buttonSelector);
+
+  if (isLoading) {
+    // Orijinal metni sakla (eğer normalText verilmemişse)
+    if (!normalText) {
+      $button.data('original-text', $button.html());
     }
+
+    // Yükleme durumunu ayarla
+    $button.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${loadingText}`);
+    $button.prop("disabled", true);
+  } else {
+    // Normal duruma döndür
+    var originalText = normalText || $button.data('original-text') || 'Kaydet';
+    $button.html(originalText);
+    $button.prop("disabled", false);
+  }
 }

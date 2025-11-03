@@ -99,3 +99,34 @@ if($_POST["action"] == "kasa_sil"){
     exit;
 }
 
+
+/** VVarsayılan Kasa Yapma */
+
+if($_POST["action"] == "varsayilan_kasa_yap"){
+
+    $id = Security::decrypt($_POST['kasa_id'] ?? 0);
+
+    //Gate::can('kasa_varsayilan_yap');
+
+    try {
+
+        $db->beginTransaction();
+
+        $KasaModel = new KasaModel();
+        $kasa = $KasaModel->find($id);
+
+        if(!$kasa){Alert::error("Kasa bulunamadı." . $id);}
+
+        //Varsayılan kasa ayarlama
+        $KasaModel->varsayilanKasaYap($id);
+
+        $db->commit();
+        Alert::success("Kasa varsayılan olarak ayarlandı");
+    } catch (PDOException $ex) {
+        $db->rollBack();
+        Alert::error($ex->getMessage());
+
+    }
+
+    exit;
+}

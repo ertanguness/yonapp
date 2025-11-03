@@ -1,6 +1,7 @@
 <?php
 
 use App\Helper\Security;
+use App\Helper\Helper;
 use Model\DefinesModel;
 
 $Tanimlamalar = new DefinesModel();
@@ -66,10 +67,21 @@ $daireTipi = $Tanimlamalar->daireTipiGetir($id);
                                                 <input type="text" class="form-control" id="apartment_type_name" name="apartment_type_name" value="<?php echo $daireTipi->define_name ?? ''; ?>">
                                             </div>
                                         </div>
-                                        <div class="col-lg-1">
+                                        <div class="col-lg-2">
+                                            <label for="apartment_type_code" class="fw-semibold">Mülk Tipi: </label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group flex-nowrap w-100">
+                                                <div class="input-group-text"><i class="feather-home"></i></div>
+                                                <?php echo Helper::getMulkTipiSelect('mulk_tipi', $daireTipi->mulk_tipi ?? null); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-2">
                                             <label for="description" class="fw-semibold">Açıklama: </label>
                                         </div>
-                                        <div class="col-lg-5">
+                                        <div class="col-lg-10">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-type"></i></div>
                                                 <textarea class="form-control" id="description" name="description" cols="30" rows="3"><?php echo $daireTipi->description ?? ''; ?></textarea>

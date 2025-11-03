@@ -62,6 +62,26 @@ class KisilerModel extends Model
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
+
+    /**Sitenin tüm kişilerini güncel bakiyesi ile beraber getirir
+     * @param int $site_id Sitenin ID'si.
+     * @return array Güncel bakiyesi ile beraber tüm kişileri içeren bir dizi döner.
+     */
+    public function SiteTumKisileriGuncelBakiyesi($site_id)
+    {
+        $sql = $this->db->prepare("SELECT 
+                                                k.*,
+                                                d.daire_kodu,
+                                                vb.bakiye
+                                            FROM $this->table k
+                                            LEFT JOIN daireler d ON d.id = k.daire_id
+                                            LEFT JOIN view_kisiler_hesap_ozet vb ON vb.kisi_id = k.id
+                                            WHERE k.site_id = ? 
+                                          ");
+        $sql->execute([$site_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
       //**************************************************************************************************** */
     /**Siteye ait aktif tüm kişileri getirir.
      * @param int $site_id Sitenin ID'si.
@@ -709,7 +729,22 @@ class KisilerModel extends Model
     }
     
 
-
+/** Daire kodu ve Adı Soyadından kişinin ID'sini bulur.
+ * @param string $daire_kodu
+ * @param string $adi_soyadi
+ * 
+ */
+    public function findKisiIdByDaireKoduAndAdiSoyadi(string $daire_kodu, string $adi_soyadi)
+    {
+        $sql = $this->db->prepare("SELECT k.id 
+                                        FROM kisiler k
+                                        LEFT JOIN daireler d ON k.daire_id = d.id
+                                        WHERE d.daire_kodu = ? AND k.adi_soyadi = ? 
+                                        LIMIT 1");
+        $sql->execute([$daire_kodu, $adi_soyadi]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? $result->id : null;
+    }
 
         /**
      * Belirtilen bir borçlandırma dönemiyle konaklama dönemi kesişen
@@ -721,7 +756,7 @@ class KisilerModel extends Model
      * @param string $borcBitisTarihi     'Y-m-d' formatında
      * @return array                      Bulunan kişilerin nesnelerinden oluşan bir dizi.
      */
-    public function BorclandirilacakAktifKisileriGetir(int $site_id, string $borcBaslangicTarihi, string $borcBitisTarihi)
+    public function BorclandirilacakAktifKisileriGetir(int $site_id, string $borcBaslangicTarihi, string $borcBitisTarihi, $daireTipi = "Konut")
     {
         $sql = 
            "SELECT 
@@ -731,15 +766,16 @@ class KisilerModel extends Model
             FROM kisiler k
             INNER JOIN daireler d ON k.daire_id = d.id
             INNER JOIN bloklar b ON d.blok_id = b.id
+            INNER JOIN defines df ON d.daire_tipi = df.id
             WHERE 
                 b.site_id = :site_id
-                AND k.aktif_mi = 1
                 AND k.giris_tarihi <= :borc_bitis
                 AND (
                     k.cikis_tarihi IS NULL
                     OR k.cikis_tarihi = '0000-00-00'
                     OR k.cikis_tarihi >= :borc_baslangic
                 )
+            and df.mulk_tipi = :daire_tipi
             ORDER BY
                 d.id, k.uyelik_tipi DESC";
     
@@ -747,11 +783,65 @@ class KisilerModel extends Model
         $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
         $stmt->bindParam(':borc_baslangic', $borcBaslangicTarihi, PDO::PARAM_STR);
         $stmt->bindParam(':borc_bitis', $borcBitisTarihi, PDO::PARAM_STR);
+        $stmt->bindParam(':daire_tipi', $daireTipi, PDO::PARAM_STR);
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
 
+    /** Email Göndermek için kişileri getirir
+     * @param int $site_id
+     *  @return array
+     */
+    public function getKisilerForEmail(int $site_id)
+    {
+        $sql = $this->db->prepare("SELECT 
+                                            id as value, adi_soyadi, eposta ,'' as avatar
+                                          FROM $this->table 
+                                            WHERE site_id = ? 
+                                            AND eposta IS NOT NULL 
+                                            AND eposta != '' ");
+        $sql->execute([$site_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**
+     * Belirli bir bloktaki aktif kişileri daire kodu ile birlikte getirir
+     * @param int $blok_id Blok ID'si
+     * @return array Kişi listesi (daire_kodu dahil)
+     */
+    public function getAktifKisilerByBlok(int $blok_id)
+    {
+        $sql = "SELECT k.*, d.daire_kodu 
+                FROM kisiler k 
+                LEFT JOIN daireler d ON d.id = k.daire_id 
+                WHERE k.blok_id = :blok_id 
+                  AND k.silinme_tarihi IS NULL
+                ORDER BY d.daire_no, k.adi_soyadi";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':blok_id' => $blok_id]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**
+     * Tüm sitedeki aktif kişileri blok adı ve daire kodu ile birlikte getirir
+     * @param int $site_id Site ID'si
+     * @return array Kişi listesi (blok_adi ve daire_kodu dahil)
+     */
+    public function getAktifKisilerBySite(int $site_id)
+    {
+        $sql = "SELECT k.*, d.daire_kodu, b.blok_adi
+                FROM kisiler k 
+                LEFT JOIN daireler d ON d.id = k.daire_id 
+                LEFT JOIN bloklar b ON b.id = k.blok_id
+                WHERE k.site_id = :site_id 
+                ORDER BY b.blok_adi, d.daire_no, k.adi_soyadi";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':site_id' => $site_id]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
 
 }

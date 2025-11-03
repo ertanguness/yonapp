@@ -1,5 +1,5 @@
 let url = "/pages/finans-yonetimi/kasa/api.php";
-$(document).on('click', '#kasa_kaydet', function() {
+$(document).on('click', '#kasa_kaydet', function () {
     var form = $('#kasaForm');
 
     form.validate({
@@ -17,7 +17,7 @@ $(document).on('click', '#kasa_kaydet', function() {
         },
     });
 
-    if(!form.valid()) {
+    if (!form.valid()) {
         return false;
     }
 
@@ -28,31 +28,31 @@ $(document).on('click', '#kasa_kaydet', function() {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        let title = data.status == 'success' ? 'Başarılı' : 'Hata';
-        swal.fire({
-            icon:data.status,
-            title: title,
-            text: data.message,
+        .then(response => response.json())
+        .then(data => {
+            let title = data.status == 'success' ? 'Başarılı' : 'Hata';
+            swal.fire({
+                icon: data.status,
+                title: title,
+                text: data.message,
+            })
+
+
         })
-        
-       
-    })
-    .catch(error => {
-        swal.fire({
-            icon: 'error',
-            title: 'Hata',
-            text: error.message,
-            confirmButtonText: 'Tamam'
+        .catch(error => {
+            swal.fire({
+                icon: 'error',
+                title: 'Hata',
+                text: error.message,
+                confirmButtonText: 'Tamam'
+            });
         });
-    });
 
 
 });
 
 /* Kasa Sil */
-$(document).on('click', '.kasa-sil', function() {
+$(document).on('click', '.kasa-sil', function () {
     let kasa_id = $(this).data('id');
     let row = $(this).closest('tr');
 
@@ -70,22 +70,22 @@ $(document).on('click', '.kasa-sil', function() {
             $.ajax({
                 url: url,
                 method: 'POST',
-                data: { 
-                    action: 'kasa_sil', 
-                    kasa_id: kasa_id 
+                data: {
+                    action: 'kasa_sil',
+                    kasa_id: kasa_id
                 },
                 dataType: 'json',
-                success: function(response) {
+                success: function (response) {
                     if (response.status === 'success') {
-                        row.fadeOut(500, function() {
+                        row.fadeOut(500, function () {
                             $(this).remove();
                         });
                         swal.fire({
                             icon: 'success',
                             title: 'Başarılı',
                             text: 'Kasa silme işlemi başarılı',
-                        }); 
-                    }else{
+                        });
+                    } else {
                         swal.fire({
                             icon: 'error',
                             title: 'Hata',
@@ -94,7 +94,7 @@ $(document).on('click', '.kasa-sil', function() {
                         });
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     swal.fire({
                         icon: 'error',
                         title: 'Hata',
@@ -106,3 +106,62 @@ $(document).on('click', '.kasa-sil', function() {
         }
     });
 });
+
+
+$(document).on('click', '.is-default', function () {
+    var row = $(this).closest("tr");
+    var id = $(this).data("id");
+
+
+    swal.fire({
+        title: 'Emin misiniz?',
+        text: "Kasa varsayılan olarak ayarlanacaktır!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, ayarla',
+        cancelButtonText: 'Hayır, iptal et'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    action: 'varsayilan_kasa_yap',
+                    kasa_id: id
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        swal.fire({
+                            icon: 'success',
+                            title: 'Başarılı',
+                            text: 'Kasa varsayılan olarak ayarlandı',
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        swal.fire({
+                            icon: 'error',
+                            title: 'Hata',
+                            text: response.message,
+                            confirmButtonText: 'Tamam'
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: error.message,    
+                        confirmButtonText: 'Tamam'
+                    });
+                }
+            });
+        }
+    });
+
+
+
+
+});
+

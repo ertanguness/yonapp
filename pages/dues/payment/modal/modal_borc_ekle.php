@@ -89,7 +89,7 @@ $borc_id = $borc_detay->borclandirma_id ?? null;
 
                                 <div class="row">
 
-                                    <div class="col-lg-6 mb-3">
+                                    <div class="col-lg-4 mb-3">
                                         <label class="form-label">Tutar</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="feather-credit-card"></i></div>
@@ -97,7 +97,15 @@ $borc_id = $borc_detay->borclandirma_id ?? null;
                                                 placeholder="₺ 0,00" required>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 mb-3">
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Ceza Oranı %</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="feather-credit-card"></i></div>
+                                            <input type="text" class="form-control money" name="borc_ceza_orani" id="borc_ceza_orani" value="<?= $borc_detay->ceza_orani ?? '' ?>"
+                                                placeholder="5" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
                                         <label class="form-label">Tarih</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="feather-calendar"></i></div>
@@ -114,7 +122,7 @@ $borc_id = $borc_detay->borclandirma_id ?? null;
                                                 <i class="feather-file-text"></i>
                                             </div>
                                             <textarea id="borc_aciklama" name="borc_aciklama"
-                                                class="form-control" placeholder="Açıklama giriniz.(Referans No vb."
+                                                class="form-control" placeholder="Açıklama giriniz..."
                                                 rows="5"><?= $borc_detay->aciklama ?? '' ?></textarea>
 
                                         </div>

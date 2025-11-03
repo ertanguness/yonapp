@@ -7,14 +7,16 @@ use App\Services\Gate;
 use App\Helper\Helper;
 use Model\KasaModel;
 use Model\KasaHareketModel;
+use Model\DefinesModel;
 
 $KasaModel = new KasaModel();
 $kasaHareketModel = new KasaHareketModel();
+$Tanımlamalar = new DefinesModel();
 
 if ($_POST['action'] == 'gelir-gider-kaydet') {
     $islem_id = Security::decrypt($_POST['islem_id'] ?? 0);
     $site_id = $_SESSION['site_id'];
-    $kasa_id =$_SESSION['kasa_id'] ;
+    $kasa_id = $_SESSION['kasa_id'];
     $lastInsertId = 0;
 
     try {
@@ -25,30 +27,55 @@ if ($_POST['action'] == 'gelir-gider-kaydet') {
             "id" => $islem_id,
             "site_id" => $site_id,
             "kasa_id" => $kasa_id,
-            "islem_tarihi" => Date::Ymd($_POST['islem_tarihi']),
+            "islem_tarihi" => Date::YmdHis($_POST['islem_tarihi']),
             "islem_tipi" => $_POST['islem_tipi'],
             "kategori" => $_POST['kategori'],
+            "makbuz_no" => $_POST['makbuz_no'],
             "tutar" => Helper::formattedMoneyToNumber($_POST['tutar']),
             "aciklama" => $_POST['aciklama'],
             "guncellenebilir" => 1
         ];
 
-        $lastInsertId = $kasaHareketModel->saveWithAttr($data);
+        $lastInsertId = $kasaHareketModel->saveWithAttr($data) ?? $_POST['islem_id'];
+
+        //satır verisini tekrar çek
+        $kasaHareket = $kasaHareketModel->findFromView($lastInsertId);
+
+
+        //yürüyen bakiye olduğu için şimdilik kapattım
+        // $rowData = [
+        //     "id" => $kasaHareket->id,
+        //     "islem_tipi" => $kasaHareket->islem_tipi == 'Gelir' ? '<span class="badge bg-success">Gelir</span>'
+        //         : '<span class="badge bg-danger">Gider</span>',
+        //     "daire_kodu" => "",
+        //     "hesap_adi" => "",
+        //     "tutar" => '<span class="' . (($kasaHareket->tutar ?? 0) >= 0 ? 'text-success' : 'text-danger') . '">' . Helper::formattedMoney($kasaHareket->tutar ?? 0) . '</span>',
+        //     "yuruyen_bakiye" => Helper::formattedMoney($kasaHareket->yuruyen_bakiye ?? 0),
+        //     "kategori" => $kasaHareket->kategori,
+        //     "makbuz_no" => $kasaHareket->makbuz_no,
+        //     "aciklama" => $kasaHareket->aciklama,
+        //     "islem_tarihi" => Date::dmYHIS($kasaHareket->islem_tarihi),
+        //     "islem_buttons" => '
+        //         <div class="hstack gap-2 justify-content-center">
+        //             <a href="#" class="avatar-text avatar-md gelirGiderGuncelle" data-id="'.$lastInsertId.'">
+        //                 <i class="feather-edit"></i>
+        //             </a>
+        //             <a href="#" class="avatar-text avatar-md gelirGiderSil" data-id="'.$lastInsertId.'">
+        //                 <i class="feather-trash-2"></i>
+        //             </a>
+        //         </div>
+        //     '
+        // ];
 
         $status = "success";
         $message = $islem_id > 0 ? "Güncelleme başarılı" : "Kayıt başarılı";
-
-
-
     } catch (PDOException $ex) {
         $status = "error";
         $message = $ex->getMessage();
     }
     $res = [
         "status" => $status,
-        "message" => $message,
-        "data" => $data,
-        "row" => $lastInsertId
+        "message" => $message
     ];
 
     echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -71,7 +98,6 @@ if ($_POST['action'] == 'gelir-gider-getir') {
 
         $status = "success";
         $message = "Kayıt bulundu.";
-
     } catch (Exception $ex) {
         $status = "error";
         $message = $ex->getMessage();
@@ -92,8 +118,8 @@ if ($_POST['action'] == 'gelir-gider-sil') {
     Gate::can('gelir_gider_sil');
 
 
-    $islem_id = $_POST['islem_id'] ;
-    $kasa_id = $_SESSION['kasa_id'] ;
+    $islem_id = $_POST['islem_id'];
+    $kasa_id = $_SESSION['kasa_id'];
     $KasaFinansalDurum = null;
 
     try {
@@ -101,7 +127,7 @@ if ($_POST['action'] == 'gelir-gider-sil') {
         //Önce kayıt var mı ve silinebilir mi kontrol et
         $kasaHareket = $kasaHareketModel->find($islem_id, true);
         if (!$kasaHareket || $kasaHareket->guncellenebilir != 1) {
-            throw new Exception("Kayıt bulunamadı veya silinemez." );
+            throw new Exception("Kayıt bulunamadı veya silinemez.");
         }
 
         //Kayıt varsa sil
@@ -112,7 +138,7 @@ if ($_POST['action'] == 'gelir-gider-sil') {
 
         //Kasa Ozet bilgilerini getir
         $KasaFinansalDurum = $KasaModel->KasaFinansalDurum($kasaHareket->kasa_id);
-      
+
         //Para formatında formatla
         $KasaFinansalDurum->toplam_gelir = Helper::formattedMoney($KasaFinansalDurum->toplam_gelir ?? 0);
         $KasaFinansalDurum->toplam_gider = Helper::formattedMoney($KasaFinansalDurum->toplam_gider ?? 0);
@@ -120,8 +146,6 @@ if ($_POST['action'] == 'gelir-gider-sil') {
 
         $status = "success";
         $message = "Kayıt başarıyla silindi.";
-
-
     } catch (Exception $ex) {
         $status = "error";
         $message = $ex->getMessage();
@@ -130,6 +154,32 @@ if ($_POST['action'] == 'gelir-gider-sil') {
         "status" => $status,
         "message" => $message,
         "data" => $KasaFinansalDurum
+    ];
+
+    echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+}
+
+
+//Gelir Gider tipi getir
+if ($_POST['action'] == 'kategori-getir') {
+
+    $islem_tipi = $_POST['islem_tipi']  ?? '';
+    $type = $islem_tipi == 'gelir' ? 6 : ($islem_tipi == 'gider' ? 7 : 0);
+
+    try {
+
+        $kategoriler = $Tanımlamalar->getGelirGiderKategorileri($type);
+
+        $status = "success";
+        $message = "Kayıt bulundu.";
+    } catch (Exception $ex) {
+        $status = "error";
+        $message = $ex->getMessage();
+    }
+    $res = [
+        "status" => $status,
+        "message" => $message,
+        "kategoriler" => $kategoriler
     ];
 
     echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

@@ -14,6 +14,8 @@ $(document).ready(function () {
                 $(".borc-baslangic").text("Başlangıç Tarihi : " + data.baslangic_tarihi);
                 $(".borc-bitis").text("Bitiş Tarihi : " + data.bitis_tarihi);
                 $("#borc_tutar").val(data.tutar.replace(".", ","));
+                $("#borc_ceza_orani").val(data.ceza_orani.replace(".", ","));
+                $("#borc_aciklama").val(data.aciklama);
                 $("#borc_islem_tarihi").flatpickr({
                     defaultDate: [data.baslangic_tarihi],
                     enableTime: true,

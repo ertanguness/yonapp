@@ -12,10 +12,22 @@ $Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $Due = new DueModel();
 
+
+//Yeni kayıt yapan kullanıcıların site seçmeden bu sayfaya erişimini engelle
+Security::ensureSiteSelected();
+
 $site_id = $_SESSION['site_id'];
+
 
 //borçlandırmaları getir
 $borclar = $Borc->getAll($site_id);
+
+// N+1 query optimizasyonu: Tüm borç detaylarını tek sorguda çek
+$borcIds = array_column($borclar, 'id');
+$borcDetayMap = $BorcDetay->getBatchDetails($borcIds);
+
+// Due name'leri cache'le (tekrar eden sorgulardan kaçın)
+$dueCache = [];
 
 
 
@@ -80,17 +92,17 @@ $borclar = $Borc->getAll($site_id);
                                             $odeme_yuzdesi = 0;
                                             if ($borc->toplam_borc > 0) {
                                                 $odeme_yuzdesi = round(($borc->toplam_tahsilat / $borc->toplam_borc) * 100, 2);
-
-                                                
                                             }
-                                          
-
-
-
+                                            
+                                            // Due name cache ile tek sorgu
+                                            if (!isset($dueCache[$borc->borc_tipi_id])) {
+                                                $dueCache[$borc->borc_tipi_id] = $Due->getDueName($borc->borc_tipi_id);
+                                            }
+                                            $dueName = $dueCache[$borc->borc_tipi_id];
                                         ?>
                                         <tr class="">
                                             <td><?php echo $i++; ?></td>
-                                            <td><?php echo $Due->getDueName($borc->borc_tipi_id); ?></td>
+                                            <td><?php echo $dueName; ?></td>
                                             <td><?php echo $borc->tutar; ?></td>
                                             <td><?php echo Date::dmY($borc->baslangic_tarihi); ?></td>
                                             <td><?php echo Date::dmY($borc->bitis_tarihi); ?></td>
@@ -99,7 +111,7 @@ $borclar = $Borc->getAll($site_id);
                                                 <?php
                                                    $borc_tipi = $borc->hedef_tipi;
                                                    $borclandirma_tipi='';
-                                                    $borclandirma_detay = '';
+                                                   $borclandirma_detay = '';
                                                    
                                                    if($borc_tipi == 'all'){
                                                       $borclandirma_tipi = "Tüm Site";
@@ -109,13 +121,15 @@ $borclar = $Borc->getAll($site_id);
                                                         $borclandirma_detay =  "Ev Sahiplerine Göre Borçlandırma Yapıldı";
                                                     }elseif($borc_tipi == 'block'){
                                                       $borclandirma_tipi = "Blok";
-                                                      $borclandirma_detay =  $BorcDetay->BorclandirilmisBlokIsimleri($borc->id);
+                                                      // Batch'ten al (N+1 query çözüldü)
+                                                      $borclandirma_detay = $borcDetayMap[$borc->id] ?? '';
                                                    }elseif($borc_tipi == 'person'){
                                                       $borclandirma_tipi = "Kişi";
                                                       $borclandirma_detay =  'Kişilere göre borçlandırma yapıldı';
                                                     }elseif($borc_tipi == 'dairetipi'){
                                                         $borclandirma_tipi = "Daire Tipi";
-                                                        $borclandirma_detay =  $BorcDetay->BorclandirilmisDaireTipleri($borc->id);
+                                                        // Batch'ten al (N+1 query çözüldü)
+                                                        $borclandirma_detay = $borcDetayMap[$borc->id] ?? '';
                                                     }
                                                    ?>
                                                 <a href="javascript:void(0)"
@@ -178,7 +192,7 @@ $borclar = $Borc->getAll($site_id);
                                                     <a href="javascript:void(0);"
                                                         class="avatar-text avatar-md delete-debit" title="Sil"
                                                         data-id="<?php echo $enc_id; ?>"
-                                                        data-name="<?php echo $Due->getDueName($borc->borc_tipi_id); ?>">
+                                                        data-name="<?php echo $dueName; ?>">
                                                         <i class="feather-trash-2"></i>
                                                     </a>
                                                 </div>

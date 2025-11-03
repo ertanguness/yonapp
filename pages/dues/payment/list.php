@@ -1,16 +1,17 @@
 <?php
 
-use App\Helper\Security;
+use App\Helper\Date;
 use App\Helper\Helper;
 
-use Model\BloklarModel;
-use Model\DairelerModel;
-use Model\KisilerModel;
-use Model\BorclandirmaDetayModel;
-use Model\TahsilatModel;
-use Model\FinansalRaporModel;
-
 use App\Services\Gate;
+use Model\BloklarModel;
+use Model\KisilerModel;
+use App\Helper\Security;
+use Model\DairelerModel;
+use Model\TahsilatModel;
+
+use Model\FinansalRaporModel;
+use Model\BorclandirmaDetayModel;
 
 $Blok = new BloklarModel();
 $Daire = new DairelerModel();
@@ -47,8 +48,8 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-            
-                <a href="/onay-bekleyen-tahsilatlar" class="btn btn-outline-success">
+
+                <!-- <a href="/onay-bekleyen-tahsilatlar" class="btn btn-outline-success">
                     <i class="feather-check me-2"></i>Onay Bekleyen Ödemeler
                 </a>
                 <a href="/eslesmeyen-odemeler" class="btn btn-outline-secondary">
@@ -56,81 +57,74 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 </a>
                 <a href="/excelden-odeme-yukle" class="btn btn-outline-primary">
                     <i class="feather-file-plus me-2"></i>Excelden Ödeme Yükle
-                </a>  
+                </a> -->
                 <div class="dropdown">
-                                <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside">
-                                    <i class="feather-filter"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-eye me-3"></i>
-                                        <span>Tümü</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-send me-3"></i>
-                                        <span>Borcu olmayanları da getir</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-book-open me-3"></i>
-                                        <span>Open</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-archive me-3"></i>
-                                        <span>Draft</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-bell me-3"></i>
-                                        <span>Revised</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-shield-off me-3"></i>
-                                        <span>Declined</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-check me-3"></i>
-                                        <span>Accepted</span>
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-briefcase me-3"></i>
-                                        <span>Leads</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-wifi-off me-3"></i>
-                                        <span>Expired</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-users me-3"></i>
-                                        <span>Customers</span>
-                                    </a>
-                                </div>
-                            </div>  
-            <div class="dropdown">
-                                <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside" aria-expanded="false">
-                                    <i class="feather-paperclip"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end" style="">
-                                    <a href="/pages/dues/payment/export/tum_sakinler_ozet_liste.php?format=pdf" 
-                                    target="_blank"
-                                    class="dropdown-item">
-                                        <i class="bi bi-filetype-pdf me-3"></i>
-                                        <span>PDF'e Aktar</span>
-                                    </a>
-                                    <a href="/pages/dues/payment/export/tum_sakinler_ozet_liste.php?format=xlsx" class="dropdown-item"
-                                    target="_blank" 
-                                    >
-                                        <i class="bi bi-filetype-exe me-3"></i>
-                                        <span>Excele Aktar</span>
-                                    </a>
-                                 
-                                    <div class="dropdown-divider"></div>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="bi bi-filetype-exe me-3"></i>
-                                        <span>Detaylı Ödeme Listesi Al</span>
-                                    </a>
-                                 
-                                </div>
-                            </div>
+                    <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside">
+                        <i class="feather-more-vertical"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="/onay-bekleyen-tahsilatlar" class="dropdown-item">
+                            <i class="feather-check-square me-3"></i>
+                            <span>Onay Bekleyen Ödemeler</span>
+                        </a>
+                        <a href="/eslesmeyen-odemeler" class="dropdown-item">
+                            <i class="feather-x-circle me-3"></i>
+                            <span>Eşleşmeyen Ödemeler</span>
+                        </a>
+                        <a href="/excelden-odeme-yukle" class="dropdown-item">
+                            <i class="feather-file-plus me-3"></i>
+                            <span>Excelden Ödeme Yükle </span>
+                        </a>
+                        <a href="/excelden-odeme-yukle" class="dropdown-item">
+                            <i class="feather-send me-3"></i>
+                            <span>Mesaj Gönder </span>
+                        </a>
+
+
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside">
+                        <i class="feather-filter"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="javascript:void(0);" class="dropdown-item">
+                            <i class="feather-eye me-3"></i>
+                            <span>Tümü</span>
+                        </a>
+                        <a href="javascript:void(0);" class="dropdown-item">
+                            <i class="feather-send me-3"></i>
+                            <span>Borcu olmayanları da getir</span>
+                        </a>
+
+
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside" aria-expanded="false">
+                        <i class="feather-paperclip"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" style="">
+                        <a href="/pages/dues/payment/export/tum_sakinler_ozet_liste.php?format=html"
+                            target="_blank"
+                            class="dropdown-item">
+                            <i class="bi bi-filetype-pdf me-3"></i>
+                            <span>Html'e Aktar</span>
+                        </a>
+                        <a href="/pages/dues/payment/export/tum_sakinler_ozet_liste.php?format=xlsx" class="dropdown-item"
+                            target="_blank">
+                            <i class="bi bi-filetype-exe me-3"></i>
+                            <span>Excele Aktar</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+                        <a href="javascript:void(0);" class="dropdown-item">
+                            <i class="bi bi-filetype-exe me-3"></i>
+                            <span>Detaylı Ödeme Listesi Al</span>
+                        </a>
+
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -160,6 +154,8 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                             </th>
                                             <th style="width:7%">Daire Kodu</th>
                                             <th>Ad Soyad</th>
+                                            <th>Giriş Tarihi</th>
+                                            <th>Çıkış Tarihi</th>
                                             <th class="text-end" style="width:11%">Borç Tutarı</th>
                                             <th class="text-end" style="width:11%">Gecikme Zammı</th>
                                             <th class="text-end" style="width:11%">Toplam Borç</th>
@@ -180,6 +176,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 
                                             $oturum_durum_color = $borc->durum == "Aktif" ? "success" : "danger";
 
+
                                         ?>
                                             <tr>
 
@@ -196,9 +193,13 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                                             class="badge text-<?= $badge_color ?> border border-dashed border-gray-500"><?= $uyelik_tipi ?></a>
                                                         <a href="javascript:void(0)"
                                                             class="badge text-<?= $oturum_durum_color ?> border border-dashed border-gray-500"><?= $borc->durum ?></a>
+                                                        <a href="javascript:void(0)"
+                                                            class="badge text-teal border border-dashed border-gray-500"><?= $borc->daire_tipi ?></a>
                                                     </div>
 
                                                 </td>
+                                                <td><?= Date::dmY($borc->giris_tarihi) ?></td>
+                                                <td><?= Date::dmY($borc->cikis_tarihi ?? "") ?></td>
                                                 <td class="text-end">
                                                     <i class="feather-trending-down fw-bold text-danger"></i>
 
@@ -245,7 +246,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         </div>
     </div>
 </div>
-<div class="modal fade" id="kisiBorcDetay" tabindex="-1" data-bs-keyboard="false" role="dialog">
+<div class="modal fade" id="kisiBorcDetay" tabindex="-1" role="dialog" data-bs-keyboard="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered" role="document">
         <div class="modal-content borc-detay">
 
@@ -257,19 +258,24 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 <div class="modal fade" id="tahsilatGir" tabindex="-1" data-bs-keyboard="false" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
-
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitleId">Tahsilat Ekle</h5>
+                <div class="hstack justify-content-between">
+                    <div>
+                        <h5 class="modal-title" id="modalTitleId">Tahsilat Ekle</h5>
+                        <span class="text-muted text-danger">Girdiğiniz tutarlar aynı zamanda kasaya Gelir/Gider olarak kaydedilecektir</span>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body tahsilat-modal-body">
-
-                <!-- Overlay (Modal içi) -->
-
-
-
+                <!-- Spinner -->
+                <div class="d-flex justify-content-center my-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer d-flex">
                 <a class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</a>
                 <a href="javascript:void(0);" class="btn btn-outline-primary" id="tahsilatKaydet">
                     <i class="feather-save me-2"></i>Kaydet
@@ -279,7 +285,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
     </div>
 </div>
 <!-- list.php'nin en altına ekle -->
-<script src="/pages/email-sms/sms.js"></script>
+<script src="/pages/email-sms/js/sms.js"></script>
 <style>
     /* Daha üstteki backdrop biraz daha koyu */
     .modal-backdrop.stacked-backdrop {
@@ -303,6 +309,16 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
     aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content borc-ekle-modal">
+            <!-- İçerik AJAX ile yüklenecek -->
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="makbuzGoster" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content makbuz-goster-modal">
             <!-- İçerik AJAX ile yüklenecek -->
         </div>
     </div>
@@ -364,10 +380,13 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         $(document).on('click', '.mesaj-gonder', function() {
             var id = $(this).data('id');
             kisiId = $(this).data('kisi-id');
+            makbuz_bildirim = $(this).data('makbuz-bildirim') || "false";
 
             $.get("/pages/email-sms/sms_gonder_modal.php", {
                 id: id,
-                kisi_id: kisiId
+                kisi_id: kisiId,
+                includeFile: "kisiye-mesaj-gonder.php", // telefon, mesaj gibi değişkenleri almak için,
+                makbuz_bildirim: makbuz_bildirim
             }, function(data) {
                 // Verileri tabloya ekle
                 $('.modal-content.sms-gonder-modal').html(data);
@@ -379,13 +398,8 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 // Modal açıldıktan sonra SMS JS'ini başlat
                 setTimeout(function() {
                     if (typeof window.initSmsModal === 'function') {
-
-
                         //$('#message').text('Merhaba, olarak size hatırlatmak isteriz ki, toplam borcunuz dir. Lütfen en kısa sürede ödeme yapınız.\n\nTeşekkürler.\nSite Yönetimi');
-
                         window.initSmsModal();
-                        //Textareaya örnek değer ata
-
                     }
                 }, 100);
             });
@@ -396,7 +410,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 
     $(document).ready(function() {
         var modalURL = "/pages/dues/payment/modal/modal_borc_ekle.php";
-       
+
         $(document).on('click', '.borc-ekle', function() {
             var id = $(this).data('id');
             kisiId = $(this).data('kisi-id');
@@ -472,6 +486,27 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 modal.modal('show');
             });
         });
+
+
+        var urlMakbuz = '/pages/dues/payment/modal/modal_makbuz_goster.php';
+        $(document).on('click', '.makbuz-goster', function() {
+            let makbuzId = $(this).data('id');
+            let kisiId = $(this).data('kisi-id');
+            let modalMakbuz = $("#makbuzGoster");
+            // Borç bilgilerini getir
+            $.get(urlMakbuz, {
+                makbuz_id: makbuzId,
+                kisi_id: kisiId
+            }, function(data) {
+                // Verileri modalda göster
+                modalMakbuz.find('.makbuz-goster-modal').html(data);
+
+                // Modal'ı göster
+                modalMakbuz.modal('show');
+            });
+        });
+
+
     });
 </script>
 

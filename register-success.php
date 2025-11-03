@@ -3,6 +3,10 @@
 
 </html>
 
+
+<?php 
+$page = "register-success";
+?>
 <?php include './partials/head.php' ?>
 
 <body>
@@ -13,11 +17,9 @@
         <div class="auth-minimal-inner">
             <div class="minimal-card-wrapper">
                 <div class="card mb-4 mt-5 mx-4 mx-sm-0 position-relative">
-                    <div class="wd-100 bg-white p-3 rounded-circle shadow-lg position-absolute translate-middle top-0 start-50">
-                        <img src="assets/images/yonapp-logo.jpg" alt="" class="img-fluid">
-                    </div>
-                    <div class="card-body p-sm-5">
-                    <img src="assets/images/icons/onay2.png" class="img-fluid d-block mx-auto mb-3" style="width: 50px; height: 50px;">
+                
+                    <div class="card-body p-sm-5 text-center">
+                    <img src="assets/images/logo/logo.svg" style="max-width: 50%; height: auto;">
                         <h2 class="fs-32 fw-bolder mb-2 text-center text-success">Kayıt Başarılı</h2>
                         <p class="fs-16 fw-medium text-muted text-center">Kayıt işleminiz başarıyla tamamlandı. </br>
                             Eposta adresinize aktivasyon maili gönderildi. </br>

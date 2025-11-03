@@ -18,6 +18,13 @@ class Helper
         '/\*([A-Za-z0-9]+)[\.\-]?\s*DAİRE\s*:?(\d+)/i'
     ];
 
+    const MULK_TIPI = [
+        '1' => 'Konut',
+        '2' => 'İşyeri',
+        '3' => 'Depo',
+        '4' => 'Otopark',
+        '5' => 'Diğer',
+    ];
     const UNITS = [
         '1' => 'Ad.',
         '2' => 'Kg',
@@ -44,9 +51,9 @@ class Helper
         '' => 'Bilinmiyor',
     ];
 
-    const INC_EXP = [
-        '1' => 'Gelir',
-        '2' => 'Gider',
+    const GELİR_GİDER = [
+        '6' => 'Gelir',
+        '7' => 'Gider',
     ];
 
     const PRIORITY = [
@@ -71,15 +78,15 @@ class Helper
     const TARGETTYPE = [
         '0' => 'Seçiniz',
         'all' => 'Tüm Sakinler(İşyeri Dahil)',
-        "sakinler"=> "Sakinler(Ev)",
-        "isyerisakinleri"=> "Sakinler(İşyeri)",
+        "sakinler" => "Sakinler(Ev)",
+        "isyerisakinleri" => "Sakinler(İşyeri)",
         'evsahibi' => 'Sahipler(Ev)',
-        "isyerisahipleri"=> "Sahipler(İşyeri)",
+        "isyerisahipleri" => "Sahipler(İşyeri)",
         'block' => 'Blok Seçerek',
         'person' => 'Kişi Borçlandırma',
         'dairetipi' => 'Daire Tipine Göre',
     ];
-  // Yeni: Gruplu seçenekler (optgroup desteği için)
+    // Yeni: Gruplu seçenekler (optgroup desteği için)
     const TARGETTYPE_GROUPED = [
         'Genel' => [
             'all' => 'Tüm Sakinler (İşyeri Dahil)',
@@ -98,7 +105,7 @@ class Helper
             'dairetipi' => 'Daire Tipine Göre',
         ],
     ];
-    
+
     const  RELATIONSHIP = [
         '1' => 'Anne',
         '2' => 'Baba',
@@ -188,6 +195,25 @@ class Helper
     }
 
 
+    /** Mulk Tipi Select 
+     * @param string $name
+     * @param string $selected
+     * @return string
+     */
+    public static function getMulkTipiSelect($name = 'mulk_tipi', $selected = null)
+    {
+        $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
+
+        $select .= '<option value="" disabled selected>Mülk Tipi Seçiniz</option>';
+        foreach (self::MULK_TIPI as $key => $value) {
+            $selectedAttr = $selected == $key ? 'selected' : '';
+            $select .= "<option value='$key' $selectedAttr>$value</option>";
+        }
+        $select .= '</select>';
+        return $select;
+    }
+
+
     //Ödeme kategorisini döndürür
     public static function getOdemeKategori($kategori)
     {
@@ -215,9 +241,9 @@ class Helper
 
 
 
-/** İkamet Türü Select'ini oluştur
- * @param string $name
- */
+    /** İkamet Türü Select'ini oluştur
+     * @param string $name
+     */
     public static function ikametTuruSelect($name = 'ikamet_turu', $selected = '1')
     {
         $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
@@ -229,6 +255,15 @@ class Helper
         return $select;
     }
 
+    /**Sayıyı yazıya çevirir
+     * @param float $number
+     * @return string
+     */
+    public static function sayiyiYaziyaCevir($sayi)
+    {
+        $formatter = new \NumberFormatter("tr", \NumberFormatter::SPELLOUT);
+        return $formatter->format($sayi);
+    }
 
 
     public static function short($value, $lenght = 21)
@@ -239,6 +274,11 @@ class Helper
 
     public static function formattedMoney($value, $currency = 1)
     {
+
+        //eğer value boş veya null ise 0 döndür
+        if (empty($value)) {
+            $value = 0;
+        }
         return number_format($value, 2, ',', '.') . ' ' . self::MONEY_UNIT[$currency];
     }
 
@@ -246,9 +286,9 @@ class Helper
     public static function formattedMoneyToNumber($value)
     {
         //içinde ₺ olabilir, onu kaldırır
+        $value = str_replace('TL', '', $value); // TL'yi kaldırır
         $value = str_replace('₺', '', $value);
         $value = str_replace(' ', '', $value); // Boşlukları kaldırır
-        $value = str_replace('TL', '', $value); // TL'yi kaldırır
         return str_replace(['.', ','], ['', '.'], $value);
     }
 
@@ -331,16 +371,16 @@ class Helper
         }
     }
 
-    public static function getIncExpTypeName($type)
+    public static function getGelirGiderTypeName($type)
     {
-        $types = self::INC_EXP;
+        $types = self::GELİR_GİDER;
         return $types[$type];
     }
 
-    public static function incExpTypeSelect($name = 'incexp_type', $selected = '1')
+    public static function getGelirGiderTipiSelect($name = 'gelir_gider_type', $selected = '1')
     {
         $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" >';
-        foreach (self::INC_EXP as $key => $value) {
+        foreach (self::GELİR_GİDER as $key => $value) {
             $selectedAttr = $selected == $key ? 'selected' : '';
             $select .= "<option value='$key' $selectedAttr>$value</option>";
         }
@@ -462,10 +502,10 @@ class Helper
     }
 
     // Yeni: Optgroup destekli versiyon (mevcudu bozmadan ayrı fonksiyon)
-    public static function targetTypeSelectGrouped($name = 'target_type', $selected = '0', $disabled = false)
+    public static function targetTypeSelectGrouped($name = 'target_type', $selected = '0', $disabled = false, $readonly = false)
     {
         $select = '<select id="' . $name . '" name="' . $name . '" class="form-select select2 w-100" '
-            . ($disabled ? 'disabled' : '') . '>';
+            . ($disabled ? 'disabled' : '')  . ' ' . ($readonly ? 'readonly' : '')  . '>';
 
         // Üstte tek "Seçiniz" opsiyonu
         $select .= '<option value="0"' . ($selected == '0' ? ' selected' : '') . '>Seçiniz</option>';
@@ -542,7 +582,7 @@ class Helper
      * @param int $site_id
      * @return string
      */
-    public static function getApartmentTypesSelect($name = 'apartment_type',$selected=[],$disabled = false)
+    public static function getApartmentTypesSelect($name = 'apartment_type', $selected = [], $disabled = false)
     {
         $Defines = new DefinesModel();
         $apartmentTypes = $Defines->getAllByApartmentType(3);
@@ -600,7 +640,7 @@ class Helper
     //     $patterns = [
     //         // DESEN 1: En yüksek öncelikli, %100 kesin format. Bitişik yazım.
     //         ['pattern' => '/\b([A-Z]\d+D\d+)\b/'],
-            
+
     //         // DESEN 2: "C-4 D.10" formatını yakala (tire ile ayrılmış blok, nokta ile ayrılmış daire)
     //         ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+D\s*\.\s*(\d+)\b/'],
 
@@ -653,132 +693,139 @@ class Helper
     //     return null;
     // }
 
-   /**
- * Serbest metin formatındaki bir açıklamadan standart 'BLOKDDAİRE' formatında
- * daire kodunu çıkaran, en yüksek isabet oranına sahip nihai fonksiyon.
- */
-public static function extractApartmentInfo($description)
-{
-    if (empty($description)) {
-        return null;
-    }
+    /**
+     * Serbest metin formatındaki bir açıklamadan standart 'BLOKDDAİRE' formatında
+     * daire kodunu çıkaran, en yüksek isabet oranına sahip nihai fonksiyon.
+     */
+    public static function extractApartmentInfo($description)
+    {
+        if (empty($description)) {
+            return null;
+        }
 
-    // 1. ADIM: HAZIRLIK - Metni standart bir forma getir.
-    $text = ' ' . strtoupper($description) . ' '; // Başına/sonuna boşluk ekle
+        // 1. ADIM: HAZIRLIK - Metni standart bir forma getir.
+        $text = ' ' . strtoupper($description) . ' '; // Başına/sonuna boşluk ekle
 
-    // Adım 1a: Türkçe karakterleri ve özel karakterleri standartlaştır.
-    $text = str_replace(
-        ['İ', 'Ü', 'Ö', 'Ç', 'Ş', 'Ğ', "'", 'Ğ'],
-        ['I', 'U', 'O', 'C', 'S', 'G', '', 'G'],
-        $text
-    );
+        // Adım 1a: Türkçe karakterleri ve özel karakterleri standartlaştır.
+        $text = str_replace(
+            ['İ', 'Ü', 'Ö', 'Ç', 'Ş', 'Ğ', "'", 'Ğ'],
+            ['I', 'U', 'O', 'C', 'S', 'G', '', 'G'],
+            $text
+        );
 
-    // Adım 1b: Bitişik yazımları ayır (örn: C3BLOK -> C3 BLOK, DAIRE5 -> DAIRE 5)
-    $text = preg_replace('/([A-Z]\d+)(BLOK|DAIRE)/', '$1 $2', $text);
-    $text = preg_replace('/(BLOK|DAIRE|NO)(\d+)/', '$1 $2', $text);
+        // Adım 1b: Bitişik yazımları ayır (örn: C3BLOK -> C3 BLOK, DAIRE5 -> DAIRE 5)
+        $text = preg_replace('/([A-Z]\d+)(BLOK|DAIRE)/', '$1 $2', $text);
+        $text = preg_replace('/(BLOK|DAIRE|NO)(\d+)/', '$1 $2', $text);
 
-    // Adım 1c: Tüm ayraçları boşlukla değiştir (nokta ve iki nokta hariç)
-    $text = str_replace(['/', ',', '_', '(', ')'], ' ', $text);
+        // Adım 1c: Tüm ayraçları boşlukla değiştir (nokta ve iki nokta hariç)
+        $text = str_replace(['/', ',', '_', '(', ')'], ' ', $text);
 
-    // Adım 1d: "D-5" gibi yapıları "D 5" haline getir.
-    $text = preg_replace('/\b(D|NO)\s*-\s*(\d+)\b/', 'D $2', $text);
+        // Adım 1d: "D-5" gibi yapıları "D 5" haline getir.
+        $text = preg_replace('/\b(D|NO)\s*-\s*(\d+)\b/', 'D $2', $text);
 
-    // Adım 1e: Çoklu boşlukları tek boşluğa indir.
-    $text = preg_replace('/\s+/', ' ', $text);
+        // Adım 1e: Çoklu boşlukları tek boşluğa indir.
+        $text = preg_replace('/\s+/', ' ', $text);
 
-    // 2. ADIM: HİYERARŞİK DESENLER (En spesifikten en genele doğru)
-    $patterns = [
-        // DESEN 1: En yüksek öncelikli, %100 kesin format. Bitişik yazım.
-        ['pattern' => '/\b([A-Z]\d+D\d+)\b/'],
+        // 2. ADIM: HİYERARŞİK DESENLER (En spesifikten en genele doğru)
+        $patterns = [
+            // DESEN 1: En yüksek öncelikli, %100 kesin format. Bitişik yazım.
+            ['pattern' => '/\b([A-Z]\d+D\d+)\b/'],
 
-        // DESEN 2: "C-3 blok Daire:20" formatını yakala
-        ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+(?:BLOK|BLK)\s+(?:DAIRE|DAİRE|DA)\s*:?\s*(\d+)\b/'],
+            // DESEN: "A.1 Blok. Daire 13" veya "A.1 BLOK DAIRE 13"
+            ['pattern' => '/\b([A-Z])\s*\.\s*(\d+)\s*(?:BLOK|BLK)?\s*\.\s*(?:DAIRE|DAİRE|DA)\s*(\d+)\b/'],
 
-          // DESEN 2: "C3 D6" formatını yakala (basit blok D daire formatı)
-        ['pattern' => '/\b([A-Z]\d+)\s+D(\d+)\b/'],
+            // DESEN 2: "C-3 blok Daire:20" formatını yakala
+            ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+(?:BLOK|BLK)\s+(?:DAIRE|DAİRE|DA)\s*:?\s*(\d+)\b/'],
 
-        // DESEN 3: "C2 blok 6 numara" formatını yakala
-        ['pattern' => '/\b([A-Z]\d+)\s+(?:BLOK|BLK)\s+(\d+)\s+(?:NUMARA|NO|N)\b/'],
+            // DESEN 2: "C3 D6" formatını yakala (basit blok D daire formatı)
+            ['pattern' => '/\b([A-Z]\d+)\s+D(\d+)\b/'],
 
-        // DESEN 4: "C.4 D.7" formatını yakala (nokta ile ayrılmış blok ve daire)
-        ['pattern' => '/\b([A-Z])\s*\.\s*(\d+)\s+D\s*\.\s*(\d+)\b/'],
+            // DESEN 3: "C2 blok 6 numara" formatını yakala
+            ['pattern' => '/\b([A-Z]\d+)\s+(?:BLOK|BLK)\s+(\d+)\s+(?:NUMARA|NO|N)\b/'],
 
-         // DESEN 4: "C3 blok no19" formatını yakala (bitişik no ile)
-        ['pattern' => '/\b([A-Z]\d+)\s+(?:BLOK|BLK)\s+(?:NO|N)(\d+)\b/'],
+            // DESEN 4: "C.4 D.7" formatını yakala (nokta ile ayrılmış blok ve daire)
+            ['pattern' => '/\b([A-Z])\s*\.\s*(\d+)\s+D\s*\.\s*(\d+)\b/'],
 
-        // DESEN 5: "C-4 D.10" formatını yakala (tire ile ayrılmış blok, nokta ile ayrılmış daire)
-        ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+D\s*\.\s*(\d+)\b/'],
+            // DESEN 4: "C3 blok no19" formatını yakala (bitişik no ile)
+            ['pattern' => '/\b([A-Z]\d+)\s+(?:BLOK|BLK)\s+(?:NO|N)(\d+)\b/'],
 
-        // DESEN 6: "C-4 D 10" formatını yakala (tire ile ayrılmış blok, boşluk ile ayrılmış daire)
-        ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+D\s+(\d+)\b/'],
+            // DESEN 5: "C-4 D.10" formatını yakala (tire ile ayrılmış blok, nokta ile ayrılmış daire)
+            ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+D\s*\.\s*(\d+)\b/'],
 
-        // DESEN 7: "C-4 DAİRE 20" formatını yakala (tire ile ayrılmış blok, DAİRE kelimesi ile)
-        ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+(?:DAIRE|DAİRE|DA)\s+(\d+)\b/'],
+            // DESEN 6: "C-4 D 10" formatını yakala (tire ile ayrılmış blok, boşluk ile ayrılmış daire)
+            ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+D\s+(\d+)\b/'],
 
-        // DESEN 8: "C.4 DAİRE 7" formatını yakala (nokta ile ayrılmış blok, DAİRE kelimesi ile)
-        ['pattern' => '/\b([A-Z])\s*\.\s*(\d+)\s+(?:DAIRE|DAİRE|DA)\s+(\d+)\b/'],
+            // DESEN 7: "C-4 DAİRE 20" formatını yakala (tire ile ayrılmış blok, DAİRE kelimesi ile)
+            ['pattern' => '/\b([A-Z])\s*-\s*(\d+)\s+(?:DAIRE|DAİRE|DA)\s+(\d+)\b/'],
 
-        // DESEN 9: "C4 DAİRE 20" formatını yakala (bitişik blok, DAİRE kelimesi ile)
-        ['pattern' => '/\b([A-Z]\d+)\s+(?:DAIRE|DAİRE|DA)\s+(\d+)\b/'],
+            // DESEN 8: "C.4 DAİRE 7" formatını yakala (nokta ile ayrılmış blok, DAİRE kelimesi ile)
+            ['pattern' => '/\b([A-Z])\s*\.\s*(\d+)\s+(?:DAIRE|DAİRE|DA)\s+(\d+)\b/'],
 
-        // DESEN 10: "C4 BLOK DAİRE 20" formatını yakala (bitişik blok, BLOK kelimesi, DAİRE)
-        ['pattern' => '/\b([A-Z]\d+)\s+(?:BLOK|BLK)\s+(?:DAIRE|DAİRE|DA)\s*:?\s*(\d+)\b/'],
+            // DESEN 9: "C4 DAİRE 20" formatını yakala (bitişik blok, DAİRE kelimesi ile)
+            ['pattern' => '/\b([A-Z]\d+)\s+(?:DAIRE|DAİRE|DA)\s+(\d+)\b/'],
 
-        // DESEN 11: Blok-Daire arasında sadece tire olan yapılar (örn: "C2-5", "B2-16").
-        ['pattern' => '/\b([A-Z]\d+)\s*-\s*(\d+)\b/'],
+            // DESEN 10: "C4 BLOK DAİRE 20" formatını yakala (bitişik blok, BLOK kelimesi, DAİRE)
+            ['pattern' => '/\b([A-Z]\d+)\s+(?:BLOK|BLK)\s+(?:DAIRE|DAİRE|DA)\s*:?\s*(\d+)\b/'],
 
-        // DESEN 12: En güçlü ve esnek desen. Blok ve Daire arasında her türlü "gürültü" olabilir.
-        ['pattern' => '/\b([A-Z]\s*\d+)\b.*?(?:DAIRE|DAİRE|DA|D|NO|NUMARA|N)\s*:?\s*\.?\s*(\d+)\b/'],
+            // DESEN 11: Blok-Daire arasında sadece tire olan yapılar (örn: "C2-5", "B2-16").
+            ['pattern' => '/\b([A-Z]\d+)\s*-\s*(\d+)\b/'],
 
-        // DESEN 13: Ters sıralı yapı. Önce Daire, sonra Blok.
-        ['pattern' => '/\b(?:DAIRE|DAİRE|DA|D|NO)\s*:?\s*\.?\s*(\d+)\b.*?\b(?:BLOK|BLK)\s*([A-Z]\s*\d+)\b/'],
+            // DESEN 12: En güçlü ve esnek desen. Blok ve Daire arasında her türlü "gürültü" olabilir.
+            ['pattern' => '/\b([A-Z]\s*\d+)\b.*?(?:DAIRE|DAİRE|DA|D|NO|NUMARA|N)\s*:?\s*\.?\s*(\d+)\b/'],
 
-        // DESEN 14: En genel fallback. Sadece "Blok Numara" var (örn: "C1 17", "B1 03").
-        ['pattern' => '/\b([A-Z]\d+)\s+(\d+)\b/']
-    ];
+            // DESEN 13: Ters sıralı yapı. Önce Daire, sonra Blok.
+            ['pattern' => '/\b(?:DAIRE|DAİRE|DA|D|NO)\s*:?\s*\.?\s*(\d+)\b.*?\b(?:BLOK|BLK)\s*([A-Z]\s*\d+)\b/'],
 
-    // 3. ADIM: Eşleşmeyi bul ve sonucu döndür.
-    foreach ($patterns as $item) {
-        if (preg_match($item['pattern'], $text, $matches)) {
+            // DESEN 14: En genel fallback. Sadece "Blok Numara" var (örn: "C1 17", "B1 03").
+            ['pattern' => '/\b([A-Z]\d+)\s+(\d+)\b/']
+        ];
 
-            $blok = '';
-            $daire = '';
+        // 3. ADIM: Eşleşmeyi bul ve sonucu döndür.
+        foreach ($patterns as $item) {
+            if (preg_match($item['pattern'], $text, $matches)) {
 
-            if (count($matches) === 2) { // Tek grup yakalayanlar (Desen 1)
-                if (preg_match('/([A-Z]\d+)D(\d+)/', $matches[1], $subMatches)) {
-                    return $subMatches[1] . 'D' . $subMatches[2];
+                $blok = '';
+                $daire = '';
+
+                if (count($matches) === 2) { // Tek grup yakalayanlar (Desen 1)
+                    if (preg_match('/([A-Z]\d+)D(\d+)/', $matches[1], $subMatches)) {
+                        return $subMatches[1] . 'D' . $subMatches[2];
+                    }
+                } else if (count($matches) === 4) { // "C-3 blok Daire:20" formatı için (3 grup: C, 3, 20)
+                    $blok = $matches[1] . $matches[2]; // C + 3 = C3
+                    $daire = $matches[3]; // 20
+                } else if (count($matches) === 3) {
+                    // "C2 blok 6 numara" veya "C4 BLOK DAİRE 20" formatı için (2 grup)
+                    $blok = $matches[1]; // C2 veya C4
+                    $daire = $matches[2]; // 6 veya 20
+
+                } else if (count($matches) === 4 && preg_match('/[A-Z]/', $matches[1]) && is_numeric($matches[2]) && is_numeric($matches[3])) {
+                    $blok = $matches[1] . $matches[2];
+                    $daire = $matches[3];
+                } else if (count($matches) >= 3) { // Diğer çok grup yakalayanlar
+                    // Ters sıralı desen için özel durum (daire önce, blok sonra)
+                    if (isset($matches[3]) && is_numeric($matches[1])) {
+                        // DESEN 13: DAİRE 20 ... BLOK C4 formatı
+                        $daire = $matches[1];
+                        $blok = $matches[2];
+                    } else {
+                        // Normal durum: blok önce, daire sonra
+                        $blok = $matches[1];
+                        $daire = $matches[count($matches) - 1];
+                    }
                 }
-            } else if (count($matches) === 4) { // "C-3 blok Daire:20" formatı için (3 grup: C, 3, 20)
-                $blok = $matches[1] . $matches[2]; // C + 3 = C3
-                $daire = $matches[3]; // 20
-            } else if (count($matches) === 3) { 
-                // "C2 blok 6 numara" veya "C4 BLOK DAİRE 20" formatı için (2 grup)
-                $blok = $matches[1]; // C2 veya C4
-                $daire = $matches[2]; // 6 veya 20
-            } else if (count($matches) >= 3) { // Diğer çok grup yakalayanlar
-                // Ters sıralı desen için özel durum (daire önce, blok sonra)
-                if (isset($matches[3]) && is_numeric($matches[1])) {
-                    // DESEN 13: DAİRE 20 ... BLOK C4 formatı
-                    $daire = $matches[1];
-                    $blok = $matches[2];
-                } else {
-                    // Normal durum: blok önce, daire sonra
-                    $blok = $matches[1];
-                    $daire = $matches[count($matches) - 1];
-                }
-            }
 
-            if (!empty($blok) && !empty($daire)) {
-                $blok = preg_replace('/\s+/', '', $blok);
-                if ((int)$daire > 0 && (int)$daire < 1000) { // Daire numarası limitini artırdık
-                    return $blok . 'D' . $daire;
+                if (!empty($blok) && !empty($daire)) {
+                    $blok = preg_replace('/\s+/', '', $blok);
+                    if ((int)$daire > 0 && (int)$daire < 1000) { // Daire numarası limitini artırdık
+                        return $blok . 'D' . $daire;
+                    }
                 }
             }
         }
-    }
 
-    return null;
-}
+        return null;
+    }
 
     /**
      * Verilen bir açıklama metni içinde, sağlanan kişi listesinden birini

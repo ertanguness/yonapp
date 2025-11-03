@@ -5,12 +5,14 @@ namespace App\Services;
 use Exception;
 use Model\SettingsModel;
 
+
+
 class SmsGonderService
 {
     public static function gonder(array $alicilar, string $mesaj, string $gondericiBaslik = null): bool
     {
         $ch = null;
-        
+        $logger = \getLogger();
         try {
             // Validasyon
             if (empty($alicilar)) {
@@ -24,13 +26,15 @@ class SmsGonderService
             $Settings = new SettingsModel();
             $allSettings = $Settings->getAllSettingsAsKeyValue();
 
-            $username = $_ENV['NETGSM_USER'] ?? $allSettings['sms_api_kullanici'] ?? '8503070380';
-            $password = $_ENV['NETGSM_PASS'] ?? $allSettings['sms_api_sifre'] ?? '633F8#7';
+            $username = $_ENV['NETGSM_USER'] ?? $allSettings['sms_api_kullanici'] ?? '';
+            $password = $_ENV['NETGSM_PASS'] ?? $allSettings['sms_api_sifre'] ?? '';
             $msgheader = $gondericiBaslik ?? $_ENV['NETGSM_HEADER'] ?? $allSettings['sms_baslik'] ?? 'YONAPP';
 
             if (empty($username) || empty($password)) {
                 throw new Exception("SMS API kimlik bilgileri eksik.");
             }
+
+          //  echo "<pre>Gönderici: $msgheader\nKullanıcı: $username\nŞifre: " . str_repeat('*', strlen($password)) . "\n</pre>"; exit;
 
             // Mesaj dizisini oluştur
             $messagesPayload = [];
@@ -69,15 +73,14 @@ class SmsGonderService
             $netgsmResult = json_decode($response, true);
 
             if (isset($netgsmResult['code']) && $netgsmResult['code'] == '00') {
-                echo count($alicilar) . " alıcıya SMS gönderildi.";
+                $logger->info(count($alicilar) . " alıcıya başarıyla SMS gönderildi.");
                 return true;
             } else {
                 throw new Exception('Netgsm API Hatası: ' . ($netgsmResult['description'] ?? 'Bilinmeyen hata.'));
             }
 
         } catch (Exception $e) {
-            echo "SMS gönderme hatası: " . $e->getMessage() . "<br>";
-            error_log("SMS gönderilemedi. Hata: " . $e->getMessage());
+            $logger->error("SMS gönderim hatası: " . $e->getMessage());
             return false;
         } finally {
             if (isset($ch) && is_resource($ch)) {

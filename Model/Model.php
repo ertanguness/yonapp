@@ -116,6 +116,11 @@ class Model extends SSPModel
     }
     
 
+    public function findAll(array $conditions, string $orderBy = null, int $limit = null): array
+    {
+        return $this->findWhere($conditions, $orderBy, $limit);
+    }
+
 
 
     /** Finds records where a specific column matches a value.
@@ -327,7 +332,12 @@ class Model extends SSPModel
     public function softDelete($id, $silen_kullanici_id = null)
     {
         //$id = Security::decrypt($id);
-        $sql = $this->db->prepare("UPDATE $this->table SET silinme_tarihi = NOW() , silen_kullanici = ?  WHERE $this->primaryKey = ? ");
+        if($silen_kullanici_id === null){
+            $silen_kullanici_id = $_SESSION['user']->id ?? null;
+        }
+        $sql = $this->db->prepare("UPDATE $this->table 
+                                            SET silinme_tarihi = NOW() , silen_kullanici = ?  
+                                            WHERE $this->primaryKey = ? ");
         $sql->execute(array( $silen_kullanici_id, $id));
 
         if ($sql->rowCount() === 0) {

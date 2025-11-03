@@ -165,7 +165,7 @@ switch ($hedef_tipi) {
                                     </div>
                         </div>
                         <div class="card-body">
-                        <form id="uploadDebitForm" action="pages/dues/debit/download-template.php"
+                        <form id="uploadDebitForm" action="/pages/dues/debit/download-template.php"
                                         method="POST">
 
                                         <input type="text" class="form-control d-none" name="borc_id" id="borc_id"
@@ -293,6 +293,16 @@ switch ($hedef_tipi) {
                 const hedef_kisi = $('#hedef_kisi').val();
 
                 // alert ("Hedef Tipi: " + hedef_tipi + ", Hedef Kişi: " + hedef_kisi);
+                // if( hedef_tipi == 0){
+                //     swal.fire({
+                //         title: "Hata",
+                //         text: "Lütfen borçlandırma yapılacak hedef tipini seçiniz.",
+                //         icon: "warning",
+                //         confirmButtonText: "Tamam"
+                //     });
+                //     return;
+                // }
+
 
                 if (hedef_tipi === 'person' && (hedef_kisi.length === 0)) {
                     swal.fire({

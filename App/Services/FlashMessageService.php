@@ -6,6 +6,9 @@ namespace App\Services;
  * 
  * Session tabanlı "flash" mesajları yönetir. Bir sonraki sayfa
  * isteğinde gösterilip sonra silinen geçici mesajlar oluşturur.
+ * Kullanımı:
+ * FlashMessageService::add('success', 'Başlık', 'Mesaj içeriği');
+ * Sayfada gösterim için:
  */
 class FlashMessageService
 {
@@ -65,9 +68,9 @@ class FlashMessageService
      */
     public static function hasMessages(): bool
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        // if (session_status() === PHP_SESSION_NONE) {
+        //     session_start();
+        // }
         
         return isset($_SESSION[self::FLASH_KEY]) && !empty($_SESSION[self::FLASH_KEY]);
     }

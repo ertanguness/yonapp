@@ -1,12 +1,264 @@
 let url = "/pages/dues/dues-defines/api.php";
-import { getBlocksBySite,getPeoplesBySite,getApartmentTypes } from "/assets/js/utils/debit.js";
+import {
+  getBlocksBySite,
+  getPeoplesBySite,
+  getApartmentTypes,
+} from "/assets/js/utils/debit.js";
+
+$(function () {
+  table = new DataTable("#due_pending_list_table", {
+    dom: "tip",
+  });
+
+  //Borçlandırılacak kişileri tabloya ekle
+  $("#load_due_pending_list").on("click", function () {
+    //Seçilen kişileri al
+    var selectedBloklar = $("#block_id").val();
+    var blokIds = selectedBloklar ? selectedBloklar.join(",") : "";
+
+    var selectedDaireTipleri = $("#apartment_type").val();
+    var daireTipiIds = selectedDaireTipleri
+      ? selectedDaireTipleri.join(",")
+      : "";
+
+    var selectedKisiler = $("#hedef_kisi").val();
+    var kisiIds = selectedKisiler ? selectedKisiler.join(",") : "";
+
+    var tutar = $("#tutar").val();
+    // tutar = tutar.replace(/\./g, '').replace(',', '.'); // Noktaları kaldır ve virgülü nokta yap
+    // tutar = parseFloat(tutar).toFixed(2); // Ondalık kısmı 2 basamak yap
+    tutar = tutar + " TL";
+    var cezaOrani = $("#ceza_orani").val();
+    var borclandirmaTipi = $("#hedef_tipi option:selected").text();
+    var hedef_tipi_text = $("#hedef_tipi option:selected").val();
+
+    var daireIds = "";
+    var daireKodu = "";
+    var adiSoyadi = "";
+    var blokAdi = "";
+    var daireTipi = "";
+
+    //hedef_kisi multiple select ile seçilen her kişi için tabloya ekle
+    selectedKisiler.forEach(function (kisi_id) {
+      var kisiText = $('#hedef_kisi option[value="' + kisi_id + '"]').text();
+      var parts = kisiText.split(" | ");
+      adiSoyadi = adiSoyadi + parts[1] + "," || "";
+    });
+    adiSoyadi = adiSoyadi.trim();
+
+    //en sondaki virgülü kaldır
+    if (adiSoyadi.endsWith(",")) {
+      adiSoyadi = adiSoyadi.slice(0, -1);
+    }
+
+    selectedBloklar.forEach(function (blok_id) {
+      var blokText = $('#block_id option[value="' + blok_id + '"]').text();
+      blokAdi = blokAdi + blokText + "," || "";
+    });
+
+    //en sondaki virgülü kaldır
+    if (blokAdi.endsWith(",")) {
+      blokAdi = blokAdi.slice(0, -1);
+    }
+
+    selectedDaireTipleri.forEach(function (daire_tipi_id) {
+      var daireTipiText = $(
+        '#apartment_type option[value="' + daire_tipi_id + '"]'
+      ).text();
+      daireTipi = daireTipi + daireTipiText + "," || "";
+    });
+    //en sondaki virgülü kaldır
+    if (daireTipi.endsWith(",")) {
+      daireTipi = daireTipi.slice(0, -1);
+    }
+
+    //tutar 0 ise swal ile uyarı ver ve ekleme yapma
+    if (tutar == "" || parseFloat(tutar.replace(",", ".")) <= 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Uyarı",
+        text: "Lütfen geçerli bir tutar giriniz.",
+      });
+      return;
+    }
+
+    //Tabloda aynı borçlandırma tipi var mı kontrol et
+    var exists = false;
+    table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+      var data = this.node();
+      if ($(data).data("target") === hedef_tipi_text) {
+        exists = true;
+        Swal.fire({
+          icon: "warning",
+          title: "Uyarı",
+          text: "Bu borçlandırma tipi zaten tabloda mevcut.",
+        });
+        return false; // Döngüyü kır
+      }
+    });
+
+    if (exists) {
+      return;
+    }
+
+    //Yeni satır oluştur
+    var newRow =
+      '<tr data-target="' +
+      hedef_tipi_text +
+      '">' +
+      "<td>" +
+      borclandirmaTipi +
+      "</td>" +
+      '<td data-daire-ids="' +
+      daireIds +
+      '">' +
+      daireKodu +
+      "</td>" +
+      '<td data-kisi-ids="' +
+      kisiIds +
+      '">' +
+      adiSoyadi +
+      "</td>" +
+      '<td data-blok-ids="' +
+      blokIds +
+      '">' +
+      blokAdi +
+      "</td>" +
+      '<td data-daire-tipi-ids="' +
+      daireTipiIds +
+      '">' +
+      daireTipi +
+      "</td>" +
+      "<td>" +
+      tutar +
+      "</td>" +
+      "<td>" +
+      cezaOrani +
+      "</td>" +
+      '<td style="width: 8%; text-align: center;"><div class="hstack gap-2">' +
+      '<a href="javascript:void(0);" class="avatar-text avatar-md delete-debit" title="Sil">' +
+      '<i class="feather-trash-2"></i>' +
+      "</a>" +
+      "</div></td>" +
+      "</tr>";
+
+    //Tabloya ekle
+    table.row.add($(newRow)).draw();
+    checkSaveButtonState();
+  });
+
+  function checkSaveButtonState() {
+    var due_name = $("#due_name").val();
+    var start_date = $("#start_date").val();
+    // Sadece gerçek veri satırlarını say (dataTables_empty class'ı hariç)
+    var tableRowCount = table
+      .rows({
+        filter: "applied",
+      })
+      .count();
+
+    if (due_name !== "" && start_date !== "" && tableRowCount > 0) {
+      $("#save_dues").removeClass("disabled");
+    } else {
+      $("#save_dues").addClass("disabled");
+    }
+  }
+
+  // Form alanları değiştiğinde kontrol et
+  $("#duesForm input, #duesForm select, #duesForm textarea").on(
+    "change keyup",
+    checkSaveButtonState
+  );
+
+  // Satır silme işlemi için de kontrol ekleyin
+  $("#due_pending_list_table").on("click", ".delete-debit", function () {
+    table.row($(this).closest("tr")).remove().draw();
+    // checkSaveButtonState burada bazen hemen çalışmayabilir, onun için draw eventine de ekle
+    checkSaveButtonState();
+  });
+});
 
 $(document).on("click", "#save_dues", function () {
+  //Aidat adı kontrolü
+  var due_name = $("#due_name").val();
+  if (due_name.trim() === "") {
+    Swal.fire({
+      icon: "warning",
+      title: "Uyarı",
+      text: "Lütfen aidat adını giriniz.",
+    });
+    return;
+  }
+
+  //Başlangıç tarihi kontrolü
+  var start_date = $("#start_date").val();
+  if (start_date.trim() === "") {
+    Swal.fire({
+      icon: "warning",
+      title: "Uyarı",
+      text: "Lütfen başlangıç tarihini giriniz.",
+    });
+    return;
+  }
+
+  //Tabloda herhangi bir satır yoksa uyarı ver
+  var tableRowCount = table
+    .rows({
+      filter: "applied",
+    })
+    .count();
+  if (tableRowCount === 0) {
+    Swal.fire({
+      icon: "warning",
+      title: "Uyarı",
+      text: "Lütfen borçlandırılacak en az bir kişi ekleyiniz.",
+    });
+    return;
+  }
+
+  //tablodaki satırları json olarak bir değişkene satır olarak ata
+  var duePendingList = [];
+  table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+    var data = this.data();
+    var $row = $(this.node());
+    var tutar = data[5].trim();
+
+    //Borçlandırma tipini al(all, person, block, dairetipi, evsahibi)
+    var borclandirmaTipi = $row.data("target");
+
+    //Borçlandırılacak Kişi idsini al
+    var kisiIds = $row.find("td:eq(2)").data("kisi-ids") || "";
+
+    //Blok idsini al
+    var blokIds = $row.find("td:eq(3)").data("blok-ids") || "";
+
+    //Daire tipi idsini al
+    var daireTipiIds = $row.find("td:eq(4)").data("daire-tipi-ids") || "";
+
+    duePendingList.push({
+      borclandirma_tipi: borclandirmaTipi,
+      daire_id: data[1].trim(),
+      kisi_ids: kisiIds,
+      blok_ids: blokIds,
+      daire_tipi_ids: daireTipiIds,
+      tutar: tutar,
+      ceza_orani: data[6].trim(),
+    });
+  });
+
+  //console.log(duePendingList); return;
+
   var form = $("#duesForm");
   var formData = new FormData(form[0]);
 
   formData.append("action", "save_dues");
   formData.append("id", $("#dues_id").val());
+  formData.append("due_pending_list", JSON.stringify(duePendingList));
+
+  // for (let pair of formData.entries()) {
+  //   console.log(pair[0] + ", " + pair[1]);
+  // }
+  // return;
 
   addCustomValidationMethods(true); //validNumber methodu için
   var validator = $("#duesForm").validate({
@@ -16,8 +268,7 @@ $(document).on("click", "#save_dues", function () {
       },
       amount: {
         required: true,
-        validNumber : true,
-        
+        validNumber: true,
       },
     },
     messages: {
@@ -43,6 +294,7 @@ $(document).on("click", "#save_dues", function () {
     })
     .then((data) => {
       var title = data.status == "success" ? "Başarılı" : "Hata";
+      console.log(data);
       swal.fire({
         title: title,
         html: data.message,
@@ -91,8 +343,6 @@ $(document).on("click", ".delete-dues", function () {
     });
 });
 
-
-
 $(document).ready(function () {
   const $targetType = $("#hedef_tipi");
   const $targetPerson = $("#hedef_kisi");
@@ -124,12 +374,12 @@ $(document).ready(function () {
     $(".blok-sec-label").text(options.blokSecLabel || "Blok Seç:");
   }
 
-   toggleElements({
-          targetPersonDisabled: true,
-          blockSelectDisabled: true,
-          hideDaireTipi: true,
-          hideBlokSec: false,
-        });
+  toggleElements({
+    targetPersonDisabled: true,
+    blockSelectDisabled: true,
+    hideDaireTipi: true,
+    hideBlokSec: false,
+  });
 
   $targetType.on("change", function () {
     const type = $(this).val();

@@ -11,6 +11,7 @@ $Dues = new DueModel();
 
 $dues = $Dues->getDues();
 
+
 ?>
 
 <div class="page-header">

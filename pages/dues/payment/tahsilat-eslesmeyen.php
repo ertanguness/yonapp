@@ -58,126 +58,102 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
     </div>
 </div>
 <div class="main-content">
-    <div class="row">
+    <div class="row mb-5">
         <div class="col-lg-12">
             <div class="card stretch stretch-full">
                 <div class="card-header">
                     <h5>Eşleşmeyen Tahsilat Yüklemeleri</h5>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body p-0 ">
                     <div class="table-responsive ">
-                        <div id="projectList_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <table class="table table-hover datatables no-footer" id="projectList"
-                                        aria-describedby="projectList_info">
-                                        <thead>
+                        <div class="row">
+                            <div class="col-sm-12 projectList_wrapper">
+                                <table class="table table-hover datatables no-footer" id="projectList"
+                                    aria-describedby="projectList_info">
+                                    <thead>
 
 
-                                            <tr>
-                                                <th>İşlem Tarihi</th>
-                                                <th>Açıklama</th>
-                                                <th class="text-end">Tahsilat Tutarı </th>
-                                                <th>İşlenen Tutar</th>
-                                                <th>Kalan Tutar</th>
-                                                <th>Daire No</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($tahsilat_havuzu as $havuz) {
-                                                $enc_id = Security::encrypt($havuz->id);
-                                                $kalan_tutar = $havuz->tahsilat_tutari - $havuz->islenen_tutar;
-                                                $olarak_aktar = $havuz->tahsilat_tutari > 0 ? "Gelir olarak" : "Gider olarak";
-                                                $aktar_color = $havuz->tahsilat_tutari > 0 ? "success" : "danger";
-                                            ?>
-                                                <tr class="single-item odd">
-                                                    <td class="sorting_1">
-                                                        <?php echo Date::Ymd($havuz->islem_tarihi); ?>
-                                                    </td>
-                                                    <td class="project-name-td">
-                                                        <div class="hstack gap-4">
+                                        <tr>
+                                            <th>İşlem Tarihi</th>
+                                            <th>Açıklama</th>
+                                            <th class="text-end">Tahsilat Tutarı </th>
+                                            <th>İşlenen Tutar</th>
+                                            <th>Kalan Tutar</th>
+                                            <th>Daire No</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($tahsilat_havuzu as $havuz) {
+                                            $enc_id = Security::encrypt($havuz->id);
+                                            $kalan_tutar = $havuz->tahsilat_tutari - $havuz->islenen_tutar;
+                                            $olarak_aktar = $havuz->tahsilat_tutari > 0 ? "Gelir olarak" : "Gider olarak";
+                                            $aktar_color = $havuz->tahsilat_tutari > 0 ? "success" : "danger";
+                                        ?>
+                                            <tr class="single-item odd">
+                                                <td class="sorting_1">
+                                                    <?php echo Date::YmdHis($havuz->islem_tarihi); ?>
+                                                </td>
+                                                <td class="project-name-td">
+                                                    <div class="hstack gap-4">
 
-                                                            <div>
-                                                                <a href="#"
-                                                                    class="text-truncate-1-line description"
-                                                                    data-bs-popover="<?php echo $havuz->ham_aciklama; ?>">
-                                                                    <?php echo $havuz->ham_aciklama; ?>
-                                                                </a>
+                                                        <div>
+                                                            <a href="#"
+                                                                class="text-truncate-1-line description"
+                                                                data-bs-popover="<?php echo $havuz->ham_aciklama; ?>">
+                                                                <?php echo $havuz->ham_aciklama; ?>
+                                                            </a>
 
-                                                                <p
-                                                                    class="fs-12 text-muted mt-2 text-truncate-1-line project-list-desc">
-                                                                    <?php echo $havuz->referans_no; ?>
-                                                                    .</p>
-                                                                <div
-                                                                    class="project-list-action fs-12 d-flex align-items-center gap-3 mt-2">
-                                                                    <a href="javascript:void(0);" class="text-primary eslesen-havuza-gonder"
-                                                                        data-id="<?php echo $enc_id; ?>">Eşleşen Havuza Gönder</a>
-                                                                    <span class="vr text-muted"></span>
-                                                                    <a href="javascript:void(0);" class="text-<?php echo $aktar_color; ?> kasaya-aktar"
-                                                                        data-id="<?php echo $enc_id; ?>"> <?php echo $olarak_aktar; ?> kasaya Aktar</a>
-                                                                    <span class="vr text-muted"></span>
-                                                                    <a href="javascript:void(0);"
-                                                                        data-id="<?php echo $enc_id; ?>"
-                                                                        class="text-danger eslesmeyen-odeme-sil">Sil</a>
+                                                            <p
+                                                                class="fs-12 text-muted mt-2 text-truncate-1-line project-list-desc">
+                                                                <?php echo $havuz->referans_no; ?>
+                                                                .</p>
+                                                            <div
+                                                                class="project-list-action fs-12 d-flex align-items-center gap-3 mt-2">
+                                                                <a href="javascript:void(0);" class="text-primary eslesen-havuza-gonder"
+                                                                    data-id="<?php echo $enc_id; ?>">Eşleşen Havuza Gönder</a>
+                                                                <span class="vr text-muted"></span>
+                                                                <a href="javascript:void(0);" class="text-<?php echo $aktar_color; ?> kasaya-aktar"
+                                                                    data-id="<?php echo $enc_id; ?>"> <?php echo $olarak_aktar; ?> kasaya Aktar</a>
+                                                                <span class="vr text-muted"></span>
+                                                                <a href="javascript:void(0);"
+                                                                    data-id="<?php echo $enc_id; ?>"
+                                                                    class="text-danger eslesmeyen-odeme-sil">Sil</a>
 
-                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </td>
+                                                    </div>
+                                                </td>
 
-                                                    <td class="text-end">
-                                                        <?php echo Helper::formattedMoney($havuz->tahsilat_tutari); ?>
-                                                    </td>
-                                                    <td class="text-end" style="width:120px">
-                                                        <?php echo Helper::formattedMoney($havuz->islenen_tutar); ?>
+                                                <td class="text-end">
+                                                    <?php echo Helper::formattedMoney($havuz->tahsilat_tutari); ?>
+                                                </td>
+                                                <td class="text-end" style="width:120px">
+                                                    <?php echo Helper::formattedMoney($havuz->islenen_tutar); ?>
 
-                                                    </td>
-                                                    <td class="text-end" style="width:120px">
-                                                        <input type="text" data-kalan-tutar="<?php echo Helper::formattedMoneyToNumber($kalan_tutar); ?>" class="form-control form-control-sm text-end money" placeholder="İşlenecek Tutar" value="<?php echo Helper::formattedMoney($kalan_tutar); ?>" />
-                                                    </td>
-                                                    <td>
-                                                        <select class="form-control kisi-ajax-select" style="width: 100%;">
-                                                            <!-- Başlangıçta boş olacak -->
-                                                        </select>
+                                                </td>
+                                                <td class="text-end" style="width:120px">
+                                                    <input type="text" data-kalan-tutar="<?php echo Helper::formattedMoneyToNumber($kalan_tutar); ?>" class="form-control form-control-sm text-end money" placeholder="İşlenecek Tutar" value="<?php echo Helper::formattedMoney($kalan_tutar); ?>" />
+                                                </td>
+                                                <td>
+                                                    <select class="form-control kisi-ajax-select" style="width: 100%;">
+                                                        <!-- Başlangıçta boş olacak -->
+                                                    </select>
 
-                                                        <?php //echo $KisiHelper->KisiSelect(
-                                                        // "kisi_id" . uniqid(),
-                                                        ///   0,
-                                                        // false,
-                                                        // true) 
-                                                        ?>
+                                                    <?php //echo $KisiHelper->KisiSelect(
+                                                    // "kisi_id" . uniqid(),
+                                                    ///   0,
+                                                    // false,
+                                                    // true) 
+                                                    ?>
 
-                                                    </td>
+                                                </td>
 
-                                                </tr>
-                                            <?php } ?>
+                                            </tr>
+                                        <?php } ?>
 
 
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-md-5">
-                                    <div class="dataTables_info" id="projectList_info" role="status" aria-live="polite">
-                                        Showing 1 to 10 of 10 entries</div>
-                                </div>
-                                <div class="col-sm-12 col-md-7">
-                                    <div class="dataTables_paginate paging_simple_numbers" id="projectList_paginate">
-                                        <ul class="pagination">
-                                            <li class="paginate_button page-item previous disabled"
-                                                id="projectList_previous"><a href="#" aria-controls="projectList"
-                                                    data-dt-idx="previous" tabindex="0" class="page-link">Previous</a>
-                                            </li>
-                                            <li class="paginate_button page-item active"><a href="#"
-                                                    aria-controls="projectList" data-dt-idx="0" tabindex="0"
-                                                    class="page-link">1</a></li>
-                                            <li class="paginate_button page-item next disabled" id="projectList_next"><a
-                                                    href="#" aria-controls="projectList" data-dt-idx="next" tabindex="0"
-                                                    class="page-link">Next</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -199,6 +175,18 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" id="kasayaAktar" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content kasaya-aktar-modal">
+            <!-- İçerik AJAX ile yüklenecek -->
+        </div>
+    </div>
+</div>
+
+
 
 <!-- Modal için CSS -->
 <style>
@@ -346,6 +334,7 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
             // Modal'ı göster
             $('#aciklama-text').text(content);
             $('#aciklama-modal').fadeIn(300);
+
 
         });
     })
@@ -556,15 +545,42 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
 
         });
 
+
         $(document).on('click', '.kasaya-aktar', function() {
             var $this = $(this);
             var id = $this.data('id');
             row = $this.closest('tr');
+            $.get('/pages/dues/payment/modal/kasaya_aktar_modal.php', {
+                    id: id
+                },
+                function(data) {
+                    $('#kasayaAktar .kasaya-aktar-modal').html(data);
+                    $('#kasayaAktar').modal('show');
 
 
-            var formData = new FormData();
-            formData.append('id', id);
+                    $(".modal-content .select2").select2({
+                        dropdownParent: $('#kasayaAktar')
+                    });
+                });
+
+
+        });
+
+        /** Gelir Gider olarak kasaya Aktar */
+        $(document).on('click', '#kasayaKaydetBtn', function() {
+            // var $this = $(this);
+            // var id = $this.data('id');
+            // row = $this.closest('tr');
+            var form = $("#kasayaAktarForm");
+
+            var formData = new FormData(form[0]);
             formData.append('action', 'kasaya_aktar');
+            formData.append('kategori', form.find('#gelir_gider_tipi option:selected').text());
+
+            // for(var pair of formData.entries()) {
+            //     console.log(pair[0]+ ', ' + pair[1]); 
+            // }
+            // return;
 
             fetch(url, {
                     method: 'POST',
@@ -580,6 +596,7 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                                 $(this).remove();
                                 // table.row(row).remove().draw(true);
                             });
+                            $('#kasayaAktar').modal('hide');
 
                             Toastify({
                                 text: "Tahsilat kasaya aktarıldı.",

@@ -106,6 +106,10 @@ switch ($hedef_tipi) {
     case 'daire':
         $sheet->setTitle('Daire Yükleme Sablonu');
         break;
+
+     case "0":
+        $sheet->setTitle('Genel Borç Yükleme Sablonu');
+        break;
     default:
         die("Geçersiz hedef tipi.");
 }

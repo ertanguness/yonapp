@@ -2,6 +2,8 @@
 
 namespace App\Helper;
 
+use App\Services\FlashMessageService;
+
 class Security
 {
     public static function escape($data)
@@ -136,4 +138,17 @@ public static function decrypt($data)
 
     return openssl_decrypt($encrypted_data, $method, $key, OPENSSL_RAW_DATA, $iv, $tag);
 }
+
+    /**Eğer site_id null ise site-ekle sayfasına yönlendir */
+public static function ensureSiteSelected()
+    {
+
+
+        if ($_SESSION['site_id'] == null) {
+
+            FlashMessageService::add( "info","Uyarı!", "Lütfen önce bir site seçin veya ekleyin.  ");
+            header("Location: site-ekle");
+            exit();
+        }
+    }
 }

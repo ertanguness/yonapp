@@ -9,14 +9,22 @@ use PhpOffice\PhpSpreadsheet\Shared\Date as PhpSpreadsheetDate;
 
 class Date
 {
-    public static function dmY($date = null, $format = 'd.m.Y')
-    {
-        if ($date == null) {
-            return null;
-        }
-        return date($format, strtotime($date));
+public static function dmY($date = null, $format = 'd.m.Y')
+{
+    // Boş, null veya 0000-00-00 kontrolü
+    if (empty($date) || $date === '0000-00-00' || $date === '0000-00-00 00:00:00') {
+        return '';
     }
-
+    
+    $timestamp = strtotime($date);
+    
+    // strtotime başarısız olursa (false döndürürse)
+    if ($timestamp === false) {
+        return '';
+    }
+    
+    return date($format, $timestamp);
+}
    public static function dmYHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
         return self::parseToFormat($input, 'd.m.Y H:i:s', $tz);
@@ -339,50 +347,66 @@ class Date
 
 
 
-    /**
-     * Excel'den gelen sayısal bir tarih değerini veya tarih metnini 'Y-m-d' formatına çevirir.
-     * @param mixed $dateValue Excel hücresinden gelen değer (sayı veya string olabilir).
-     * @return string|null Başarılı ise 'Y-m-d' formatında tarih, değilse null.
-     */
-    public static function convertExcelDate($dateValue): ?string
-    {
-        // Değer boşsa veya 0 ise null döndür.
-        if (empty($dateValue)) {
+/**
+ * Excel'den gelen sayısal bir tarih değerini istenen formatta döndürür.
+ * @param mixed $dateValue Excel hücresinden gelen değer (sayı veya string)
+ * @param string $format Çıktı formatı (Y-m-d H:i:s, timestamp, vs)
+ * @return string|int|null Başarılı ise istenen format, değilse null
+ */
+public static function convertExcelDate($dateValue, $format = 'Y-m-d'): string|int|null
+{
+    if (empty($dateValue)) {
+        return null;
+    }
+
+    // 1. Sayısal ise (Excel seri numarası: 45948.70138888889 gibi)
+    if (is_numeric($dateValue)) {
+        try {
+            // TIMESTAMP İSTİYORSANIZ:
+            if ($format === 'timestamp') {
+                return PhpSpreadsheetDate::excelToTimestamp((float)$dateValue);
+            }
+
+            // TARİH STRING İSTİYORSANIZ (saat+dakika dahil):
+            $dateTimeObject = PhpSpreadsheetDate::excelToDateTimeObject((float)$dateValue);
+            return $dateTimeObject->format($format);
+
+        } catch (\Exception $e) {
             return null;
         }
-
-        // 1. Durum: Değer sayısal ise (Excel'in varsayılan tarih formatı)
-        if (is_numeric($dateValue)) {
-            try {
-                // Excel tarih sayısını PHP DateTime nesnesine çevir
-                $dateTimeObject = PhpSpreadsheetDate::excelToDateTimeObject($dateValue);
-                // Veritabanı için Y-m-d formatına dönüştür
-                return $dateTimeObject->format('Y-m-d');
-            } catch (\Exception $e) {
-                // Eğer geçersiz bir sayı ise (örn: sadece '5') hata verebilir, bu durumu yakala.
-                return null;
-            }
-        }
-
-        // 2. Durum: Değer metin ise (kullanıcı '25.12.2023' gibi manuel girmişse)
-        if (is_string($dateValue)) {
-            try {
-                // PHP'nin standart DateTime yapıcısı ile metni tarihe çevirmeyi dene.
-                // Bu, '2023-12-25', '25-12-2023' gibi birçok formatı anlar.
-                $dateTimeObject = new \DateTime(trim($dateValue));
-                return $dateTimeObject->format('Y-m-d');
-            } catch (\Exception $e) {
-                // Standart format değilse (örn: '25.12.2023'), createFromFormat dene.
-                $dt = \DateTime::createFromFormat('d.m.Y', trim($dateValue));
-                if ($dt) {
-                    return $dt->format('Y-m-d');
-                }
-                return null; // Hiçbir formata uymuyorsa null döndür.
-            }
-        }
-
-        return null; // Hiçbir koşula uymuyorsa.
     }
-  
+
+    // 2. Metin ise (örn: "18.02.2025 10:41:41")
+    if (is_string($dateValue)) {
+        try {
+            // Önce standart DateTime ile dene
+            $dt = new \DateTime(trim($dateValue));
+            
+            if ($format === 'timestamp') {
+                return (int)$dt->format('U');
+            }
+            
+            return $dt->format($format);
+
+        } catch (\Exception $e) {
+            // Türkçe formatlar için (d.m.Y H:i:s)
+            $dt = \DateTime::createFromFormat('d.m.Y H:i:s', trim($dateValue));
+            if (!$dt) {
+                $dt = \DateTime::createFromFormat('d.m.Y H:i', trim($dateValue));
+            }
+            if (!$dt) {
+                $dt = \DateTime::createFromFormat('d.m.Y', trim($dateValue));
+            }
+            
+            if ($dt) {
+                return ($format === 'timestamp') ? (int)$dt->format('U') : $dt->format($format);
+            }
+            
+            return null;
+        }
+    }
+
+    return null;
+}
     
 }

@@ -45,9 +45,9 @@ $(document).on("click", "#save_sites", function () {
     });
 });
 
-$(document).on("change", ".select2", function () {
-  $(this).valid(); // Trigger validation for the changed select2 element
-});
+// $(document).on("change", ".select2", function () {
+//   $(this).valid(); // Trigger validation for the changed select2 element
+// });
 
 
 

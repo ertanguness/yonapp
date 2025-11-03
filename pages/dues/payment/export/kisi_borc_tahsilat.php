@@ -74,8 +74,7 @@ foreach ($headers as $cell => $value) {
 }
 
 /* BAŞLIK AYARLARI */
-//a1'den G3'e kadar birleştir
-$spreadsheet->getActiveSheet()->setTitle('Kişi Hesap Hareketleri');
+
 $spreadsheet->setActiveSheetIndex(0);
 $sheet->mergeCells('A1:K3');
 $sheet->setCellValue('A1', 'Kişi Hesap Hareketleri');
@@ -193,7 +192,7 @@ $sheet->getStyle('A9:' . $lastHeaderColumn . '9')->applyFromArray([
 $row = 10;
 foreach ($kisiHareketler as $hareket) {
     $sheet->setCellValue('A' . $row, $hareket->islem_id); // 'islem_id' daha mantıklı olabilir
-    $sheet->setCellValue('B' . $row, date('d.m.Y H:i', strtotime($hareket->islem_tarihi)));
+    $sheet->setCellValue('B' . $row, date('d.m.Y H:i', strtotime($hareket->islem_tarihi ?? '')));
     $sheet->setCellValue('C' . $row, ucfirst($hareket->borc_adi));
     $sheet->setCellValue('D' . $row, number_format((float)$hareket->anapara, 2, ',', '.')); // Float'a çevirme
     $sheet->setCellValue('E' . $row, number_format((float)$hareket->gecikme_zammi, 2, ',', '.')); // Float'a çevirme
@@ -236,10 +235,10 @@ $sheet->getColumnDimension('D')->setWidth(10); // Anapara
 $sheet->getColumnDimension('E')->setWidth(10); // Gecikme Zammı
 $sheet->getColumnDimension('F')->setWidth(10); // Ödenen
 $sheet->getColumnDimension('G')->setWidth(10); // Bakiye
-$sheet->getColumnDimension('H')->setWidth(width: 15); // Açıklama
-$sheet->getColumnDimension('I')->setWidth(width: 15); // Açıklama
-$sheet->getColumnDimension('J')->setWidth(width: 15); // Açıklama
-$sheet->getColumnDimension('K')->setWidth(width: 15); // Açıklama
+$sheet->getColumnDimension('H')->setWidth(15); // Açıklama
+$sheet->getColumnDimension('I')->setWidth(15); // Açıklama
+$sheet->getColumnDimension('J')->setWidth(15); // Açıklama
+$sheet->getColumnDimension('K')->setWidth(15); // Açıklama
 
 //D'den G'ye kadar olan sütunları sağa hizala
 $sheet->getStyle('D10:G' . ($row - 1))
@@ -284,6 +283,13 @@ $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENT
 // Dosya adı
 $filename = $kisi->adi_soyadi . ' hesap_ozeti_' . date('Y-m-d_H-i-s');
 
+// Document properties ayarla (HTML export için)
+$spreadsheet->getProperties()
+    ->setCreator($site->site_adi ?? 'YonApp')
+    ->setTitle($filename)
+    ->setSubject('Kişi Hesap Özeti')
+    ->setDescription('Kişi borç ve tahsilat detayları');
+
 // Format'a göre export yap
 try {
     switch ($format) {
@@ -315,20 +321,50 @@ try {
 
         case 'html':
             header('Content-Type: text/html; charset=utf-8');
-            header('Content-Disposition: attachment;filename="' . $filename . '.html"');
+            header('Content-Disposition: inline');
             header('Cache-Control: max-age=0');
 
-            //Fontu ayarla
-            // $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setBold(true);
-            $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setName('DejaVu Sans');
-            $spreadsheet->getActiveSheet()->getStyle('A1:G100')->getFont()->setSize(10);
+            ob_start();
 
 
+            $sheet->getStyle('A3:K' . ($row - 1))->applyFromArray([
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'indent' => 1,
+                    'wrapText' => true
+                ]
+            ]);
 
             $writer = new Html($spreadsheet);
             $writer->setSheetIndex(0);
             $writer->save('php://output');
+            $htmlContent = ob_get_clean();
+
+            $printScript = '
+                <style>
+                    @page {
+                        size: A4 portrait;
+                        margin: 1cm;
+                    }
+                    @media print {
+                        body { margin: 0; padding: 0; }
+                        table { page-break-inside: auto; }
+                        tr { page-break-inside: avoid; page-break-after: auto; }
+                    }
+                </style>
+                <script>
+                    window.onload = function() {
+                        window.print();
+                    };
+                </script>
+                </body>';
+
+            $htmlContent = str_replace('</body>', $printScript, $htmlContent);
+            echo $htmlContent;
             break;
+
+
 
         case 'pdf':
             header('Content-Type: application/pdf');
@@ -344,8 +380,8 @@ try {
             //Sayfayı yatay yap
             $spreadsheet->getActiveSheet()->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
             $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
-        
-             // 1. Başlık tekrarını ayarla (bu satır bold sorununu tetikliyor)
+
+            // 1. Başlık tekrarını ayarla (bu satır bold sorununu tetikliyor)
             $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 9);
 
             // 2. Tekrarlanan tüm başlık alanını (A1:K9) ÖNCE normale (bold=false) zorla.
@@ -385,10 +421,10 @@ try {
 
             $sheet->getStyle('A10:H' . ($row - 1))
                 ->applyFromArray([
-                   'font' => [
-                       'size' => 8,
-                       'name' => 'DejaVu Sans',
-                   ]
+                    'font' => [
+                        'size' => 8,
+                        'name' => 'DejaVu Sans',
+                    ]
                 ]);
 
             $writer = IOFactory::createWriter($spreadsheet, 'Pdf');

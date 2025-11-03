@@ -72,7 +72,7 @@
                                                 <td><?= $i ?></td>
                                                 <td><?= $type->define_name ?></td>
                                                 <td><?= $type->description ?></td>
-                                                <td><?= $type->create_at ?></td>
+                                                <td><?= $type->created_at ?></td>
                                                 <td>
                                                     <div class="hstack gap-2 justify-content-center">
                                                         <a href="daire-turu-duzenle/<?= $enc_id ?>" class="avatar-text avatar-md">

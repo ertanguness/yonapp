@@ -1,8 +1,7 @@
 <?php 
 //$page = isset($_GET['p']) ? $_GET['p'] : '';
 
-//eğer $page değişkeni yoka url'deki sayfa adını al, örnek sign-in.php
-//$page = isset($_GET['p']) ? $_GET['p'] : '';
+$page = isset($page) ? $page : 'ana-sayfa';
 
 ?>
 <head>
@@ -24,7 +23,7 @@
     <!--! END: Bootstrap CSS-->
   
     <link rel="stylesheet" type="text/css" href="/assets/vendors/css/select2.min.css">
-    <!-- <link rel="stylesheet" type="text/css" href="assets/vendors/css/select2-theme.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="/assets/vendors/css/select2-theme.min.css">
     
     
     <link rel="stylesheet" type="text/css" href="/assets/vendors/css/vendors.min.css" />
@@ -45,9 +44,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="stylesheet" type="text/css" href="/assets/vendors/css/jquery.time-to.min.css">	
 	
-    <link rel="stylesheet" type="text/css" href="/assets/vendors/css/tagify.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/assets/vendors/css/tagify.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/vendors/css/tagify-data.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/vendors/css/quill.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/vendors/css/quill.min.css"> -->
 
     <link type="text/css" rel="stylesheet" href="/assets/vendors/css/tui-calendar.min.css">
     <link type="text/css" rel="stylesheet" href="/assets/vendors/css/tui-theme.min.css">
@@ -79,10 +78,14 @@
 		<![endif]-->
     <?php echo (isset($css) ? $css   : '')?>
 
-
+	<?php if($page == "bildirimler" || $page == "ana-sayfa") { ?>
+    <link rel="stylesheet" type="text/css" href="assets/vendors/css/tagify.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/vendors/css/tagify-data.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/vendors/css/quill.min.css">
+            <?php } ?>                 
 
     <script src="/assets/js/jquery.3.7.1.min.js"></script>
-    <!-- <script src="assets/js/common-init.min.js"></script> -->
+    <script src="/assets/js/common-init.min.js"></script>
     
 
 </head>

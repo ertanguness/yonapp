@@ -1,4 +1,5 @@
 <?php
+
 use Model\KasaModel;
 use App\Helper\Helper;
 use App\Helper\Security;
@@ -23,7 +24,7 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items d-flex align-items-center gap-2">
-            <a href="/kasa-ekle" class="btn btn-primary route-link" >
+            <a href="/kasa-ekle" class="btn btn-primary route-link">
                 <i class="feather-plus me-2"></i>
                 Yeni Kasa Ekle
             </a>
@@ -65,32 +66,37 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
                             // Örnek veri — Gerçek veriler veritabanından alınmalı
 
                             foreach ($kasalar as $kasa) {
-                                $enc_id =Security::encrypt($kasa->id);
-                              ?>
+                                $enc_id = Security::encrypt($kasa->id);
+                            ?>
 
-                            <tr>
-                                <td><?= $kasa->id; ?></td>
-                                <td><?= $kasa->kasa_adi; ?></td>
-                                <td><?= $kasa->kasa_tipi; ?></td>
-                                <td><?= $kasa->banka_adi ?: '-'; ?></td>
-                                <td><?= $kasa->sube_kodu ?: '-'; ?></td>
-                                <td><?= $kasa->iban ?: '-'; ?></td>
-                                <td>
-                                    <?php if ($kasa->varsayilan_mi): ?>
-                                    <span class="badge bg-success">Evet</span>
-                                    <?php else: ?>
-                                    <span class="badge bg-secondary">Hayır</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                  
+                                <tr>
+                                    <td><?= $kasa->id; ?></td>
+                                    <td><?= $kasa->kasa_adi; ?></td>
+                                    <td><?= $kasa->kasa_tipi; ?></td>
+                                    <td><?= $kasa->banka_adi ?: '-'; ?></td>
+                                    <td><?= $kasa->sube_kodu ?: '-'; ?></td>
+                                    <td><?= $kasa->iban ?: '-'; ?></td>
+                                    <td>
+                                        <?php if ($kasa->varsayilan_mi): ?>
+                                            <span class="badge bg-success is-default cursor-pointer"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Varsayılan kasa."
+                                                data-id="<?= $enc_id ?>">Evet</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary is-default cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Varsayılan kasa yapmak için tıklayın."
+                                                data-id="<?= $enc_id ?>">Hayır</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+
                                         <div class="hstack gap-2 text-muted text-success mb-2">
                                             <div class="avatar-text avatar-sm">
                                                 <i class="feather-trending-up"></i>
                                             </div>
                                             <span class="text-truncate-1-line"><?php echo Helper::formattedMoney($kasa->toplam_gelir) ?></span>
                                         </div>
-                                
+
                                         <div class="hstack gap-2 text-muted text-danger mb-2">
                                             <div class="avatar-text avatar-sm">
                                                 <i class="feather-trending-down"></i>
@@ -103,47 +109,47 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
                                             </div>
                                             <span class="text-truncate-1-line"><?php echo Helper::formattedMoney($kasa->bakiye) ?></span>
                                         </div>
-                                 
-                                </td>
-                                <td><?= $kasa->aciklama ?: '-'; ?></td>
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="javascript:void(0)" class="avatar-text avatar-md"
-                                            data-bs-toggle="dropdown" data-bs-offset="0,21" aria-expanded="false">
-                                            <i class="feather feather-more-horizontal"></i>
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a class="dropdown-item" href="/kasa-duzenle/<?php echo $enc_id; ?>">
-                                                    <i class="feather feather-edit-3 me-3"></i>
-                                                    <span>Düzenle</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item printBTN" href="javascript:void(0)">
-                                                    <i class="feather feather-refresh-ccw me-3"></i>
-                                                    <span>Transfer Yap</span>
-                                                </a>
-                                            </li>
 
-                                            <li>
-                                                <a class="dropdown-item" href="/gelir-gider-islemleri/<?php echo $enc_id; ?>">
-                                                    <i class="feather feather-alert-octagon me-3"></i>
-                                                    <span>Hareketleri Göster</span>
-                                                </a>
-                                            </li>
-                                            <li class="dropdown-divider"></li>
-                                            <li>
-                                                <a class="dropdown-item bg-danger text-white kasa-sil" data-id="<?php echo $enc_id; ?>"
-                                                    href="javascript:void(0)">
-                                                    <i class="feather feather-trash-2 me-3"></i>
-                                                    <span>Sil</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td><?= $kasa->aciklama ?: '-'; ?></td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="javascript:void(0)" class="avatar-text avatar-md"
+                                                data-bs-toggle="dropdown" data-bs-offset="0,21" aria-expanded="false">
+                                                <i class="feather feather-more-horizontal"></i>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="/kasa-duzenle/<?php echo $enc_id; ?>">
+                                                        <i class="feather feather-edit-3 me-3"></i>
+                                                        <span>Düzenle</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item printBTN" href="javascript:void(0)">
+                                                        <i class="feather feather-refresh-ccw me-3"></i>
+                                                        <span>Transfer Yap</span>
+                                                    </a>
+                                                </li>
+
+                                                <li>
+                                                    <a class="dropdown-item" href="/gelir-gider-islemleri/<?php echo $enc_id; ?>">
+                                                        <i class="feather feather-alert-octagon me-3"></i>
+                                                        <span>Hareketleri Göster</span>
+                                                    </a>
+                                                </li>
+                                                <li class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item bg-danger text-white kasa-sil" data-id="<?php echo $enc_id; ?>"
+                                                        href="javascript:void(0)">
+                                                        <i class="feather feather-trash-2 me-3"></i>
+                                                        <span>Sil</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
                             <?php } ?>
                         </tbody>
                     </table>
@@ -211,16 +217,19 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
 
 
 <script>
-function showKasaDetails(kasa) {
-    document.getElementById('detayKasaAdi').innerText = kasa.adi || '-';
-    document.getElementById('detayKasaTur').innerText = kasa.tur || '-';
-    document.getElementById('detayKasaKur').innerText = kasa.kur || '-';
-    document.getElementById('detayKasaDefault').innerHTML = kasa.default ?
-        '<span class="badge bg-success">Evet</span>' : '<span class="badge bg-secondary">Hayır</span>';
-    document.getElementById('detayKasaBakiye').innerText = new Intl.NumberFormat('tr-TR', {
-        style: 'currency',
-        currency: 'TRY'
-    }).format(kasa.bakiye);
-    document.getElementById('detayKasaAciklama').innerText = kasa.aciklama || '-';
-}
+    function showKasaDetails(kasa) {
+        document.getElementById('detayKasaAdi').innerText = kasa.adi || '-';
+        document.getElementById('detayKasaTur').innerText = kasa.tur || '-';
+        document.getElementById('detayKasaKur').innerText = kasa.kur || '-';
+        document.getElementById('detayKasaDefault').innerHTML = kasa.default ?
+            '<span class="badge bg-success">Evet</span>' : '<span class="badge bg-secondary">Hayır</span>';
+        document.getElementById('detayKasaBakiye').innerText = new Intl.NumberFormat('tr-TR', {
+            style: 'currency',
+            currency: 'TRY'
+        }).format(kasa.bakiye);
+        document.getElementById('detayKasaAciklama').innerText = kasa.aciklama || '-';
+    }
+
+
+ 
 </script>

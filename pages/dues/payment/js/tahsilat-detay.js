@@ -9,8 +9,6 @@ $(document).on('click', '.borc-sil', function () {
         text: "Bu işlem geri alınamaz!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
         confirmButtonText: 'Evet, Sil!',
         cancelButtonText: 'İptal'
     }).then((result) => {
@@ -91,16 +89,16 @@ $(document).on("click", ".tahsilat-sil", function () {
                     //console.log(rowData);
                     
                     //tablo satırnını 4.sütununa data.finansalDurum.toplam_borc değerini güncelle
-                    row.cell(row.index(), 3).data(rowData.kalan_anapara).draw(false);
+                    row.cell(row.index(), 5).data(rowData.kalan_anapara).draw(false);
 
                     //tablo satırnını 5.sütununa data.finansalDurum.toplam_odeme değerini güncelle
-                    row.cell(row.index(), 4).data(rowData.hesaplanan_gecikme_zammi).draw(false);
+                    row.cell(row.index(), 6).data(rowData.hesaplanan_gecikme_zammi).draw(false);
 
-                    row.cell(row.index(), 5).data(rowData.toplam_kalan_borc).draw(false);
+                    row.cell(row.index(), 7).data(rowData.toplam_kalan_borc).draw(false);
 
                     //tablo satırnını 6.sütununa data.finansalDurum.bakiye değerini güncelle
-                    row.cell(row.index(), 6).data(rowData.kredi_tutari).draw(false);
-                    row.cell(row.index(), 7).data(rowData.guncel_borc).draw(false);
+                    row.cell(row.index(), 8).data(rowData.kredi_tutari).draw(false);
+                    row.cell(row.index(), 9).data(rowData.guncel_borc).draw(false);
 
                     let title = data.status == "success" ? "Başarılı" : "Hata";
 

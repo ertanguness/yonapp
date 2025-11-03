@@ -19,6 +19,30 @@ class DairelerModel extends Model
         parent::__construct($this->table);
     }
 
+    /**
+     * Sitedeki dairelerin mülk sahiplerini ve blok bilgisini döndürür
+     * @param int $site_id
+     * @return array [ ['blok_adi' => ..., 'daire_no' => ..., 'ev_sahibi' => ...], ... ]
+     */
+    public function getDairelerWithOwner($site_id)
+    {
+        $sql = $this->db->prepare("SELECT d.id, d.daire_no, d.blok_id, b.blok_adi FROM {$this->table} d JOIN bloklar b ON d.blok_id = b.id WHERE d.site_id = ? ORDER BY b.blok_adi, CAST(d.daire_no AS UNSIGNED) ASC");
+        $sql->execute([$site_id]);
+        $daireler = $sql->fetchAll(PDO::FETCH_ASSOC);
+        $result = [];
+        $Kisiler = new \Model\KisilerModel();
+        foreach ($daireler as $d) {
+            $owner = $Kisiler->AktifKisiByDaireId($d['id'], 'Ev Sahibi');
+            $result[] = [
+                'blok_adi' => $d['blok_adi'],
+                'daire_no' => $d['daire_no'],
+                'ev_sahibi' => $owner ? ($owner->adi_soyadi ?? '') : ''
+            ];
+        }
+        return $result;
+    }
+    // ...existing code...
+
     // *************************************************************************************** */
 
     /**
@@ -392,6 +416,33 @@ class DairelerModel extends Model
         $result = $query->fetch(PDO::FETCH_OBJ);
         
         return $result ? (int)$result->id : null;  // Eğer sonuç varsa id'yi döndür, yoksa null döndür
+    }
+
+    /**
+     * Birden fazla daire ID'sini tek sorguda getirir (batch query optimization)
+     * @param array $daire_ids Daire ID'leri dizisi
+     * @return array ID'ye göre indexlenmiş daire nesneleri
+     */
+    public function findByIds(array $daire_ids): array
+    {
+        if (empty($daire_ids)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($daire_ids), '?'));
+        $sql = "SELECT * FROM {$this->table} WHERE id IN ({$placeholders})";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($daire_ids);
+        $results = $stmt->fetchAll(PDO::FETCH_OBJ);
+        
+        // ID'ye göre indexle
+        $indexed = [];
+        foreach ($results as $row) {
+            $indexed[$row->id] = $row;
+        }
+        
+        return $indexed;
     }
 
 }

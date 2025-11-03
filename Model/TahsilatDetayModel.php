@@ -159,11 +159,49 @@ class TahsilatDetayModel extends Model
     {
         $borclandirma_id = Security::decrypt($borclandirma_id);
         $sql = $this->db->prepare("SELECT 1 
-                                   FROM tahsilat_detay 
+                                   FROM $this->table 
                                    WHERE borc_detay_id IN (SELECT id FROM borclandirma_detayi WHERE borclandirma_id = ?) 
                                    LIMIT 1");
         $sql->execute([$borclandirma_id]);
         return $sql->fetchColumn() !== false;
+    }
+
+    /** Borçlandırma Detay bilgisi ile beraber detay döndürür
+     * @param int $id
+     * @return array
+     */
+    public function findAllByTahsilatIdWithDueDetails($tahsilat_id)
+    {
+        $sql = $this->db->prepare("SELECT td.*, bd.borc_adi,bd.aciklama as borc_aciklama 
+                                   FROM $this->table td
+                                   LEFT JOIN borclandirma_detayi bd ON bd.id = td.borc_detay_id
+                                   WHERE td.tahsilat_id = ?");
+        $sql->execute([$tahsilat_id]);
+        return $sql->fetchAll(\PDO::FETCH_OBJ);
+    }
+
+    /**
+     * Birden fazla borç ID'si için toplam tahsilat tutarını getirir
+     * @param array $borc_ids Borç detay ID'leri dizisi
+     * @return float Toplam tahsilat tutarı
+     */
+    public function getTahsilatByBorcIds(array $borc_ids): float
+    {
+        if (empty($borc_ids)) {
+            return 0.0;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($borc_ids), '?'));
+        $sql = "SELECT COALESCE(SUM(odenen_tutar), 0) as toplam_tahsilat
+                FROM {$this->table}
+                WHERE borc_detay_id IN ({$placeholders})
+                  AND silinme_tarihi IS NULL";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($borc_ids);
+        $result = $stmt->fetch(\PDO::FETCH_OBJ);
+        
+        return (float)($result->toplam_tahsilat ?? 0.0);
     }
 
 

@@ -29,6 +29,7 @@ if ($_POST["action"] == "saveApartmentType") {
             "id" => $id,
             "site_id" => $site_id,
             "define_name" =>  $apartment_type_name,
+            'mulk_tipi' => $_POST['mulk_tipi'],
             "description" => $description,
             "type" => 3,    
         ];

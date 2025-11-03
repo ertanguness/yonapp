@@ -17,6 +17,8 @@ $enc_id = $id ?? 0;
 $blocks = $Block->SiteBloklari($site_id);
 $kisi = $Kisiler->KisiBilgileri($id);
 $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
+
+//echo "<pre>"; var_dump($kisi); echo "</pre>";exit;
 ?>
 <div class="card-body people-info">
 
@@ -131,12 +133,12 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         </div>
 
         <div class="col-lg-2">
-            <label for="exitDate" class="fw-semibold">Çıkış Tarihi:</label>
+            <label for="exitDate" class="fw-semibold">Çıkış Tarihi: </label>
         </div>
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-times"></i></div>
-                <input type="text" class="form-control flatpickr" id="exitDate" name="exitDate" placeholder="Çıkış Tarihi Giriniz" value="<?php echo Date::dmY($kisi->cikis_tarihi ?? null)  ?? ''; ?>">
+                <input type="text" class="form-control flatpickr" id="exitDate" name="exitDate" placeholder="Çıkış Tarihi Giriniz" value="<?php echo Date::dmY($kisi->cikis_tarihi ?? '') ; ?>">
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Kişi çıkış yaptığında tarih girilmelidir. </small>
@@ -226,6 +228,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
             } else {
                 $('#buyDate').prop('disabled', true);
                 $('#buyDateHelp').show(); // istersen hide() da olabilir
+                $("#buyDate").val('');
             }
         }
 

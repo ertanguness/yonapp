@@ -70,7 +70,7 @@ class BorclandirmaDetayModel extends Model
     /**
      * Borçlandırılmış Blokların isimlerini getirir
      * @param int $borclandirma_id
-     *  @return array
+     *  @return string
      */
     public function BorclandirilmisBlokIsimleri($borclandirma_id)
     {
@@ -89,7 +89,7 @@ class BorclandirmaDetayModel extends Model
     //******************************************************************************
     /**
      * Borçlandırılmış Daire Tiperini isimlerini getirir
-     * @return array
+     * @return string
      */
     public function BorclandirilmisDaireTipleri($borclandirma_id)
     {
@@ -526,5 +526,116 @@ class BorclandirmaDetayModel extends Model
         $sql = $this->db->prepare("CALL borc_detaylari_param(?)");
         $sql->execute([$borc_idleri]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**
+     * Birden fazla borçlandırma için detayları tek sorguda getirir (N+1 query çözümü)
+     * @param array $borclandirma_ids Borçlandırma ID'leri dizisi
+     * @return array Borçlandırma ID'sine göre gruplanmış detaylar
+     */
+    public function getBatchDetails(array $borclandirma_ids): array
+    {
+        if (empty($borclandirma_ids)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($borclandirma_ids), '?'));
+        
+        // Blok ve daire tipi detaylarını tek sorguda çek
+        $sql = "SELECT 
+                    bd.borclandirma_id,
+                    bd.hedef_tipi,
+                    CASE 
+                        WHEN bd.hedef_tipi = 'block' THEN GROUP_CONCAT(DISTINCT b.blok_adi SEPARATOR ', ')
+                        WHEN bd.hedef_tipi = 'dairetipi' THEN GROUP_CONCAT(DISTINCT df.define_name SEPARATOR ', ')
+                        ELSE NULL
+                    END as detay
+                FROM {$this->table} bd
+                LEFT JOIN bloklar b ON b.id = bd.blok_id AND bd.hedef_tipi = 'block'
+                LEFT JOIN daireler d ON d.id = bd.daire_id AND bd.hedef_tipi = 'dairetipi'
+                LEFT JOIN defines df ON df.id = d.daire_tipi AND bd.hedef_tipi = 'dairetipi'
+                WHERE bd.borclandirma_id IN ({$placeholders})
+                  AND bd.silinme_tarihi IS NULL
+                GROUP BY bd.borclandirma_id, bd.hedef_tipi";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($borclandirma_ids);
+        $results = $stmt->fetchAll(PDO::FETCH_OBJ);
+        
+        // Borçlandırma ID'sine göre grupla
+        $grouped = [];
+        foreach ($results as $row) {
+            $grouped[$row->borclandirma_id] = $row->detay ?? '';
+        }
+        
+        return $grouped;
+    }
+
+    /**
+     * Toplu borç detayı ekleme (batch insert)
+     * @param array $records Eklenecek kayıtlar dizisi
+     * @return int Eklenen kayıt sayısı
+     */
+    public function batchInsert(array $records): int
+    {
+        if (empty($records)) {
+            return 0;
+        }
+
+        try {
+            // Sütun isimlerini ilk kayıttan al
+            $columns = array_keys($records[0]);
+            $columnList = implode(', ', $columns);
+            
+            // Her kayıt için placeholder oluştur
+            $placeholders = [];
+            $values = [];
+            
+            foreach ($records as $record) {
+                $rowPlaceholders = [];
+                foreach ($columns as $column) {
+                    $rowPlaceholders[] = '?';
+                    $values[] = $record[$column] ?? null;
+                }
+                $placeholders[] = '(' . implode(', ', $rowPlaceholders) . ')';
+            }
+            
+            $sql = "INSERT INTO {$this->table} ({$columnList}) VALUES " . implode(', ', $placeholders);
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($values);
+            
+            return $stmt->rowCount();
+        } catch (\PDOException $e) {
+            getLogger()->error("Batch insert hatası: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Kişinin belirli bir ay aralığındaki borçlandırmalarını getirir
+     * @param int $kisi_id Kişi ID
+     * @param string $baslangic_tarihi Ayın başlangıç tarihi
+     * @param string $bitis_tarihi Ayın bitiş tarihi
+     * @return array Borçlandırma kayıtları
+     */
+    public function getAylikBorclandirma(int $kisi_id, string $baslangic_tarihi, string $bitis_tarihi): array
+    {
+        $sql = "SELECT id, tutar
+                FROM {$this->table}
+                WHERE kisi_id = :kisi_id
+                  AND baslangic_tarihi >= :baslangic_tarihi
+                  AND bitis_tarihi <= :bitis_tarihi
+                  AND silinme_tarihi IS NULL
+                ORDER BY baslangic_tarihi ASC";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':kisi_id' => $kisi_id,
+            ':baslangic_tarihi' => $baslangic_tarihi,
+            ':bitis_tarihi' => $bitis_tarihi
+        ]);
+        
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
 }

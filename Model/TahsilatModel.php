@@ -257,6 +257,7 @@ public function tahsilatiSil(int $tahsilatId, int $silenKullaniciId)
                     kisi_kredi_kullanimlari kkk ON t.id = kkk.tahsilat_id
                 WHERE 
                     t.silinme_tarihi IS NULL
+                    and tutar >= 0
                     -- Eğer site ID'si verilmişse, sadece o siteye ait kayıtları getir.
                     AND (:site_id IS NULL OR bl.site_id = :site_id)
                 GROUP BY 
@@ -291,5 +292,20 @@ public function tahsilatiSil(int $tahsilatId, int $silenKullaniciId)
         return $result ? (float)$result->toplam_tutar : 0.0; 
     }
 
+
+
+/** Tahsilatı kasa adıyla beraber getirir
+ * @param int $tahsilat_id
+ * @return object
+ */
+public function getPaymentWithCaseName($tahsilat_id)
+{
+    $sql = $this->db->prepare("SELECT t.*,k.kasa_adi FROM $this->table t
+                                      LEFT JOIN kasa k ON k.id = t.kasa_id
+                                      WHERE t.id = ?");
+    $sql->execute([$tahsilat_id]);
+    return $sql->fetch(PDO::FETCH_OBJ);
+    
+}
 
 }

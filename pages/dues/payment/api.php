@@ -82,6 +82,8 @@ if ($_POST['action'] == 'payment_file_upload') {
     $eslesmeyen_daireler = [];
     $kisi_id = 0;
 
+
+
     /**
      * Başarılı eşleşen daire için tahsilat kaydını veritabanına ekler.
      * @param $Tahsilat TahsilatModel öği
@@ -119,6 +121,9 @@ if ($_POST['action'] == 'payment_file_upload') {
         ]);
     }
 
+
+
+
     /**
      * Eşleşmeyen veya hatalı kayıtları tahsilat havuzuna ekler.
      * @param $TahsilatHavuzu TahsilatHavuzuModel örneği
@@ -128,17 +133,22 @@ if ($_POST['action'] == 'payment_file_upload') {
      */
     function kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk = '')
     {
-        $islem_tarihi = Date::Ymd($data[0]);  // İşlem tarihi
+        $islem_tarihi = Date::YmdHis($data[0]);  // İşlem tarihi
         $ham_aciklama = $data[5] ?? '';  // Ham açıklama alanı, varsa kullanılır
         $referans_no = $data[6] ?? '';  // Makbuz no, varsa kullanılır
+        // Tutar artık temizlenmiş durumda gelmeli
+        $tutar = floatval(str_replace(',', '.', $data[1]));
+        $tutar = is_numeric($data[1]) ? floatval($data[1]) : Helper::formattedMoneyToNumber($data[1]);
+
 
         return $TahsilatHavuzu->saveWithAttr([
             'id' => 0,
             'islem_tarihi' => $islem_tarihi,
             'site_id' => $_SESSION['site_id'],  // Site ID'si
-            'tahsilat_tutari' => Helper::formattedMoneyToNumber($data[1]),  // Tutar
+            'tahsilat_tutari' => $tutar,  // Tutar
             'ham_aciklama' => $ham_aciklama,
             'referans_no' => $referans_no,
+            'banka_ref_no' => $referans_no ?? '',
             'aciklama' => $aciklamaEk,  // Ek açıklama veya hata
         ]);
     }
@@ -399,6 +409,46 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
         ];
         $tahsilatId = $Tahsilat->saveWithAttr($tahsilatData);
 
+
+        //Eğer gelen tahsilat tutar 0'dan küçük ise kredilere kaydet ve döngüden çık
+        if ($odenen_toplam_tutar < 0) {
+            $krediData = [
+                'id' => 0,
+                'kisi_id' => $kisi_id,
+                "tahsilat_id" => Security::decrypt($tahsilatId),
+                'tutar' => $odenen_toplam_tutar,
+                'aciklama' => $aciklama,
+            ];
+            $krediId = $KisiKredi->saveWithAttr($krediData);
+
+            //Tahsilatı kasa hareketi olarak kaydet
+            $data = [
+                'id' => 0,
+                'site_id' => $_SESSION['site_id'], // Site ID'si
+                'kasa_id' => $kasa_id,
+                'tahsilat_id' => Security::decrypt($tahsilatId), // Tahsilat ID'si
+                'kisi_id' => $kisi_id, // Kişi ID'si
+                'tutar' => $odenen_toplam_tutar,
+                'islem_tarihi' => $islem_tarihi,
+                'islem_tipi' =>  'gider', // Tahsilat geliri
+                'kategori' => 'İADE', // Kategori aidat
+                'kaynak_tablo' => 'kisi_kredi', // Tahsilat kaynağı
+                'kaynak_id' => Security::decrypt($krediId), // Tahsilat ID'si
+                'kayit_yapan' => $_SESSION['user']->id, // Kayıt yapan kullanıcı ID'si
+                'aciklama' => $aciklama ?: 'İade olarak kredi eklendi',
+            ];
+            $KasaHareket->saveWithAttr($data);
+
+
+            $db->commit();
+            $logger->info("Kişi ID {$kisi_id} için tahsilat tutarı negatif olduğundan kredi olarak eklendi: " . $odenen_toplam_tutar . " TL");
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Tahsilat kaydı başarıyla oluşturuldu. Kredi olarak eklendi.',
+            ]);
+            exit;
+        }
+
         // 3. Borçları VIEW ÜZERİNDEN Getir ve Sırala
         $secilenBorclar = [];
         if (!empty($borcDetayIds)) {
@@ -537,7 +587,8 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
             'kisi_id' => $kisi_id, // Kişi ID'si
             'tutar' => $odenen_toplam_tutar,
             'islem_tarihi' => $islem_tarihi,
-            'islem_tipi' => 'gelir', // Tahsilat geliri
+            'islem_tipi' => $odenen_toplam_tutar > 0 ? 'gelir' : 'gider', // Tahsilat geliri
+            'kategori' => 'AİDAT', // Kategori aidat
             'kaynak_tablo' => 'tahsilat', // Tahsilat kaynağı
             'kaynak_id' => Security::decrypt($tahsilatId), // Tahsilat ID'si
             'kayit_yapan' => $_SESSION['user']->id, // Kayıt yapan kullanıcı ID'si
@@ -847,18 +898,34 @@ if ($_POST['action'] == 'borc_sil') { {
         Gate::can('borclandirma_ekle_sil');
 
         try {
+            $db->beginTransaction();
 
             //bu id ile tahsilat_detay tablosunda kayıt var mı kontrol et
-            $tahsilatDetay = $TahsilatDetay->findWhere(['borc_detay_id' => $id]);
+            $tahsilatDetay = $TahsilatDetay->findWhere(['borc_detay_id' => $id, 'silinme_tarihi' => null]);
             //Tahsilat detayını sil
             if ($tahsilatDetay) {
+
                 $TahsilatDetay->softDeleteByColumn('borc_detay_id', $id);
 
-                // echo json_encode([
-                //     'status' => 'warning',
-                //     'message' => 'Bu borçlandırma detayı ile ilişkili tahsilat işlemleri bulunduğu için silinemez.'
-                // ]);
-                // exit;
+                //Borçlandırma silindiğinde ilgili tahsilat tutarını kredi olarak ekle
+
+                //Birden fazla tahsilat detayı olabilir, hepsi için krediyi toplam olarak ekle
+
+                foreach ($tahsilatDetay as $tDetay) {
+                    $kisi_id = $BorcDetay->find($tDetay->borc_detay_id)->kisi_id ?? 0;
+
+                    $data = [
+                        'id' => 0,
+                        'kisi_id' => $kisi_id,
+                        'tahsilat_id' => $tDetay->tahsilat_id,
+                        'tutar' => $tDetay->odenen_tutar,
+                        'aciklama' => 'Borçlandırma silindiği için tahsil edilen tutar kredi olarak eklendi. Borç Detay ID: ' . $id,
+                    ];
+
+                    $logger->info("Borç Detay ID {$id} silindi. İlgili tahsilat tutarı kredi olarak eklendi: " . ($tDetay->odenen_tutar) . " TL");
+
+                    $KisiKredi->saveWithAttr($data);
+                }
             }
 
 
@@ -877,9 +944,11 @@ if ($_POST['action'] == 'borc_sil') { {
             //Kişinin güncel finansal durumunu al
             $finansalDurum = $FinansalRapor->KisiFinansalDurum($borcDetay->kisi_id);
 
+            $db->commit();
             $status = 'success';
             $message = 'Borçlandırma detayı başarıyla silindi.';
         } catch (Exception $e) {
+            $db->rollBack();
             $status = 'error';
             $message = 'İşlem sırasında bir hata oluştu: ' . $e->getMessage();
         }
@@ -1009,7 +1078,7 @@ if ($_POST['action'] == 'eslesmeyen_odeme_sil') {
 }
 
 
-/* Yapılan ödemeyi kasaya aktarma işlemi */
+/* Yapılan ödemeyi kasaya aktarma işlemi Gelir veya Gider olarak */
 if ($_POST['action'] == 'kasaya_aktar') {
     $id = Security::decrypt($_POST['id']);
     $kasa_id = $Kasa->varsayilanKasa()->id;
@@ -1036,6 +1105,7 @@ if ($_POST['action'] == 'kasaya_aktar') {
             'kisi_id' => 0, // Kişi ID'si yok
             'tutar' => $havuzKaydi->tahsilat_tutari,
             'islem_tarihi' => $havuzKaydi->islem_tarihi,
+            'kategori' => $_POST['kategori'], // Özel kategori
             'islem_tipi' => $islem_tipi,
             'kaynak_tablo' => 'tahsilat_havuzu', // Kaynak tablo
             'kaynak_id' => $havuzKaydi->id, // Havuz kaydı ID'si
@@ -1045,8 +1115,16 @@ if ($_POST['action'] == 'kasaya_aktar') {
         ];
         $KasaHareket->saveWithAttr($data);
 
+        //Havuzdaki kayda aciklama yaz
+        $data = [
+            'id' => $id,
+            'aciklama' => 'Kasaya ' . $islem_tipi . ' olarak aktarıldı: ' . $havuzKaydi->ham_aciklama . ' | ',
+        ];
+        $TahsilatHavuzu->saveWithAttr($data);
+
         // Havuz kaydını sil
-        $TahsilatHavuzu->softDelete($_POST['id']);
+        $TahsilatHavuzu->softDelete($id);
+        $logger->info("Eşleşmeyen tahsilat ID {$id} kasaya aktarıldı ve havuz kaydı silindi.");
 
         $db->commit();
         $status = 'success';
@@ -1126,6 +1204,7 @@ if ($_POST['action'] == 'borc_ekle') {
             'bitis_tarihi' => $borc->bitis_tarihi,
             'son_odeme_tarihi' => $borc->bitis_tarihi,
             'tutar' => $tutar,
+            'ceza_orani' => $borc->ceza_orani,
             'kisi_id' => $kisi_id,
             'daire_id' => $kisi->daire_id,
 
@@ -1150,5 +1229,3 @@ if ($_POST['action'] == 'borc_ekle') {
     ];
     echo json_encode($res);
 }
-
-

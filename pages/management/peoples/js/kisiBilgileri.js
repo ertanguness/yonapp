@@ -12,15 +12,15 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
     rules: {
       blokAdi: { required: true },
       daireNo: { required: true },
-      tcPassportNo: { 
-        required: true,
-        minlength: 6,
-        maxlength: 11,
-        customTcPassport: true
-      },
+      // tcPassportNo: { 
+      //   required: true,
+      //   minlength: 6,
+      //   maxlength: 11,
+      //   customTcPassport: true
+      // },
       fullName: { required: true },
       residentType: { required: true },
-      birthDate: { required: true },
+      //birthDate: { required: true },
       gender: { required: true },
       phoneNumber: { 
         required: true,
@@ -32,15 +32,15 @@ $(document).on("click", "#save_peoples, #savePeoples", function () {
     messages: {
       blokAdi: { required: "Lütfen blok seçiniz" },
       daireNo: { required: "Lütfen daire seçiniz" },
-      tcPassportNo: {
-        required: "Lütfen TC Kimlik No veya Pasaport No giriniz",
-        minlength: "TC Kimlik No 11 rakamdan oluşmalı, Pasaport no 6 karakterden az olamaz",
-        maxlength: "En fazla 11 karakter olmalı",
-        customTcPassport: "TC kimlik no giriyorsanız sadece rakam olmalı, Pasaport no giriyorsanız harf ve rakam olabilir"
-      },
+      // tcPassportNo: {
+      //   required: "Lütfen TC Kimlik No veya Pasaport No giriniz",
+      //   minlength: "TC Kimlik No 11 rakamdan oluşmalı, Pasaport no 6 karakterden az olamaz",
+      //   maxlength: "En fazla 11 karakter olmalı",
+      //   customTcPassport: "TC kimlik no giriyorsanız sadece rakam olmalı, Pasaport no giriyorsanız harf ve rakam olabilir"
+      // },
       fullName: { required: "Lütfen Ad Soyad giriniz" },
       residentType: { required: "Lütfen konut sakini türü seçiniz" },
-      birthDate: { required: "Lütfen doğum tarihi giriniz" },
+      //birthDate: { required: "Lütfen doğum tarihi giriniz" },
       gender: { required: "Lütfen cinsiyet seçiniz" },
       phoneNumber: { 
         required: "Lütfen telefon numarası giriniz",

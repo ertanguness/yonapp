@@ -1,0 +1,1011 @@
+[2025-10-29 15:46:22] [INFO] Borçlandırma tipi: sakinler 
+[2025-10-29 15:46:22] [INFO] Borçlandırılacak kişiler: [{"id":261,"adi_soyadi":"Ay\u015fe Y\u0131lmaz","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-01-15","cikis_tarihi":"0000-00-00","daire_id":181,"daire_kodu":"AD1","blok_id":26,"blok_adi":"A Blok"},{"id":262,"adi_soyadi":"Mehmet Kaya","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-06-10","cikis_tarihi":"0000-00-00","daire_id":182,"daire_kodu":"AD2","blok_id":26,"blok_adi":"A Blok"},{"id":263,"adi_soyadi":"Fatma Demir","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2019-09-05","cikis_tarihi":"0000-00-00","daire_id":183,"daire_kodu":"AD3","blok_id":26,"blok_adi":"A Blok"},{"id":264,"adi_soyadi":"Ali \u015eahin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-03-03","cikis_tarihi":"0000-00-00","daire_id":184,"daire_kodu":"AD4","blok_id":26,"blok_adi":"A Blok"},{"id":265,"adi_soyadi":"Zeynep \u00c7elik","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-11-01","cikis_tarihi":"0000-00-00","daire_id":185,"daire_kodu":"AD5","blok_id":26,"blok_adi":"A Blok"},{"id":266,"adi_soyadi":"Mustafa \u00d6zt\u00fcrk","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-07-14","cikis_tarihi":"0000-00-00","daire_id":186,"daire_kodu":"AD6","blok_id":26,"blok_adi":"A Blok"},{"id":267,"adi_soyadi":"Elif Y\u0131ld\u0131r\u0131m","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-02-22","cikis_tarihi":"0000-00-00","daire_id":187,"daire_kodu":"AD7","blok_id":26,"blok_adi":"A Blok"},{"id":268,"adi_soyadi":"Ahmet Arslan","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2022-11-10","cikis_tarihi":"0000-00-00","daire_id":188,"daire_kodu":"AD8","blok_id":26,"blok_adi":"A Blok"},{"id":269,"adi_soyadi":"Emine Can","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2005-04-10","cikis_tarihi":"0000-00-00","daire_id":189,"daire_kodu":"AD9","blok_id":26,"blok_adi":"A Blok"},{"id":270,"adi_soyadi":"H\u00fcseyin Aksoy","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-01-25","cikis_tarihi":"0000-00-00","daire_id":190,"daire_kodu":"AD10","blok_id":26,"blok_adi":"A Blok"},{"id":271,"adi_soyadi":"Selin G\u00fcne\u015f","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-08-01","cikis_tarihi":"0000-00-00","daire_id":191,"daire_kodu":"AD11","blok_id":26,"blok_adi":"A Blok"},{"id":272,"adi_soyadi":"Murat K\u0131l\u0131\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2012-06-17","cikis_tarihi":"0000-00-00","daire_id":192,"daire_kodu":"AD12","blok_id":26,"blok_adi":"A Blok"},{"id":273,"adi_soyadi":"Esra Do\u011fan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-11-20","cikis_tarihi":"0000-00-00","daire_id":193,"daire_kodu":"AD13","blok_id":26,"blok_adi":"A Blok"},{"id":274,"adi_soyadi":"Berk Deniz","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-04-12","cikis_tarihi":"2025-10-01","daire_id":194,"daire_kodu":"AD14","blok_id":26,"blok_adi":"A Blok"},{"id":275,"adi_soyadi":"Deniz Polat","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2014-08-29","cikis_tarihi":"0000-00-00","daire_id":195,"daire_kodu":"AD15","blok_id":26,"blok_adi":"A Blok"},{"id":276,"adi_soyadi":"Turgut Ayd\u0131n","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2008-10-10","cikis_tarihi":"0000-00-00","daire_id":196,"daire_kodu":"AD16","blok_id":26,"blok_adi":"A Blok"},{"id":277,"adi_soyadi":"\u0130rem Tekin","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-02-15","cikis_tarihi":"0000-00-00","daire_id":197,"daire_kodu":"AD17","blok_id":26,"blok_adi":"A Blok"},{"id":278,"adi_soyadi":"Furkan Kocaman","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2011-05-05","cikis_tarihi":"0000-00-00","daire_id":198,"daire_kodu":"AD18","blok_id":26,"blok_adi":"A Blok"},{"id":279,"adi_soyadi":"Gizem Erdem","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-12-01","cikis_tarihi":"0000-00-00","daire_id":199,"daire_kodu":"AD19","blok_id":26,"blok_adi":"A Blok"},{"id":280,"adi_soyadi":"Okan \u00d6zcan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2013-08-11","cikis_tarihi":"0000-00-00","daire_id":200,"daire_kodu":"AD20","blok_id":26,"blok_adi":"A Blok"},{"id":281,"adi_soyadi":"P\u0131nar Ko\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-03-16","cikis_tarihi":"0000-00-00","daire_id":201,"daire_kodu":"BD1","blok_id":27,"blok_adi":"B Blok"},{"id":282,"adi_soyadi":"Tolga Bulut","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-12-01","cikis_tarihi":"0000-00-00","daire_id":202,"daire_kodu":"BD2","blok_id":27,"blok_adi":"B Blok"},{"id":283,"adi_soyadi":"Hande Ece","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-09-04","cikis_tarihi":"0000-00-00","daire_id":203,"daire_kodu":"BD3","blok_id":27,"blok_adi":"B Blok"},{"id":284,"adi_soyadi":"Burak Erdem","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-10-27","cikis_tarihi":"0000-00-00","daire_id":204,"daire_kodu":"BD4","blok_id":27,"blok_adi":"B Blok"},{"id":286,"adi_soyadi":"Cemil Tekin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2007-04-02","cikis_tarihi":"0000-00-00","daire_id":206,"daire_kodu":"BD6","blok_id":27,"blok_adi":"B Blok"},{"id":287,"adi_soyadi":"Yasemin G\u00fcl","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-03-01","cikis_tarihi":"0000-00-00","daire_id":207,"daire_kodu":"BD7","blok_id":27,"blok_adi":"B Blok"},{"id":288,"adi_soyadi":"Koray Uzun","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-06-28","cikis_tarihi":"0000-00-00","daire_id":208,"daire_kodu":"BD8","blok_id":27,"blok_adi":"B Blok"},{"id":289,"adi_soyadi":"B\u00fc\u015fra Toprak","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-17","cikis_tarihi":"0000-00-00","daire_id":209,"daire_kodu":"BD9","blok_id":27,"blok_adi":"B Blok"},{"id":290,"adi_soyadi":"Harun Y\u00fccel","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2019-08-03","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":291,"adi_soyadi":"Melis Karaca","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-01","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":292,"adi_soyadi":"Volkan Sever","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2009-08-08","cikis_tarihi":"0000-00-00","daire_id":212,"daire_kodu":"BD12","blok_id":27,"blok_adi":"B Blok"},{"id":293,"adi_soyadi":"Derya \u00d6zen","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-07-01","cikis_tarihi":"0000-00-00","daire_id":213,"daire_kodu":"BD13","blok_id":27,"blok_adi":"B Blok"},{"id":294,"adi_soyadi":"Emre \u00c7ak\u0131r","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-04-15","cikis_tarihi":"0000-00-00","daire_id":214,"daire_kodu":"BD14","blok_id":27,"blok_adi":"B Blok"},{"id":296,"adi_soyadi":"R\u0131dvan \u015eim\u015fek","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-11-12","cikis_tarihi":"0000-00-00","daire_id":216,"daire_kodu":"BD16","blok_id":27,"blok_adi":"B Blok"},{"id":297,"adi_soyadi":"Ebru Kaplan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-07-25","cikis_tarihi":"0000-00-00","daire_id":217,"daire_kodu":"BD17","blok_id":27,"blok_adi":"B Blok"},{"id":298,"adi_soyadi":"Ufuk Gen\u00e7","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-04-07","cikis_tarihi":"0000-00-00","daire_id":218,"daire_kodu":"BD18","blok_id":27,"blok_adi":"B Blok"},{"id":300,"adi_soyadi":"Kadir Kurt","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2004-12-18","cikis_tarihi":"0000-00-00","daire_id":220,"daire_kodu":"BD20","blok_id":27,"blok_adi":"B Blok"}] 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 181, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 261,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 182 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 183, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 263,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 184, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 264,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 185 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 186, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 266,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 187, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 267,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 188 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 189, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 269,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 190, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 270,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 191 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 192, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 272,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 193, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 273,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 194 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 195, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 275,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 196, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 276,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 197 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 198, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 278,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 199 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 200, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 280,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 201, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 281,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 202 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 203, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 283,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 204, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 284,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 206, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 286,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 207 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 208, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 288,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 209, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 289,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 211, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 291,
+                                                                          Kiracı : [{"id":290,"adi_soyadi":"Harun Y\u00fccel","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2019-08-03","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"}],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 212, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 292,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 213 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 214, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 294,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 216, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 296,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 217, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 297,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 218 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 220, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 300,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Batch insert: 25 kayıt eklendi. 
+[2025-10-29 15:46:22] [INFO] Borçlandırma tipi: isyerisakinleri 
+[2025-10-29 15:46:22] [INFO] Borçlandırılacak kişiler: [{"id":299,"adi_soyadi":"Merve Sar\u0131","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2021-01-03","cikis_tarihi":"0000-00-00","daire_id":219,"daire_kodu":"BD19","blok_id":27,"blok_adi":"B Blok"}] 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 219, 
+                                                                          Tutar: 400, 
+                                                                          Ev Sahibi ID: 299,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Batch insert: 1 kayıt eklendi. 
+[2025-10-29 15:46:22] [INFO] Borçlandırma tipi: evsahibi 
+[2025-10-29 15:46:22] [INFO] Borçlandırılacak kişiler: [{"id":261,"adi_soyadi":"Ay\u015fe Y\u0131lmaz","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-01-15","cikis_tarihi":"0000-00-00","daire_id":181,"daire_kodu":"AD1","blok_id":26,"blok_adi":"A Blok"},{"id":262,"adi_soyadi":"Mehmet Kaya","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-06-10","cikis_tarihi":"0000-00-00","daire_id":182,"daire_kodu":"AD2","blok_id":26,"blok_adi":"A Blok"},{"id":263,"adi_soyadi":"Fatma Demir","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2019-09-05","cikis_tarihi":"0000-00-00","daire_id":183,"daire_kodu":"AD3","blok_id":26,"blok_adi":"A Blok"},{"id":264,"adi_soyadi":"Ali \u015eahin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-03-03","cikis_tarihi":"0000-00-00","daire_id":184,"daire_kodu":"AD4","blok_id":26,"blok_adi":"A Blok"},{"id":265,"adi_soyadi":"Zeynep \u00c7elik","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-11-01","cikis_tarihi":"0000-00-00","daire_id":185,"daire_kodu":"AD5","blok_id":26,"blok_adi":"A Blok"},{"id":266,"adi_soyadi":"Mustafa \u00d6zt\u00fcrk","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-07-14","cikis_tarihi":"0000-00-00","daire_id":186,"daire_kodu":"AD6","blok_id":26,"blok_adi":"A Blok"},{"id":267,"adi_soyadi":"Elif Y\u0131ld\u0131r\u0131m","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-02-22","cikis_tarihi":"0000-00-00","daire_id":187,"daire_kodu":"AD7","blok_id":26,"blok_adi":"A Blok"},{"id":268,"adi_soyadi":"Ahmet Arslan","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2022-11-10","cikis_tarihi":"0000-00-00","daire_id":188,"daire_kodu":"AD8","blok_id":26,"blok_adi":"A Blok"},{"id":269,"adi_soyadi":"Emine Can","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2005-04-10","cikis_tarihi":"0000-00-00","daire_id":189,"daire_kodu":"AD9","blok_id":26,"blok_adi":"A Blok"},{"id":270,"adi_soyadi":"H\u00fcseyin Aksoy","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-01-25","cikis_tarihi":"0000-00-00","daire_id":190,"daire_kodu":"AD10","blok_id":26,"blok_adi":"A Blok"},{"id":271,"adi_soyadi":"Selin G\u00fcne\u015f","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-08-01","cikis_tarihi":"0000-00-00","daire_id":191,"daire_kodu":"AD11","blok_id":26,"blok_adi":"A Blok"},{"id":272,"adi_soyadi":"Murat K\u0131l\u0131\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2012-06-17","cikis_tarihi":"0000-00-00","daire_id":192,"daire_kodu":"AD12","blok_id":26,"blok_adi":"A Blok"},{"id":273,"adi_soyadi":"Esra Do\u011fan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-11-20","cikis_tarihi":"0000-00-00","daire_id":193,"daire_kodu":"AD13","blok_id":26,"blok_adi":"A Blok"},{"id":274,"adi_soyadi":"Berk Deniz","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-04-12","cikis_tarihi":"2025-10-01","daire_id":194,"daire_kodu":"AD14","blok_id":26,"blok_adi":"A Blok"},{"id":275,"adi_soyadi":"Deniz Polat","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2014-08-29","cikis_tarihi":"0000-00-00","daire_id":195,"daire_kodu":"AD15","blok_id":26,"blok_adi":"A Blok"},{"id":276,"adi_soyadi":"Turgut Ayd\u0131n","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2008-10-10","cikis_tarihi":"0000-00-00","daire_id":196,"daire_kodu":"AD16","blok_id":26,"blok_adi":"A Blok"},{"id":277,"adi_soyadi":"\u0130rem Tekin","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-02-15","cikis_tarihi":"0000-00-00","daire_id":197,"daire_kodu":"AD17","blok_id":26,"blok_adi":"A Blok"},{"id":278,"adi_soyadi":"Furkan Kocaman","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2011-05-05","cikis_tarihi":"0000-00-00","daire_id":198,"daire_kodu":"AD18","blok_id":26,"blok_adi":"A Blok"},{"id":279,"adi_soyadi":"Gizem Erdem","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-12-01","cikis_tarihi":"0000-00-00","daire_id":199,"daire_kodu":"AD19","blok_id":26,"blok_adi":"A Blok"},{"id":280,"adi_soyadi":"Okan \u00d6zcan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2013-08-11","cikis_tarihi":"0000-00-00","daire_id":200,"daire_kodu":"AD20","blok_id":26,"blok_adi":"A Blok"},{"id":281,"adi_soyadi":"P\u0131nar Ko\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-03-16","cikis_tarihi":"0000-00-00","daire_id":201,"daire_kodu":"BD1","blok_id":27,"blok_adi":"B Blok"},{"id":282,"adi_soyadi":"Tolga Bulut","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-12-01","cikis_tarihi":"0000-00-00","daire_id":202,"daire_kodu":"BD2","blok_id":27,"blok_adi":"B Blok"},{"id":283,"adi_soyadi":"Hande Ece","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-09-04","cikis_tarihi":"0000-00-00","daire_id":203,"daire_kodu":"BD3","blok_id":27,"blok_adi":"B Blok"},{"id":284,"adi_soyadi":"Burak Erdem","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-10-27","cikis_tarihi":"0000-00-00","daire_id":204,"daire_kodu":"BD4","blok_id":27,"blok_adi":"B Blok"},{"id":286,"adi_soyadi":"Cemil Tekin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2007-04-02","cikis_tarihi":"0000-00-00","daire_id":206,"daire_kodu":"BD6","blok_id":27,"blok_adi":"B Blok"},{"id":287,"adi_soyadi":"Yasemin G\u00fcl","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-03-01","cikis_tarihi":"0000-00-00","daire_id":207,"daire_kodu":"BD7","blok_id":27,"blok_adi":"B Blok"},{"id":288,"adi_soyadi":"Koray Uzun","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-06-28","cikis_tarihi":"0000-00-00","daire_id":208,"daire_kodu":"BD8","blok_id":27,"blok_adi":"B Blok"},{"id":289,"adi_soyadi":"B\u00fc\u015fra Toprak","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-17","cikis_tarihi":"0000-00-00","daire_id":209,"daire_kodu":"BD9","blok_id":27,"blok_adi":"B Blok"},{"id":290,"adi_soyadi":"Harun Y\u00fccel","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2019-08-03","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":291,"adi_soyadi":"Melis Karaca","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-01","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":292,"adi_soyadi":"Volkan Sever","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2009-08-08","cikis_tarihi":"0000-00-00","daire_id":212,"daire_kodu":"BD12","blok_id":27,"blok_adi":"B Blok"},{"id":293,"adi_soyadi":"Derya \u00d6zen","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-07-01","cikis_tarihi":"0000-00-00","daire_id":213,"daire_kodu":"BD13","blok_id":27,"blok_adi":"B Blok"},{"id":294,"adi_soyadi":"Emre \u00c7ak\u0131r","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-04-15","cikis_tarihi":"0000-00-00","daire_id":214,"daire_kodu":"BD14","blok_id":27,"blok_adi":"B Blok"},{"id":296,"adi_soyadi":"R\u0131dvan \u015eim\u015fek","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-11-12","cikis_tarihi":"0000-00-00","daire_id":216,"daire_kodu":"BD16","blok_id":27,"blok_adi":"B Blok"},{"id":297,"adi_soyadi":"Ebru Kaplan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-07-25","cikis_tarihi":"0000-00-00","daire_id":217,"daire_kodu":"BD17","blok_id":27,"blok_adi":"B Blok"},{"id":298,"adi_soyadi":"Ufuk Gen\u00e7","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-04-07","cikis_tarihi":"0000-00-00","daire_id":218,"daire_kodu":"BD18","blok_id":27,"blok_adi":"B Blok"},{"id":300,"adi_soyadi":"Kadir Kurt","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2004-12-18","cikis_tarihi":"0000-00-00","daire_id":220,"daire_kodu":"BD20","blok_id":27,"blok_adi":"B Blok"}] 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 181, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 261,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 182 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 183, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 263,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 184, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 264,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 185 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 186, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 266,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 187, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 267,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 188 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 189, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 269,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 190, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 270,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 191 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 192, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 272,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 193, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 273,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 194 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 195, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 275,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 196, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 276,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 197 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 198, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 278,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 199 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 200, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 280,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 201, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 281,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 202 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 203, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 283,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 204, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 284,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 206, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 286,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 207 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 208, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 288,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 209, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 289,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 211, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 291,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 212, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 292,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 213 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 214, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 294,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 216, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 296,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 217, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 297,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Daire ID 218 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:22] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 220, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 300,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:22] [INFO] Batch insert: 25 kayıt eklendi. 
+[2025-10-29 15:46:22] [INFO] Borçlandırma işlemi tamamlandı. 
+[2025-10-29 15:46:45] [INFO] Borçlandırma tipi: evsahibi 
+[2025-10-29 15:46:45] [INFO] Borçlandırılacak kişiler: [{"id":261,"adi_soyadi":"Ay\u015fe Y\u0131lmaz","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-01-15","cikis_tarihi":"0000-00-00","daire_id":181,"daire_kodu":"AD1","blok_id":26,"blok_adi":"A Blok"},{"id":262,"adi_soyadi":"Mehmet Kaya","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-06-10","cikis_tarihi":"0000-00-00","daire_id":182,"daire_kodu":"AD2","blok_id":26,"blok_adi":"A Blok"},{"id":263,"adi_soyadi":"Fatma Demir","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2019-09-05","cikis_tarihi":"0000-00-00","daire_id":183,"daire_kodu":"AD3","blok_id":26,"blok_adi":"A Blok"},{"id":264,"adi_soyadi":"Ali \u015eahin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-03-03","cikis_tarihi":"0000-00-00","daire_id":184,"daire_kodu":"AD4","blok_id":26,"blok_adi":"A Blok"},{"id":265,"adi_soyadi":"Zeynep \u00c7elik","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-11-01","cikis_tarihi":"0000-00-00","daire_id":185,"daire_kodu":"AD5","blok_id":26,"blok_adi":"A Blok"},{"id":266,"adi_soyadi":"Mustafa \u00d6zt\u00fcrk","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-07-14","cikis_tarihi":"0000-00-00","daire_id":186,"daire_kodu":"AD6","blok_id":26,"blok_adi":"A Blok"},{"id":267,"adi_soyadi":"Elif Y\u0131ld\u0131r\u0131m","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-02-22","cikis_tarihi":"0000-00-00","daire_id":187,"daire_kodu":"AD7","blok_id":26,"blok_adi":"A Blok"},{"id":268,"adi_soyadi":"Ahmet Arslan","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2022-11-10","cikis_tarihi":"0000-00-00","daire_id":188,"daire_kodu":"AD8","blok_id":26,"blok_adi":"A Blok"},{"id":269,"adi_soyadi":"Emine Can","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2005-04-10","cikis_tarihi":"0000-00-00","daire_id":189,"daire_kodu":"AD9","blok_id":26,"blok_adi":"A Blok"},{"id":270,"adi_soyadi":"H\u00fcseyin Aksoy","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-01-25","cikis_tarihi":"0000-00-00","daire_id":190,"daire_kodu":"AD10","blok_id":26,"blok_adi":"A Blok"},{"id":271,"adi_soyadi":"Selin G\u00fcne\u015f","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-08-01","cikis_tarihi":"0000-00-00","daire_id":191,"daire_kodu":"AD11","blok_id":26,"blok_adi":"A Blok"},{"id":272,"adi_soyadi":"Murat K\u0131l\u0131\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2012-06-17","cikis_tarihi":"0000-00-00","daire_id":192,"daire_kodu":"AD12","blok_id":26,"blok_adi":"A Blok"},{"id":273,"adi_soyadi":"Esra Do\u011fan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-11-20","cikis_tarihi":"0000-00-00","daire_id":193,"daire_kodu":"AD13","blok_id":26,"blok_adi":"A Blok"},{"id":274,"adi_soyadi":"Berk Deniz","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-04-12","cikis_tarihi":"2025-10-01","daire_id":194,"daire_kodu":"AD14","blok_id":26,"blok_adi":"A Blok"},{"id":275,"adi_soyadi":"Deniz Polat","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2014-08-29","cikis_tarihi":"0000-00-00","daire_id":195,"daire_kodu":"AD15","blok_id":26,"blok_adi":"A Blok"},{"id":276,"adi_soyadi":"Turgut Ayd\u0131n","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2008-10-10","cikis_tarihi":"0000-00-00","daire_id":196,"daire_kodu":"AD16","blok_id":26,"blok_adi":"A Blok"},{"id":277,"adi_soyadi":"\u0130rem Tekin","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-02-15","cikis_tarihi":"0000-00-00","daire_id":197,"daire_kodu":"AD17","blok_id":26,"blok_adi":"A Blok"},{"id":278,"adi_soyadi":"Furkan Kocaman","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2011-05-05","cikis_tarihi":"0000-00-00","daire_id":198,"daire_kodu":"AD18","blok_id":26,"blok_adi":"A Blok"},{"id":279,"adi_soyadi":"Gizem Erdem","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-12-01","cikis_tarihi":"0000-00-00","daire_id":199,"daire_kodu":"AD19","blok_id":26,"blok_adi":"A Blok"},{"id":280,"adi_soyadi":"Okan \u00d6zcan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2013-08-11","cikis_tarihi":"0000-00-00","daire_id":200,"daire_kodu":"AD20","blok_id":26,"blok_adi":"A Blok"},{"id":281,"adi_soyadi":"P\u0131nar Ko\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-03-16","cikis_tarihi":"0000-00-00","daire_id":201,"daire_kodu":"BD1","blok_id":27,"blok_adi":"B Blok"},{"id":282,"adi_soyadi":"Tolga Bulut","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-12-01","cikis_tarihi":"0000-00-00","daire_id":202,"daire_kodu":"BD2","blok_id":27,"blok_adi":"B Blok"},{"id":283,"adi_soyadi":"Hande Ece","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-09-04","cikis_tarihi":"0000-00-00","daire_id":203,"daire_kodu":"BD3","blok_id":27,"blok_adi":"B Blok"},{"id":284,"adi_soyadi":"Burak Erdem","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-10-27","cikis_tarihi":"0000-00-00","daire_id":204,"daire_kodu":"BD4","blok_id":27,"blok_adi":"B Blok"},{"id":286,"adi_soyadi":"Cemil Tekin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2007-04-02","cikis_tarihi":"0000-00-00","daire_id":206,"daire_kodu":"BD6","blok_id":27,"blok_adi":"B Blok"},{"id":287,"adi_soyadi":"Yasemin G\u00fcl","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-03-01","cikis_tarihi":"0000-00-00","daire_id":207,"daire_kodu":"BD7","blok_id":27,"blok_adi":"B Blok"},{"id":288,"adi_soyadi":"Koray Uzun","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-06-28","cikis_tarihi":"0000-00-00","daire_id":208,"daire_kodu":"BD8","blok_id":27,"blok_adi":"B Blok"},{"id":289,"adi_soyadi":"B\u00fc\u015fra Toprak","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-17","cikis_tarihi":"0000-00-00","daire_id":209,"daire_kodu":"BD9","blok_id":27,"blok_adi":"B Blok"},{"id":290,"adi_soyadi":"Harun Y\u00fccel","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2019-08-03","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":291,"adi_soyadi":"Melis Karaca","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-01","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":292,"adi_soyadi":"Volkan Sever","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2009-08-08","cikis_tarihi":"0000-00-00","daire_id":212,"daire_kodu":"BD12","blok_id":27,"blok_adi":"B Blok"},{"id":293,"adi_soyadi":"Derya \u00d6zen","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-07-01","cikis_tarihi":"0000-00-00","daire_id":213,"daire_kodu":"BD13","blok_id":27,"blok_adi":"B Blok"},{"id":294,"adi_soyadi":"Emre \u00c7ak\u0131r","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-04-15","cikis_tarihi":"0000-00-00","daire_id":214,"daire_kodu":"BD14","blok_id":27,"blok_adi":"B Blok"},{"id":296,"adi_soyadi":"R\u0131dvan \u015eim\u015fek","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-11-12","cikis_tarihi":"0000-00-00","daire_id":216,"daire_kodu":"BD16","blok_id":27,"blok_adi":"B Blok"},{"id":297,"adi_soyadi":"Ebru Kaplan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-07-25","cikis_tarihi":"0000-00-00","daire_id":217,"daire_kodu":"BD17","blok_id":27,"blok_adi":"B Blok"},{"id":298,"adi_soyadi":"Ufuk Gen\u00e7","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-04-07","cikis_tarihi":"0000-00-00","daire_id":218,"daire_kodu":"BD18","blok_id":27,"blok_adi":"B Blok"},{"id":300,"adi_soyadi":"Kadir Kurt","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2004-12-18","cikis_tarihi":"0000-00-00","daire_id":220,"daire_kodu":"BD20","blok_id":27,"blok_adi":"B Blok"}] 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 181, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 261,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 182 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 183, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 263,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 184, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 264,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 185 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 186, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 266,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 187, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 267,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 188 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 189, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 269,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 190, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 270,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 191 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 192, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 272,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 193, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 273,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 194 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 195, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 275,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 196, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 276,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 197 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 198, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 278,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 199 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 200, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 280,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 201, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 281,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 202 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 203, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 283,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 204, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 284,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 206, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 286,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 207 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 208, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 288,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 209, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 289,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 211, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 291,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 212, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 292,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 213 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 214, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 294,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 216, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 296,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 217, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 297,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Daire ID 218 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:46:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 220, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 300,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:46:45] [INFO] Batch insert: 25 kayıt eklendi. 
+[2025-10-29 15:46:45] [INFO] Borçlandırma işlemi tamamlandı. 
+[2025-10-29 15:47:03] [INFO] Borçlandırma tipi: sakinler 
+[2025-10-29 15:47:03] [INFO] Borçlandırılacak kişiler: [{"id":261,"adi_soyadi":"Ay\u015fe Y\u0131lmaz","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-01-15","cikis_tarihi":"0000-00-00","daire_id":181,"daire_kodu":"AD1","blok_id":26,"blok_adi":"A Blok"},{"id":262,"adi_soyadi":"Mehmet Kaya","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-06-10","cikis_tarihi":"0000-00-00","daire_id":182,"daire_kodu":"AD2","blok_id":26,"blok_adi":"A Blok"},{"id":263,"adi_soyadi":"Fatma Demir","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2019-09-05","cikis_tarihi":"0000-00-00","daire_id":183,"daire_kodu":"AD3","blok_id":26,"blok_adi":"A Blok"},{"id":264,"adi_soyadi":"Ali \u015eahin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-03-03","cikis_tarihi":"0000-00-00","daire_id":184,"daire_kodu":"AD4","blok_id":26,"blok_adi":"A Blok"},{"id":265,"adi_soyadi":"Zeynep \u00c7elik","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-11-01","cikis_tarihi":"0000-00-00","daire_id":185,"daire_kodu":"AD5","blok_id":26,"blok_adi":"A Blok"},{"id":266,"adi_soyadi":"Mustafa \u00d6zt\u00fcrk","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-07-14","cikis_tarihi":"0000-00-00","daire_id":186,"daire_kodu":"AD6","blok_id":26,"blok_adi":"A Blok"},{"id":267,"adi_soyadi":"Elif Y\u0131ld\u0131r\u0131m","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-02-22","cikis_tarihi":"0000-00-00","daire_id":187,"daire_kodu":"AD7","blok_id":26,"blok_adi":"A Blok"},{"id":268,"adi_soyadi":"Ahmet Arslan","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2022-11-10","cikis_tarihi":"0000-00-00","daire_id":188,"daire_kodu":"AD8","blok_id":26,"blok_adi":"A Blok"},{"id":269,"adi_soyadi":"Emine Can","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2005-04-10","cikis_tarihi":"0000-00-00","daire_id":189,"daire_kodu":"AD9","blok_id":26,"blok_adi":"A Blok"},{"id":270,"adi_soyadi":"H\u00fcseyin Aksoy","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-01-25","cikis_tarihi":"0000-00-00","daire_id":190,"daire_kodu":"AD10","blok_id":26,"blok_adi":"A Blok"},{"id":271,"adi_soyadi":"Selin G\u00fcne\u015f","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-08-01","cikis_tarihi":"0000-00-00","daire_id":191,"daire_kodu":"AD11","blok_id":26,"blok_adi":"A Blok"},{"id":272,"adi_soyadi":"Murat K\u0131l\u0131\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2012-06-17","cikis_tarihi":"0000-00-00","daire_id":192,"daire_kodu":"AD12","blok_id":26,"blok_adi":"A Blok"},{"id":273,"adi_soyadi":"Esra Do\u011fan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-11-20","cikis_tarihi":"0000-00-00","daire_id":193,"daire_kodu":"AD13","blok_id":26,"blok_adi":"A Blok"},{"id":274,"adi_soyadi":"Berk Deniz","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-04-12","cikis_tarihi":"2025-10-01","daire_id":194,"daire_kodu":"AD14","blok_id":26,"blok_adi":"A Blok"},{"id":275,"adi_soyadi":"Deniz Polat","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2014-08-29","cikis_tarihi":"0000-00-00","daire_id":195,"daire_kodu":"AD15","blok_id":26,"blok_adi":"A Blok"},{"id":276,"adi_soyadi":"Turgut Ayd\u0131n","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2008-10-10","cikis_tarihi":"0000-00-00","daire_id":196,"daire_kodu":"AD16","blok_id":26,"blok_adi":"A Blok"},{"id":277,"adi_soyadi":"\u0130rem Tekin","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-02-15","cikis_tarihi":"0000-00-00","daire_id":197,"daire_kodu":"AD17","blok_id":26,"blok_adi":"A Blok"},{"id":278,"adi_soyadi":"Furkan Kocaman","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2011-05-05","cikis_tarihi":"0000-00-00","daire_id":198,"daire_kodu":"AD18","blok_id":26,"blok_adi":"A Blok"},{"id":279,"adi_soyadi":"Gizem Erdem","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-12-01","cikis_tarihi":"0000-00-00","daire_id":199,"daire_kodu":"AD19","blok_id":26,"blok_adi":"A Blok"},{"id":280,"adi_soyadi":"Okan \u00d6zcan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2013-08-11","cikis_tarihi":"0000-00-00","daire_id":200,"daire_kodu":"AD20","blok_id":26,"blok_adi":"A Blok"},{"id":281,"adi_soyadi":"P\u0131nar Ko\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-03-16","cikis_tarihi":"0000-00-00","daire_id":201,"daire_kodu":"BD1","blok_id":27,"blok_adi":"B Blok"},{"id":282,"adi_soyadi":"Tolga Bulut","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-12-01","cikis_tarihi":"0000-00-00","daire_id":202,"daire_kodu":"BD2","blok_id":27,"blok_adi":"B Blok"},{"id":283,"adi_soyadi":"Hande Ece","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-09-04","cikis_tarihi":"0000-00-00","daire_id":203,"daire_kodu":"BD3","blok_id":27,"blok_adi":"B Blok"},{"id":284,"adi_soyadi":"Burak Erdem","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-10-27","cikis_tarihi":"0000-00-00","daire_id":204,"daire_kodu":"BD4","blok_id":27,"blok_adi":"B Blok"},{"id":286,"adi_soyadi":"Cemil Tekin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2007-04-02","cikis_tarihi":"0000-00-00","daire_id":206,"daire_kodu":"BD6","blok_id":27,"blok_adi":"B Blok"},{"id":287,"adi_soyadi":"Yasemin G\u00fcl","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-03-01","cikis_tarihi":"0000-00-00","daire_id":207,"daire_kodu":"BD7","blok_id":27,"blok_adi":"B Blok"},{"id":288,"adi_soyadi":"Koray Uzun","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-06-28","cikis_tarihi":"0000-00-00","daire_id":208,"daire_kodu":"BD8","blok_id":27,"blok_adi":"B Blok"},{"id":289,"adi_soyadi":"B\u00fc\u015fra Toprak","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-17","cikis_tarihi":"0000-00-00","daire_id":209,"daire_kodu":"BD9","blok_id":27,"blok_adi":"B Blok"},{"id":290,"adi_soyadi":"Harun Y\u00fccel","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2019-08-03","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":291,"adi_soyadi":"Melis Karaca","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-01","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":292,"adi_soyadi":"Volkan Sever","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2009-08-08","cikis_tarihi":"0000-00-00","daire_id":212,"daire_kodu":"BD12","blok_id":27,"blok_adi":"B Blok"},{"id":293,"adi_soyadi":"Derya \u00d6zen","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-07-01","cikis_tarihi":"0000-00-00","daire_id":213,"daire_kodu":"BD13","blok_id":27,"blok_adi":"B Blok"},{"id":294,"adi_soyadi":"Emre \u00c7ak\u0131r","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-04-15","cikis_tarihi":"0000-00-00","daire_id":214,"daire_kodu":"BD14","blok_id":27,"blok_adi":"B Blok"},{"id":296,"adi_soyadi":"R\u0131dvan \u015eim\u015fek","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-11-12","cikis_tarihi":"0000-00-00","daire_id":216,"daire_kodu":"BD16","blok_id":27,"blok_adi":"B Blok"},{"id":297,"adi_soyadi":"Ebru Kaplan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-07-25","cikis_tarihi":"0000-00-00","daire_id":217,"daire_kodu":"BD17","blok_id":27,"blok_adi":"B Blok"},{"id":298,"adi_soyadi":"Ufuk Gen\u00e7","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-04-07","cikis_tarihi":"0000-00-00","daire_id":218,"daire_kodu":"BD18","blok_id":27,"blok_adi":"B Blok"},{"id":300,"adi_soyadi":"Kadir Kurt","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2004-12-18","cikis_tarihi":"0000-00-00","daire_id":220,"daire_kodu":"BD20","blok_id":27,"blok_adi":"B Blok"}] 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 181, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 261,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 182 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 183, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 263,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 184, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 264,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 185 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 186, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 266,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 187, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 267,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 188 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 189, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 269,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 190, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 270,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 191 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 192, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 272,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 193, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 273,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 194 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 195, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 275,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 196, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 276,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 197 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 198, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 278,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 199 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 200, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 280,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 201, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 281,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 202 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 203, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 283,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 204, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 284,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 206, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 286,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 207 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 208, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 288,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 209, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 289,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 211, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 291,
+                                                                          Kiracı : [{"id":290,"adi_soyadi":"Harun Y\u00fccel","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2019-08-03","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"}],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 212, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 292,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 213 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 214, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 294,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 216, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 296,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 217, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 297,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Daire ID 218 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 220, 
+                                                                          Tutar: 800, 
+                                                                          Ev Sahibi ID: 300,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Batch insert: 25 kayıt eklendi. 
+[2025-10-29 15:47:03] [INFO] Borçlandırma tipi: isyerisakinleri 
+[2025-10-29 15:47:03] [INFO] Borçlandırılacak kişiler: [{"id":299,"adi_soyadi":"Merve Sar\u0131","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2021-01-03","cikis_tarihi":"0000-00-00","daire_id":219,"daire_kodu":"BD19","blok_id":27,"blok_adi":"B Blok"}] 
+[2025-10-29 15:47:03] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 219, 
+                                                                          Tutar: 400, 
+                                                                          Ev Sahibi ID: 299,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 15:47:03] [INFO] Batch insert: 1 kayıt eklendi. 
+[2025-10-29 15:47:03] [INFO] Borçlandırma işlemi tamamlandı. 
+[2025-10-29 20:14:45] [INFO] Borçlandırılacak kişiler: [{"id":261,"adi_soyadi":"Ay\u015fe Y\u0131lmaz","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-01-15","cikis_tarihi":"0000-00-00","daire_id":181,"daire_kodu":"AD1","blok_id":26,"blok_adi":"A Blok"},{"id":262,"adi_soyadi":"Mehmet Kaya","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-06-10","cikis_tarihi":"0000-00-00","daire_id":182,"daire_kodu":"AD2","blok_id":26,"blok_adi":"A Blok"},{"id":263,"adi_soyadi":"Fatma Demir","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2019-09-05","cikis_tarihi":"0000-00-00","daire_id":183,"daire_kodu":"AD3","blok_id":26,"blok_adi":"A Blok"},{"id":264,"adi_soyadi":"Ali \u015eahin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-03-03","cikis_tarihi":"0000-00-00","daire_id":184,"daire_kodu":"AD4","blok_id":26,"blok_adi":"A Blok"},{"id":265,"adi_soyadi":"Zeynep \u00c7elik","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-11-01","cikis_tarihi":"0000-00-00","daire_id":185,"daire_kodu":"AD5","blok_id":26,"blok_adi":"A Blok"},{"id":266,"adi_soyadi":"Mustafa \u00d6zt\u00fcrk","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-07-14","cikis_tarihi":"0000-00-00","daire_id":186,"daire_kodu":"AD6","blok_id":26,"blok_adi":"A Blok"},{"id":267,"adi_soyadi":"Elif Y\u0131ld\u0131r\u0131m","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-02-22","cikis_tarihi":"0000-00-00","daire_id":187,"daire_kodu":"AD7","blok_id":26,"blok_adi":"A Blok"},{"id":268,"adi_soyadi":"Ahmet Arslan","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2022-11-10","cikis_tarihi":"0000-00-00","daire_id":188,"daire_kodu":"AD8","blok_id":26,"blok_adi":"A Blok"},{"id":269,"adi_soyadi":"Emine Can","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2005-04-10","cikis_tarihi":"0000-00-00","daire_id":189,"daire_kodu":"AD9","blok_id":26,"blok_adi":"A Blok"},{"id":270,"adi_soyadi":"H\u00fcseyin Aksoy","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-01-25","cikis_tarihi":"0000-00-00","daire_id":190,"daire_kodu":"AD10","blok_id":26,"blok_adi":"A Blok"},{"id":271,"adi_soyadi":"Selin G\u00fcne\u015f","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-08-01","cikis_tarihi":"0000-00-00","daire_id":191,"daire_kodu":"AD11","blok_id":26,"blok_adi":"A Blok"},{"id":272,"adi_soyadi":"Murat K\u0131l\u0131\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2012-06-17","cikis_tarihi":"0000-00-00","daire_id":192,"daire_kodu":"AD12","blok_id":26,"blok_adi":"A Blok"},{"id":273,"adi_soyadi":"Esra Do\u011fan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-11-20","cikis_tarihi":"0000-00-00","daire_id":193,"daire_kodu":"AD13","blok_id":26,"blok_adi":"A Blok"},{"id":274,"adi_soyadi":"Berk Deniz","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-04-12","cikis_tarihi":"2025-10-01","daire_id":194,"daire_kodu":"AD14","blok_id":26,"blok_adi":"A Blok"},{"id":275,"adi_soyadi":"Deniz Polat","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2014-08-29","cikis_tarihi":"0000-00-00","daire_id":195,"daire_kodu":"AD15","blok_id":26,"blok_adi":"A Blok"},{"id":276,"adi_soyadi":"Turgut Ayd\u0131n","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2008-10-10","cikis_tarihi":"0000-00-00","daire_id":196,"daire_kodu":"AD16","blok_id":26,"blok_adi":"A Blok"},{"id":277,"adi_soyadi":"\u0130rem Tekin","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-02-15","cikis_tarihi":"0000-00-00","daire_id":197,"daire_kodu":"AD17","blok_id":26,"blok_adi":"A Blok"},{"id":278,"adi_soyadi":"Furkan Kocaman","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2011-05-05","cikis_tarihi":"0000-00-00","daire_id":198,"daire_kodu":"AD18","blok_id":26,"blok_adi":"A Blok"},{"id":279,"adi_soyadi":"Gizem Erdem","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-12-01","cikis_tarihi":"0000-00-00","daire_id":199,"daire_kodu":"AD19","blok_id":26,"blok_adi":"A Blok"},{"id":280,"adi_soyadi":"Okan \u00d6zcan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2013-08-11","cikis_tarihi":"0000-00-00","daire_id":200,"daire_kodu":"AD20","blok_id":26,"blok_adi":"A Blok"},{"id":281,"adi_soyadi":"P\u0131nar Ko\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-03-16","cikis_tarihi":"0000-00-00","daire_id":201,"daire_kodu":"BD1","blok_id":27,"blok_adi":"B Blok"},{"id":282,"adi_soyadi":"Tolga Bulut","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-12-01","cikis_tarihi":"0000-00-00","daire_id":202,"daire_kodu":"BD2","blok_id":27,"blok_adi":"B Blok"},{"id":283,"adi_soyadi":"Hande Ece","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-09-04","cikis_tarihi":"0000-00-00","daire_id":203,"daire_kodu":"BD3","blok_id":27,"blok_adi":"B Blok"},{"id":284,"adi_soyadi":"Burak Erdem","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-10-27","cikis_tarihi":"0000-00-00","daire_id":204,"daire_kodu":"BD4","blok_id":27,"blok_adi":"B Blok"},{"id":286,"adi_soyadi":"Cemil Tekin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2007-04-02","cikis_tarihi":"0000-00-00","daire_id":206,"daire_kodu":"BD6","blok_id":27,"blok_adi":"B Blok"},{"id":287,"adi_soyadi":"Yasemin G\u00fcl","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-03-01","cikis_tarihi":"0000-00-00","daire_id":207,"daire_kodu":"BD7","blok_id":27,"blok_adi":"B Blok"},{"id":288,"adi_soyadi":"Koray Uzun","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-06-28","cikis_tarihi":"0000-00-00","daire_id":208,"daire_kodu":"BD8","blok_id":27,"blok_adi":"B Blok"},{"id":289,"adi_soyadi":"B\u00fc\u015fra Toprak","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-17","cikis_tarihi":"0000-00-00","daire_id":209,"daire_kodu":"BD9","blok_id":27,"blok_adi":"B Blok"},{"id":290,"adi_soyadi":"Harun Y\u00fccel","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2019-08-03","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":291,"adi_soyadi":"Melis Karaca","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-01","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":292,"adi_soyadi":"Volkan Sever","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2009-08-08","cikis_tarihi":"0000-00-00","daire_id":212,"daire_kodu":"BD12","blok_id":27,"blok_adi":"B Blok"},{"id":293,"adi_soyadi":"Derya \u00d6zen","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-07-01","cikis_tarihi":"0000-00-00","daire_id":213,"daire_kodu":"BD13","blok_id":27,"blok_adi":"B Blok"},{"id":294,"adi_soyadi":"Emre \u00c7ak\u0131r","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-04-15","cikis_tarihi":"0000-00-00","daire_id":214,"daire_kodu":"BD14","blok_id":27,"blok_adi":"B Blok"},{"id":296,"adi_soyadi":"R\u0131dvan \u015eim\u015fek","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-11-12","cikis_tarihi":"0000-00-00","daire_id":216,"daire_kodu":"BD16","blok_id":27,"blok_adi":"B Blok"},{"id":297,"adi_soyadi":"Ebru Kaplan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-07-25","cikis_tarihi":"0000-00-00","daire_id":217,"daire_kodu":"BD17","blok_id":27,"blok_adi":"B Blok"},{"id":298,"adi_soyadi":"Ufuk Gen\u00e7","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-04-07","cikis_tarihi":"0000-00-00","daire_id":218,"daire_kodu":"BD18","blok_id":27,"blok_adi":"B Blok"},{"id":300,"adi_soyadi":"Kadir Kurt","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2004-12-18","cikis_tarihi":"0000-00-00","daire_id":220,"daire_kodu":"BD20","blok_id":27,"blok_adi":"B Blok"}] 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 181, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 261,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 182 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 183, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 263,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 184, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 264,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 185 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 186, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 266,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 187, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 267,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 188 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 189, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 269,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 190, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 270,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 191 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 192, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 272,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 193, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 273,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 194 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 195, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 275,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 196, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 276,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 197 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 198, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 278,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 199 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 200, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 280,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 201, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 281,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 202 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 203, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 283,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 204, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 284,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 206, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 286,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 207 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 208, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 288,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 209, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 289,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 211, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 291,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 212, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 292,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 213 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 214, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 294,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 216, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 296,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 217, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 297,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Daire ID 218 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:14:45] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 220, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 300,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:14:45] [INFO] Batch insert: 25 kayıt eklendi. 
+[2025-10-29 20:14:45] [INFO] Borçlandırma işlemi tamamlandı. 
+[2025-10-29 20:30:01] [ERROR] Borçlandırma işlemi sırasında hata: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'borclandirma_tarihi' in 'field list' 
+[2025-10-29 20:32:14] [INFO] Borçlandırılacak kişiler: [{"id":261,"adi_soyadi":"Ay\u015fe Y\u0131lmaz","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-01-15","cikis_tarihi":"0000-00-00","daire_id":181,"daire_kodu":"AD1","blok_id":26,"blok_adi":"A Blok"},{"id":262,"adi_soyadi":"Mehmet Kaya","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-06-10","cikis_tarihi":"0000-00-00","daire_id":182,"daire_kodu":"AD2","blok_id":26,"blok_adi":"A Blok"},{"id":263,"adi_soyadi":"Fatma Demir","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2019-09-05","cikis_tarihi":"0000-00-00","daire_id":183,"daire_kodu":"AD3","blok_id":26,"blok_adi":"A Blok"},{"id":264,"adi_soyadi":"Ali \u015eahin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-03-03","cikis_tarihi":"0000-00-00","daire_id":184,"daire_kodu":"AD4","blok_id":26,"blok_adi":"A Blok"},{"id":265,"adi_soyadi":"Zeynep \u00c7elik","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-11-01","cikis_tarihi":"0000-00-00","daire_id":185,"daire_kodu":"AD5","blok_id":26,"blok_adi":"A Blok"},{"id":266,"adi_soyadi":"Mustafa \u00d6zt\u00fcrk","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-07-14","cikis_tarihi":"0000-00-00","daire_id":186,"daire_kodu":"AD6","blok_id":26,"blok_adi":"A Blok"},{"id":267,"adi_soyadi":"Elif Y\u0131ld\u0131r\u0131m","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-02-22","cikis_tarihi":"0000-00-00","daire_id":187,"daire_kodu":"AD7","blok_id":26,"blok_adi":"A Blok"},{"id":268,"adi_soyadi":"Ahmet Arslan","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2022-11-10","cikis_tarihi":"0000-00-00","daire_id":188,"daire_kodu":"AD8","blok_id":26,"blok_adi":"A Blok"},{"id":269,"adi_soyadi":"Emine Can","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2005-04-10","cikis_tarihi":"0000-00-00","daire_id":189,"daire_kodu":"AD9","blok_id":26,"blok_adi":"A Blok"},{"id":270,"adi_soyadi":"H\u00fcseyin Aksoy","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-01-25","cikis_tarihi":"0000-00-00","daire_id":190,"daire_kodu":"AD10","blok_id":26,"blok_adi":"A Blok"},{"id":271,"adi_soyadi":"Selin G\u00fcne\u015f","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-08-01","cikis_tarihi":"0000-00-00","daire_id":191,"daire_kodu":"AD11","blok_id":26,"blok_adi":"A Blok"},{"id":272,"adi_soyadi":"Murat K\u0131l\u0131\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2012-06-17","cikis_tarihi":"0000-00-00","daire_id":192,"daire_kodu":"AD12","blok_id":26,"blok_adi":"A Blok"},{"id":273,"adi_soyadi":"Esra Do\u011fan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-11-20","cikis_tarihi":"0000-00-00","daire_id":193,"daire_kodu":"AD13","blok_id":26,"blok_adi":"A Blok"},{"id":274,"adi_soyadi":"Berk Deniz","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-04-12","cikis_tarihi":"2025-10-01","daire_id":194,"daire_kodu":"AD14","blok_id":26,"blok_adi":"A Blok"},{"id":275,"adi_soyadi":"Deniz Polat","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2014-08-29","cikis_tarihi":"0000-00-00","daire_id":195,"daire_kodu":"AD15","blok_id":26,"blok_adi":"A Blok"},{"id":276,"adi_soyadi":"Turgut Ayd\u0131n","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2008-10-10","cikis_tarihi":"0000-00-00","daire_id":196,"daire_kodu":"AD16","blok_id":26,"blok_adi":"A Blok"},{"id":277,"adi_soyadi":"\u0130rem Tekin","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-02-15","cikis_tarihi":"0000-00-00","daire_id":197,"daire_kodu":"AD17","blok_id":26,"blok_adi":"A Blok"},{"id":278,"adi_soyadi":"Furkan Kocaman","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2011-05-05","cikis_tarihi":"0000-00-00","daire_id":198,"daire_kodu":"AD18","blok_id":26,"blok_adi":"A Blok"},{"id":279,"adi_soyadi":"Gizem Erdem","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2023-12-01","cikis_tarihi":"0000-00-00","daire_id":199,"daire_kodu":"AD19","blok_id":26,"blok_adi":"A Blok"},{"id":280,"adi_soyadi":"Okan \u00d6zcan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2013-08-11","cikis_tarihi":"0000-00-00","daire_id":200,"daire_kodu":"AD20","blok_id":26,"blok_adi":"A Blok"},{"id":281,"adi_soyadi":"P\u0131nar Ko\u00e7","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-03-16","cikis_tarihi":"0000-00-00","daire_id":201,"daire_kodu":"BD1","blok_id":27,"blok_adi":"B Blok"},{"id":282,"adi_soyadi":"Tolga Bulut","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2021-12-01","cikis_tarihi":"0000-00-00","daire_id":202,"daire_kodu":"BD2","blok_id":27,"blok_adi":"B Blok"},{"id":283,"adi_soyadi":"Hande Ece","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2017-09-04","cikis_tarihi":"0000-00-00","daire_id":203,"daire_kodu":"BD3","blok_id":27,"blok_adi":"B Blok"},{"id":284,"adi_soyadi":"Burak Erdem","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-10-27","cikis_tarihi":"0000-00-00","daire_id":204,"daire_kodu":"BD4","blok_id":27,"blok_adi":"B Blok"},{"id":286,"adi_soyadi":"Cemil Tekin","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2007-04-02","cikis_tarihi":"0000-00-00","daire_id":206,"daire_kodu":"BD6","blok_id":27,"blok_adi":"B Blok"},{"id":287,"adi_soyadi":"Yasemin G\u00fcl","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-03-01","cikis_tarihi":"0000-00-00","daire_id":207,"daire_kodu":"BD7","blok_id":27,"blok_adi":"B Blok"},{"id":288,"adi_soyadi":"Koray Uzun","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2010-06-28","cikis_tarihi":"0000-00-00","daire_id":208,"daire_kodu":"BD8","blok_id":27,"blok_adi":"B Blok"},{"id":289,"adi_soyadi":"B\u00fc\u015fra Toprak","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-17","cikis_tarihi":"0000-00-00","daire_id":209,"daire_kodu":"BD9","blok_id":27,"blok_adi":"B Blok"},{"id":290,"adi_soyadi":"Harun Y\u00fccel","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2019-08-03","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":291,"adi_soyadi":"Melis Karaca","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2025-01-01","cikis_tarihi":"0000-00-00","daire_id":211,"daire_kodu":"BD11","blok_id":27,"blok_adi":"B Blok"},{"id":292,"adi_soyadi":"Volkan Sever","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2009-08-08","cikis_tarihi":"0000-00-00","daire_id":212,"daire_kodu":"BD12","blok_id":27,"blok_adi":"B Blok"},{"id":293,"adi_soyadi":"Derya \u00d6zen","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2024-07-01","cikis_tarihi":"0000-00-00","daire_id":213,"daire_kodu":"BD13","blok_id":27,"blok_adi":"B Blok"},{"id":294,"adi_soyadi":"Emre \u00c7ak\u0131r","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2015-04-15","cikis_tarihi":"0000-00-00","daire_id":214,"daire_kodu":"BD14","blok_id":27,"blok_adi":"B Blok"},{"id":296,"adi_soyadi":"R\u0131dvan \u015eim\u015fek","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2016-11-12","cikis_tarihi":"0000-00-00","daire_id":216,"daire_kodu":"BD16","blok_id":27,"blok_adi":"B Blok"},{"id":297,"adi_soyadi":"Ebru Kaplan","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2018-07-25","cikis_tarihi":"0000-00-00","daire_id":217,"daire_kodu":"BD17","blok_id":27,"blok_adi":"B Blok"},{"id":298,"adi_soyadi":"Ufuk Gen\u00e7","uyelik_tipi":"Kirac\u0131","giris_tarihi":"2020-04-07","cikis_tarihi":"0000-00-00","daire_id":218,"daire_kodu":"BD18","blok_id":27,"blok_adi":"B Blok"},{"id":300,"adi_soyadi":"Kadir Kurt","uyelik_tipi":"Ev Sahibi","giris_tarihi":"2004-12-18","cikis_tarihi":"0000-00-00","daire_id":220,"daire_kodu":"BD20","blok_id":27,"blok_adi":"B Blok"}] 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 181, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 261,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 182 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 183, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 263,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 184, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 264,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 185 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 186, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 266,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 187, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 267,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 188 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 189, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 269,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 190, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 270,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 191 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 192, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 272,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 193, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 273,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 194 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 195, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 275,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 196, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 276,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 197 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 198, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 278,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 199 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 200, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 280,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 201, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 281,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 202 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 203, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 283,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 204, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 284,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 206, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 286,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 207 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 208, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 288,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 209, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 289,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 211, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 291,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 212, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 292,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 213 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 214, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 294,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 216, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 296,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 217, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 297,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Daire ID 218 için ev sahibi bulunamadı, atlanıyor. 
+[2025-10-29 20:32:14] [INFO] Daireye borçlandirma yapılıyor : Daire ID: 220, 
+                                                                          Tutar: 1060, 
+                                                                          Ev Sahibi ID: 300,
+                                                                          Kiracı : [],
+                                                                          Başlangıç: 2025-10-01, 
+                                                                          Bitiş: 2025-10-31 
+[2025-10-29 20:32:14] [INFO] Batch insert: 25 kayıt eklendi. 
+[2025-10-29 20:32:14] [INFO] Borçlandırma işlemi tamamlandı. 
+[2025-10-29 20:33:16] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 1060.00 TL 
+[2025-10-29 20:33:34] [INFO] Tahsilat ID 3978 için ilişkili kasa hareketleri silindi. 
+[2025-10-29 20:33:34] [INFO] Tahsilat ID 3978 için ilişkili tahsilat detayları silindi. 
+[2025-10-29 20:33:34] [INFO] Tahsilat ID 3978 kaydı ve ilişkili tüm veriler silindi. 
+[2025-10-29 20:33:57] [INFO] Gecikme zammı ödemesi: 0.00 TL, kalan ödenecek tutar: 1060.00 TL 

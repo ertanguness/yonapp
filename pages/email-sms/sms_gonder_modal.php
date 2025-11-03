@@ -6,9 +6,12 @@ use Model\TahsilatModel;
 use Model\FinansalRaporModel;
 use Model\SitelerModel;
 
+use App\Services\Gate;
+
 use App\Helper\Security;
 
-use function PHPSTORM_META\type;
+//Gate::authorizeOrDie('sms_gonderme','Sms Gönderme Yetkiniz Bulunmamaktadır.', false);
+
 
 $SiteModel = new SitelerModel();
 $KisiModel = new KisilerModel();
@@ -19,47 +22,20 @@ $FinansalRaporModel = new FinansalRaporModel();
 $id = Security::decrypt($_GET['id'] ?? 0);
 $kisi_id = Security::decrypt($_GET['kisi_id'] ?? 0);
 
-$tahsilat = $TahsilatModel->find($id);
+$includeFile = $_GET['includeFile'];
+
 
 
 $kisi = $KisiModel->find($kisi_id);
 $site = $SiteModel->find($_SESSION['site_id']);
 // Telefon numarasını temizle ve hazırla
-$telefonNumarasi = '';
 
 
-if ($kisi && !empty($kisi->telefon)) {
 
-    $kisi_bakiye = $FinansalRaporModel->KisiFinansalDurum($kisi_id);
-
-    if($kisi_bakiye->bakiye < 0) {
-        $metin_ek = "{$kisi_bakiye->bakiye} TL tutarında borç bakiyesi bulunmaktadır. 
-Kalan tutarın en kısa sürede ödenmesini rica eder,";
-    }else {
-        $metin_ek = "{$kisi_bakiye->bakiye} TL tutarında alacak bakiyesi bulunmaktadır." ;
-     }
-
-    $mesaj_metni = "Sayın {$kisi->adi_soyadi},
-{$tahsilat->tutar} TL tutarındaki ödemeniz tarafımıza ulaşmıştır.
-İlginiz ve zamanında yaptığınız ödeme için teşekkür ederiz.
-Yapılan işlem sonrasında hesabınızda {$metin_ek}
-iyi günler dileriz.
-{$site->site_adi} YÖNETİMİ
-                    ";
-
-    // Telefonu sadece rakamlar olacak şekilde temizle
-    $telefonNumarasi = preg_replace('/[^0-9]/', '', $kisi->telefon);
-    // 0 ile başlıyorsa kaldır (5xxxxxxxxx formatına çevir)
-    if (substr($telefonNumarasi, 0, 1) === '0') {
-        $telefonNumarasi = substr($telefonNumarasi, 1);
-    }
-    
-    // Geçerli bir numara mı kontrol et (10-15 karakter arası)
-    if (strlen($telefonNumarasi) < 10 || strlen($telefonNumarasi) > 15) {
-        $telefonNumarasi = '';
-    }
-
+if($includeFile && file_exists("on-hazirlik/{$includeFile}")){
+    include_once  "on-hazirlik/{$includeFile}";
 }
+
 
 
 ?>
@@ -209,7 +185,7 @@ iyi günler dileriz.
     }
 </style>
 
-<div class="sms-sender-card shadow-lg" data-kisi-telefon="<?php echo htmlspecialchars($telefonNumarasi, ENT_QUOTES); ?>">
+<div class="sms-sender-card shadow-lg" data-kisi-telefon="<?php echo htmlspecialchars($telefonNumarasi ?? 0, ENT_QUOTES); ?>">
     <!-- KART BAŞLIĞI -->
     <div class="card-header">
         <h4 class="mb-0 d-flex align-items-center">
@@ -226,7 +202,7 @@ iyi günler dileriz.
                 <form id="smsForm">
                     <!-- Gönderen Adı (Alfanümerik) -->
                     <div class="mb-4">
-                        <select name="senderId" id="senderId" class="form-select">
+                        <select name="senderId" id="senderId" class="form-control select2">
                             <option value="USKUPEVLSIT" selected>USKUPEVLSIT</option>
                             <option value="FIRMAUNVANI">FIRMAUNVANI</option>
                             <option value="Diger">Diğer</option>
@@ -257,7 +233,7 @@ iyi günler dileriz.
                             </a>
                         </label>
                         <div class="form-floating">
-                            <textarea class="form-control" id="message" style="height: 350px;"><?php echo htmlspecialchars($mesaj_metni, ENT_QUOTES); ?></textarea>
+                            <textarea class="form-control" id="message" style="height: 350px;"><?php echo htmlspecialchars($mesaj_metni ?? '', ENT_QUOTES); ?></textarea>
                             <label for="message">Mesajınızı yazın...</label>
                         </div>
                         <!-- Karakter Sayacı -->
@@ -314,5 +290,5 @@ iyi günler dileriz.
 
 <script>
 // Kişi telefon numarasını JavaScript'e aktar
-window.kisiTelefonNumarasi = '<?php echo htmlspecialchars($telefonNumarasi, ENT_QUOTES); ?>';
+window.kisiTelefonNumarasi = '<?php echo htmlspecialchars($telefonNumarasi ?? '', ENT_QUOTES); ?>';
 </script>

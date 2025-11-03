@@ -33,6 +33,11 @@ $router->get('borclandirma-yap', function () {
     require 'pages/dues/debit/manage.php';
 });
 
+//Site Borçlandırma Özet
+$router->get('borclandirma-ozet', function () {
+    require 'pages/dues/payment/export/tum_sakinler_ozet_liste.php';
+});
+
 //Borçlandırma Düzenle
 $router->get('borclandirma-duzenle/{id}', function ($id) {
     require 'pages/dues/debit/manage.php';
@@ -88,11 +93,15 @@ $router->get('tahsilat-detayi/{id}', function ($id) {
 
 //Ana Sayfa
 $router->get('ana-sayfa', function () {
-    require 'pages/home.php';
+    require 'pages//home/home.php';
 });
 
+//Email ve SMS Bildirimleri
+$router->get('bildirimler', function () {
+    require 'pages/email-sms/list.php';
+});
 
-                        // SİTE YÖNETİMİ
+// SİTE YÖNETİMİ
 //site ekle
 $router->get('site-ekle', function () {
     require 'pages/management/sites/manage.php';
@@ -135,6 +144,35 @@ $router->get('daire-duzenle/{id}', function ($id) {
     require 'pages/management/apartment/manage.php';
 });
 
+
+//Excelden Daire Yükle
+$router->get('daireleri-excelden-yukle', function () {
+    require 'pages/management/apartment/upload-from-xls.php';
+});
+
+
+//Excelden gelir gider Yükle
+$router->get('excelden-gelir-gider-yukle', function () {
+    require 'pages/finans-yonetimi/gelir-gider/upload/upload-from-xls.php';
+});
+
+
+/* Daire tipi listesi */
+
+$router->get('daire-tipi-listesi', function () {
+    require 'pages/defines/apartment-type/list.php';
+});
+
+
+//Daire Tipi Tanımlama
+$router->get('daire-tipi-ekle', function () {
+    require 'pages/defines/apartment-type/manage.php';
+});
+//Daire Tipi Düzenle
+$router->get('daire-tipi-duzenle/{id}', function ($id) {
+    require 'pages/defines/apartment-type/manage.php';
+});
+
 //Site Sakinleri
 $router->get('site-sakinleri', function () {
     require 'pages/management/peoples/list.php';
@@ -160,12 +198,16 @@ $router->get('acil-durum-yonetimi', function () {
 });
 
 
+//Excelden borçlandırma yükle
+$router->get('borclandirma-excelden-yukle/{id}', function ($id) {
+    require 'pages/dues/debit/upload-from-xls.php';
+});
 
 $router->get('excelden-site-sakini-yukle', function () {
     require 'pages/management/peoples/upload-from-xls.php';
 });
 
-                        // REPAİR(BAKIM ONARIM)
+// REPAİR(BAKIM ONARIM)
 //Bakım ve arıza yönetimi
 $router->get('bakim-ariza-takip', function () {
     require 'pages/repair/list.php';
@@ -197,32 +239,32 @@ $router->get('maliyet-fatura-duzenle/{id}', function ($id) {
     require 'pages/repair/cost/manage.php';
 });
 
-                                //GÜVENLİK VE ZİYARETÇİ 
+//GÜVENLİK VE ZİYARETÇİ 
 //Görev Yeri listesi
 $router->get('guvenlik-gorev-yerleri', function () {
     require 'pages/ziyaretci/guvenlik/GorevYeri/list.php';
-});   
+});
 //Görev Yeri ekle
 $router->get('guvenlik-gorev-yeri-ekle', function () {
     require 'pages/ziyaretci/guvenlik/GorevYeri/manage.php';
-}); 
+});
 //Görev Yeri duzenle
 $router->get('guvenlik-gorev-yeri-duzenle/{id}', function ($id) {
     require 'pages/ziyaretci/guvenlik/GorevYeri/manage.php';
-});  
+});
 //Güvenlik Yönetimi
 $router->get('guvenlik', function () {
     require 'pages/ziyaretci/guvenlik/list.php';
-});                             
-                         
+});
+
 // Güvenlik Görev Yeri Ekle 
 $router->get('guvenlik-yeni-gorev-ekle', function () {
     require 'pages/ziyaretci/guvenlik/manage.php';
-}); 
+});
 // Güvenlik Görev Yeri Duzenle 
 $router->get('guvenlik-gorev-duzenle/{id}', function ($id) {
     require 'pages/ziyaretci/guvenlik/manage.php';
-}); 
+});
 // Ziyaretciler
 $router->get('ziyaretci-listesi', function () {
     require 'pages/ziyaretci/list.php';
@@ -250,16 +292,16 @@ $router->get('personel-duzenle/{id}', function ($id) {
 // Vardiya listesi
 $router->get('vardiya-listesi', function () {
     require 'pages/ziyaretci/guvenlik/Vardiya/list.php';
-});  
+});
 $router->get('vardiya-ekle', function () {
     require 'pages/ziyaretci/guvenlik/Vardiya/manage.php';
-});  
+});
 $router->get('vardiya-duzenle/{id}', function ($id) {
     require 'pages/ziyaretci/guvenlik/Vardiya/manage.php';
-});  
-                                    //KULLANICILAR 
+});
+//KULLANICILAR 
 //Kullanıcı Ekle
-$router->get('kullanici-ekle' , function () {
+$router->get('kullanici-ekle', function () {
     require 'pages/kullanici/duzenle.php';
 });
 
@@ -307,8 +349,13 @@ $router->get('kasa-listesi', function () {
 
 //Kasa Hareketleri
 $router->get('kasa-hareketleri/{id}', function ($id) {
-   
+
     require 'pages/finans-yonetimi/kasa/hareketler.php';
+});
+
+// Kasa ekle
+$router->get('kasa-ekle', function () {
+    require 'pages/finans-yonetimi/kasa/duzenle.php';
 });
 
 
@@ -323,6 +370,46 @@ $router->get('gelir-gider-islemleri/{id}', function ($id) {
 });
 
 
+
+
+//Tanımlamalar - Gelir Gider Tipleri
+$router->get('gelir-gider-tipi-listesi', function () {
+    require 'pages/defines/gelir-gider-tipi/list.php';
+});
+
+/*Tanımlamalar - Gelir Gider Tipi ekle*/
+$router->get('gelir-gider-tipi-ekle', function () {
+    require 'pages/defines/gelir-gider-tipi/manage.php';
+});
+/*Tanımlamalar - Gelir Gider Tipi düzenle*/
+$router->get('gelir-gider-tipi-duzenle/{id}', function ($id) {
+    require 'pages/defines/gelir-gider-tipi/manage.php';
+});
+
+
+
+
+// Gelir gider ajax list
+$router->get('gelir-gider-ajax-list', function () {
+    require 'pages/finans-yonetimi/gelir-gider/test-ajax.php';
+    // require 'pages/finans-yonetimi/gelir-gider/ajax-list.php';
+});
+
+
+//online aidat takip
+$router->get('online-aidat-takip', function () {
+    require 'pages/dues/online-dues/sorgula.php';
+});
+
+//Banka hesap hareketleri sorgula
+$router->get('banka-hesap-sorgula', function () {
+    require 'pages/dues/online-payment/sorgula.php';
+});
+
+//Banka hesap hareketleri listesi
+$router->get('banka-hesap-hareketleri', function () {
+    require 'pages/dues/online-payment/list.php';
+});
 
 //Ayarlar
 $router->get('ayarlar', function () {
@@ -358,7 +445,7 @@ $router->get('icra-duzenle/{id}', function ($id) {
     require 'pages/icra/manage.php';
 });
 
-                                //TANIMLAMALAR
+//TANIMLAMALAR
 //Daire Tipi Tanımlama
 $router->get('daire-turu-listesi', function () {
     require 'pages/defines/apartment-type/list.php';
@@ -372,9 +459,9 @@ $router->get('daire-turu-duzenle/{id}', function ($id) {
     require 'pages/defines/apartment-type/manage.php';
 });
 
-                            //AYARLAR
+//AYARLAR
 //ayarlar
-$router->get('ayarlar', function () { 
+$router->get('ayarlar', function () {
     require 'pages/ayarlar/manage.php';
 });
 
@@ -410,11 +497,16 @@ $router->get('sign-in', function () {
     require 'sign-in.php';
 });
 
+
 // Kayıt ol
-$router->get('sign-up', function () {
-    require 'sign-up.php';
+$router->get('kayit-ol', function () {
+    require 'register.php';
 });
 
+//Kayıt başarılı
+$router->get('kayit-basarili', function () {
+    require 'register-success.php';
+});
 
 //Çıkış yap
 $router->get('logout', function () {
@@ -423,14 +515,29 @@ $router->get('logout', function () {
 
 // Yetkiniz yok sayfası
 $router->get('unauthorize', function () {
-    
-     require 'pages/authorize.php';
+
+    require 'pages/authorize.php';
 });
 
 // Parametreli örnek: /rapor/2025-08-17
 $router->get('rapor/{tarih}', function ($tarih) {
     // $tarih değişkeni dinamik geliyor
     echo "Rapor tarihi: " . htmlspecialchars($tarih);
+});
+
+// Raporlar modülü: Tarihler Arası Borç/Alacak form sayfası
+$router->get('tarihler-arasi-boc-alacak-raporu', function () {
+    require 'pages/raporlar/tarihler-arasi-borc-alacak.php';
+});
+
+//raporlar
+$router->get('raporlar', function () {
+    require 'pages/raporlar/main.php';
+});
+
+//hazirun listesi raporu
+$router->get('hazirun-listesi', function () {
+    require 'pages/raporlar/export/hazirun-listesi.php';
 });
 
 // // Çalıştır

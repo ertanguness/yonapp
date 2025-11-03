@@ -1,24 +1,23 @@
 <?php
-require_once "App/Helper/helper.php";
 
+use App\Helper\Security;
 use App\Helper\Helper;
+use Model\DefinesModel;
 
-require_once 'Model/DefinesModel.php';
-$defineObj = new DefinesModel();
-$id = $_GET['id'] ?? 0;
-$debitType = $defineObj->find($id);
+$Tanimlamalar = new DefinesModel();
 
-$pageTitle = $id > 0 ? 'Borçlandırma Türü Güncelleme' : 'Yeni Borçlandırma Türü Tanımlama';
+$id = Security::decrypt($id ?? 0);
 
+$daireTipi = $Tanimlamalar->daireTipiGetir($id);
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
             <h5 class="m-b-10">Tanımlamalar</h5>
         </div>
-        <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/">Ana Sayfa</a></li>
-            <li class="breadcrumb-item">Borçlandırma İşlemleri</li>
+        <ul class="breadcrumb"></ul>
+            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
+            <li class="breadcrumb-item">Daire Tipi Tanımlama</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
@@ -30,13 +29,12 @@ $pageTitle = $id > 0 ? 'Borçlandırma Türü Güncelleme' : 'Yeni Borçlandırm
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="defines/debit-type/list">
+                <a href="/daire-turu-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
-                <button type="button" class="btn btn-primary" id="saveDebitType"></button>
-                    <i class="feather-save  me-2"></i>
+                </a>
+                <button type="button" class="btn btn-primary" id="saveApartmentType">
+                    <i class="feather-save me-2"></i>
                     Kaydet
                 </button>
             </div>
@@ -49,66 +47,48 @@ $pageTitle = $id > 0 ? 'Borçlandırma Türü Güncelleme' : 'Yeni Borçlandırm
     </div>
 </div>
 <div class="main-content">
-    <?php
-    $title = $pageTitle;
-    if ($pageTitle === 'Yeni Borçlandırma Türü Tanımlama') {
-        $text = "Yeni borçlandırma türü tanımlayabilirsiniz.";
-    } else {
-        $text = "Seçtiğiniz borçlandırma türünü güncelleyebilirsiniz.";
-    }
-    require_once 'pages/components/alert.php'
-    ?>
     <div class="row">
         <div class="container-xl">
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <form action='' id='debitTypeForm'></form>
+                        <form action="" id="apartmentTypeForm">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
-                                        <!--********** HIDDEN ROW************** -->
-                                        <div class='row d-none'>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='id' class='form-control'
-                                                    value="<?php echo $debitType->id ?? 0 ?>">
-                                            </div>
-                                            <div class='col-md-4'>
-                                                <input type='text' name='action' value='saveDebitType' class='form-control'>
-                                            </div>
-                                        </div>
-                                        <!--********** HIDDEN ROW************** -->
+                                    <input type="hidden" name="apartment-type_id" id="apartment-type_id" value="<?php echo Security::encrypt($id ?? 0)  ; ?>">
+
                                         <div class="col-lg-2">
-                                            <label for="debit_name" class="fw-semibold">Adı: </label>
+                                            <label for="apartment_type_name" class="fw-semibold">Daire Tipi Adı: </label>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="input-group">
-                                                <div class="input-group-text"><i class="feather-user-plus"></i></div>
-                                                <input type="text" class="form-control" id="debit_name" name="debit_name" value="<?php echo $debitType->debit_name ?? '' ?>">
+                                                <div class="input-group-text"><i class="feather-home"></i></div>
+                                                <input type="text" class="form-control" id="apartment_type_name" name="apartment_type_name" value="<?php echo $daireTipi->define_name ?? ''; ?>">
                                             </div>
                                         </div>
-
                                         <div class="col-lg-2">
-                                            <label for="debit_type" class="fw-semibold">Tipi: </label>
+                                            <label for="apartment_type_code" class="fw-semibold">Mülk Tipi: </label>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="input-group flex-nowrap w-100">
-                                                <div class="input-group-text"><i class="feather-dollar-sign"></i></div>
-                                                <?php echo Helper::debitTypeSelect("debit_type", $debitType->type_id ?? 1) ?>
+                                                <div class="input-group-text"><i class="feather-home"></i></div>
+                                                <?php echo Helper::getMulkTipiSelect('mulk_tipi', $daireTipi->mulk_tipi ?? null); ?>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-4 align-items-center">
+                                    <div class="row">
                                         <div class="col-lg-2">
                                             <label for="description" class="fw-semibold">Açıklama: </label>
                                         </div>
                                         <div class="col-lg-10">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-type"></i></div>
-                                                <textarea class="form-control" id="description" cols="30" rows="3" value="<?php echo $incexp->description ?? '' ?>"></textarea>
+                                                <textarea class="form-control" id="description" name="description" cols="30" rows="3"><?php echo $daireTipi->description ?? ''; ?></textarea>
                                             </div>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </form>

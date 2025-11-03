@@ -14,10 +14,22 @@ class SettingsModel extends Model
     }
 
 
+    /** 
+     * Sitenin tüm ayarlarını anahtar-değer çifti olarak döner
+     * @return object|null
+     */
+    public function getAllSettingsAsKeyValue()
+    {
+        $firm_id = $_SESSION['site_id'];
+        $sql = $this->db->prepare("SELECT set_name, set_value FROM $this->table WHERE site_id = ?");
+        $sql->execute([$firm_id]);
+        return $sql->fetchAll(PDO::FETCH_KEY_PAIR) ?? null;
+    }
+
     public function getSettings($set_name)
     {
         $firm_id = $_SESSION['firm_id'];
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE firm_id = ? AND set_name = ?");
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE site_id = ? AND set_name = ?");
         $sql->execute([$firm_id, $set_name]);
         return $sql->fetch(PDO::FETCH_OBJ) ?? null;
     }

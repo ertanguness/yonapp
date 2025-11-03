@@ -1,5 +1,6 @@
 <?php
 ob_start();
+$page = "sign-in";
 
 
 require_once __DIR__ . '/configs/bootstrap.php';
@@ -135,6 +136,7 @@ include './partials/head.php';
                     <?php
                    // --- TEK SATIRDA FLASH MESAJLARI GÖSTERME ---
                    include __DIR__ . '/partials/_flash_messages.php';
+                   unset($_SESSION['message']);
                     ?>
                     
                     <h2 class="fs-24 fw-bolder mb-4 text-center">Hoşgeldiniz!</h2>
@@ -159,6 +161,10 @@ include './partials/head.php';
                         <div class="mt-5">
                             <button type="submit" name="submitForm" class="btn btn-lg btn-primary w-100">Giriş</button>
                         </div>
+                        <div class="mt-5 text-muted">
+                        <span> Henüz hesabınız yok mu?</span>
+                        <a href="/register.php" class="fw-bold">Hesap Oluştur</a>
+                    </div>
                     </form>
 
                     <!-- ... (Formun alt kısmı aynı kalabilir) ... -->

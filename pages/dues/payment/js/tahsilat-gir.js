@@ -64,32 +64,38 @@ $(function () {
       .then((response) => response.json())
       .then((data) => {
 
-        //console.log(data);
+        console.log(data);
         
-        var finansalDurum = data.finansalDurum;
-        var rowData = data.rowData;
+        setButtonLoading("#tahsilatKaydet", false,); // Buton yükleme durumunu kaldır
+        var finansalDurum = data.finansalDurum ?? {};
+        var rowData = data.rowData ?? {};
         //console.log(rowData);
 
         //kalan anapara 0'dan büyükse <i class="feather-trending-down fw-bold text-danger"></i> bunu da ekle
 
 
         //tablo satırnını 4.sütununa data.finansalDurum.toplam_borc değerini güncelle
-        row.cell(row.index(), 3).data(rowData.kalan_anapara).draw(false);
-        
-        //tablo satırnını 5.sütununa data.finansalDurum.toplam_odeme değerini güncelle
-        row.cell(row.index(), 4).data(rowData.hesaplanan_gecikme_zammi).draw(false);
-        
-        row.cell(row.index(), 5).data(rowData.toplam_kalan_borc).draw(false);
+        //Tablo başlığına göre getir
+        //BORÇ TUTARI olan sütunu al
 
-        //tablo satırnını 6.sütununa data.finansalDurum.bakiye değerini güncelle
-        row.cell(row.index(), 6).data(rowData.kredi_tutari).draw(false);
-        row.cell(row.index(), 7).data(rowData.guncel_borc).draw(false);
+        // Eğer rowData varsa güncelleme yap
+        if (Object.keys(rowData).length > 0) {
+            row.cell(row.index(), 5).data(rowData.kalan_anapara).draw(false);
+            
+            //tablo satırnını 5.sütununa data.finansalDurum.toplam_odeme değerini güncelle
+            row.cell(row.index(), 6).data(rowData.hesaplanan_gecikme_zammi).draw(false);
+            
+            row.cell(row.index(), 7).data(rowData.toplam_kalan_borc).draw(false);
+            
+            //tablo satırnını 6.sütununa data.finansalDurum.bakiye değerini güncelle
+            row.cell(row.index(), 8).data(rowData.kredi_tutari).draw(false);
+            row.cell(row.index(), 9).data(rowData.guncel_borc).draw(false);
+          }
 
 
-        setButtonLoading("#tahsilatKaydet", false,); // Buton yükleme durumunu kaldır
 
 
-        let title = data.status ? "Başarılı" : "Hata";
+        let title = data.status  ? "Başarılı" : "Hata";
 
         Swal.fire({
           icon: data.status,
@@ -135,6 +141,7 @@ $(function () {
       })
       .catch((error) => {
         console.error("Error:", error);
+         setButtonLoading("#tahsilatKaydet", false,); // Buton yükleme durumunu kaldır
         Swal.fire({
           icon: "error",
           title: "Hata",
