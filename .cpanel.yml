@@ -1,0 +1,6 @@
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/mbeyazil/public_html/test/
+    - /bin/echo "🚀 Deploy başlıyor..."
+    - /bin/rsync -av --delete --exclude='.git' --exclude='.env' --exclude='.cpanel.yml' . $DEPLOYPATH
+    - /bin/echo "✅ Deploy tamamlandı ($(date))"
