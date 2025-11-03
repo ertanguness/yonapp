@@ -64,7 +64,6 @@ $page = $router->getPageName() ?? '';
     <main class="nxl-container">
         <div class="nxl-content">
         <?php 
-        echo "<!-- Yüklenen sayfa: " . ($page) . " -->"; // Debug için
             // 4. Adım: İÇERİK OLUŞTURMA
             // Rota tespitinde bulduğumuz callback'i parametreleriyle birlikte çalıştır.
             call_user_func_array($resolvedRoute['callback'], $resolvedRoute['params']);
