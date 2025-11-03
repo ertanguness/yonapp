@@ -1,1 +1,7 @@
-/.env
+# Ortak gereksiz dosyalar
+cache/
+logs/
+*.log
+*.cache
+vendor/composer/installed.json
+.env
