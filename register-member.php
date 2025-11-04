@@ -31,7 +31,7 @@ if (!empty($email)) {
   $User = new UserModel();
   if ($User->isEmailExists($email)) {
     FlashMessageService::add('error', 'Hata!', 'Bu e-posta ile daha önce kayıt olunmuş. Lütfen giriş yapınız.');
-    header('Location: /register-members.php?email=' . urlencode($email));
+    header('Location: /register-member.php?email=' . urlencode($email));
     exit;
   }
 }
