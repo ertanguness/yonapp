@@ -70,7 +70,7 @@ try {
     FlashMessageService::add('success', 
                              'Kayıt Başarılı', 
                              'Hesabınız oluşturuldu. Giriş yapabilirsiniz.',
-                             'onay2');
+                             'onay2.png');
     header('Location: /sign-in.php?email=' . urlencode($email));
     exit;
 } catch (\Throwable $e) {
