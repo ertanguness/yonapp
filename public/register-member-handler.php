@@ -67,7 +67,10 @@ try {
 
     $pdo->commit();
 
-    FlashMessageService::add('success', 'Kayıt Başarılı', 'Hesabınız oluşturuldu. Giriş yapabilirsiniz.');
+    FlashMessageService::add('success', 
+                             'Kayıt Başarılı', 
+                             'Hesabınız oluşturuldu. Giriş yapabilirsiniz.',
+                             'onay2');
     header('Location: /sign-in.php?email=' . urlencode($email));
     exit;
 } catch (\Throwable $e) {

@@ -144,8 +144,9 @@ public static function ensureSiteSelected()
     {
 
         //Kullanıcı tipi site sakini ise atla
-        if ($_SESSION['user']['roles'] == 3) {
-            return;
+        if ($_SESSION['user']->roles == 3) {
+            header('Location: /borclarim');
+            exit();
         }
         if ($_SESSION['site_id'] == null ) {
 
