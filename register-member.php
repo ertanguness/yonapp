@@ -3,9 +3,38 @@ require_once __DIR__ . '/configs/bootstrap.php';
 
 use App\Helper\Security;
 use App\Services\FlashMessageService;
+use Model\KisilerModel;
+use Model\UserModel;
 
 $email = isset($_GET['email']) ? trim($_GET['email']) : '';
 $kisiEnc = $_GET['kisi'] ?? '';
+$fullName = '';
+
+// Eğer kisi parametresi geldiyse, adı-soyadı ön-doldur
+if (!empty($kisiEnc)) {
+  try {
+    $kisiId = (int) Security::decrypt($kisiEnc);
+    if ($kisiId > 0) {
+      $Kisiler = new KisilerModel();
+      $kisi = $Kisiler->KisiBilgileri($kisiId);
+      if ($kisi && !empty($kisi->adi_soyadi)) {
+        $fullName = $kisi->adi_soyadi;
+      }
+    }
+  } catch (\Throwable $e) {
+    // sessiz geç, form boş kalsın
+  }
+}
+
+// Eğer e-posta mevcut ise ve zaten kayıtlıysa, giriş sayfasına yönlendir
+if (!empty($email)) {
+  $User = new UserModel();
+  if ($User->isEmailExists($email)) {
+    FlashMessageService::add('error', 'Hata!', 'Bu e-posta ile daha önce kayıt olunmuş. Lütfen giriş yapınız.');
+    header('Location: /register-members.php?email=' . urlencode($email));
+    exit;
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -31,7 +60,7 @@ $kisiEnc = $_GET['kisi'] ?? '';
           <input type="hidden" name="action" value="register_member">
           <input type="hidden" name="kisi" value="<?= htmlspecialchars($kisiEnc) ?>">
           <div class="mb-4">
-            <input type="text" class="form-control" name="full_name" id="full_name" placeholder="Adınız Soyadınız" required>
+            <input type="text" class="form-control" name="full_name" id="full_name" placeholder="Adınız Soyadınız" value="<?= htmlspecialchars($fullName) ?>" required>
           </div>
           <div class="mb-4">
             <input type="email" class="form-control" name="email" id="email" value="<?= htmlspecialchars($email) ?>" placeholder="E-posta" <?= $email ? 'readonly' : '' ?> required>
