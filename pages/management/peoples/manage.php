@@ -110,6 +110,10 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                                                 </li>
                                                 <li class="nav-item flex-fill border-top" role="presentation">
                                                     <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
+                                                        data-bs-target="#girisbilgileri" role="tab">Giriş Bilgileri</a>
+                                                </li>
+                                                <li class="nav-item flex-fill border-top" role="presentation">
+                                                    <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
                                                         data-bs-target="#peopleCarInfoTab" role="tab">Araç Bilgileri</a>
                                                 </li>
                                                 <li class="nav-item flex-fill border-top" role="presentation">
@@ -122,6 +126,11 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                                             <div class="tab-pane fade " id="peopleInfoTab" role="tabpanel">
                                                 <?php
                                                 require_once 'pages/management/peoples/content/PeopleInfoTab.php';
+                                                ?>
+                                            </div>
+                                            <div class="tab-pane fade " id="girisbilgileri" role="tabpanel">
+                                                <?php
+                                                require_once 'pages/management/peoples/content/GirisBilgileri.php';
                                                 ?>
                                             </div>
                                             <div class="tab-pane fade " id="peopleCarInfoTab" role="tabpanel">
