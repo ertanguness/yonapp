@@ -32,7 +32,12 @@ $daire   = $Daireler->DaireAdi($kisi->daire_id ?? null);
 $encKisiId = Security::encrypt($kisiId);
 
 // Davet linki (kayıt sayfasına e-posta ön-dolu)
-$inviteLink = yonapp_base_url() . '/register.php' . ($email ? ('?email=' . urlencode($email)) : '');
+// Davet linkini register-member.php'ye yönlendir, kisi (enc) ve email parametreleri ile
+$inviteLinkBase = yonapp_base_url() . '/register-member.php';
+$query = [];
+if ($email) { $query['email'] = $email; }
+if ($encKisiId) { $query['kisi'] = $encKisiId; }
+$inviteLink = $inviteLinkBase . (!empty($query) ? ('?' . http_build_query($query)) : '');
 
 // Kullanıcı ve giriş kayıtları
 $user = null;
