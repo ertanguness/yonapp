@@ -7,6 +7,10 @@ use App\Helper\Cities;
 $Sites = new SitelerModel();
 $cities = new Cities();
 
+
+/**Site sakini bu sayfayı görmeyecek */
+Security::ensureNotResident();
+
 $enc_id = $id ?? 0;
 
 $id = Security::decrypt($id ?? 0);

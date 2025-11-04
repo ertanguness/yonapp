@@ -143,11 +143,6 @@ public static function decrypt($data)
 public static function ensureSiteSelected()
     {
 
-        //Kullanıcı tipi site sakini ise atla
-        if ($_SESSION['user']->roles == 3) {
-            header('Location: /borclarim');
-            exit();
-        }
         if ($_SESSION['site_id'] == null ) {
 
             FlashMessageService::add( "info","Uyarı!", "Lütfen önce bir site seçin veya ekleyin.  ");
@@ -155,4 +150,19 @@ public static function ensureSiteSelected()
             exit();
         }
     }
+
+/** Eğer giriş yapan kullanıcının rolü site sakini ise başka sayfalara girmesini engelle
+ */
+public static function ensureNotResident()
+    {
+        //Kullanıcı tipi site sakini ise atla
+        if ($_SESSION['user']->roles == 3) {
+            FlashMessageService::add( "error","Yetkisiz Erişim!", "Bu sayfaya erişim yetkiniz bulunmamaktadır.  ");
+            header('Location: /borclarim');
+            exit();
+        }
+    }
+
 }
+
+

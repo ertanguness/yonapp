@@ -3,7 +3,10 @@
 use App\Helper\Helper;
 use Model\BorclandirmaModel;
 use Model\FinansalRaporModel;
+use App\Helper\Security;
 
+/**Site sakini bu sayfayı görmeyecek */
+Security::ensureNotResident();
 
 $BorclandirmaModel = new BorclandirmaModel();
 $FinansalRaporModel = new FinansalRaporModel();
