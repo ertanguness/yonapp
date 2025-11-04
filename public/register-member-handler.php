@@ -55,7 +55,7 @@ try {
         'full_name' => Security::escape($fullName),
         'email' => Security::escape($email),
         'status' => 1, // davetli kullanıcıyı direkt aktif et
-        'roles' => 0,  // not: sistemde "sakin" rol id'si farklıysa burada güncellenmeli
+        'roles' => 3,  // not: sistemde "sakin" rol id'si 3 olarak varsayılmıştır
         'is_main_user' => 0,
         'password' => password_hash($pass, PASSWORD_DEFAULT),
     ];

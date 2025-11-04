@@ -143,8 +143,11 @@ public static function decrypt($data)
 public static function ensureSiteSelected()
     {
 
-
-        if ($_SESSION['site_id'] == null) {
+        //Kullanıcı tipi site sakini ise atla
+        if ($_SESSION['user']['roles'] == 3) {
+            return;
+        }
+        if ($_SESSION['site_id'] == null ) {
 
             FlashMessageService::add( "info","Uyarı!", "Lütfen önce bir site seçin veya ekleyin.  ");
             header("Location: site-ekle");

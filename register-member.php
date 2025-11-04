@@ -60,7 +60,7 @@ if (!empty($email)) {
           <input type="hidden" name="action" value="register_member">
           <input type="hidden" name="kisi" value="<?= htmlspecialchars($kisiEnc) ?>">
           <div class="mb-4">
-            <input type="text" class="form-control" name="full_name" id="full_name" placeholder="Adınız Soyadınız" value="<?= htmlspecialchars($fullName) ?>" required>
+            <input type="text" class="form-control" name="full_name" readonly id="full_name" placeholder="Adınız Soyadınız" value="<?= htmlspecialchars($fullName) ?>" required>
           </div>
           <div class="mb-4">
             <input type="email" class="form-control" name="email" id="email" value="<?= htmlspecialchars($email) ?>" placeholder="E-posta" <?= $email ? 'readonly' : '' ?> required>
