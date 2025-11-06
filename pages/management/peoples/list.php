@@ -51,7 +51,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
   
                 <a href="/site-sakini-ekle" class="btn btn-primary route-link" >
                     <i class="feather-plus"></i>
-                    <span>Yeni Kişi Ekledd</span>
+                    <span>Yeni Kişi Ekle</span>
 
                 </a>
             </div>
@@ -75,6 +75,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
+                    
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
 
