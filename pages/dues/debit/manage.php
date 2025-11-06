@@ -213,7 +213,7 @@ switch ($hedef_tipi) {
                     <div class="card-body aidat-info">
                         <div class="table-responsive">
 
-                            <table class="table table-hover table-center mb-0 datatables" id="definedDebitsTable">
+                            <table class="table table-hover table-center mb-0 datatables table-responsive" id="definedDebitsTable">
                                 <thead>
                                     <tr>
                                         <th>Sıra</th>

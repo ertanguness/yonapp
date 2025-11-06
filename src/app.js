@@ -5,7 +5,8 @@ $(document).ready(function () {
   if ($(".datatables").length > 0) {
     table = $(".datatables").DataTable({
       //stateSave: true,
-      responsive: false,
+      responsive: true,
+      dom: '<"row mb-3"<"col-md-6"B><"col-md-6"f>>t<"row m-2"<"col-md-1"l><"col-md-1"i><"col-md-10 float-end"p>>',
       language: {
         //url: "/assets/js/tr.json",
       },

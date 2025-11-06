@@ -12,11 +12,11 @@ $Borc = new BorclandirmaModel();
 $BorcDetay = new BorclandirmaDetayModel();
 $Due = new DueModel();
 
+$site_id = $_SESSION['site_id'];
 
 //Yeni kayıt yapan kullanıcıların site seçmeden bu sayfaya erişimini engelle
 Security::ensureSiteSelected();
 
-$site_id = $_SESSION['site_id'];
 
 
 //borçlandırmaları getir
@@ -68,7 +68,7 @@ $dueCache = [];
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover datatables" id="debitTable">
+                                <table class="table table-hover datatables table-responsive" id="debitTable">
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>

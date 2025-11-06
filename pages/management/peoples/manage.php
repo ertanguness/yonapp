@@ -38,6 +38,10 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                     Listeye Dön
                 </a>
                 </button>
+                <a href="/site-sakini-ekle" class="btn btn-success"  class="dynamic-save-button">
+                    <i class="feather-save me-2"></i>
+                    Yeni Kayıt
+                </a >
                 <button type="button" class="btn btn-primary" id="savePeoples" class="dynamic-save-button">
                     <i class="feather-save me-2"></i>
                     Kaydet

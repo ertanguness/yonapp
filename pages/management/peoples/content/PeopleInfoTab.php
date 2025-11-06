@@ -43,7 +43,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
                 <div class="input-group-text"><i class="fas fa-phone"></i></div>
                 <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Telefon Numarası Giriniz" value="<?php echo $kisi->telefon ?? ''; ?>">
             </div>
-            
+
         </div>
 
     </div>
@@ -98,7 +98,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group flex-nowrap w-100">
                 <div class="input-group-text"><i class="fas fa-user"></i></div>
-               <?php echo Helper::ikametTuruSelect('residentType', $kisi->uyelik_tipi ?? '0'); ?>
+                <?php echo Helper::ikametTuruSelect('residentType', $kisi->uyelik_tipi ?? '0'); ?>
             </div>
             <small id="sakinTürü" class="form-text text-muted">
             </small>
@@ -125,8 +125,8 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-check"></i></div>
-                <input type="text" class="form-control flatpickr" id="entryDate" autocomplete="off" name="entryDate" placeholder="Giriş Tarihi Giriniz" 
-                value="<?php echo Date::dmY($kisi->giris_tarihi ?? null)  ?? ''; ?>">
+                <input type="text" class="form-control flatpickr" id="entryDate" autocomplete="off" name="entryDate" placeholder="Giriş Tarihi Giriniz"
+                    value="<?php echo Date::dmY($kisi->giris_tarihi ?? null)  ?? ''; ?>">
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Kişi kayıt yaptığında tarih girilmelidir. </small>
@@ -138,7 +138,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-calendar-times"></i></div>
-                <input type="text" class="form-control flatpickr" id="exitDate" name="exitDate" placeholder="Çıkış Tarihi Giriniz" value="<?php echo Date::dmY($kisi->cikis_tarihi ?? '') ; ?>">
+                <input type="text" class="form-control flatpickr" id="exitDate" name="exitDate" placeholder="Çıkış Tarihi Giriniz" value="<?php echo Date::dmY($kisi->cikis_tarihi ?? ''); ?>">
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Kişi çıkış yaptığında tarih girilmelidir. </small>
@@ -155,7 +155,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-id-card"></i></div>
-                <input type="text" class="form-control" id="tcPassportNo" name="tcPassportNo" placeholder="TC Kimlik No veya Pasaport No Giriniz" maxlength="11" value="<?php echo $kisi->kimlik_no ?? ''; ?>">
+                <input type="text" inputmode="numeric" maxlength="11" class="form-control" id="tcPassportNo" name="tcPassportNo" placeholder="TC Kimlik No veya Pasaport No Giriniz" value="<?php echo $kisi->kimlik_no ?? ''; ?>" autocomplete="off">
             </div>
         </div>
 
@@ -211,9 +211,9 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
                     <?= (!empty($kisi->kullanim_durumu) && $kisi->kullanim_durumu != 0) ? 'checked' : '' ?>>
                 <label class="form-check-label ms-4" for="status"></label>
                 <small id="kullanimDurumu" class="form-text text-muted">
-                Kişinin İlgili Bağımsız bölümü aktif olarak kullanıp kullanmama durumunu belirtir. </small>
+                    Kişinin İlgili Bağımsız bölümü aktif olarak kullanıp kullanmama durumunu belirtir. </small>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -265,5 +265,39 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
                 this.value = value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 9);
             }
         });
+
+
+ 
     });
+        // TC Kimlik No doğrulama fonksiyonu
+        function isValidTCKN(tckn) {
+            // Sadece rakam - 11 hane - ilk hane 0 olamaz
+            if (!/^[1-9][0-9]{10}$/.test(tckn)) {
+                return false;
+            }
+
+            const digits = tckn.split('').map(Number);
+
+            // 10. hane kontrolü
+            const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+            const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
+            const digit10 = ((oddSum * 7) - evenSum) % 10;
+
+            if (digit10 !== digits[9]) {
+                return false;
+            }
+
+            // 11. hane kontrolü
+            const total = digits.slice(0, 10).reduce((a, b) => a + b, 0);
+            const digit11 = total % 10;
+
+            if (digit11 !== digits[10]) {
+                return false;
+            }
+
+            return true;
+        }
+
+
+
 </script>
