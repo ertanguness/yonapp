@@ -103,7 +103,7 @@ if ($_POST['action'] == 'payment_file_upload') {
     function kaydetTahsilatOnay($TahsilatOnay, $data, $daire_id)
     {
 
-        $islem_tarihi = Date::parseExcelDate($data[0]) ?? Date::YmdHIS($data[0]);  // İşlem tarihi
+        $islem_tarihi =  Date::YmdHIS($data[0]);  // İşlem tarihi
 
         // Tutar artık temizlenmiş durumda gelmeli
         $tutar = is_numeric($data[1]) ? floatval($data[1]) : Helper::formattedMoneyToNumber($data[1]);
@@ -141,7 +141,7 @@ if ($_POST['action'] == 'payment_file_upload') {
      */
     function kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk = '')
     {
-        $islem_tarihi = Date::parseExcelDate($data[0]) ?? Date::YmdHis($data[0]);  // İşlem tarihi
+        $islem_tarihi =  Date::YmdHis($data[0]);  // İşlem tarihi
         $ham_aciklama = $data[5] ?? '';  // Ham açıklama alanı, varsa kullanılır
         $referans_no = $data[6] ?? '';  // Makbuz no, varsa kullanılır
         // Tutar artık temizlenmiş durumda gelmeli

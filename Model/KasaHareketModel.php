@@ -84,7 +84,7 @@ class KasaHareketModel extends Model{
               LEFT JOIN daireler d ON k.daire_id = d.id
               WHERE kh.kasa_id = :kasa_id 
               AND kh.silinme_tarihi IS NULL 
-              AND kh.tutar != 0
+              AND kh.tutar != 0;
               AND kh.islem_tarihi BETWEEN :baslangic_tarihi AND :bitis_tarihi";
     
     // Hareket yönü filtresi varsa ekle

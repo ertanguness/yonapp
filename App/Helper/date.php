@@ -96,45 +96,7 @@ public static function dmY($date = null, $format = 'd.m.Y')
         return null;
     }
 
-    // public static function normalizeDate($date, $outputFormat = 'Y-m-d H:i:s')
-    // {
-    //     if (empty($date)) {
-    //         return '';
-    //     }
-
-    //     // Önceden tanımlanmış yaygın formatlar
-    //     $commonFormats = [
-    //         'd/m/Y-H:i:s',    // 26/05/2025-14:02:40
-    //         'd.m.Y H:i:s',     // 26.05.2025 14:02:40
-    //         'Y-m-d H:i:s',     // 2025-05-26 14:02:40
-    //         'd/m/Y H:i:s',     // 26/05/2025 14:02:40
-    //         'm/d/Y H:i:s',     // 05/26/2025 14:02:40 (US format)
-    //         'Ymd His',         // 20250526 140240
-    //         'D M d Y H:i:s',   // Tue May 26 2025 14:02:40
-    //         DateTime::ATOM,     // 2025-05-26T14:02:40+00:00
-    //         DateTime::RFC2822,  // Tue, 26 May 2025 14:02:40 +0000
-    //     ];
-
-    //     // Önce DateTime objesi oluşturmayı dene
-    //     $datetime = date_create($date);
-
-    //     // Başarısız olursa, bilinen formatları dene
-    //     if ($datetime === false) {
-    //         foreach ($commonFormats as $format) {
-    //             $datetime = DateTime::createFromFormat($format, $date);
-    //             if ($datetime !== false) {
-    //                 break;
-    //             }
-    //         }
-    //     }
-
-    //     // Hala geçerli bir tarih yoksa, şimdiki zamanı dön
-    //     if ($datetime === false) {
-    //         return date($outputFormat);
-    //     }
-
-    //     return $datetime->format($outputFormat);
-    // }
+    
 
     /**
      * Farklı yerel tarih formatlarını güvenle çözüp verilen çıktıya dönüştürür.
