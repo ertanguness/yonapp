@@ -45,7 +45,7 @@ if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
 
         //Email adresi  kontrolü
         if (!empty($_POST["email"])) {
-            if ($Kisiler->isExistsEmail($_POST["email"], $id)) {
+            if ($Kisiler->isExistsEmail($_POST["email"]) && (empty($id) || $id == 0)) {
                 $kayitli_email = $_POST["email"];
             }
             if (!empty($kayitli_email)) {
