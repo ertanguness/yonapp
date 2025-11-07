@@ -477,6 +477,16 @@ $router->get('onay-bekleyen-tahsilatlar', function () {
 
 
 
+// personel listesi
+$router->get('personeller', function () {
+    require 'pages/persons/list.php';
+});
+
+
+
+
+
+
 $router->get('profile', function () {
     require 'profile.php';
 });

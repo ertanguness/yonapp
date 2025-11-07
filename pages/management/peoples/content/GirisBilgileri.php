@@ -86,8 +86,8 @@ try {
                 <div class="card border-light shadow-sm h-100 invite-card transition-all">
                     <div class="card-body d-flex flex-column text-center">
                         <div class="mb-3">
-                            <div class="text-warning fs-1">
-                                <i class="bi bi-link-45deg"></i>
+                            <div class="text-warning">
+                                <i class="bi bi-link-45deg card-icon"></i>
                             </div>
                         </div>
                         <h6 class="card-title fw-600 mb-2">Davet Linki</h6>
@@ -109,8 +109,8 @@ try {
                 <div class="card border-light shadow-sm h-100 invite-card transition-all">
                     <div class="card-body d-flex flex-column text-center">
                         <div class="mb-3">
-                            <div class="text-primary fs-1">
-                                <i class="bi bi-envelope-paper"></i>
+                            <div class="text-primary">
+                                <i class="bi bi-envelope-paper card-icon"></i>
                             </div>
                         </div>
                         <h6 class="card-title fw-600 mb-2">E-posta ile Davet</h6>
@@ -134,8 +134,8 @@ try {
                 <div class="card border-light shadow-sm h-100 invite-card transition-all">
                     <div class="card-body d-flex flex-column text-center">
                         <div class="mb-3">
-                            <div class="text-success fs-1">
-                                <i class="fa-brands fa-whatsapp"></i>
+                            <div class="text-success">
+                                <i class="fa-brands fa-whatsapp card-icon"></i>
                             </div>
                         </div>
                         <h6 class="card-title fw-600 mb-2">WhatsApp ile Davet</h6>
@@ -143,7 +143,7 @@ try {
                             Kişiye WhatsApp üzerinden davet linki gönder
                         </p>
                         <div class="alert alert-light small mb-2 p-2 text-break" style="border: 1px solid #e9ecef; border-radius: 4px;">
-                            <i class="bi bi-phone"></i> 
+                            <i class="bi bi-phone "></i> 
                             <br>
                             <strong><?= htmlspecialchars($telefon ?: 'Telefon yok') ?></strong>
                         </div>
@@ -159,8 +159,8 @@ try {
                 <div class="card border-light shadow-sm h-100 invite-card transition-all">
                     <div class="card-body d-flex flex-column text-center">
                         <div class="mb-3">
-                            <div class="text-info fs-1">
-                                <i class="bi bi-chat-dots"></i>
+                            <div class="text-info">
+                                <i class="bi bi-chat-dots card-icon"></i>
                             </div>
                         </div>
                         <h6 class="card-title fw-600 mb-2">SMS ile Davet</h6>
@@ -230,10 +230,15 @@ try {
 
 .invite-card .card-body {
     padding: 1.5rem;
-}
+}   
 
 .fw-600 {
     font-weight: 600;
+}
+.card-icon {
+    font-size: 2rem !important;
+    vertical-align: middle;
+    margin-right: 0.5rem;
 }
 </style>
 
