@@ -66,7 +66,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
         </li>
         <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
-                data-bs-target="#girisbilgileri" role="tab">Giriş Bilgileri</a>
+                data-bs-target="#girisbilgileri" role="tab">Program Giriş Bilgileri</a>
         </li>
         <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"

@@ -64,29 +64,10 @@ try {
     <?php return; endif; ?>
 
 <!-- Davet Alanı (Tablonun Üstünde) -->
-<div class="card mb-3">
+<div class="card mb-4 border-0 shadow-sm">
     <div class="card-body">
-        <div class="d-flex flex-wrap align-items-center gap-3">
-            <div>
-                <div class="fw-bold mb-1">Davet Linki</div>
-                <div class="input-group input-group-sm" style="min-width:360px; max-width:640px;">
-                    <input type="text" class="form-control" id="inviteLinkInput" readonly value="<?= htmlspecialchars($inviteLink) ?>">
-                    <button type="button" class="btn btn-outline-secondary" id="copyInviteBtn" data-link="<?= htmlspecialchars($inviteLink) ?>"><i class="feather-copy"></i></button>
-                </div>
-            </div>
-            <div class="ms-auto d-flex flex-wrap align-items-center gap-2">
-                <button class="btn btn-sm btn-outline-primary" id="sendInviteEmail" <?= $email ? '' : 'disabled' ?> data-email="<?= htmlspecialchars($email) ?>">
-                    <i class="bi bi-envelope"></i> E-posta Gönder
-                </button>
-                <button class="btn btn-sm btn-outline-success" id="sendInviteWhatsapp" <?= $telefon ? '' : 'disabled' ?> data-phone="<?= htmlspecialchars($telefon) ?>">
-                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                </button>
-                <button class="btn btn-sm btn-outline-info" id="sendInviteSms" <?= $telefon ? '' : 'disabled' ?> data-phone="<?= htmlspecialchars($telefon) ?>">
-                    <i class="bi bi-send"></i> SMS Gönder
-                </button>
-            </div>
-        </div>
-        <div class="mt-2 small text-muted">
+        <!-- Kişi Bilgileri -->
+        <div class="small text-muted mb-4 pb-3 border-bottom">
             <span class="me-3"><strong>Kişi:</strong> <?= htmlspecialchars($kisi->adi_soyadi ?? '-') ?></span>
             <span class="me-3"><strong>Blok:</strong> <?= htmlspecialchars($blok->blok_adi ?? '-') ?></span>
             <span class="me-3"><strong>Daire:</strong> <?= is_object($daire) ? htmlspecialchars($daire->daire_no) : '-' ?></span>
@@ -95,13 +76,115 @@ try {
             <?php else: ?>
                 <span class="me-3"><strong>Hesap:</strong> Yok</span>
             <?php endif; ?>
-            <span class="me-3"><strong>Son Davet:</strong> <span id="lastInviteText">-</span></span>
+            <span><strong>Son Davet:</strong> <span id="lastInviteText">-</span></span>
+        </div>
+
+        <!-- Davet Yöntemleri Card Layout - 4 Kartlı -->
+        <div class="row g-3">
+            <!-- Davet Linki Card -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-light shadow-sm h-100 invite-card transition-all">
+                    <div class="card-body d-flex flex-column text-center">
+                        <div class="mb-3">
+                            <div class="text-warning fs-1">
+                                <i class="bi bi-link-45deg"></i>
+                            </div>
+                        </div>
+                        <h6 class="card-title fw-600 mb-2">Davet Linki</h6>
+                        <p class="card-text small text-muted mb-3 flex-grow-1">
+                            Davet linkini kopyala ve paylaş
+                        </p>
+                        <div class="input-group input-group-sm mb-2">
+                            <input type="text" class="form-control form-control-sm" id="inviteLinkInput" readonly value="<?= htmlspecialchars($inviteLink) ?>" style="font-size:0.75rem;">
+                        </div>
+                        <button class="btn btn-warning btn-sm w-100 mt-auto" id="copyInviteBtn" data-link="<?= htmlspecialchars($inviteLink) ?>" title="Linki Kopyala">
+                            <i class="bi bi-clipboard"></i> Kopyala
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- E-posta Davet Card -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-light shadow-sm h-100 invite-card transition-all">
+                    <div class="card-body d-flex flex-column text-center">
+                        <div class="mb-3">
+                            <div class="text-primary fs-1">
+                                <i class="bi bi-envelope-paper"></i>
+                            </div>
+                        </div>
+                        <h6 class="card-title fw-600 mb-2">E-posta ile Davet</h6>
+                        <p class="card-text small text-muted mb-2 flex-grow-1">
+                            Kişinin e-posta adresine davet linki gönder
+                        </p>
+                        <div class="alert alert-light small mb-2 p-2 text-break" style="border: 1px solid #e9ecef; border-radius: 4px;">
+                            <i class="bi bi-envelope"></i> 
+                            <br>
+                            <strong><?= htmlspecialchars($email ?: 'E-posta yok') ?></strong>
+                        </div>
+                        <button class="btn btn-primary btn-sm w-100 mt-auto" id="sendInviteEmail" <?= $email ? '' : 'disabled' ?> data-email="<?= htmlspecialchars($email) ?>">
+                            <i class="bi bi-send"></i> Gönder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WhatsApp Davet Card -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-light shadow-sm h-100 invite-card transition-all">
+                    <div class="card-body d-flex flex-column text-center">
+                        <div class="mb-3">
+                            <div class="text-success fs-1">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                        </div>
+                        <h6 class="card-title fw-600 mb-2">WhatsApp ile Davet</h6>
+                        <p class="card-text small text-muted mb-2 flex-grow-1">
+                            Kişiye WhatsApp üzerinden davet linki gönder
+                        </p>
+                        <div class="alert alert-light small mb-2 p-2 text-break" style="border: 1px solid #e9ecef; border-radius: 4px;">
+                            <i class="bi bi-phone"></i> 
+                            <br>
+                            <strong><?= htmlspecialchars($telefon ?: 'Telefon yok') ?></strong>
+                        </div>
+                        <button class="btn btn-success btn-sm w-100 mt-auto" id="sendInviteWhatsapp" <?= $telefon ? '' : 'disabled' ?> data-phone="<?= htmlspecialchars($telefon) ?>">
+                            <i class="fa-brands fa-whatsapp"></i> Gönder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMS Davet Card -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-light shadow-sm h-100 invite-card transition-all">
+                    <div class="card-body d-flex flex-column text-center">
+                        <div class="mb-3">
+                            <div class="text-info fs-1">
+                                <i class="bi bi-chat-dots"></i>
+                            </div>
+                        </div>
+                        <h6 class="card-title fw-600 mb-2">SMS ile Davet</h6>
+                        <p class="card-text small text-muted mb-2 flex-grow-1">
+                            Kişiye SMS aracılığıyla davet linki gönder
+                        </p>
+                        <div class="alert alert-light small mb-2 p-2 text-break" style="border: 1px solid #e9ecef; border-radius: 4px;">
+                            <i class="bi bi-phone"></i> 
+                            <br>
+                            <strong><?= htmlspecialchars($telefon ?: 'Telefon yok') ?></strong>
+                        </div>
+                        <button class="btn btn-info btn-sm w-100 mt-auto" id="sendInviteSms" <?= $telefon ? '' : 'disabled' ?> data-phone="<?= htmlspecialchars($telefon) ?>">
+                            <i class="bi bi-send"></i> Gönder
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
     <input type="hidden" id="encKisiId" value="<?= htmlspecialchars($encKisiId) ?>">
     <input type="hidden" id="kisiEmail" value="<?= htmlspecialchars($email) ?>">
     <input type="hidden" id="kisiPhone" value="<?= htmlspecialchars($telefon) ?>">
- </div>
+</div>
 
 <!-- Kişinin Giriş Kayıtları -->
 <div class="table-responsive">
@@ -132,6 +215,27 @@ try {
         </tbody>
     </table>
  </div>
+
+<style>
+.invite-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.invite-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12) !important;
+}
+
+.invite-card .card-body {
+    padding: 1.5rem;
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
