@@ -124,11 +124,11 @@ class Helper
     ];
 
     public const ikametTuru = [
-        '1' => 'Kat Maliki',
-        '2' => 'Kiracı',
-        '3' => 'Çalışan',
-        '4' => 'Misafir',
-        '5' => 'Mirasçı'
+        'Kat Maliki' => 'Kat Maliki',
+        'Kiracı' => 'Kiracı',
+        'Çalışan' => 'Çalışan',
+        'Misafir' => 'Misafir',
+        'Mirasçı' => 'Mirasçı'
     ];
     public const bakimTuru = [
         '1' => 'Bakım / Arıza / Onarım',

@@ -17,13 +17,14 @@ $enc_id = $id ?? 0;
 $blocks = $Block->SiteBloklari($site_id);
 $kisi = $Kisiler->KisiBilgileri($id);
 $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
+$uyelik_tipi = $kisi->uyelik_tipi ?? '';
 
 //echo "<pre>"; var_dump($kisi); echo "</pre>";exit;
 ?>
 <div class="card-body people-info">
 
     <!-- TC Kimlik No / Pasaport No ve Konut Sakini Türü -->
-    <div class="row mb-4 align-items-center">
+    <div class="row mb-3 align-items-center">
 
         <div class="col-lg-2">
             <label for="fullName" class="fw-semibold">Ad Soyad:</label>
@@ -50,7 +51,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
 
 
     <!-- Blok Adı ve Daire No -->
-    <div class="row mb-4 align-items-center">
+    <div class="row mb-3 align-items-center">
         <div class="col-lg-2">
             <label for="blokAdi" class="fw-semibold">Blok Adı:</label>
         </div>
@@ -90,7 +91,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         </div>
     </div>
     <!-- Satın Alma Tarihi -->
-    <div class="row mb-4 align-items-center">
+    <div class="row mb-3 align-items-center">
 
         <div class="col-lg-2">
             <label for="residentType" class="fw-semibold">Konut Sakini Türü:</label>
@@ -101,6 +102,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
                 <?php echo Helper::ikametTuruSelect('residentType', $kisi->uyelik_tipi ?? '0'); ?>
             </div>
             <small id="sakinTürü" class="form-text text-muted">
+                Konut sakini türünü seçiniz.
             </small>
         </div>
         <div class="col-lg-2">
@@ -109,7 +111,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-shopping-cart"></i></div>
-                <input type="text" class="form-control flatpickr" id="buyDate" name="buyDate" placeholder="Satın Alma Tarihi Giriniz" disabled value="<?php echo $kisi->satin_alma_tarihi ?? ''; ?>">
+                <input type="text" class="form-control flatpickr" id="buyDate" name="buyDate" placeholder="Satın Alma Tarihi Giriniz" <?php echo $uyelik_tipi == 'Kat Maliki' ? '' : 'disabled'; ?> value="<?php echo Date::dmY($kisi->satin_alma_tarihi ?? '')   ; ?>">
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Sadece Kat Maliki seçildiğinde aktif olur.
@@ -118,7 +120,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
 
     </div>
     <!-- Giriş Tarihi / Satın Alma Tarihi ve Çıkış Tarihi -->
-    <div class="row mb-4 align-items-center">
+    <div class="row mb-3 align-items-center">
         <div class="col-lg-2">
             <label for="entryDate" class="fw-semibold">Giriş Tarihi:</label>
         </div>
@@ -147,7 +149,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
 
 
     <!-- Doğum Bilgileri -->
-    <div class="row mb-4 align-items-center">
+    <div class="row mb-3 align-items-center">
 
         <div class="col-lg-2">
             <label for="tcPassportNo" class="fw-semibold">TC Kimlik No / Pasaport No:</label>
@@ -176,7 +178,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
     </div>
 
     <!-- İletişim Bilgileri -->
-    <div class="row mb-4 align-items-center">
+    <div class="row mb-3 align-items-center">
 
         <div class="col-lg-2">
             <label for="birthDate" class="fw-semibold">Doğum Tarihi:</label>
@@ -199,7 +201,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
             </div>
         </div>
     </div>
-    <div class="row mb-4 align-items-center">
+    <div class="row mb-3 align-items-center">
 
         <div class="col-lg-2">
             <label for="status" class="fw-semibold">Kullanım Durumu:</label>
@@ -222,7 +224,7 @@ $daireler = $Daireler->BlokDaireleri($kisi->blok_id ?? 0);
     $(document).ready(function() {
         function toggleBuyDateField() {
             const val = $('#residentType').val();
-            if (val === '1') {
+            if (val === 'Kat Maliki') {
                 $('#buyDate').prop('disabled', false);
                 $('#buyDateHelp').show();
             } else {

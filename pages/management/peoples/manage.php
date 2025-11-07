@@ -38,10 +38,10 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                     Listeye Dön
                 </a>
                 </button>
-                <a href="/site-sakini-ekle" class="btn btn-success"  class="dynamic-save-button">
+                <a href="/site-sakini-ekle" class="btn btn-success" class="dynamic-save-button">
                     <i class="feather-save me-2"></i>
                     Yeni Kayıt
-                </a >
+                </a>
                 <button type="button" class="btn btn-primary" id="savePeoples" class="dynamic-save-button">
                     <i class="feather-save me-2"></i>
                     Kaydet
@@ -54,6 +54,29 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             </a>
         </div>
     </div>
+</div>
+<div class="card-header p-0">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs bg-white customers-nav-tabs"
+        id="myTab" role="tablist">
+        <li class="nav-item border-top" role="presentation">
+            <a href="javascript:void(0);" class="nav-link"
+                data-bs-toggle="tab" data-bs-target="#peopleInfoTab"
+                role="tab">Genel Bilgiler</a>
+        </li>
+        <li class="nav-item border-top" role="presentation">
+            <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
+                data-bs-target="#girisbilgileri" role="tab">Giriş Bilgileri</a>
+        </li>
+        <li class="nav-item border-top" role="presentation">
+            <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
+                data-bs-target="#peopleCarInfoTab" role="tab">Araç Bilgileri</a>
+        </li>
+        <li class="nav-item border-top" role="presentation">
+            <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
+                data-bs-target="#peoplesEmergencyInfoTab" role="tab">Acil Durum Bilgileri</a>
+        </li>
+    </ul>
 </div>
 <div class="main-content">
     <?php /*
@@ -70,62 +93,14 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <div class="row px-4 pt-4 pb-0">
-                            <div class="col-lg-12">
-                                <div class="alert alert-dismissible d-flex alert-soft-teal-message" role="alert">
-                                    <div class="me-4 d-none d-md-block">
-                                        <i class="feather feather-alert-octagon fs-1"></i>
-                                    </div>
-                                    <div>
-                                        <?php if (empty($id) || $id == 0): ?>
-                                            <p class="fw-bold mb-1 text-truncate-1-line alert-header">Yeni Site Sakini Ekle!</p>
-                                            <p class="fs-12 fw-medium alert-description">
-                                                <strong>Genel Bilgiler</strong> sekmesinde yeni kişi ile ilgili bilgileri girebilirsiniz.<br>
-                                                <strong>Araç Bilgileri</strong> sekmesinde yeni araç ekleyebilirsiniz. Eklenmiş tüm araçları görebilirsiniz.<br>
-                                                <strong>Acil Durum Bilgileri</strong> sekmesinde yeni acil durum kişisi ekleyebilirsiniz. Eklenmiş tüm acil durum kişilerini görebilirsiniz.
-                                            </p>
-                                        <?php else: ?>
-                                            <p class="fw-bold mb-1 text-truncate-1-line alert-header">Site Sakini Güncelle!</p>
-                                            <p class="fs-12 fw-medium alert-description">
-                                                <strong>Genel Bilgiler</strong> sekmesinde seçili kişi bilgilerini güncelleyebilirsiniz.<br>
-                                                <strong>Araç Bilgileri</strong> sekmesinde seçili kişiye ait mevcut araçları görebilir, yeni araç ekleyebilir veya mevcut araç bilgilerini düzenleyebilirsiniz.<br>
-                                                <strong>Acil Durum Bilgileri</strong> sekmesinde seçili kişiye ait mevcut acil durum kişilerini görebilir, yeni acil durum kişisi ekleyebilir veya mevcut acil durum kişi bilgilerini düzenleyebilirsiniz.
-                                            </p>
-                                        <?php endif; ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                  
                         <form action='' id='peoplesForm'>
                             <input type="hidden" name="kisi_id" id="kisi_id" value='<?= Security::encrypt($id) ?? 0; ?>'>
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
 
-                                        <div class="card-header p-0">
-                                            <!-- Nav tabs -->
-                                            <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
-                                                id="myTab" role="tablist">
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link"
-                                                        data-bs-toggle="tab" data-bs-target="#peopleInfoTab"
-                                                        role="tab">Genel Bilgiler</a>
-                                                </li>
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
-                                                        data-bs-target="#girisbilgileri" role="tab">Giriş Bilgileri</a>
-                                                </li>
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
-                                                        data-bs-target="#peopleCarInfoTab" role="tab">Araç Bilgileri</a>
-                                                </li>
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
-                                                        data-bs-target="#peoplesEmergencyInfoTab" role="tab">Acil Durum Bilgileri</a>
-                                                </li>
-                                            </ul>
-                                        </div>
+
                                         <div class="tab-content">
                                             <div class="tab-pane fade " id="peopleInfoTab" role="tabpanel">
                                                 <?php

@@ -6,7 +6,7 @@ $(document).ready(function () {
     table = $(".datatables").DataTable({
       //stateSave: true,
       responsive: true,
-      dom: 't<"row m-2"<"col-md-1"l><"col-md-1"i><"col-md-10 float-end"p>>',
+      dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
       language: {
         //url: "/assets/js/tr.json",
       },

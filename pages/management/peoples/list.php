@@ -72,7 +72,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
     ?>
     <div class="row">
         <div class="container-xl">
-            <div class="row row-deck row-cards">
+            <div class="row row-deck row-cards mb-5">
                 <div class="col-12">
                     <div class="card">
                     
@@ -102,9 +102,11 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                             $blok = $Bloklar->Blok(isset($row->blok_id) ? htmlspecialchars($row->blok_id) : '-');
                                             $daire_no = is_object($daire) ? htmlspecialchars($daire->daire_no) : '-';
                                             $adi_soyadi = isset($row->adi_soyadi) ? htmlspecialchars($row->adi_soyadi) : '-';
-                                            $telefon = isset($row->telefon) ? htmlspecialchars($row->telefon) : '-';
+                                            $telefon = isset($row->telefon) && !empty($row->telefon)
+                                                ? preg_replace('/^(\d{3})(\d{3})(\d{2})(\d{2})$/', '+90 $1 $2 $3 $4', preg_replace('/\D/', '', $row->telefon))
+                                                : '-';
                                             $ikametTuruList = Helper::ikametTuru;
-                                            $ikamet_turu = isset($ikametTuruList[$row->uyelik_tipi]) ? $ikametTuruList[$row->uyelik_tipi] : '-';
+                                            $ikamet_turu =  $ikametTuruList[$row->uyelik_tipi];
                                             $plaka = !empty($row->plaka_listesi)
                                                 ? nl2br(htmlspecialchars_decode($row->plaka_listesi))
                                                 : '-';
@@ -117,7 +119,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                                 <td><?php echo $telefon; ?></td>
                                                 <td><?php echo $plaka; ?></td>
                                                 <td><?php echo $ikamet_turu; ?></td>
-                                                <td>
+                                                <td style="width: 7%;">
                                                     <div class="hstack gap-2">
                                                         <a href="javascript:void(0);" class="avatar-text avatar-md opensiteSakiniDetay" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
