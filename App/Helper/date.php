@@ -48,7 +48,53 @@ public static function dmY($date = null, $format = 'd.m.Y')
     {
         return date($format);
     }
+ public static function parseExcelDate($val)
+    {
+        $s = trim((string)($val ?? ''));
+        if ($s === '') return null;
 
+        // Eğer Excel seri numarası gelmişse (sayısal)
+        if (is_numeric($s)) {
+            try {
+                $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float)$s);
+                return $dt->format('Y-m-d H:i');
+            } catch (\Throwable $e) {
+                // devre dışı bırak, diğer formatlara dene
+            }
+        }
+
+        // Temizle: gereksiz karakterler (ör. sonuna eklenen "uud" gibi)
+        $s = preg_replace('/[^0-9\.\-:\s\/]/u', '', $s);
+
+        $formats = [
+            'j.n.Y H:i:s',
+            'j.n.Y H:i',
+            'd.m.Y H:i:s',
+            'd.m.Y H:i',
+            'Y-m-d H:i:s',
+            'Y-m-d H:i',
+            'Y/m/d H:i:s',
+            'Y/m/d H:i',
+            'j.n.Y',
+            'd.m.Y',
+            'Y-m-d',
+        ];
+
+        foreach ($formats as $fmt) {
+            $dt = \DateTime::createFromFormat($fmt, $s);
+            if ($dt !== false) {
+                return $dt->format('Y-m-d H:i');
+            }
+        }
+
+        // Eğer hala başarısızsa, fallback olarak strtotime deneyelim
+        $ts = strtotime($s);
+        if ($ts !== false && $ts > 0) {
+            return date('Y-m-d H:i', $ts);
+        }
+
+        return null;
+    }
 
     // public static function normalizeDate($date, $outputFormat = 'Y-m-d H:i:s')
     // {

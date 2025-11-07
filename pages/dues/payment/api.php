@@ -56,6 +56,7 @@ $db = Db::getInstance();
 
 
 /* Excel dosyasından toplu ödeme yükleme işlemi */
+/**excelden-odeme-yukle */
 if ($_POST['action'] == 'payment_file_upload') {
     $file = $_FILES['payment_file'];
     $fileName = $file['name'];
@@ -91,11 +92,18 @@ if ($_POST['action'] == 'payment_file_upload') {
      * @param $daire Eşleşen daire ID'si
      * @return mixed Son eklenen kaydın ID'si
      */
+    /**
+     * Gelen farklı tarih formatlarını güvenli şekilde MySQL biçimine (Y-m-d H:i) dönüştürür.
+     * Desteklenen örnek formatlar: "7.11.2025 20:42", "07.11.2025 20:42:00", Excel serial vb.
+     * @param mixed $val
+     * @return string|null biçim: 'Y-m-d H:i' veya null (parslanamazsa)
+     */
+   
+
     function kaydetTahsilatOnay($TahsilatOnay, $data, $daire_id)
     {
 
-
-        $islem_tarihi = Date::YmdHIS($data[0]);  // İşlem tarihi
+        $islem_tarihi = Date::parseExcelDate($data[0]) ?? Date::YmdHIS($data[0]);  // İşlem tarihi
 
         // Tutar artık temizlenmiş durumda gelmeli
         $tutar = is_numeric($data[1]) ? floatval($data[1]) : Helper::formattedMoneyToNumber($data[1]);
@@ -133,7 +141,7 @@ if ($_POST['action'] == 'payment_file_upload') {
      */
     function kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk = '')
     {
-        $islem_tarihi = Date::YmdHis($data[0]);  // İşlem tarihi
+        $islem_tarihi = Date::parseExcelDate($data[0]) ?? Date::YmdHis($data[0]);  // İşlem tarihi
         $ham_aciklama = $data[5] ?? '';  // Ham açıklama alanı, varsa kullanılır
         $referans_no = $data[6] ?? '';  // Makbuz no, varsa kullanılır
         // Tutar artık temizlenmiş durumda gelmeli
