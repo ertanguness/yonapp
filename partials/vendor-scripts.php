@@ -51,7 +51,7 @@ if (
     $page == "daire-tipi-listesi" || 
     $page == "gelir-gider-tipi-listesi" || $page == "gelir-gider-tipi-ekle" || $page == "gelir-gider-tipi-duzenle" ||
     $page == "aidat-turu-tanimlama" || $page== "aidat-turu-duzenle" ||   $page == "borclandirma-yap" ||
-    $page == "personeller"
+    $page == "personeller" || $page == "personel-ekle" || $page == "personel-duzenle"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
