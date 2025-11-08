@@ -40,6 +40,32 @@ class Model extends SSPModel
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
+    /**
+     * Tablodaki toplam kayıt sayısını döndürür
+     * @return int Kayıt sayısı
+     */
+    public function count()
+    {
+        $sql = $this->db->prepare("SELECT COUNT(*) as total FROM $this->table");
+        $sql->execute();
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result->total ?? 0;
+    }
+
+    /**
+     * Belirtilen koşula göre kayıt sayısını döndürür
+     * @param string $column Kolon adı
+     * @param mixed $value Kolon değeri
+     * @return int Kayıt sayısı
+     */
+    public function countWhere($column, $value)
+    {
+        $sql = $this->db->prepare("SELECT COUNT(*) as total FROM $this->table WHERE $column = ?");
+        $sql->execute([$value]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result->total ?? 0;
+    }
+
     public function find($id, $encrypt = false)
     {
         if ($encrypt) {

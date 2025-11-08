@@ -36,11 +36,17 @@ $(document).on("click", "#save_sites", function () {
     })
     .then((data) => {
       var title = data.status == "success" ? "Başarılı" : "Hata";
+      console.log(data);
       swal.fire({
         title: title,
         text: data.message,
         icon: data.status,
         confirmButtonText: "Tamam",
+      }).then(() => {
+        if(data.ilkSiteMi){
+          console.log("İlk site eklendi, yönlendiriliyor...");
+          window.location.href = "/site-ekle";
+        }
       });
     });
 });
