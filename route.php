@@ -278,15 +278,15 @@ $router->get('ziyaretci-duzenle/{id}', function ($id) {
     require 'pages/ziyaretci/manage.php';
 });
 // Personel Listesi
-$router->get('personel-listesi', function () {
+$router->get('guvenlik-personel-listesi', function () {
     require 'pages/ziyaretci/guvenlik/Personel/list.php';
 });
 // Personel Ekle
-$router->get('personel-ekle', function () {
+$router->get('guvenlik-personel-ekle', function () {
     require 'pages/ziyaretci/guvenlik/Personel/manage.php';
 });
 // Personel Düzenle
-$router->get('personel-duzenle/{id}', function ($id) {
+$router->get('guvenlik-personel-duzenle/{id}', function ($id) {
     require 'pages/ziyaretci/guvenlik/Personel/manage.php';
 });
 // Vardiya listesi
@@ -299,6 +299,23 @@ $router->get('vardiya-ekle', function () {
 $router->get('vardiya-duzenle/{id}', function ($id) {
     require 'pages/ziyaretci/guvenlik/Vardiya/manage.php';
 });
+
+
+//personel listesi
+$router->get('personel-listesi', function () {
+    require 'pages/persons/list.php';
+});
+//personel ekle
+$router->get('personel-ekle', function () {
+    require 'pages/persons/manage.php';
+});
+
+//personel duzenle
+$router->get('personel-duzenle/{id}', function ($id) {
+    require 'pages/persons/manage.php';
+});
+
+
 //KULLANICILAR 
 //Kullanıcı Ekle
 $router->get('kullanici-ekle', function () {
@@ -474,15 +491,6 @@ $router->get('index', function () {
 $router->get('onay-bekleyen-tahsilatlar', function () {
     require 'pages/dues/payment/tahsilat-onay.php';
 });
-
-
-
-// personel listesi
-$router->get('personeller', function () {
-    require 'pages/persons/list.php';
-});
-
-
 
 
 

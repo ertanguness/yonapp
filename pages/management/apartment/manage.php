@@ -44,6 +44,21 @@ $id =  Security::decrypt($id ?? 0);
         </div>
     </div>
 </div>
+<ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs bg-white"
+                                                id="myTab" role="tablist">
+                                                <li class="nav-item border-top" role="presentation">
+                                                    <a href="javascript:void(0);" class="nav-link"
+                                                        data-bs-toggle="tab" data-bs-target="#apartmentInfoTab"
+                                                        role="tab">Daire Bilgileri</a>
+                                                </li>
+                                                <?php if ($id && $id != 0): ?>
+                                                    <li class="nav-item border-top" role="presentation">
+                                                        <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab"
+                                                            data-bs-target="#apartmentPeopleInfoTab" role="tab">Daire Kişi Bilgileri</a>
+                                                    </li>
+                                                <?php endif; ?>
+
+                                            </ul>
 <div class="main-content">
 
     <div class="row">
@@ -51,7 +66,10 @@ $id =  Security::decrypt($id ?? 0);
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <div class="row px-4 pt-4 pb-0">
+                        <div class="card-header">
+                            <h5>Daire Bilgileri Sayfası</h5>
+                        </div>
+                        <!-- <div class="row px-4 pt-4 pb-0">
                             <div class="col-lg-12">
                                 <div class="alert alert-dismissible d-flex alert-soft-teal-message" role="alert">
                                     <div class="me-4 d-none d-md-block">
@@ -70,31 +88,14 @@ $id =  Security::decrypt($id ?? 0);
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <form action='' id='apartmentForm'>
                             <input type="hidden" name="apartment_id" id="apartment_id" value="<?php echo $enc_id ?? 0; ?>">
 
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body apartment-info">
                                     <div class="row mb-4 align-items-center">
-                                        <div class="card-header p-0">
-                                            <!-- Nav tabs -->
-                                            <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
-                                                id="myTab" role="tablist">
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link"
-                                                        data-bs-toggle="tab" data-bs-target="#apartmentInfoTab"
-                                                        role="tab">Daire Bilgileri</a>
-                                                </li>
-                                                <?php if ($id && $id != 0): ?>
-                                                    <li class="nav-item flex-fill border-top" role="presentation">
-                                                        <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab"
-                                                            data-bs-target="#apartmentPeopleInfoTab" role="tab">Daire Kişi Bilgileri</a>
-                                                    </li>
-                                                <?php endif; ?>
-
-                                            </ul>
-                                        </div>
+                                  
                                         <div class="tab-content">
                                             <div class="tab-pane fade " id="apartmentInfoTab" role="tabpanel">
                                                 <?php

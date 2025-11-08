@@ -11,9 +11,9 @@ $Personel = new GuvenlikPersonelModel();
 
 if ($_POST["action"] == "guvenlikPersonel_kaydetme") {
     
-    $baslama_tarihi     = Date::Ymd($_POST["baslama_tarihi"] ?? null);
-    $dogum_tarihi      = Date::Ymd($_POST["dogum_tarihi"] ?? null);
-    $bitis_tarihi      = Date::Ymd($_POST["bitis_tarihi"] ?? null);
+    $baslama_tarihi     = Date::Ymd($_POST["baslama_tarihi"] ?? '');
+    $dogum_tarihi      = Date::Ymd($_POST["dogum_tarihi"] ?? '');
+    $bitis_tarihi      = Date::Ymd($_POST["bitis_tarihi"] ?? '');
 
     $id = Security::decrypt($_POST["id"]);
     $data = [

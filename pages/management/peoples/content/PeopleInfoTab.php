@@ -111,7 +111,7 @@ $uyelik_tipi = $kisi->uyelik_tipi ?? '';
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-shopping-cart"></i></div>
-                <input type="text" class="form-control flatpickr" id="buyDate" name="buyDate" placeholder="Satın Alma Tarihi Giriniz" <?php echo $uyelik_tipi == 'Kat Maliki' ? '' : 'disabled'; ?> value="<?php echo Date::dmY($kisi->satin_alma_tarihi ?? '')   ; ?>">
+                <input type="text" class="form-control flatpickr" id="buyDate" name="buyDate" placeholder="Satın Alma Tarihi Giriniz" <?php echo $uyelik_tipi == 'Kat Maliki' ? '' : 'disabled'; ?> value="<?php echo Date::dmY($kisi->satin_alma_tarihi ?? ''); ?>">
             </div>
             <small id="buyDateHelp" class="form-text text-muted">
                 Sadece Kat Maliki seçildiğinde aktif olur.
@@ -268,38 +268,41 @@ $uyelik_tipi = $kisi->uyelik_tipi ?? '';
             }
         });
 
+        //Tarih formatı için inputmask kullan
+        $(document).on("focus", ".flatpickr", function() {
+            $(this).inputmask("99.99.9999", {
+                placeholder: "gg.aa.yyyy",
+                clearIncomplete: true,
+            });
+        });
 
- 
     });
-        // TC Kimlik No doğrulama fonksiyonu
-        function isValidTCKN(tckn) {
-            // Sadece rakam - 11 hane - ilk hane 0 olamaz
-            if (!/^[1-9][0-9]{10}$/.test(tckn)) {
-                return false;
-            }
-
-            const digits = tckn.split('').map(Number);
-
-            // 10. hane kontrolü
-            const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
-            const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
-            const digit10 = ((oddSum * 7) - evenSum) % 10;
-
-            if (digit10 !== digits[9]) {
-                return false;
-            }
-
-            // 11. hane kontrolü
-            const total = digits.slice(0, 10).reduce((a, b) => a + b, 0);
-            const digit11 = total % 10;
-
-            if (digit11 !== digits[10]) {
-                return false;
-            }
-
-            return true;
+    // TC Kimlik No doğrulama fonksiyonu
+    function isValidTCKN(tckn) {
+        // Sadece rakam - 11 hane - ilk hane 0 olamaz
+        if (!/^[1-9][0-9]{10}$/.test(tckn)) {
+            return false;
         }
 
+        const digits = tckn.split('').map(Number);
 
+        // 10. hane kontrolü
+        const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+        const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
+        const digit10 = ((oddSum * 7) - evenSum) % 10;
 
+        if (digit10 !== digits[9]) {
+            return false;
+        }
+
+        // 11. hane kontrolü
+        const total = digits.slice(0, 10).reduce((a, b) => a + b, 0);
+        const digit11 = total % 10;
+
+        if (digit11 !== digits[10]) {
+            return false;
+        }
+
+        return true;
+    }
 </script>

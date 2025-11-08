@@ -47,9 +47,10 @@ class DueDetailModel extends Model
                 LEFT JOIN defines dfn 
                     ON dd.daire_tipi_ids LIKE CONCAT('%\"', dfn.id, '\"%')
                 WHERE dd.silinme_tarihi IS null
+                and d.site_id = ?
                 GROUP BY dd.due_id;)";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        $stmt->execute([$_SESSION['site_id'] ]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ) ?? [];
     }
 }

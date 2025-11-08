@@ -58,15 +58,13 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
+                           <div class="card-header">
+                                            <h5>Blok Bilgileri Sayfası</h5>
+                                        </div>
                         <form action='' id='blocksForm'>
                             <input type="hidden" name="blok_id" id="blok_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
 
-                            <div class="row">
-                                <div class="container-xl">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Blok Bilgileri Sayfası</h5>
-                                        </div>
+                                     
                                         <div class="card-body aidat-info">
 
                                             <?php
@@ -76,9 +74,6 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                                                 require_once 'pages/management/blocks/content/BlocksNumberPage.php';
                                             }
                                             ?>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </form>
                     </div>

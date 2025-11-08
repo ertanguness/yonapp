@@ -78,14 +78,14 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
                                 <table class="table table-hover datatables" id="apartmentsList">
                                     <thead>
                                         <tr class="text-center">
-                                            <th>#</th>
+                                            <th style="width:7%">#</th>
                                             <th>Daire Kodu</th>
                                             <th>Blok Adı</th>
                                             <th>Daire No</th>
                                             <th>Kat Maliki</th>
                                             <th>Kiracı</th>
                                             <th>Durumu</th>
-                                            <th>İşlem</th>
+                                            <th style="width:7%">İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>

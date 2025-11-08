@@ -84,7 +84,12 @@
                                                 <li class="nav-item flex-fill border-top" role="presentation">
                                                     <a href="javascript:void(0);" class="nav-link"
                                                         data-bs-toggle="tab" data-bs-target="#salaryTrackingTab"
-                                                        role="tab">Maaş & Ödeme Takibi</a>
+                                                        role="tab">Maaş Bilgileri</a>
+                                                </li>
+                                                <li class="nav-item flex-fill border-top" role="presentation">
+                                                    <a href="javascript:void(0);" class="nav-link"
+                                                        data-bs-toggle="tab" data-bs-target="#paymentsTab"
+                                                        role="tab">Ödemeler</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -115,6 +120,13 @@
                                             <div class="tab-pane fade" id="salaryTrackingTab" role="tabpanel">
                                                 <?php
                                                 require_once 'pages/persons/content/SalaryTrackingTab.php';
+                                                ?>
+                                            </div>
+
+                                            <!-- Ödemeler -->
+                                            <div class="tab-pane fade" id="paymentsTab" role="tabpanel">
+                                                <?php
+                                                require_once 'pages/persons/content/PaymentsTab.php';
                                                 ?>
                                             </div>
                                         </div>
