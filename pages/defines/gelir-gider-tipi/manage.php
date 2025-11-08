@@ -10,6 +10,11 @@ $enc_id = $id ?? 0;
 $id = Security::decrypt($id ?? 0);
 
 $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
+
+//echo "<pre>"; print_r($gelirgidertipi); echo "</pre>"; exit;
+
+
+
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">

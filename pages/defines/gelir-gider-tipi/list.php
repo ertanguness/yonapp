@@ -97,7 +97,7 @@ $items = $defines->getGelirGiderTipleri();
 
                                                 <td>
                                                     <div class="hstack gap-2 ">
-                                                        <a href="/gelir-gider-tipi-duzenle/id=<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                        <a href="/gelir-gider-tipi-duzenle/<?php echo $enc_id ?>" class="avatar-text avatar-md">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);"

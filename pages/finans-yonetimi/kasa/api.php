@@ -33,6 +33,11 @@ if($_POST['action'] == 'kasa_kaydet'){
 
         $db->beginTransaction();
 
+        /** Eğer ilk kasa kaydı ise varsayılan kasa yap */
+        $ilkKasami = $KasaModel->countWhere('site_id', $site_id);
+        if($ilkKasami == 0){
+            $_POST['varsayilan_mi'] = 1;
+        }
         $data = [
             "id" => $id,
             "site_id" => $site_id,

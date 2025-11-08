@@ -124,8 +124,11 @@ class KasaModel extends Model
      */
     public function varsayilanKasa()
     {
-        $query = "SELECT * FROM {$this->table} WHERE varsayilan_mi = 1 LIMIT 1";
+        $query = "SELECT * FROM {$this->table} WHERE varsayilan_mi = 1
+                    and site_id = :site_id
+                    LIMIT 1";
         $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':site_id', $_SESSION['site_id'], \PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_OBJ);
     }

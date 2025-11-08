@@ -17,10 +17,13 @@ $KisiHelper = new KisiHelper();
 
 // Kasa ID'yi belirle
 $kasa_id = null;
+$kasa_hareketleri = [];
 
 //1. Önce session'dan kontrol et
 if (isset($_SESSION["kasa_id"]) && !empty($_SESSION["kasa_id"])) {
     $kasa_id = $_SESSION["kasa_id"];
+      //  Helper::dd(["1-kasa_id" => $kasa_id]);
+
 }
 
 // 2. POST ile yeni seçim geldi mi?
@@ -44,12 +47,11 @@ if (isset($id) && !empty($id)) {
 if (!$kasa_id) {
     try {
         $varsayilanKasa = $Kasa->varsayilanKasa();
-        $kasa_id = $varsayilanKasa ? $varsayilanKasa->id : 1;
+        $kasa_id = $varsayilanKasa->id ?? null;
         $_SESSION["kasa_id"] = $kasa_id;
+        //Helper::dd(["4-kasa_id" => $kasa_id]);
     } catch (Exception $e) {
         // Hata durumunda fallback
-        $kasa_id = 1;
-        $_SESSION["kasa_id"] = $kasa_id;
     }
 }
 
@@ -100,7 +102,6 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
     $kasa_hareketleri = $KasaHareket->getKasaHareketleri($kasa_id);
     $KasaFinansalDurum = $Kasa->KasaFinansalDurum($kasa_id);
 }
-
 
 
 
@@ -352,10 +353,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted">Kayıt bulunamadı.</td>
-                                    </tr>
+                         
                                 <?php endif; ?>
                             </tbody>
                         </table>
