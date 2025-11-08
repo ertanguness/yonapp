@@ -24,6 +24,12 @@ require_once __DIR__ . '/route.php';
 
 
 
+//site_id boş ise company-list sayfasına yönlendir
+if (empty($site_id)) {
+    header('Location: /company-list.php');
+    exit;
+}
+
 // Gelen URL'yi al
 $url = $_GET['p'] ?? 'ana-sayfa';
 //$url = rtrim($url, '/');

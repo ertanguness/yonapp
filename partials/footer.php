@@ -201,7 +201,6 @@
             <span>Çıkış Yap</span>
         </a>
 
-        <a href="/cikis-yap" class="mobile-quick-actions-item" title="Çıkış Yap"><i class="bi bi-box-arrow-right"></i></a>
         <!-- bootstrap icons -->
     </div>
 </div>
