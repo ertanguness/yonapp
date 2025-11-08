@@ -254,6 +254,11 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         </div>
     </div>
 </div>
+<style>
+    .card-body{
+        overflow-x: auto;
+    }
+</style>
 
 <div class="modal fade" id="tahsilatGir" tabindex="-1" data-bs-keyboard="false" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">

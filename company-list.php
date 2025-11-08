@@ -646,6 +646,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
     <!-- Topbar -->
     <div class="page-content">
 
+        <?php
+        include_once 'partials/_flash_messages.php';
+        ?>
+
         <div class="topbar mb-3">
             <div class="topbar-container">
                 <div class="topbar-breadcrumb">
@@ -661,47 +665,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
         </div>
 
         <!-- Page Header -->
-<div class="row">
-        <div class="col-xxl-4 col-md-6">
-            <div class="card card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="me-3">
-                        <h5 class="fs-4"><?= $activeSitesCount ?></h5>
-                        <span class="text-muted">Aktif Siteler</span>
+        <div class="row">
+            <div class="col-xxl-4 col-md-6">
+                <div class="card card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="me-3">
+                            <h5 class="fs-4"><?= $activeSitesCount ?></h5>
+                            <span class="text-muted">Aktif Siteler</span>
+                        </div>
+                        <div class="avatar-text avatar-lg bg-success text-white rounded">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="avatar-text avatar-lg bg-success text-white rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+            </div>
+            <div class="col-xxl-4 col-md-6">
+                <div class="card card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="me-3">
+                            <h5 class="fs-4"><?= $inactiveSitesCount ?></h5>
+                            <span class="text-muted">Pasif Siteler</span>
+                        </div>
+                        <div class="avatar-text avatar-lg bg-warning text-white rounded">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4 col-md-6">
+                <div class="card card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="me-3">
+                            <h5 class="fs-4"><?= $totalSitesCount ?></h5>
+                            <span class="text-muted">Toplam Siteler</span>
+                        </div>
+                        <div class="avatar-text avatar-lg bg-primary text-white rounded">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xxl-4 col-md-6">
-            <div class="card card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="me-3">
-                        <h5 class="fs-4"><?= $inactiveSitesCount ?></h5>
-                        <span class="text-muted">Pasif Siteler</span>
-                    </div>
-                    <div class="avatar-text avatar-lg bg-warning text-white rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xxl-4 col-md-6">
-            <div class="card card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="me-3">
-                        <h5 class="fs-4"><?= $totalSitesCount ?></h5>
-                        <span class="text-muted">Toplam Siteler</span>
-                    </div>
-                    <div class="avatar-text avatar-lg bg-primary text-white rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-</div>
 
     </div>
     <!-- Page Content -->
@@ -736,12 +751,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
 
             <!-- Search and Controls Card -->
             <div class="search-controls-card">
-                <input 
-                    type="text" 
-                    class="search-input" 
-                    id="siteSearchInput" 
-                    placeholder="Site adı, adres veya başka bilgi ile ara..."
-                >
+                <input
+                    type="text"
+                    class="search-input"
+                    id="siteSearchInput"
+                    placeholder="Site adı, adres veya başka bilgi ile ara...">
                 <div class="toggle-control">
                     <input class="form-check-input" type="checkbox" id="showInactiveSwitch">
                     <label class="form-check-label" for="showInactiveSwitch">
@@ -817,7 +831,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
             $('#accordionHeader').click(function() {
                 var $header = $(this);
                 var $content = $('#accordionContent');
-                
+
                 $header.toggleClass('active');
                 $content.toggleClass('active');
             });
