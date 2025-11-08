@@ -192,6 +192,11 @@
             <i class="bi bi-send-plus"></i>
             <span>SMS Gönder</span>
         </a>
+        <a href="/raporlar" class="sms-gonder">
+            <i class="bi bi-card-checklist"></i>
+            <span>Raporlar</span>
+        </a>
+        <!-- bootstrap icons -->
     </div>
 </div>
 
