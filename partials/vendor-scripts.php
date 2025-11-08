@@ -350,4 +350,16 @@ if($page == "email-sms/sms_gonder_modal"){
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 <script src="/src/app.js?v=<?php echo filemtime('src/app.js'); ?>" defer></script>
+
+
+<!-- Eğer görünüm mobile ise veya sayfa ana sayfa ise  -->
+<script>
+    if (window.matchMedia("(max-width: 768px)").matches || window.location.pathname === "/ana-sayfa") {
+        // Mobile spesifik scriptler
+        document.write('<script src="/partials/mobile-menu.js"><\/script>');
+        console.log("Mobile menu script yüklendi.");
+    }
+</script>
+
+
 <!--<< All JS Plugins >>-->

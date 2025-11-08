@@ -187,7 +187,7 @@
             <i class="bi bi-envelope"></i>
             <span>Email Gönder</span>
         </a>
-        <a href="#" class="sms-gonder">
+        <a href="javascript:void(0);" class="sms-gonder">
             <i class="bi bi-send-plus"></i>
             <span>SMS Gönder</span>
         </a>
