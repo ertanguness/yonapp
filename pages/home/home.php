@@ -32,25 +32,34 @@ $geciken_odeme_tutari = $FinansalRaporModel->getGecikenOdemeTutar($site_id);
         .flex-fill {
             transition: background-color 0.3s ease-in-out;
             display: inline-block;
-            /* Satırı tamamen kaplamasını engeller */
             align-items: center;
-            /* İçerikleri ortalar */
             text-align: center;
-            /* Metni ortalar */
             margin-bottom: 4px;
         }
 
         .flex-fill:hover {
             background-color: #f8f9fa;
-            /* Hover durumunda arka plan rengi değişir */
         }
 
         .flex-fill i {
             font-size: 24px;
-            /* İkon boyutunu artırır */
+        }
+
+        /* Desktop - Hızlı İşlemler Card */
+        .quick-actions-card {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .quick-actions-card {
+                display: none;
+            }
         }
     </style>
-    <div class="col-xxl-12">
+
+    <!-- Desktop Hızlı İşlemler Card -->
+    <div class="col-xxl-12 quick-actions-card">
         <div class="card stretch stretch-full">
             <div class="card-header">
                 <h5 class="card-title">Hızlı İşlemler</h5>
@@ -477,7 +486,6 @@ $geciken_odeme_tutari = $FinansalRaporModel->getGecikenOdemeTutar($site_id);
 
 <?php include './partials/calender-scripts.php' ?>
 
-<script>
     /** Gelir Ekle Modalini açar */
     $(document).on('click', '.gelir-ekle, .gider-ekle', function() {
         var islem_tipi = $(this).hasClass('gelir-ekle') ? 'gelir' : 'gider';

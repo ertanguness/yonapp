@@ -948,4 +948,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
     }
 </script>
 
+<?php include './partials/footer.php'; ?>
+
 </html>
