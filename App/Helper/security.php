@@ -140,13 +140,13 @@ public static function decrypt($data)
 }
 
     /**Eğer site_id null ise site-ekle sayfasına yönlendir */
-public static function ensureSiteSelected()
+public static function ensureSiteSelected($redirectUri = 'site-ekle')
     {
 
         if ($_SESSION['site_id'] == null ) {
 
             FlashMessageService::add( "info","Uyarı!", "Lütfen önce bir site seçin veya ekleyin.  ");
-            header("Location: site-ekle");
+            header("Location: $redirectUri");
             exit();
         }
     }

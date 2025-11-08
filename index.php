@@ -12,10 +12,16 @@ require_once __DIR__ . '/configs/bootstrap.php';
 // Bu fonksiyon, kullanıcı giriş yapmamışsa login sayfasına yönlendirir.
 
 use App\Controllers\AuthController;
+use App\Helper\Security;
+use Random\Engine\Secure;
+
 $authController = new AuthController();
 
 //giriş ve demo süresi kontrolü
 $authController->checkAuthentication();
+
+/**site_id kontrolü */
+Security::ensureSiteSelected("company-list.php");
 
 
 // 3. Adım: ROTA TESPİTİ (SAYFANIN EN BAŞINDA)
