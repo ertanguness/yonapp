@@ -120,7 +120,7 @@
 <div class="mobile-quick-actions">
     <div class="mobile-quick-actions-wrapper">
         <!-- Ana Sayfa -->
-        <a href="?p=home" class="mobile-quick-actions-item" title="Ana Sayfa">
+        <a href="/ana-sayfa" class="mobile-quick-actions-item" title="Ana Sayfa">
             <i class="bi bi-house-fill"></i>
             <p>Ana Sayfa</p>
         </a>
@@ -196,6 +196,12 @@
             <i class="bi bi-card-checklist"></i>
             <span>Raporlar</span>
         </a>
+        <a href="/logout" class="sms-gonder">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Çıkış Yap</span>
+        </a>
+
+        <a href="/cikis-yap" class="mobile-quick-actions-item" title="Çıkış Yap"><i class="bi bi-box-arrow-right"></i></a>
         <!-- bootstrap icons -->
     </div>
 </div>
