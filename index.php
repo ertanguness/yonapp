@@ -21,7 +21,7 @@ $authController = new AuthController();
 $authController->checkAuthentication();
 
 /**site_id kontrolü */
-Security::ensureSiteSelected("company-list.php");
+Security::ensureSiteSelected("/company-list.php");
 
 
 // 3. Adım: ROTA TESPİTİ (SAYFANIN EN BAŞINDA)
