@@ -638,4 +638,37 @@ switch ($hedef_tipi) {
 
 
     });
+$(document).ready(function() {
+    // Flatpickr örneğini al
+    var baslangicTarihiFlatpickr = flatpickr('#modal_baslangic_tarihi', {
+        dateFormat: "d.m.Y",
+        locale: "tr", // locale for this instance only
+        dateFormat: "d.m.Y",
+        onChange: function(selectedDates, dateStr, instance) {
+            if (!dateStr) return;
+            
+            var tarihParcalari = dateStr.split('.');
+            var gun = tarihParcalari[0];
+            var ay = tarihParcalari[1];
+            var yil = tarihParcalari[2];
+
+            // Ayın son gününü hesapla
+            var sonGun = new Date(yil, ay, 0).getDate();
+
+            // Bitiş tarihini ayın son günü olarak ayarla
+            var bitisTarihi = sonGun + '.' + ay + '.' + yil;
+            console.log('Yeni Bitiş Tarihi:', bitisTarihi);
+            $('#modal_bitis_tarihi').val(bitisTarihi);
+
+            // Açıklama kısmını da güncelle
+            var monthNames = [
+                "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+                "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+            ];
+            var monthName = monthNames[parseInt(ay) - 1];
+            $('#modal_aciklama').val(monthName + ' ' + yil + ' ' + 'AİDAT');
+        }
+    });
+});
+
 </script>

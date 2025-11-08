@@ -52,7 +52,7 @@ if ($_POST["action"] == "save_apartment") {
         "kat" => $_POST["floor"],
         "daire_no" => $daire_no,
         "daire_kodu" => (empty($id) || $id == 0) ? $daire_kodu : ($mevcut_kod ?? $daire_kodu),
-        "daire_tipi" => $_POST["apartment_type"],
+        "daire_tipi" => Security::decrypt($_POST["apartment_type"]),
         "brut_alan" => $_POST["grossArea"],
         "net_alan" => $_POST["netArea"],
         "arsa_payi" => $_POST["landShare"],

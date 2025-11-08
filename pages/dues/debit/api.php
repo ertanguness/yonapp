@@ -108,7 +108,12 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
                                                                           $mulk_tipi);
 
 
-            $logger->info("Borçlandırılacak kişiler: " . json_encode($borclandirilacakKisiler));
+            $logger->info("Borçlandırılacak kişiler: " . json_encode(["kisiler" => $borclandirilacakKisiler,
+                                                                    "mulk_tipi" => $mulk_tipi,
+                                                                    "borclandirma_tipi" => $borclandirma_tipi,
+                                                                    "baslangic_tarihi" => $baslangic_tarihi_str,
+                                                                    "bitis_tarihi" => $bitis_tarihi_str,
+                                                                ]));
 
             // 2. Bu düz listeyi, daire bazında gruplanmış bir diziye dönüştür.
             $dairelerVeSakinleri = [];
