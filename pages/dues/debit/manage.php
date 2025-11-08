@@ -116,22 +116,9 @@ switch ($hedef_tipi) {
 
 
 <div class="bg-white py-3 border-bottom rounded-0 p-md-0 mb-0 ">
-    <div class="d-md-none d-flex align-items-center justify-content-between">
-        <a href="javascript:void(0)" class="page-content-left-open-toggle">
-            <i class="feather-align-left fs-20"></i>
-        </a>
-        <a href="javascript:void(0)" class="page-content-right-open-toggle">
-            <i class="feather-align-right fs-20"></i>
-        </a>
-    </div>
     <div class="d-flex align-items-center justify-content-between">
         <div class="nav-tabs-wrapper page-content-left-sidebar-wrapper">
-            <div class="d-flex d-md-none">
-                <a href="javascript:void(0)" class="page-content-left-close-toggle">
-                    <i class="feather-arrow-left me-2"></i>
-                    <span>Back</span>
-                </a>
-            </div>
+           
             <ul class="nav nav-tabs nav-tabs-custom-style" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tanimliBorclarTab">Tanımlı Borç Tipleri </button>
@@ -142,52 +129,10 @@ switch ($hedef_tipi) {
 
             </ul>
         </div>
-        <div class="page-content-right-sidebar-wrapper">
-            <div class="d-flex d-md-none">
-                <a href="javascript:void(0)" class="page-content-right-close-toggle">
-                    <i class="feather-arrow-left me-2"></i>
-                    <span>Back</span>
-                </a>
-            </div>
-            <div class="proposal-action-btn">
-                <div class="d-md-none d-lg-flex">
-                    <a href="javascript:void(0);" class="action-btn" data-bs-toggle="tooltip" title="" data-bs-original-title="Views Trackign">
-                        <i class="feather-eye"></i>
-                    </a>
-                </div>
-                <div class="d-md-none d-lg-flex">
-                    <a href="javascript:void(0);" class="action-btn" data-bs-toggle="tooltip" title="" data-bs-original-title="Send to Email">
-                        <i class="feather-mail"></i>
-                    </a>
-                </div>
-                <div class="d-md-none d-lg-flex">
-                    <a href="proposal-edit.html" class="action-btn" data-bs-toggle="tooltip" title="" data-bs-original-title="Edit Proposal">
-                        <i class="feather-edit"></i>
-                    </a>
-                </div>
-                <div class="dropdown">
-                    <a href="javascript:void(0);" class="action-btn dropdown-toggle c-pointer" data-bs-toggle="dropdown" data-bs-offset="0, 2" data-bs-auto-close="outside">Convert</a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-check-square me-3"></i>
-                            <span>Draft</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-dollar-sign me-3"></i>
-                            <span>Invoice</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-cast me-3"></i>
-                            <span>Estimate</span>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+       
     </div>
 </div>
-<div class="main-content">
+<div class="main-content mb-20">
     <?php
 
     Gate::authorizeOrDie('borclandirma_ekle_sil');

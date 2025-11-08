@@ -9,7 +9,7 @@
         right: 0;
         background: white;
         border-top: 1px solid #e0e0e0;
-        z-index: 1000;
+        z-index: 1060;
         padding: 0;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
     }
@@ -111,6 +111,7 @@
 
         footer {
             display: none !important;
+           
         }
     }
 </style>
