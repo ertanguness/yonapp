@@ -99,7 +99,7 @@ $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
 $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
 // Alt Başlık (Rapor Dönemi)
-$sheet->setCellValue('A2', $start . ' - ' . $end . ' ARASI 2025 GELİR GİDER RAPORU');
+$sheet->setCellValue('A2', Date::dmY($start) . ' - ' . Date::dmY($end) . ' ARASI 2025 GELİR GİDER RAPORU');
 $sheet->mergeCells('A2:E2');
 $sheet->getStyle('A2')->getFont()->setBold(false)->setSize(12);
 $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);

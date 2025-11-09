@@ -63,7 +63,7 @@ foreach ($daireler as $daire) {
     $blok_adi = $blok->blok_adi ?? '';
     
     // Dairenin tüm aktif sakinlerini getir
-    $ev_sahibi      = $Kisiler->AktifKisiByDaireId($daire->id, 'Ev Sahibi');
+    $ev_sahibi      = $Kisiler->AktifKisiByDaireId($daire->id, 'Kat Maliki');
     $kiraci         = $Kisiler->AktifKisiByDaireId($daire->id, 'Kiracı');
     
     // Sakin yoksa atla (boş daire bilgisi eklenmeyecek)

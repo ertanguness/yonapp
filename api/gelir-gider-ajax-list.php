@@ -83,6 +83,7 @@ try {
         $orderDir
     );
     
+    //Helper::dd($kasaHareketleri);
     // DataTables formatına dönüştür
     $data = [];
     foreach ($kasaHareketleri as $hareket) {
@@ -148,6 +149,7 @@ try {
         'data' => $data
     ];
     
+       // Helper::dd($response);
     // Debug modu
     if (isset($debug) && $debug) {
         $response['debug'] = [
@@ -163,13 +165,13 @@ try {
     }
     
     // Output buffer'ı temizle (JSON'dan ÖNCE)
-    $bufferContent = ob_get_clean();
+  //  $bufferContent = ob_get_clean();
     
     // Eğer buffer'da beklenmeyen içerik varsa logla
     if (!empty($bufferContent) && isset($debug) && $debug) {
         error_log("Unexpected output: " . $bufferContent);
     }
-    
+
     echo json_encode($response);
     exit(); // Layout render edilmesini engelle
     

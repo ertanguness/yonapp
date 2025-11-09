@@ -22,6 +22,28 @@ use PDOException;
 
 class SSPModel {
 	/**
+	 * Quote an identifier safely. Supports dotted identifiers like t.col
+	 */
+	private static function ident($name) {
+		if (strpos($name, '.') !== false) {
+			list($a, $b) = explode('.', $name, 2);
+			return "`".$a."`.`".$b."`";
+		}
+		return "`".$name."`";
+	}
+
+	/**
+	 * Build SELECT piece for a column `db`. If dotted, also alias back to the dotted name
+	 * so that data_output can access $row[$column['db']].
+	 */
+	private static function selectExpr($name) {
+		if (strpos($name, '.') !== false) {
+			list($a, $b) = explode('.', $name, 2);
+			return "`".$a."`.`".$b."` AS ".$a.'_'.$b;
+		}
+		return "`".$name."`";
+	}
+	/**
 	 * Create the data output array for the DataTables rows
 	 *
 	 *  @param  array $columns Column information array
@@ -141,7 +163,9 @@ class SSPModel {
 						'ASC' :
 						'DESC';
 
-					$orderBy[] = '`'.$column['db'].'` '.$dir;
+					$colName = $column['db'] ?? '';
+					if ($colName === '') continue;
+					$orderBy[] = self::ident($colName).' '.$dir;
 				}
 			}
 
@@ -251,6 +275,11 @@ class SSPModel {
 		$bindings = array();
 		$db = self::db( $conn );
 
+		// Eğer table JOIN içeriyorsa backtick'leri değil, yoksa koy
+		$tableFormatted = (strpos($table, 'JOIN') !== false || strpos($table, 'join') !== false) 
+			? $table 
+			: "`$table`";
+
 		// Allow for a JSON string to be passed in
 		if (isset($request['json'])) {
 			$request = json_decode($request['json'], true);
@@ -263,8 +292,8 @@ class SSPModel {
 
 		// Main query to actually get the data
 		$data = self::sql_exec( $db, $bindings,
-			"SELECT `".implode("`, `", self::pluck($columns, 'db'))."`
-			 FROM `$table`
+			"SELECT ".implode(", ", array_filter(array_map([self::class, 'selectExpr'], self::pluck($columns, 'db'))))."
+			 FROM $tableFormatted
 			 $where
 			 $order
 			 $limit"
@@ -272,8 +301,8 @@ class SSPModel {
 
 		// Data set length after filtering
 		$resFilterLength = self::sql_exec( $db, $bindings,
-			"SELECT COUNT(`{$primaryKey}`)
-			 FROM   `$table`
+			"SELECT COUNT(".self::ident($primaryKey).")
+			 FROM $tableFormatted
 			 $where"
 		);
 		$recordsFiltered = $resFilterLength[0][0];
@@ -281,8 +310,8 @@ class SSPModel {
 		// Total data set length
 		$resTotalLength = self::sql_exec( $db,
 			[],
-			"SELECT COUNT(`{$primaryKey}`)
-			 FROM   `$table`"
+			"SELECT COUNT(".self::ident($primaryKey).")
+			 FROM $tableFormatted"
 		);
 		$recordsTotal = $resTotalLength[0][0];
 
@@ -343,6 +372,11 @@ class SSPModel {
 		$db = self::db( $conn );
 		$whereAllSql = '';
 
+		// Eğer table JOIN içeriyorsa backtick'leri değil, yoksa koy
+		$tableFormatted = (strpos($table, 'JOIN') !== false || strpos($table, 'join') !== false) 
+			? $table 
+			: "`$table`";
+
 		// Build the SQL query string from the request
 		$limit = self::limit( $request, $columns );
 		$order = self::order( $request, $columns );
@@ -388,8 +422,8 @@ class SSPModel {
 
 		// Main query to actually get the data
 		$data = self::sql_exec( $db, $bindings,
-			"SELECT `".implode("`, `", self::pluck($columns, 'db'))."`
-			 FROM `$table`
+			"SELECT ".implode(", ", array_filter(array_map([self::class, 'selectExpr'], self::pluck($columns, 'db'))))."
+			 FROM $tableFormatted
 			 $where
 			 $order
 			 $limit"
@@ -397,16 +431,16 @@ class SSPModel {
 
 		// Data set length after filtering
 		$resFilterLength = self::sql_exec( $db, $bindings,
-			"SELECT COUNT(`{$primaryKey}`)
-			 FROM   `$table`
+			"SELECT COUNT(".self::ident($primaryKey).")
+			 FROM $tableFormatted
 			 $where"
 		);
 		$recordsFiltered = $resFilterLength[0][0];
 
 		// Total data set length
 		$resTotalLength = self::sql_exec( $db, $whereAllBindings,
-			"SELECT COUNT(`{$primaryKey}`)
-			 FROM   `$table` ".
+			"SELECT COUNT(".self::ident($primaryKey).")
+			 FROM $tableFormatted ".
 			$whereAllSql
 		);
 		$recordsTotal = $resTotalLength[0][0];

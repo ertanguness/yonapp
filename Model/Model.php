@@ -613,17 +613,63 @@ private function getFilteredRecords($where, $bindings)
 /**
  * SSP sınıfını kullanarak DataTables response'u oluşturur
  */
-public function getSSPResponse($request, $columns, $whereResult = null, $whereAll = null)
+public function getSSPResponse($request, $columns, $whereResult = null, $whereAll = null, $customTable = null, $primaryKey = null)
 {
     // Mevcut DB bağlantısını SSP için uygun formata çevir
     $conn = $this->db;
+    $table = $customTable ?? $this->table;
+    $pk = $primaryKey ?? $this->primaryKey;
     
     if ($whereResult || $whereAll) {
-        return parent::complex($request, $conn, $this->table, $this->primaryKey, $columns, $whereResult, $whereAll);
+        return parent::complex($request, $conn, $table, $pk, $columns, $whereResult, $whereAll);
     } else {
-        return parent::simple($request, $conn, $this->table, $this->primaryKey, $columns);
+        return parent::simple($request, $conn, $table, $pk, $columns);
     }
 }
+
+    /**
+     * DataTables server-side processing (convenience wrapper)
+     * - Uses the current model's table and primary key
+     * - Accepts the standard DataTables columns array (with db and dt mappings)
+     * - Optionally returns JSON string directly
+     *
+     * @param array $request  Typically $_GET or $_POST from DataTables
+     * @param array $columns  [ [ 'db' => 'db_col', 'dt' => 0, 'formatter' => callable|null ], ... ]
+     * @param string|array|null $whereResult Additional filtering applied only to data rows
+     * @param string|array|null $whereAll    Filtering applied to all queries (restrict data scope)
+     * @param bool $asJson When true returns json_encode'd string, else returns array
+     * @param string|null $customTable Optional custom table/JOIN string
+     * @param string|null $primaryKey Optional qualified primary key (e.g., 'kh.id' for JOINs)
+     * @return string|array
+     */
+    public function serverProcessing(
+        array $request,
+        array $columns,
+        $whereResult = null,
+        $whereAll = null,
+        bool $asJson = true,
+        $customTable = null,
+        $primaryKey = null
+    ) {
+        $response = $this->getSSPResponse($request, $columns, $whereResult, $whereAll, $customTable, $primaryKey);
+        return $asJson ? json_encode($response) : $response;
+    }
+
+    /**
+     * snake_case alias for serverProcessing to match DataTables docs naming.
+     * @see serverProcessing
+     */
+    public function server_processing(
+        array $request,
+        array $columns,
+        $whereResult = null,
+        $whereAll = null,
+        bool $asJson = true,
+        $customTable = null,
+        $primaryKey = null
+    ) {
+        return $this->serverProcessing($request, $columns, $whereResult, $whereAll, $asJson, $customTable, $primaryKey);
+    }
 
 
 }

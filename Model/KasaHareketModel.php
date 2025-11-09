@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Model;
 
@@ -15,7 +15,8 @@ use Model\KisiKredileriModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class KasaHareketModel extends Model{
+class KasaHareketModel extends Model
+{
     protected $table = "kasa_hareketleri";
 
     protected $view = "view_kasa_hareketleri";
@@ -66,19 +67,19 @@ class KasaHareketModel extends Model{
      * @param string $bitis_tarihi
      * @param string $hareket_yonu 'Gelir', 'Gider' veya '' (tümü)
      * @return array
-    */
+     */
     public function getKasaHareketleriByDateRange($kasa_id, $baslangic_tarihi, $bitis_tarihi, $hareket_yonu = '')
-{
-    // Tarih aralıklarını günün tümünü kapsayacak şekilde normalize et
-    // Sadece tarih (YYYY-MM-DD) verilmişse başlangıcı 00:00:00, bitişi 23:59:59 yap
-    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', trim((string)$baslangic_tarihi))) {
-        $baslangic_tarihi = $baslangic_tarihi . ' 00:00:00';
-    }
-    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', trim((string)$bitis_tarihi))) {
-        $bitis_tarihi = $bitis_tarihi . ' 23:59:59';
-    }
+    {
+        // Tarih aralıklarını günün tümünü kapsayacak şekilde normalize et
+        // Sadece tarih (YYYY-MM-DD) verilmişse başlangıcı 00:00:00, bitişi 23:59:59 yap
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', trim((string)$baslangic_tarihi))) {
+            $baslangic_tarihi = $baslangic_tarihi . ' 00:00:00';
+        }
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', trim((string)$bitis_tarihi))) {
+            $bitis_tarihi = $bitis_tarihi . ' 23:59:59';
+        }
 
-    $query = "SELECT kh.*, k.adi_soyadi AS adi_soyadi, d.daire_kodu AS daire_kodu 
+        $query = "SELECT kh.*, k.adi_soyadi AS adi_soyadi, d.daire_kodu AS daire_kodu 
               FROM $this->table kh
               LEFT JOIN kisiler k ON kh.kisi_id = k.id
               LEFT JOIN daireler d ON k.daire_id = d.id
@@ -87,28 +88,28 @@ class KasaHareketModel extends Model{
               AND kh.tutar != 0
               AND kh.islem_tarihi BETWEEN :baslangic_tarihi AND :bitis_tarihi";
 
-    // Hareket yönü filtresini normalize et
-    $hareketYonuNormalized = strtolower((string)$hareket_yonu);
+        // Hareket yönü filtresini normalize et
+        $hareketYonuNormalized = strtolower((string)$hareket_yonu);
 
-    // Hareket yönü filtresi varsa ekle
-    if (in_array($hareketYonuNormalized, ['gelir', 'gider'], true)) {
-        $query .= " AND LOWER(kh.islem_tipi) = :hareket_yonu";
-    }
-    
-    $query .= " ORDER BY kh.islem_tarihi DESC, kh.id DESC";
-    
-    $stmt = $this->db->prepare($query);
-    $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
-    $stmt->bindParam(':baslangic_tarihi', $baslangic_tarihi, \PDO::PARAM_STR);
-    $stmt->bindParam(':bitis_tarihi', $bitis_tarihi, \PDO::PARAM_STR);
+        // Hareket yönü filtresi varsa ekle
+        if (in_array($hareketYonuNormalized, ['gelir', 'gider'], true)) {
+            $query .= " AND LOWER(kh.islem_tipi) = :hareket_yonu";
+        }
 
-    if (in_array($hareketYonuNormalized, ['gelir', 'gider'], true)) {
-        $stmt->bindValue(':hareket_yonu', $hareketYonuNormalized, \PDO::PARAM_STR);
+        $query .= " ORDER BY kh.islem_tarihi DESC, kh.id DESC";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
+        $stmt->bindParam(':baslangic_tarihi', $baslangic_tarihi, \PDO::PARAM_STR);
+        $stmt->bindParam(':bitis_tarihi', $bitis_tarihi, \PDO::PARAM_STR);
+
+        if (in_array($hareketYonuNormalized, ['gelir', 'gider'], true)) {
+            $stmt->bindValue(':hareket_yonu', $hareketYonuNormalized, \PDO::PARAM_STR);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
-    
-    $stmt->execute();
-    return $stmt->fetchAll(\PDO::FETCH_OBJ);
-}
 
 
 
@@ -137,23 +138,23 @@ class KasaHareketModel extends Model{
                   AND kh.silinme_tarihi IS NULL 
                   AND kh.tutar != 0
                   AND kh.islem_tarihi BETWEEN :baslangic_tarihi AND :bitis_tarihi";
-        
+
         // Hareket yönü filtresi varsa ekle
         if ($hareket_yonu && in_array($hareket_yonu, ['Gelir', 'Gider'])) {
             $query .= " AND kh.islem_tipi = :hareket_yonu";
         }
-        
+
         $query .= " ORDER BY kh.islem_tarihi DESC, kh.id DESC";
-        
+
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
         $stmt->bindParam(':baslangic_tarihi', $baslangic_tarihi, \PDO::PARAM_STR);
         $stmt->bindParam(':bitis_tarihi', $bitis_tarihi, \PDO::PARAM_STR);
-        
+
         if ($hareket_yonu && in_array($hareket_yonu, ['Gelir', 'Gider'])) {
             $stmt->bindParam(':hareket_yonu', $hareket_yonu, \PDO::PARAM_STR);
         }
-        
+
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
@@ -169,8 +170,8 @@ class KasaHareketModel extends Model{
      * @return array
      */
     public function getKasaHareketleriPaginated(
-        int $kasa_id, 
-        int $start = 0, 
+        int $kasa_id,
+        int $start = 0,
         int $length = 50,
         string $searchValue = '',
         string $orderColumn = 'islem_tarihi',
@@ -181,9 +182,9 @@ class KasaHareketModel extends Model{
         if (!in_array($orderColumn, $allowedColumns)) {
             $orderColumn = 'islem_tarihi';
         }
-        
+
         $orderDir = strtolower($orderDir) === 'asc' ? 'ASC' : 'DESC';
-        
+
         $query = "SELECT kh.*, k.adi_soyadi AS adi_soyadi, d.daire_kodu AS daire_kodu 
                   FROM {$this->table} kh
                   LEFT JOIN kisiler k ON kh.kisi_id = k.id
@@ -191,7 +192,7 @@ class KasaHareketModel extends Model{
                   WHERE kh.kasa_id = :kasa_id 
                   AND kh.silinme_tarihi IS NULL 
                   AND kh.tutar != 0";
-        
+
         // Arama filtresi
         if (!empty($searchValue)) {
             $query .= " AND (
@@ -201,20 +202,20 @@ class KasaHareketModel extends Model{
                 OR kh.islem_tipi LIKE :search
             )";
         }
-        
+
         $query .= " ORDER BY kh.{$orderColumn} {$orderDir}, kh.id DESC
                     LIMIT :start, :length";
-        
+
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
         $stmt->bindParam(':start', $start, \PDO::PARAM_INT);
         $stmt->bindParam(':length', $length, \PDO::PARAM_INT);
-        
+
         if (!empty($searchValue)) {
             $searchParam = "%{$searchValue}%";
             $stmt->bindParam(':search', $searchParam, \PDO::PARAM_STR);
         }
-        
+
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
@@ -234,7 +235,7 @@ class KasaHareketModel extends Model{
                   WHERE kh.kasa_id = :kasa_id 
                   AND kh.silinme_tarihi IS NULL 
                   AND kh.tutar != 0";
-        
+
         // Arama filtresi
         if (!empty($searchValue)) {
             $query .= " AND (
@@ -244,18 +245,18 @@ class KasaHareketModel extends Model{
                 OR kh.islem_tipi LIKE :search
             )";
         }
-        
+
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
-        
+
         if (!empty($searchValue)) {
             $searchParam = "%{$searchValue}%";
             $stmt->bindParam(':search', $searchParam, \PDO::PARAM_STR);
         }
-        
+
         $stmt->execute();
         $result = $stmt->fetch(\PDO::FETCH_OBJ);
-        
+
         return (int)($result->total ?? 0);
     }
 
@@ -276,7 +277,7 @@ class KasaHareketModel extends Model{
     }
 
 
-    
+
     /**
      * Yüklenen bir Excel dosyasındaki tutar bilgilerini işler ve veritabanına kaydeder.
      *
@@ -292,16 +293,16 @@ class KasaHareketModel extends Model{
         $KasaModel = new KasaModel();
         $TahsilatModel = new TahsilatModel();
         $KisiKredileriModel = new KisiKredileriModel();
-    
+
         // Sonuçları ve hataları toplayacağımız diziler
         $processedCount = 0;
         $errorRows = [];
         $skippedCount = 0; // Atlanan kayıt sayısı
-    
+
 
 
         //   id;site_id;kasa_id;islem_tarihi;islem_tipi;tahsilat_id;kisi_id;tutar;para_birimi;kategori;aciklama;silinme_tarihi;silen_kullanici;kaynak_tablo;kaynak_id;kayit_yapan;created_at;guncellenebilir;updated_at
-        
+
         $kasa_id = $KasaModel->varsayilanKasa()->id ?? 0;
 
 
@@ -317,7 +318,7 @@ class KasaHareketModel extends Model{
                 // Eğer dosya tamamen boşsa, burada işlemi bitirebilirsiniz.
                 return ['status' => 'error', 'message' => 'Yüklenen Excel dosyası boş veya okunamıyor.'];
             }
-    
+
 
             $logger->info("Excel dosyası başarıyla yüklendi ve işleme alınıyor.", ['file' => $tmpFilePath]);
 
@@ -326,16 +327,16 @@ class KasaHareketModel extends Model{
                 $header[$cell->getColumn()] = trim($cell->getValue() ?? ''); // Başlıklardaki boşlukları da temizle
             }
             $rows->next(); // Başlık satırını ATLA ve veri satırlarına geç
-    
+
             // === 2. TÜM İŞLEMLERİ TEK BİR TRANSACTION İÇİNDE YAP ===
             $this->db->beginTransaction();
-    
+
             // `foreach` yerine `while` döngüsü kullanarak iteratörün kontrolünü ele al.
             while ($rows->valid()) {
                 $row = $rows->current(); // Mevcut satırı al
 
                 $logger->info("İşlenen satır numarası: " . $row->getRowIndex());
-    
+
                 $rowData = [];
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // Boş hücreleri de al
@@ -346,13 +347,13 @@ class KasaHareketModel extends Model{
                         $rowData[$columnHeader] = $cell->getValue();
                     }
                 }
-                
+
                 // Satır tamamen boşsa atla
                 if (count(array_filter($rowData)) == 0) {
                     $rows->next(); // Bir sonraki satıra geç
                     continue;
                 }
-                
+
                 // Tarih*	Tutar*	Kategori(Gelir/Gider)*	DaireKodu	Adı Soyadı	Açıklama
 
                 // Verileri al ve temizle
@@ -363,12 +364,12 @@ class KasaHareketModel extends Model{
                 $tutar            = trim($rowData['Tutar*'] ?? '');
                 $kategori         = trim($rowData['Kategori(Gelir/Gider)*'] ?? '');
                 $daireKodu        = trim($rowData['DaireKodu'] ?? '');
-                $hesapAdi         = trim($rowData['Adı Soyadı'] ?? '');  
+                $hesapAdi         = trim($rowData['Adı Soyadı'] ?? '');
                 $aciklama         = trim($rowData['Açıklama'] ?? '');
-    
+
                 // ... diğer sütunlar ...
                 $logger->info("Satır Verileri", [$tarih, $tutar, $kategori, $daireKodu, $hesapAdi, $aciklama]);
-    
+
                 // Eğer zorunlu alanlar boşsa, hatayı kaydet ve sonraki satıra geç
                 if (empty($tarih) || empty($tutar) || empty($kategori)) {
                     $errorRows[] = [
@@ -380,41 +381,40 @@ class KasaHareketModel extends Model{
                     $rows->next(); // Bir sonraki satıra geç
                     continue;
                 }
-    
+
                 //Daire kodu ve hesap Adından kişi id'yi bul
-                
+
                 if (empty($daireKodu) && empty($hesapAdi)) {
-                        $kisi_id = $KisiModel->findKisiIdByDaireKoduAndAdiSoyadi( $daireKodu, $hesapAdi);
+                    $kisi_id = $KisiModel->findKisiIdByDaireKoduAndAdiSoyadi($daireKodu, $hesapAdi);
+                }
+                // Veritabanına eklenecek veriyi hazırla
+                $data = [
+                    'id' => 0,
+                    'site_id' => $siteId,
+                    'kasa_id' => $kasa_id,
+                    'islem_tarihi' => $tarih,
+                    'tutar' => floatval($tutar),
+                    'islem_tipi' => $kategori,
+                    'kisi_id' => $kisi_id ?? 0,
+                    'aciklama' => $aciklama,
+                ];
 
-                }          
-                    // Veritabanına eklenecek veriyi hazırla
-                    $data = [
-                        'id' => 0,
-                        'site_id' => $siteId,
-                        'kasa_id' => $kasa_id,
-                        'islem_tarihi' => $tarih,
-                        'tutar' => floatval($tutar),
-                        'islem_tipi' => $kategori,
-                        'kisi_id' => $kisi_id ?? 0,
-                        'aciklama' => $aciklama,
-                    ];
-    
-                    $this->saveWithAttr($data);
-
-
-                    // Kişi id mevcutsa, ve gelen tutar pozitif ise Tahsilat ve Kredi kaydı oluştur
-                    if (!empty($kisi_id) && floatval($tutar) > 0) {
-                        $logger->info("Kişi ID {$kisi_id} için tahsilat ve kredi kaydı oluşturuluyor.", ['tutar' => $tutar]);
-                    }
+                $this->saveWithAttr($data);
 
 
-                    $processedCount++;
-                    
-                    // Döngünün sonunda bir sonraki satıra MANUEL olarak geç.
-                    $rows->next();
+                // Kişi id mevcutsa, ve gelen tutar pozitif ise Tahsilat ve Kredi kaydı oluştur
+                if (!empty($kisi_id) && floatval($tutar) > 0) {
+                    $logger->info("Kişi ID {$kisi_id} için tahsilat ve kredi kaydı oluşturuluyor.", ['tutar' => $tutar]);
                 }
 
-    
+
+                $processedCount++;
+
+                // Döngünün sonunda bir sonraki satıra MANUEL olarak geç.
+                $rows->next();
+            }
+
+
             // === 4. İŞLEMİ SONLANDIR ===
             $this->db->commit();
             $logger->info("Excel yükleme tamamlandı.", [
@@ -422,12 +422,12 @@ class KasaHareketModel extends Model{
                 'atlanan kayıt sayısı' => $skippedCount,
                 'hatalı kayıt sayısı' => count($errorRows)
             ]);
-            
+
             $message = "İşlem tamamlandı: {$processedCount} yeni kayıt eklendi.";
             if (!empty($errorRows)) {
                 $message .= " " . count($errorRows) . " satırda hata oluştu.";
             }
-    
+
             return [
                 'status' => 'success',
                 'message' => $message,
@@ -437,13 +437,11 @@ class KasaHareketModel extends Model{
                     'error_rows' => $errorRows,
                 ]
             ];
-    
         } catch (\PDOException $e) {
             // Veritabanı hatası olursa, tüm işlemleri geri al
             $this->db->rollBack();
             $logger->error("Gelir-Gider Excel yükleme sırasında veritabanı hatası.", ['error' => $e->getMessage()]);
             return ['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()];
-    
         } catch (\Exception $e) {
             // Dosya okuma veya başka bir genel hata olursa
             // Not: `rollBack()` sadece transaction başlatıldıysa çalışır, aksi halde hata verir.
@@ -453,6 +451,8 @@ class KasaHareketModel extends Model{
         }
     }
 
+
+    
 
 
 

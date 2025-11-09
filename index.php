@@ -60,7 +60,8 @@ $page = $router->getPageName() ?? '';
 <html lang="tr">
 <?php include './partials/head.php'; ?>
 
-<body>
+<body data-page="<?= $page ?>">
+
     <?php include './partials/left-sidebar.php'; ?>
     <?php include './partials/header.php'; ?>
     
