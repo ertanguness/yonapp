@@ -289,4 +289,43 @@
             }, 100);
         });
     });
+
+    // Modal ve Offcanvas Z-Index Yönetimi
+    (function() {
+        const BASE = 1050,
+            STEP = 10;
+        
+        document.addEventListener('show.bs.modal', function(e) {
+            const openCount = document.querySelectorAll('.modal.show').length;
+            const modalZ = BASE + (STEP * (openCount + 1)) + 5;
+            e.target.style.zIndex = modalZ;
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                const bd = backdrops[backdrops.length - 1];
+                if (bd) {
+                    bd.style.zIndex = modalZ - 5;
+                    bd.classList.add('stacked-backdrop');
+                }
+                document.body.classList.add('modal-open');
+            }, 10);
+        });
+
+        document.addEventListener('show.bs.offcanvas', function(e) {
+            const offcanvasZ = BASE + 1050;
+            e.target.style.zIndex = offcanvasZ;
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.offcanvas-backdrop');
+                const bd = backdrops[backdrops.length - 1];
+                if (bd) {
+                    bd.style.zIndex = offcanvasZ - 5;
+                }
+            }, 10);
+        });
+
+        document.addEventListener('hidden.bs.modal', function() {
+            if (document.querySelectorAll('.modal.show').length === 0) {
+                document.body.classList.remove('modal-open');
+            }
+        });
+    })();
 </script>

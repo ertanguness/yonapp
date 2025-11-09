@@ -192,11 +192,11 @@
             <i class="bi bi-send-plus"></i>
             <span>SMS Gönder</span>
         </a>
-        <a href="/raporlar" class="sms-gonder">
+        <a href="/raporlar">
             <i class="bi bi-card-checklist"></i>
             <span>Raporlar</span>
         </a>
-        <a href="/logout" class="sms-gonder">
+        <a href="/logout">
             <i class="bi bi-box-arrow-right"></i>
             <span>Çıkış Yap</span>
         </a>

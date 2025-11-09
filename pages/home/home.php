@@ -472,6 +472,7 @@ $geciken_odeme_tutari = $FinansalRaporModel->getGecikenOdemeTutar($site_id);
 </div>
 
 
+
 <!-- Gelir Gider Modal -->
 <div class="modal fade" id="gelirGiderModal" tabindex="-1" aria-labelledby="gelirGiderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -481,6 +482,68 @@ $geciken_odeme_tutari = $FinansalRaporModel->getGecikenOdemeTutar($site_id);
     </div>
 </div>
 
+
 <?php include './partials/calender-scripts.php' ?>
 <!-- list.php'nin en altına ekle -->
 <script src="/pages/email-sms/js/sms.js"></script>
+
+
+<style>
+    /* Modal backdrop z-index otomatik yönetilecek */
+    .stacked-backdrop {
+        opacity: 0.3 !important;
+    }
+
+    /* Modal ve Offcanvas Backdrop Stilleri */
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .offcanvas-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+</style>
+
+<script>
+    // Kişi telefon numarasını JavaScript'e aktar
+    window.kisiTelefonNumarasi = '<?php echo htmlspecialchars($telefonNumarasi ?? '', ENT_QUOTES); ?>';
+
+    // Modal ve Offcanvas Z-Index Yönetimi
+    (function() {
+        const BASE = 1050,
+            STEP = 10;
+        
+        document.addEventListener('show.bs.modal', function(e) {
+            const openCount = document.querySelectorAll('.modal.show').length;
+            const modalZ = BASE + (STEP * (openCount + 1)) + 5;
+            e.target.style.zIndex = modalZ;
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                const bd = backdrops[backdrops.length - 1];
+                if (bd) {
+                    bd.style.zIndex = modalZ - 5;
+                    bd.classList.add('stacked-backdrop');
+                }
+                document.body.classList.add('modal-open');
+            }, 10);
+        });
+
+        document.addEventListener('show.bs.offcanvas', function(e) {
+            const offcanvasZ = BASE + 1050;
+            e.target.style.zIndex = offcanvasZ;
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.offcanvas-backdrop');
+                const bd = backdrops[backdrops.length - 1];
+                if (bd) {
+                    bd.style.zIndex = offcanvasZ - 5;
+                }
+            }, 10);
+        });
+
+        document.addEventListener('hidden.bs.modal', function() {
+            if (document.querySelectorAll('.modal.show').length === 0) {
+                document.body.classList.remove('modal-open');
+            }
+        });
+    })();
+</script>   

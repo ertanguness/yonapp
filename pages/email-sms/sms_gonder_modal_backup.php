@@ -303,5 +303,163 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
 </div>
 
 <script>
-console.log('✓ SMS gönder modal script başladı');
+let offcanvasListenerAdded = false;
+let shouldClearOnClose = false;
+
+// Event listener'ı dinamik olarak kur
+function setupKisilerdenSecListener() {
+    
+    const offcanvasElement = document.getElementById('kisilerdenSecOffcanvas');
+    
+    if (!offcanvasElement || offcanvasListenerAdded) return;
+    
+    offcanvasListenerAdded = true;
+    console.log('📍 Offcanvas listener bir kez kuruldu');
+    
+    // shown event'ine listener ekle
+    const onShown = function() {
+        console.log('📱 Offcanvas açıldı');
+        
+        // Buton'u bul
+        setTimeout(() => {
+            const seciliEkleBtn = document.getElementById('seciliEkleBtn');
+            
+            if (!seciliEkleBtn) {
+                console.warn('⚠️ Button bulunamadı');
+                return;
+            }
+            
+            // Eski event listener'ları temizle
+            const newBtn = seciliEkleBtn.cloneNode(true);
+            seciliEkleBtn.parentNode.replaceChild(newBtn, seciliEkleBtn);
+            
+            // Event listener ekle
+            newBtn.addEventListener('click', handleSeciliEkleClick);
+            console.log('✓ Seçilenleri Ekle button listener eklendi');
+        }, 200);
+    };
+    
+    // hidden event'ine listener ekle
+    const onHidden = function() {
+        console.log('📱 Offcanvas kapatıldı, shouldClearOnClose:', shouldClearOnClose);
+        
+        if (!shouldClearOnClose) {
+            console.log('� Seçimler korunuyor (normal kapatma)');
+            return;
+        }
+        
+        console.log('�️ Seçimler temizleniyor');
+        
+        // Tüm checkbox'ları temizle
+        const allCheckboxes = document.querySelectorAll('.kisi-checkbox');
+        allCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // "Tümünü Seç" checkbox'ını temizle
+        const selectAllCheckbox = document.getElementById('selectAll');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = false;
+        }
+        
+        // Seçili sayı sıfırla
+        const selectedCount = document.getElementById('selectedCount');
+        if (selectedCount) {
+            selectedCount.textContent = '0';
+        }
+        
+        // Bayrak sıfırla
+        shouldClearOnClose = false;
+        console.log('✓ Temizleme tamamlandı, bayrak sıfırlandı');
+    };
+    
+    offcanvasElement.addEventListener('shown.bs.offcanvas', onShown);
+    offcanvasElement.addEventListener('hidden.bs.offcanvas', onHidden);
+}
+
+// Buton tıklama olayını işle
+function handleSeciliEkleClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log('🎯 BUTON TIKLANDI!');
+    
+    // Seçilen checkboxları al
+    const checkedBoxes = document.querySelectorAll('.kisi-checkbox:checked');
+    console.log('📊 Seçilen sayı:', checkedBoxes.length);
+    
+    if (checkedBoxes.length === 0) {
+        alert('Lütfen en az bir kişi seçin.');
+        return;
+    }
+    
+    // Telefon numaralarını topla
+    const selectedPhones = Array.from(checkedBoxes).map(checkbox => {
+        return checkbox.getAttribute('data-phone');
+    });
+    
+    console.log('📞 Telefon numaraları:', selectedPhones);
+    
+    // Telefonları ekle
+    if (typeof window.addPhoneToSMS === 'function') {
+        console.log('✓ addPhoneToSMS çağrılıyor');
+        selectedPhones.forEach(phone => {
+            console.log('→ Ekleniyor:', phone);
+            window.addPhoneToSMS(phone);
+        });
+        
+        // Offcanvas'ı kapat ve seçimleri temizle
+        const offcanvasElement = document.getElementById('kisilerdenSecOffcanvas');
+        if (offcanvasElement) {
+            // Seçimleri temizle
+            const allCheckboxes = document.querySelectorAll('.kisi-checkbox');
+            allCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            const selectAllCheckbox = document.getElementById('selectAll');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = false;
+            }
+            
+            const selectedCount = document.getElementById('selectedCount');
+            if (selectedCount) {
+                selectedCount.textContent = '0';
+            }
+            
+            // Offcanvas kapat
+            const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+            if (bsOffcanvas) {
+                bsOffcanvas.hide();
+            }
+        }
+    } else {
+        console.error('✗ addPhoneToSMS fonksiyonu bulunamadı!');
+        alert('Sistem hatası. Sayfayı yenileyin.');
+    }
+}
+
+// Button listener'ını kur
+function setupButtonListener() {
+    const seciliEkleBtn = document.getElementById('seciliEkleBtn');
+    if (seciliEkleBtn) {
+        // Eski listener'ları temizle
+        const newBtn = seciliEkleBtn.cloneNode(true);
+        seciliEkleBtn.parentNode.replaceChild(newBtn, seciliEkleBtn);
+        
+        // Yeni listener ekle
+        newBtn.addEventListener('click', handleSeciliEkleClick);
+        console.log('✓ Button listener eklendi');
+    }
+}
+
+// DOMContentLoaded'da başlat
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupButtonListener);
+} else {
+    setupButtonListener();
+}
+
+setTimeout(setupButtonListener, 500);
+console.log('✓ SMS modal script hazır');
 </script>

@@ -328,6 +328,19 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         </div>
     </div>
 </div>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="kisilerdenSecOffcanvas" aria-labelledby="offcanvasEndLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasEndLabel">Kişilerden Seç</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body kisilerden-sec-offcanvas">
+        <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
     .borc-satiri.secili-satir {
@@ -372,6 +385,19 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 document.body.classList.add('modal-open');
             }, 10);
         });
+
+        document.addEventListener('show.bs.offcanvas', function(e) {
+            const offcanvasZ = BASE + 1050;
+            e.target.style.zIndex = offcanvasZ;
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.offcanvas-backdrop');
+                const bd = backdrops[backdrops.length - 1];
+                if (bd) {
+                    bd.style.zIndex = offcanvasZ - 5;
+                }
+            }, 10);
+        });
+
         document.addEventListener('hidden.bs.modal', function() {
             if (document.querySelectorAll('.modal.show').length === 0) {
                 document.body.classList.remove('modal-open');

@@ -82,7 +82,7 @@
         });
     });
 
-    /**Mail Göönder butonuna basınca */
+    /**Mail Gönder butonuna basınca */
     $(document).on('click', '#SendMail', function() {
         const toList = window.pickEmails?.(window.mailTagify?.to) || [];
         const ccList = window.pickEmails?.(window.mailTagify?.cc) || [];
@@ -155,28 +155,44 @@
     });
 
     /**Sms Gönderme Modalini açar */
-    $(document).on('click', '.sms-gonder', function() {
-        var kisi_id = $(this).data('kisi-id');
-        // SMS gönderme işlemini burada gerçekleştirin
-        $.get("pages/email-sms/sms_gonder_modal.php", {
-            kisi_id: kisi_id,
-            includeFile: ''
+    $(document).on('click', '.sms-gonder', function(e) {
+        e.preventDefault();
+        var kisi_id = $(this).data('kisi-id') || '';
+        const url = '/pages/email-sms/sms_gonder_modal.php';
 
-        }, function(data) {
-            // Gelen yanıtı işleyin (örneğin, bir modal açarak)
+        // Güvenlik: Modal DOM'da var mı?
+        if (!document.getElementById('SendMessage')) {
+            console.error('[SMS] #SendMessage modal DOM içinde bulunamadı');
+            return;
+        }
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: { kisi_id: kisi_id, includeFile: '' },
+            dataType: 'html'
+        }).done(function(data){
             $('#SendMessage .modal-content').html(data);
+
+            if (typeof window.registerNewModal === 'function') {
+                window.registerNewModal('SendMessage');
+            }
+
             $('#SendMessage').modal('show');
 
-
+            // Bootstrap show animasyonu bitmesine yakın init
             setTimeout(function() {
                 if (typeof window.initSmsModal === 'function') {
-                    //$('#message').text('Merhaba, olarak size hatırlatmak isteriz ki, toplam borcunuz dir. Lütfen en kısa sürede ödeme yapınız.\n\nTeşekkürler.\nSite Yönetimi');
                     window.initSmsModal();
-                    // Modal içindeki select2’ler
-                    $(".select2").select2({
-                        dropdownParent: $('#SendMessage')
-                    });
+                    $(".select2").select2({ dropdownParent: $('#SendMessage') });
                 }
-            }, 100);
+            }, 150);
+        }).fail(function(xhr, status, err){
+            console.error('[SMS] Modal içeriği alınırken hata', status, err, xhr.status, xhr.responseText);
+            Swal.fire({
+                icon: 'error',
+                title: 'SMS Modal Hatası',
+                text: 'İçerik yüklenemedi. Lütfen tekrar deneyin.'
+            });
         });
     });
