@@ -84,12 +84,15 @@ class KasaHareketModel extends Model{
               LEFT JOIN daireler d ON k.daire_id = d.id
               WHERE kh.kasa_id = :kasa_id 
               AND kh.silinme_tarihi IS NULL 
-              AND kh.tutar != 0;
+              AND kh.tutar != 0
               AND kh.islem_tarihi BETWEEN :baslangic_tarihi AND :bitis_tarihi";
-    
+
+    // Hareket yönü filtresini normalize et
+    $hareketYonuNormalized = strtolower((string)$hareket_yonu);
+
     // Hareket yönü filtresi varsa ekle
-    if ($hareket_yonu && in_array($hareket_yonu, ['Gelir', 'Gider'])) {
-        $query .= " AND kh.islem_tipi = :hareket_yonu";
+    if (in_array($hareketYonuNormalized, ['gelir', 'gider'], true)) {
+        $query .= " AND LOWER(kh.islem_tipi) = :hareket_yonu";
     }
     
     $query .= " ORDER BY kh.islem_tarihi DESC, kh.id DESC";
@@ -98,9 +101,9 @@ class KasaHareketModel extends Model{
     $stmt->bindParam(':kasa_id', $kasa_id, \PDO::PARAM_INT);
     $stmt->bindParam(':baslangic_tarihi', $baslangic_tarihi, \PDO::PARAM_STR);
     $stmt->bindParam(':bitis_tarihi', $bitis_tarihi, \PDO::PARAM_STR);
-    
-    if ($hareket_yonu && in_array($hareket_yonu, ['Gelir', 'Gider'])) {
-        $stmt->bindParam(':hareket_yonu', $hareket_yonu, \PDO::PARAM_STR);
+
+    if (in_array($hareketYonuNormalized, ['gelir', 'gider'], true)) {
+        $stmt->bindValue(':hareket_yonu', $hareketYonuNormalized, \PDO::PARAM_STR);
     }
     
     $stmt->execute();

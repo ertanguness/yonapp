@@ -42,7 +42,7 @@ if ($blok_id == 0) {
 
 
 
-//Helper::dd($kisiler);
+
 if (empty($kisiler)) {
     die('Dışarı aktarılacak kişi bulunamadı.');
 }

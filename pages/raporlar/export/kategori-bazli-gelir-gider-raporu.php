@@ -4,6 +4,7 @@ require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
 
 use Model\SitelerModel;
 use App\Helper\Date;
+use App\Helper\Helper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
@@ -12,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Font;
+
 
 // --- Veri Çekme ve Hazırlık (Bu kısım projenize göre aynı kalabilir) ---
 $site_id = $_SESSION['site_id'] ?? 0;
@@ -42,9 +44,10 @@ $KasaHareketModel = new KasaHareketModel();
 $selected_kasa_id = isset($_GET['kasa_id']) ? intval($_GET['kasa_id']) : ($varsayilan_kasa_id->id ?? 0);
 
 // Gelir ve Gider verilerini ayrı ayrı çek
-$gelirler_raw = $KasaHareketModel->getKasaHareketleriByDateRange($selected_kasa_id, $start, $end, 'Gelir');
-$giderler_raw = $KasaHareketModel->getKasaHareketleriByDateRange($selected_kasa_id, $start, $end, 'Gider');
+$gelirler_raw = $KasaHareketModel->getKasaHareketleriByDateRange($selected_kasa_id, $start, $end, 'gelir');
+$giderler_raw = $KasaHareketModel->getKasaHareketleriByDateRange($selected_kasa_id, $start, $end, 'gider');
 
+//Helper::dd($gelirler_raw);
 
 // print_r($gelirler_raw);
 // print_r($giderler_raw);
@@ -96,7 +99,7 @@ $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
 $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
 // Alt Başlık (Rapor Dönemi)
-$sheet->setCellValue('A2', 'EYLÜL 2025 GELİR GİDER RAPORU');
+$sheet->setCellValue('A2', $start . ' - ' . $end . ' ARASI 2025 GELİR GİDER RAPORU');
 $sheet->mergeCells('A2:E2');
 $sheet->getStyle('A2')->getFont()->setBold(false)->setSize(12);
 $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
