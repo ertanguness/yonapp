@@ -85,7 +85,7 @@ $site_adi = $site->site_adi ?? 'Site';
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <label for="hazirun_baslik" class="form-label">
                                                 <i class="feather-edit-3 me-1"></i>Rapor Başlığı
                                             </label>
@@ -109,24 +109,23 @@ $site_adi = $site->site_adi ?? 'Site';
                                             <label for="hazirun_format" class="form-label">
                                                 <i class="feather-download me-1"></i>İndirme Formatı
                                             </label>
-                                            <select class="form-select" id="hazirun_format" name="hazirun_format">
+                                            <select class="form-control select2" id="hazirun_format" name="hazirun_format">
                                                 <option value="pdf">PDF Belgesi</option>
                                                 <option value="xlsx">Excel (XLSX)</option>
                                                 <option value="csv">CSV Dosyası</option>
                                                 <option value="html">HTML Sayfası</option>
                                             </select>
                                         </div>
-
-                                        <div class="col-12">
-                                            <hr class="my-2">
-                                            <button type="button" class="btn btn-primary btn-rapor-indir"
-                                                data-rapor="hazirun">
-                                                <i class="feather-download me-2"></i>Raporu İndir
-                                            </button>
+                                        <hr class="my-2">
+                                        <div class="col-12 d-flex gap-2">
                                             <button type="button" class="btn btn-outline-secondary btn-rapor-onizle"
-                                                data-rapor="hazirun">
-                                                <i class="feather-eye me-2"></i>Önizle
-                                            </button>
+                                            data-rapor="hazirun">
+                                            <i class="feather-eye me-2"></i>Önizle
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-rapor-indir"
+                                            data-rapor="hazirun">
+                                            <i class="feather-download me-2"></i>Raporu İndir
+                                        </button>
                                         </div>
                                     </form>
                                 </div>
@@ -183,7 +182,7 @@ $site_adi = $site->site_adi ?? 'Site';
                                             <label for="borc_format" class="form-label">
                                                 <i class="feather-download me-1"></i>İndirme Formatı
                                             </label>
-                                            <select class="form-select" id="borc_format" name="borc_format">
+                                            <select class="form-control select2" id="borc_format" name="borc_format">
                                                 <option value="pdf">PDF Belgesi</option>
                                                 <option value="xlsx">Excel (XLSX)</option>
                                                 <option value="csv">CSV Dosyası</option>
@@ -214,13 +213,13 @@ $site_adi = $site->site_adi ?? 'Site';
                                                 <i class="feather-eye me-2"></i>Önizle
                                             </button>
                                             <button type="button" class="btn btn-outline-success btn-rapor-indir"
-                                            data-rapor="borc-ozet">
-                                            <i class="feather-list me-2"></i>Borç Bazında Özet
-                                        </button>
-                                        <button type="button" class="btn btn-primary btn-rapor-indir"
-                                            data-rapor="borc-alacak">
-                                            <i class="feather-download me-2"></i>Raporu İndir
-                                        </button>
+                                                data-rapor="borc-ozet">
+                                                <i class="feather-list me-2"></i>Borç Bazında Özet
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-rapor-indir"
+                                                data-rapor="borc-alacak">
+                                                <i class="feather-download me-2"></i>Raporu İndir
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -260,12 +259,22 @@ $site_adi = $site->site_adi ?? 'Site';
                                                 <i class="feather-calendar me-1"></i>Ay
                                             </label>
                                             <select class="form-control select2" id="aidat_ay" name="aidat_ay">
-                                                <?php 
-                                                
+                                                <?php
+
                                                 $aylar = [
-                                                            1 => 'Ocak', 2 => 'Şubat', 3 => 'Mart', 4 => 'Nisan', 5 => 'Mayıs', 6 => 'Haziran',
-                                                            7 => 'Temmuz', 8 => 'Ağustos', 9 => 'Eylül', 10 => 'Ekim', 11 => 'Kasım', 12 => 'Aralık'
-                                                        ];
+                                                    1 => 'Ocak',
+                                                    2 => 'Şubat',
+                                                    3 => 'Mart',
+                                                    4 => 'Nisan',
+                                                    5 => 'Mayıs',
+                                                    6 => 'Haziran',
+                                                    7 => 'Temmuz',
+                                                    8 => 'Ağustos',
+                                                    9 => 'Eylül',
+                                                    10 => 'Ekim',
+                                                    11 => 'Kasım',
+                                                    12 => 'Aralık'
+                                                ];
 
                                                 foreach ($aylar as $i => $ay): ?>
                                                     <option value="<?php echo $i; ?>" <?php echo date('n') == $i ? 'selected' : ''; ?>>
@@ -314,7 +323,7 @@ $site_adi = $site->site_adi ?? 'Site';
                                             </label>
                                         </div>
 
-                                       <hr class="my-4">
+                                        <hr class="my-4">
                                         <div class="col-12 d-flex gap-2">
                                             <button type="button" class="btn btn-outline-secondary btn-rapor-onizle"
                                                 data-rapor="aidat">
@@ -400,8 +409,8 @@ $site_adi = $site->site_adi ?? 'Site';
                                                     data-rapor="gelir-kategori" data-range="this-year">Bu Yıl</button>
                                             </div>
                                         </div>
-                              
-  <hr class="my-4">
+
+                                        <hr class="my-4">
                                         <div class="col-12 d-flex gap-2">
                                             <button type="button" class="btn btn-outline-secondary btn-rapor-onizle"
                                                 data-rapor="gelir-gider-kategori">
@@ -412,7 +421,7 @@ $site_adi = $site->site_adi ?? 'Site';
                                                 <i class="feather-download me-2"></i>Raporu İndir
                                             </button>
                                         </div>
-                                                    
+
 
                                     </form>
                                 </div>

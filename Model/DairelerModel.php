@@ -32,7 +32,7 @@ class DairelerModel extends Model
         $result = [];
         $Kisiler = new \Model\KisilerModel();
         foreach ($daireler as $d) {
-            $owner = $Kisiler->AktifKisiByDaireId($d['id'], 'Ev Sahibi');
+            $owner = $Kisiler->AktifKisiByDaireId($d['id'], 'Kat Maliki');
             $result[] = [
                 'blok_adi' => $d['blok_adi'],
                 'daire_no' => $d['daire_no'],

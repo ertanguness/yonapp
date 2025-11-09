@@ -1,18 +1,24 @@
 <?php
 // Hazirun Listesi Raporu (mülk sahipleri)
 require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
+
+use App\Helper\Date;
+use App\Helper\Helper;
+use Model\KisilerModel;
 use Model\SitelerModel;
 use Model\DairelerModel;
-use Model\KisilerModel;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 
 $site_id = $_SESSION['site_id'] ?? 0;
 $format = strtolower($_GET['format'] ?? 'pdf');
+$baslik = $_GET['baslik'] ?? '';
+$tarih = $_GET['tarih'] ?? '';
+
 
 $Siteler = new SitelerModel();
 $Daireler = new DairelerModel();
@@ -24,6 +30,8 @@ if (!$site) { die('Site bulunamadı'); }
 // Daire, blok ve mülk sahipleri
 $daireler = $Daireler->getDairelerWithOwner($site_id); // blok_adi, daire_no, ev_sahibi
 
+
+//Helper::dd($daireler);
 // Spreadsheet
 $ss = new Spreadsheet();
 $sheet = $ss->getActiveSheet();
@@ -34,7 +42,7 @@ $sheet->setTitle('Hazirun Listesi');
 // Başlıklar
 $sheet->setCellValue('A1', strtoupper($site->site_adi ?? ''));
 $sheet->mergeCells('A1:F1');
-$sheet->setCellValue('A2', date('d.m.Y') . ' TARİHLİ OLAĞANÜSTÜ GENEL KURUL');
+$sheet->setCellValue('A2', Date::dmy($tarih) .  ' ' . strtoupper($baslik));
 $sheet->mergeCells('A2:F2');
 $sheet->setCellValue('A3', 'HAZİRUN LİSTESİ');
 $sheet->mergeCells('A3:F3');
@@ -57,6 +65,9 @@ $sheet->getColumnDimension('D')->setWidth(22);
 $sheet->getColumnDimension('E')->setWidth(28);
 $sheet->getColumnDimension('F')->setWidth(22);
 
+//Başlıkları yinele
+$sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 5);
+
 // Satırlar
 $row = 6;
 foreach ($daireler as $d) {
@@ -67,9 +78,16 @@ foreach ($daireler as $d) {
     $sheet->setCellValue('E'.$row, $d['ev_sahibi'] ?? '');
     $sheet->setCellValue('F'.$row, ''); // İmza (Ev Sahibi)
     $sheet->getRowDimension($row)->setRowHeight(32); // İmza için satır yüksekliği
+    
     $row++;
+    
 }
-$sheet->getStyle('A6:A'.($row-1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+$sheet->getStyle('A6:B'.($row-1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+//Dikeyde ortala
+$sheet->getStyle('A6:B'.($row-1))->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+$sheet->getStyle('D6:F'.($row-1))->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
+
 $sheet->getPageSetup()->setFitToWidth(1);
 $sheet->getPageSetup()->setFitToHeight(0);
 
