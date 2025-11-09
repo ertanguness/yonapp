@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modal Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Modal Test Page</h1>
+    <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#kisilerdenSecOffcanvas">
+        Kişilerden Seç
+    </button>
+    
+    <!-- Offcanvas Modal -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="kisilerdenSecOffcanvas" data-bs-backdrop="false" data-bs-scroll="true">
+        <div class="offcanvas-header">
+            <h5>Kişilerden Seç</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="d-flex justify-content-center align-items-center" style="height: 200px; flex: 1;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Test: Modal AJAX yükleme
+document.getElementById('kisilerdenSecOffcanvas').addEventListener('show.bs.offcanvas', function() {
+    const body = this.querySelector('.offcanvas-body');
+    if (body.querySelector('.spinner-border')) {
+        $.get("pages/email-sms/modal/kisilerden_sec_modal.php", function(data) {
+            body.innerHTML = data;
+            console.log('✓ Modal yüklendi');
+            if (typeof window.setupModalSearch === 'function') {
+                console.log('✓ setupModalSearch çağrılıyor');
+                window.setupModalSearch();
+            } else {
+                console.error('❌ setupModalSearch bulunamadı');
+            }
+        }).fail(function(err) {
+            console.error('❌ AJAX hatası:', err);
+            body.innerHTML = '<div class="alert alert-danger m-3">Hata</div>';
+        });
+    }
+});
+
+// Test: Parent window addPhoneToSMS
+window.addPhoneToSMS = function(phone) {
+    console.log('✓ Telefon eklendi:', phone);
+    // Placeholder fonksiyon
+};
+
+console.log('🚀 Test sayfası başladı');
+</script>
+</body>
+</html>
