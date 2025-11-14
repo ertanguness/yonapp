@@ -175,10 +175,11 @@ class KasaHareketModel extends Model
         int $length = 50,
         string $searchValue = '',
         string $orderColumn = 'islem_tarihi',
-        string $orderDir = 'desc'
+        string $orderDir = 'desc',
+        array $columnFilters = []
     ): array {
         // Güvenlik: Sadece izin verilen kolonlara sıralama
-        $allowedColumns = ['islem_tarihi', 'islem_tipi', 'tutar', 'kategori', 'adi_soyadi', 'daire_kodu'];
+        $allowedColumns = ['islem_tarihi', 'islem_tipi', 'tutar', 'kategori', 'adi_soyadi', 'daire_kodu', 'makbuz_no'];
         if (!in_array($orderColumn, $allowedColumns)) {
             $orderColumn = 'islem_tarihi';
         }
@@ -200,7 +201,59 @@ class KasaHareketModel extends Model
                 OR d.daire_kodu LIKE :search 
                 OR kh.aciklama LIKE :search
                 OR kh.islem_tipi LIKE :search
+                OR kh.kategori LIKE :search
+                OR kh.makbuz_no LIKE :search
             )";
+        }
+
+        $bindings = [];
+        if (!empty($columnFilters)) {
+            if (!empty($columnFilters['islem_tarihi'])) {
+                $query .= " AND DATE_FORMAT(kh.islem_tarihi, '%d.%m.%Y %H:%i') LIKE :f_date";
+                $bindings[':f_date'] = '%' . $columnFilters['islem_tarihi'] . '%';
+            }
+            if (!empty($columnFilters['islem_tipi'])) {
+                $query .= " AND LOWER(kh.islem_tipi) = :f_islem";
+                $bindings[':f_islem'] = strtolower($columnFilters['islem_tipi']);
+            }
+            if (!empty($columnFilters['daire_kodu'])) {
+                $query .= " AND d.daire_kodu LIKE :f_daire";
+                $bindings[':f_daire'] = '%' . $columnFilters['daire_kodu'] . '%';
+            }
+            if (!empty($columnFilters['adi_soyadi'])) {
+                $query .= " AND k.adi_soyadi LIKE :f_hesap";
+                $bindings[':f_hesap'] = '%' . $columnFilters['adi_soyadi'] . '%';
+            }
+            if (!empty($columnFilters['tutar'])) {
+                $val = preg_replace('/[^0-9.,-]/', '', (string)$columnFilters['tutar']);
+                $val = str_replace('.', '', $val);
+                $val = str_replace(',', '.', $val);
+                if ($val !== '') {
+                    $query .= " AND kh.tutar = :f_tutar";
+                    $bindings[':f_tutar'] = (float)$val;
+                }
+            }
+            if (!empty($columnFilters['yuruyen_bakiye'])) {
+                $valb = preg_replace('/[^0-9.,-]/', '', (string)$columnFilters['yuruyen_bakiye']);
+                $valb = str_replace('.', '', $valb);
+                $valb = str_replace(',', '.', $valb);
+                if ($valb !== '') {
+                    $query .= " AND kh.yuruyen_bakiye = :f_bakiye";
+                    $bindings[':f_bakiye'] = (float)$valb;
+                }
+            }
+            if (!empty($columnFilters['kategori'])) {
+                $query .= " AND kh.kategori LIKE :f_kategori";
+                $bindings[':f_kategori'] = '%' . $columnFilters['kategori'] . '%';
+            }
+            if (!empty($columnFilters['makbuz_no'])) {
+                $query .= " AND kh.makbuz_no LIKE :f_makbuz";
+                $bindings[':f_makbuz'] = '%' . $columnFilters['makbuz_no'] . '%';
+            }
+            if (!empty($columnFilters['aciklama'])) {
+                $query .= " AND kh.aciklama LIKE :f_aciklama";
+                $bindings[':f_aciklama'] = '%' . $columnFilters['aciklama'] . '%';
+            }
         }
 
         $query .= " ORDER BY kh.{$orderColumn} {$orderDir}, kh.id DESC
@@ -215,6 +268,13 @@ class KasaHareketModel extends Model
             $searchParam = "%{$searchValue}%";
             $stmt->bindParam(':search', $searchParam, \PDO::PARAM_STR);
         }
+        foreach ($bindings as $key => $val) {
+            if (is_float($val) || is_int($val)) {
+                $stmt->bindValue($key, $val, \PDO::PARAM_STR);
+            } else {
+                $stmt->bindValue($key, $val, \PDO::PARAM_STR);
+            }
+        }
 
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
@@ -226,7 +286,7 @@ class KasaHareketModel extends Model
      * @param string $searchValue Arama terimi
      * @return int
      */
-    public function getKasaHareketleriCount(int $kasa_id, string $searchValue = ''): int
+    public function getKasaHareketleriCount(int $kasa_id, string $searchValue = '', array $columnFilters = []): int
     {
         $query = "SELECT COUNT(*) as total
                   FROM {$this->table} kh
@@ -243,7 +303,59 @@ class KasaHareketModel extends Model
                 OR d.daire_kodu LIKE :search 
                 OR kh.aciklama LIKE :search
                 OR kh.islem_tipi LIKE :search
+                OR kh.kategori LIKE :search
+                OR kh.makbuz_no LIKE :search
             )";
+        }
+
+        $bindings = [];
+        if (!empty($columnFilters)) {
+            if (!empty($columnFilters['islem_tarihi'])) {
+                $query .= " AND DATE_FORMAT(kh.islem_tarihi, '%d.%m.%Y %H:%i') LIKE :f_date";
+                $bindings[':f_date'] = '%' . $columnFilters['islem_tarihi'] . '%';
+            }
+            if (!empty($columnFilters['islem_tipi'])) {
+                $query .= " AND LOWER(kh.islem_tipi) = :f_islem";
+                $bindings[':f_islem'] = strtolower($columnFilters['islem_tipi']);
+            }
+            if (!empty($columnFilters['daire_kodu'])) {
+                $query .= " AND d.daire_kodu LIKE :f_daire";
+                $bindings[':f_daire'] = '%' . $columnFilters['daire_kodu'] . '%';
+            }
+            if (!empty($columnFilters['adi_soyadi'])) {
+                $query .= " AND k.adi_soyadi LIKE :f_hesap";
+                $bindings[':f_hesap'] = '%' . $columnFilters['adi_soyadi'] . '%';
+            }
+            if (!empty($columnFilters['tutar'])) {
+                $val = preg_replace('/[^0-9.,-]/', '', (string)$columnFilters['tutar']);
+                $val = str_replace('.', '', $val);
+                $val = str_replace(',', '.', $val);
+                if ($val !== '') {
+                    $query .= " AND kh.tutar = :f_tutar";
+                    $bindings[':f_tutar'] = (float)$val;
+                }
+            }
+            if (!empty($columnFilters['yuruyen_bakiye'])) {
+                $valb = preg_replace('/[^0-9.,-]/', '', (string)$columnFilters['yuruyen_bakiye']);
+                $valb = str_replace('.', '', $valb);
+                $valb = str_replace(',', '.', $valb);
+                if ($valb !== '') {
+                    $query .= " AND kh.yuruyen_bakiye = :f_bakiye";
+                    $bindings[':f_bakiye'] = (float)$valb;
+                }
+            }
+            if (!empty($columnFilters['kategori'])) {
+                $query .= " AND kh.kategori LIKE :f_kategori";
+                $bindings[':f_kategori'] = '%' . $columnFilters['kategori'] . '%';
+            }
+            if (!empty($columnFilters['makbuz_no'])) {
+                $query .= " AND kh.makbuz_no LIKE :f_makbuz";
+                $bindings[':f_makbuz'] = '%' . $columnFilters['makbuz_no'] . '%';
+            }
+            if (!empty($columnFilters['aciklama'])) {
+                $query .= " AND kh.aciklama LIKE :f_aciklama";
+                $bindings[':f_aciklama'] = '%' . $columnFilters['aciklama'] . '%';
+            }
         }
 
         $stmt = $this->db->prepare($query);
@@ -252,6 +364,13 @@ class KasaHareketModel extends Model
         if (!empty($searchValue)) {
             $searchParam = "%{$searchValue}%";
             $stmt->bindParam(':search', $searchParam, \PDO::PARAM_STR);
+        }
+        foreach ($bindings as $key => $val) {
+            if (is_float($val) || is_int($val)) {
+                $stmt->bindValue($key, $val, \PDO::PARAM_STR);
+            } else {
+                $stmt->bindValue($key, $val, \PDO::PARAM_STR);
+            }
         }
 
         $stmt->execute();

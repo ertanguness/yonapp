@@ -300,61 +300,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (!empty($kasa_hareketleri)): ?>
-                                    <?php foreach ($kasa_hareketleri as $hareket): ?>
-                                        <?php
-                                        $enc_id = Security::encrypt($hareket->id);
-                                        // Tarih
-                                        $tarih = date('d.m.Y H:i', strtotime($hareket->islem_tarihi));
-                                        // İşlem tipi
-                                        $islemTipiHtml = ($hareket->islem_tipi === 'gelir')
-                                            ? '<span class="badge bg-success">Gelir</span>'
-                                            : '<span class="badge bg-danger">Gider</span>';
-
-                                        $daireKodu = $hareket->daire_kodu ? htmlspecialchars($hareket->daire_kodu) : '-';
-                                        $hesapAdi = $hareket->adi_soyadi ? htmlspecialchars($hareket->adi_soyadi) : '-';
-                                        // Tutar
-                                        $tutarHtml = ($hareket->islem_tipi === 'gelir')
-                                            ? '<span class="text-success fw-bold">+' . Helper::formattedMoney($hareket->tutar) . '</span>'
-                                            : '<span class="text-danger">' . Helper::formattedMoney($hareket->tutar) . '</span>';
-
-                                        $bakiyeHtml = ($hareket->yuruyen_bakiye ?? 0) >= 0
-                                            ? '<span class="text-success fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>'
-                                            : '<span class="text-danger fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>';
-
-                                        // Kategori ve açıklama
-                                        $kategori = $hareket->kategori ?? '-';
-                                        $makbuzNo = $hareket->makbuz_no ?? '-';
-                                        $aciklama = $hareket->aciklama ?? '-';
-                                        // İşlemler
-                                        $encrypted_id = Security::encrypt($hareket->id);
-                                        $gelirGiderGuncelle = $hareket->guncellenebilir == 1 ? 'gelirGiderGuncelle' : 'GuncellemeYetkisiYok';
-                                        $gelirGiderSil = $hareket->guncellenebilir == 1 ? 'gelirGiderSil' : 'SilmeYetkisiYok';
-                                        ?>
-                                        <tr>
-                                            <td><?= $tarih ?></td>
-                                            <td><?= $islemTipiHtml ?></td>
-                                            <td><?= htmlspecialchars($daireKodu) ?></td>
-                                            <td><?= htmlspecialchars($hesapAdi) ?></td>
-                                            <td><?= $tutarHtml ?></td>
-                                            <td><?= $bakiyeHtml ?></td>
-                                            <td><?= htmlspecialchars($kategori) ?></td>
-                                            <td><?= htmlspecialchars($makbuzNo) ?></td>
-                                            <td style="width: 200px;white-space: wrap;"><?= htmlspecialchars($aciklama) ?></td>
-                                            <td>
-                                                <div class="hstack gap-2 justify-content-center">
-                                                    <a href="#" class="avatar-text avatar-md <?php echo $gelirGiderGuncelle; ?>" data-id="<?php echo $enc_id; ?>">
-                                                        <i class="feather-edit"></i>
-                                                    </a>
-                                                    <a href="#" class="avatar-text avatar-md <?php echo $gelirGiderSil; ?>" data-id="<?php echo $enc_id; ?>">
-                                                        <i class="feather-trash-2"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                         
-                                <?php endif; ?>
+                                
                             </tbody>
                         </table>
                     </div>
@@ -586,4 +532,52 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
         color: #495057;
         background-color: #f8f9fa;
     }
+    #gelirGiderTable { width: 100% !important; }
 </style>
+<script>
+    (function(){
+        const nav = performance.getEntriesByType('navigation')[0];
+        const metrics = { LCP: 0, CLS: 0, FID: 0, TTFB: nav ? nav.responseStart : 0 };
+        let lcp = 0; let cls = 0; let fidSet = false;
+        try {
+            new PerformanceObserver(function(list){
+                const entries = list.getEntries();
+                for (let i=0;i<entries.length;i++) {
+                    const e = entries[i];
+                    lcp = Math.max(lcp, (e.renderTime || e.loadTime || 0));
+                }
+                metrics.LCP = lcp;
+            }).observe({ type:'largest-contentful-paint', buffered:true });
+        } catch(e) {}
+        try {
+            new PerformanceObserver(function(list){
+                const entries = list.getEntries();
+                for (let i=0;i<entries.length;i++) {
+                    const e = entries[i];
+                    if (!e.hadRecentInput) { cls += e.value; }
+                }
+                metrics.CLS = Math.round(cls*1000)/1000;
+            }).observe({ type:'layout-shift', buffered:true });
+        } catch(e) {}
+        try {
+            new PerformanceObserver(function(list){
+                const e = list.getEntries()[0];
+                if (e && !fidSet) { metrics.FID = e.processingStart - e.startTime; fidSet = true; }
+            }).observe({ type:'first-input', buffered:true });
+        } catch(e) {}
+        function flush(){
+            const data = {
+                page: window.location.pathname,
+                ts: Date.now(),
+                LCP: metrics.LCP,
+                FID: metrics.FID,
+                CLS: metrics.CLS,
+                TTFB: metrics.TTFB
+            };
+            try { localStorage.setItem('yonapp_web_vitals', JSON.stringify(data)); } catch(e) {}
+            console.log('WebVitals', data);
+        }
+        addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') flush(); }, { once:false });
+        addEventListener('load', function(){ setTimeout(flush, 0); });
+    })();
+</script>

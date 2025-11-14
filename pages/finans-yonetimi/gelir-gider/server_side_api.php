@@ -1,0 +1,110 @@
+<?php
+require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
+
+use App\Helper\Security;
+use App\Helper\Date;
+use App\Services\Gate;
+use App\Helper\Helper;
+use Model\KasaModel;
+use Model\KasaHareketModel;
+
+$KasaModel = new KasaModel();
+$kasaHareketModel = new KasaHareketModel();
+header('Content-Type: application/json; charset=utf-8');
+
+$kasa_id = $_SESSION['kasa_id'] ?? 0;
+$draw = intval($_POST['draw'] ?? 1);
+$start = intval($_POST['start'] ?? 0);
+$length = intval($_POST['length'] ?? 50);
+$searchValue = isset($_POST['search']['value']) ? trim((string)$_POST['search']['value']) : '';
+if (isset($_POST['columns']) && is_array($_POST['columns'])) {
+    $colTerms = [];
+    foreach ($_POST['columns'] as $c) {
+        $v = isset($c['search']['value']) ? trim((string)$c['search']['value']) : '';
+        if ($v !== '') { $colTerms[] = $v; }
+    }
+    if ($searchValue === '' && !empty($colTerms)) { $searchValue = implode(' ', $colTerms); }
+}
+$orderColIndex = intval($_POST['order'][0]['column'] ?? 0);
+$orderDir = strtolower($_POST['order'][0]['dir'] ?? 'desc');
+$map = [
+    0 => 'islem_tarihi',
+    1 => 'islem_tipi',
+    2 => 'daire_kodu',
+    3 => 'adi_soyadi',
+    4 => 'tutar',
+    5 => 'yuruyen_bakiye',
+    6 => 'kategori',
+    7 => 'makbuz_no',
+    8 => 'aciklama',
+    9 => 'islem_tarihi'
+];
+$orderColumn = $map[$orderColIndex] ?? 'islem_tarihi';
+
+$filters = [];
+if (isset($_POST['columns']) && is_array($_POST['columns'])) {
+    $mapCols = [
+        0 => 'islem_tarihi',
+        1 => 'islem_tipi',
+        2 => 'daire_kodu',
+        3 => 'adi_soyadi',
+        4 => 'tutar',
+        5 => 'yuruyen_bakiye',
+        6 => 'kategori',
+        7 => 'makbuz_no',
+        8 => 'aciklama'
+    ];
+    foreach ($_POST['columns'] as $idx => $col) {
+        $val = isset($col['search']['value']) ? trim((string)$col['search']['value']) : '';
+        if ($val !== '' && isset($mapCols[$idx])) { $filters[$mapCols[$idx]] = $val; }
+    }
+}
+$total = $kasaHareketModel->getKasaHareketleriCount($kasa_id, '');
+$filtered = $kasaHareketModel->getKasaHareketleriCount($kasa_id, $searchValue, $filters);
+$items = $kasaHareketModel->getKasaHareketleriPaginated($kasa_id, $start, $length, $searchValue, $orderColumn, $orderDir, $filters);
+
+$data = [];
+foreach ($items as $hareket) {
+    $enc_id = Security::encrypt($hareket->id);
+    $tarih = Date::dmYHIS($hareket->islem_tarihi);
+    $islemTipiHtml = (strtolower($hareket->islem_tipi) === 'gelir')
+        ? '<span class="badge bg-success">Gelir</span>'
+        : '<span class="badge bg-danger">Gider</span>';
+    $daireKodu = $hareket->daire_kodu ? htmlspecialchars($hareket->daire_kodu) : '-';
+    $hesapAdi = $hareket->adi_soyadi ? htmlspecialchars($hareket->adi_soyadi) : '-';
+    $tutarHtml = (strtolower($hareket->islem_tipi) === 'gelir')
+        ? '<span class="text-success fw-bold">+' . Helper::formattedMoney($hareket->tutar) . '</span>'
+        : '<span class="text-danger">' . Helper::formattedMoney($hareket->tutar) . '</span>';
+    $bakiyeHtml = ($hareket->yuruyen_bakiye ?? 0) >= 0
+        ? '<span class="text-success fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>'
+        : '<span class="text-danger fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>';
+    $kategori = htmlspecialchars($hareket->kategori ?? '-');
+    $makbuzNo = htmlspecialchars($hareket->makbuz_no ?? '-');
+    $aciklama = htmlspecialchars($hareket->aciklama ?? '-');
+    $gelirGiderGuncelle = ($hareket->guncellenebilir == 1) ? 'gelirGiderGuncelle' : 'GuncellemeYetkisiYok';
+    $gelirGiderSil = ($hareket->guncellenebilir == 1) ? 'gelirGiderSil' : 'SilmeYetkisiYok';
+    $buttons = '<div class="hstack gap-2 justify-content-center">'
+        . '<a href="#" class="avatar-text avatar-md ' . $gelirGiderGuncelle . '" data-id="' . $enc_id . '"><i class="feather-edit"></i></a>'
+        . '<a href="#" class="avatar-text avatar-md ' . $gelirGiderSil . '" data-id="' . $enc_id . '"><i class="feather-trash-2"></i></a>'
+        . '</div>';
+
+    $data[] = [
+        $tarih,
+        $islemTipiHtml,
+        $daireKodu,
+        $hesapAdi,
+        $tutarHtml,
+        $bakiyeHtml,
+        $kategori,
+        $makbuzNo,
+        '<span style="display:inline-block;max-width:200px;white-space:wrap;">' . $aciklama . '</span>',
+        $buttons
+    ];
+}
+
+echo json_encode([
+    'draw' => $draw,
+    'recordsTotal' => $total,
+    'recordsFiltered' => $filtered,
+    'data' => $data
+], JSON_UNESCAPED_UNICODE);

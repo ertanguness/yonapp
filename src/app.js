@@ -2,10 +2,12 @@ let table;
 let row;
 let preloader;
 $(document).ready(function () {
-  if ($(".datatables").length > 0) {
-    table = $(".datatables").DataTable({
+  const $gg = $("#gelirGiderTable");
+  if ($gg.length) {
+    table = $gg.DataTable({
       //stateSave: true,
       responsive: true,
+      autoWidth: true,
       dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
       language: {
         //url: "/assets/js/tr.json",
@@ -23,7 +25,16 @@ $(document).ready(function () {
         });
       },
 
-      ...getTableSpecificOptions(),
+      serverSide: true,
+      processing: true,
+      deferRender: true,
+      ajax: {
+        url: "/pages/finans-yonetimi/gelir-gider/server_side_api.php",
+        type: "POST",
+        data: function (d) { d.action = "datatable-list"; },
+        dataSrc: "data"
+      },
+      ordering: false,
 
       initComplete: function (settings, json) {
         var api = this.api();
@@ -105,8 +116,22 @@ $(document).ready(function () {
           api.state.clear();
         }
 
-
+        api.columns.adjust().responsive.recalc();
       },
+    });
+
+    $(window).on('resize.gg', function(){
+      try { table.columns.adjust().responsive.recalc(); } catch(e) {}
+    });
+  }
+  const $others = $(".datatables").not($gg);
+  if ($others.length) {
+    $others.DataTable({
+      responsive: true,
+      dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+      language: {},
+      drawCallback: function (settings) {},
+      ...getTableSpecificOptions(),
     });
   }
 });
