@@ -85,6 +85,7 @@ if (!empty($request['search']['value'])) {
     }));
 }
 
+// İlk filtre sonrası
 $recordsFiltered = count($rows);
 
 // Sıralama
@@ -167,6 +168,9 @@ if (!empty($request['columns']) && is_array($request['columns'])) {
         // Diğer kolonlar için gerekirse filtre eklenebilir
     }
 }
+
+// Kolon bazlı filtrelerden sonra güncel filtre sayısını ayarla
+$recordsFiltered = count($rows);
 
 // Sayfalama
 $start = isset($request['start']) ? (int)$request['start'] : 0;

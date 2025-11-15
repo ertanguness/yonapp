@@ -35,15 +35,8 @@ $draw = intval($_POST['draw'] ?? 1);
 $start = intval($_POST['start'] ?? 0);
 $length = intval($_POST['length'] ?? 50);
 $searchValue = isset($_POST['search']['value']) ? trim((string)$_POST['search']['value']) : '';
-// Kolon aramaları boşsa, global aramayı kolon değerlerinden türet
-if (isset($_POST['columns']) && is_array($_POST['columns'])) {
-    $colTerms = [];
-    foreach ($_POST['columns'] as $c) {
-        $v = isset($c['search']['value']) ? trim((string)$c['search']['value']) : '';
-        if ($v !== '') { $colTerms[] = $v; }
-    }
-    if ($searchValue === '' && !empty($colTerms)) { $searchValue = implode(' ', $colTerms); }
-}
+// Sadece üstteki global arama kutusu için searchValue kullan; 
+// kolon bazlı aramalar ayrı filtreler olarak uygulanacak.
 // Sıralama parametrelerini haritala
 $orderColIndex = intval($_POST['order'][0]['column'] ?? 0);
 $orderDir = strtolower($_POST['order'][0]['dir'] ?? 'desc');
