@@ -61,22 +61,30 @@ class SSPModel {
 				$column = $columns[$j];
 
 				// Is there a formatter?
-				if ( isset( $column['formatter'] ) ) {
+                if ( isset( $column['formatter'] ) ) {
                     if(empty($column['db'])){
                         $row[ $column['dt'] ] = $column['formatter']( $data[$i] );
                     }
                     else{
-                        $row[ $column['dt'] ] = $column['formatter']( $data[$i][ $column['db'] ], $data[$i] );
+                        $key = $column['db'];
+                        if (strpos($key, '.') !== false) {
+                            $key = str_replace('.', '_', $key);
+                        }
+                        $row[ $column['dt'] ] = $column['formatter']( $data[$i][ $key ] ?? null, $data[$i] );
                     }
-				}
-				else {
+                }
+                else {
                     if(!empty($column['db'])){
-                        $row[ $column['dt'] ] = $data[$i][ $columns[$j]['db'] ];
+                        $key = $columns[$j]['db'];
+                        if (strpos($key, '.') !== false) {
+                            $key = str_replace('.', '_', $key);
+                        }
+                        $row[ $column['dt'] ] = $data[$i][ $key ] ?? null;
                     }
                     else{
                         $row[ $column['dt'] ] = "";
                     }
-				}
+                }
 			}
 
 			$out[] = $row;

@@ -191,10 +191,8 @@ $site_adi = $site->site_adi ?? 'Site';
                                         </div>
 
                                         <div class="col-12">
-                                            <label class="form-label">
-                                                <i class="feather-zap me-1"></i>Hızlı Tarih Seçimi
-                                            </label>
-                                            <div class="btn-group d-flex flex-wrap gap-2" role="group">
+                                           
+                                            <div class="btn-group gap-2" role="group">
                                                 <button type="button" class="btn btn-sm btn-outline-primary hizli-tarih"
                                                     data-rapor="borc" data-range="this-month">Bu Ay</button>
                                                 <button type="button" class="btn btn-sm btn-outline-primary hizli-tarih"
@@ -506,11 +504,9 @@ $site_adi = $site->site_adi ?? 'Site';
                                             </div>
                                         </div>
 
-                                        <div class="col-12">
-                                            <label class="form-label">
-                                                <i class="feather-zap me-1"></i>Hızlı Tarih Seçimi
-                                            </label>
-                                            <div class="btn-group d-flex flex-wrap gap-2" role="group">
+                                        <div class="col-12 gap-2">
+                                          
+                                            <div class="btn-group gap-2" role="group">
                                                 <button type="button" class="btn btn-sm btn-outline-primary hizli-tarih"
                                                     data-rapor="gelir" data-range="this-month">Bu Ay</button>
                                                 <button type="button" class="btn btn-sm btn-outline-primary hizli-tarih"
@@ -547,8 +543,8 @@ $site_adi = $site->site_adi ?? 'Site';
                                             <i class="feather-home fs-4"></i>
                                         </div>
                                         <div>
-                                            <span class="fw-bold d-block">Daire Bazlı Rapor</span>
-                                            <small class="text-muted">Tüm daireler ve sakinleri</small>
+                                            <span class="fw-bold d-block">Daire Sakinleri Raporu</span>
+                                            <small class="text-muted">Tüm daireler ve sakinleri listesini alabilecğiniz rapor</small>
                                         </div>
                                     </div>
                                 </button>

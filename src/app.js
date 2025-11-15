@@ -2,6 +2,7 @@ let table;
 let row;
 let preloader;
 $(document).ready(function () {
+  const tahsilatTable = $("#tahsilatTable");
   const $gg = $("#gelirGiderTable");
   if ($gg.length) {
     table = $gg.DataTable({
@@ -99,7 +100,7 @@ $(document).ready(function () {
         var state = api.state.loaded();
         if (state && state.sTableId === tableId) {
           console.log("State loaded for table:", tableId);
-          var inputs = $("thead input");
+          var inputs = $("#" + tableId + " thead input");
 
           inputs.each(function (inputIndex) {
             var columnIndex = $(this).closest("th").index();
@@ -124,7 +125,7 @@ $(document).ready(function () {
       try { table.columns.adjust().responsive.recalc(); } catch(e) {}
     });
   }
-  const $others = $(".datatables").not($gg);
+  const $others = $(".datatables, .datatable").not($gg).not(tahsilatTable);
 
   if ($others.length) {
     table = $others.DataTable({
@@ -133,6 +134,89 @@ $(document).ready(function () {
       language: {},
       drawCallback: function (settings) {},
       ...getTableSpecificOptions(),
+
+       initComplete: function (settings, json) {
+        var api = this.api();
+        var tableId = settings.sTableId;
+
+        $("#" + tableId + " thead").append(
+          '<tr class="search-input-row"></tr>'
+        );
+
+        api.columns().every(function () {
+          let column = this;
+          let title = column.header().textContent;
+
+          if (
+            title != "İşlem" &&
+            title != "Seç" &&
+            title != "#" &&
+            $(column.header()).find('input[type="checkbox"]').length === 0
+          ) {
+            // Input elementini oluştur
+            let input = document.createElement("input");
+            input.placeholder = title;
+            input.classList.add("form-control", "form-control-sm");
+            input.setAttribute("autocomplete", "off");
+
+            // Ortalanmış <th> içine ekle
+            const th = $('<th class="search text-center align-middle">').append(input);
+            $("#" + tableId + " .search-input-row").append(th);
+
+            // Event listener
+            $(input).on("keyup change", function () {
+              if (column.search() !== this.value) {
+                column.search(this.value).draw();
+              }
+            });
+
+            // Sütunun görünürlüğünü kontrol et
+            const isColumnVisible =
+              column.visible() && !$(column.header()).hasClass("dtr-hidden");
+
+            if (!isColumnVisible) {
+              th.hide(); // görünmüyorsa input gizle
+            }
+          } else {
+            // İşlem / seçim sütunları için boş th
+            $("#" + tableId + " .search-input-row").append("<th></th>");
+          }
+        });
+
+        // Responsive resize olayı
+        api.on("responsive-resize", function (e, datatable, columns) {
+          $("#" + tableId + " .search-input-row th").each(function (index) {
+            if (columns[index]) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          });
+        });
+
+        // State yükleme
+        var state = api.state.loaded();
+        if (state && state.sTableId === tableId) {
+          console.log("State loaded for table:", tableId);
+          var inputs = $("#" + tableId + " thead input");
+
+          inputs.each(function (inputIndex) {
+            var columnIndex = $(this).closest("th").index();
+            var searchValue = state.columns[columnIndex]?.search?.search || "";
+
+            if (searchValue) {
+              $(this).val(searchValue);
+              table.column(columnIndex).search(searchValue);
+            }
+          });
+
+          api.draw();
+        } else {
+          api.state.clear();
+        }
+
+        api.columns.adjust().responsive.recalc();
+      },
     });
   }
 });

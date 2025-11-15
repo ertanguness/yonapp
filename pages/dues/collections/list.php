@@ -65,7 +65,7 @@ table tr td .p-3.border.rounded.text-center {
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <table id="tahsilatlarTable" class="table datatables" style="width:100%;">
+                    <table id="tahsilatlarTable" class="table" style="width:100%;">
                         <thead>
                             <tr >
                                 <th>Makbuz No</th>
@@ -76,59 +76,7 @@ table tr td .p-3.border.rounded.text-center {
                                 <th class="text-center" style="width:10%">Detay</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php foreach ($tumTahsilatlar as $tahsilat):
-                                $enc_id = Security::encrypt($tahsilat->id);
-                                $kasa_id = Security::encrypt($tahsilat->kasa_id);
-                            ?>
-                                <tr>
-                                    <td>
-                                        <span class="badge bg-light-secondary">
-                                            <?= htmlspecialchars($tahsilat->makbuz_no ?? 'N/A') ?>
-                                        </span>
-                                    </td>
-                                    <td><?= ($tahsilat->islem_tarihi) ?></td>
-                                    <td>
-                                        <div class="fw-bold"><?= htmlspecialchars($tahsilat->adi_soyadi) ?></div>
-                                        <small class="text-muted"><?= htmlspecialchars($tahsilat->daire_kodu) ?></small>
-                                    </td>
-                                    <td>
-                                        <div><?= htmlspecialchars($tahsilat->aciklama ?: 'Genel Tahsilat') ?></div>
-                                        <small class="text-muted" data-bs-toggle="tooltip" data-bs-original-title="Hareketleri Görüntüle">
-                                        <a href="kasa-hareketleri/<?= ($kasa_id) ?>">
-                                                <i class="bi bi-safe me-1"></i><?= htmlspecialchars($tahsilat->kasa_adi) ?>
-                                            </a>
-                                        </small>
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="fw-bold">
-                                            <?= Helper::formattedMoney($tahsilat->tutar) ?>
-                                        </div>
-                                        <?php if($tahsilat->kullanilan_kredi >0 ) { ?>
-                                        <div>
-                                            <?= "Kredi : " . Helper::formattedMoney($tahsilat->kullanilan_kredi) ?>
-                                        </div>
-                                        <?php } ?>
-                                     
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="text-center d-flex justify-content-center align-items-center gap-1">
-
-                                            <button class="avatar-text avatar-md tahsilat-detay-goster"
-                                                data-id="<?= $enc_id ?>" title="Tahsilat Detaylarını Görüntüle">
-                                                <i class="feather-chevron-down"></i>
-                                            </button>
-                                            <a href="#" id="delete-tahsilat"
-                                                data-id="<?= $enc_id ?>"
-                                                class="avatar-text avatar-md" title="Tahsilatı Sil">
-                                                <i class="feather-trash-2"></i>
-
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -139,6 +87,53 @@ table tr td .p-3.border.rounded.text-center {
 <script>
     let url = "pages/dues/collections/api.php"; // API URL'si
     $(function() {
+        let table = $('#tahsilatlarTable').DataTable({
+            destroy: true,
+            processing: true,
+            serverSide: true,
+            stateSave: true,
+            ajax: '/pages/dues/collections/server_processing.php',
+            columns: [
+                { data: 0 },
+                { data: 1 },
+                { data: 2 },
+                { data: 3 },
+                { data: 4 },
+                { data: 5 }
+            ],
+            order: [[1, 'desc']],
+            pageLength: 25,
+            initComplete: function (settings, json) {
+                var api = this.api();
+                var tableId = settings.sTableId;
+
+                $('#' + tableId + ' thead .search-input-row').remove();
+                $('#' + tableId + ' thead').append('<tr class="search-input-row"></tr>');
+
+                api.columns().every(function () {
+                    let column = this;
+                    let title = column.header().textContent.trim();
+
+                    if (title !== 'Detay') {
+                        let input = document.createElement('input');
+                        input.placeholder = title;
+                        input.classList.add('form-control', 'form-control-sm');
+                        input.setAttribute('autocomplete', 'off');
+
+                        const th = $('<th class="search text-center align-middle">').append(input);
+                        $('#' + tableId + ' .search-input-row').append(th);
+
+                        $(input).on('keyup change', function () {
+                            if (column.search() !== this.value) {
+                                column.search(this.value).draw();
+                            }
+                        });
+                    } else {
+                        $('#' + tableId + ' .search-input-row').append('<th></th>');
+                    }
+                });
+            }
+        });
 
         // 2. Detay Butonuna Tıklama Olayını Dinle
         $('#tahsilatlarTable tbody').on('click', 'button.tahsilat-detay-goster', function() {

@@ -165,78 +165,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <?php
-
-                                        foreach ($guncel_borclar as $index => $borc):
-                                            $enc_id = Security::encrypt($borc->kisi_id);
-                                            $tahsilat_color = 'secondary';
-                                            $net_borc = $borc->kredi_tutari - $borc->toplam_kalan_borc;
-                                            $color = $net_borc < 0 ? 'danger' : 'success';
-
-                                            $oturum_durum_color = $borc->durum == "Aktif" ? "success" : "danger";
-
-
-                                        ?>
-                                            <tr>
-
-                                                <td><?php echo $index + 1 ?></td>
-                                                <td class="text-center"><?= ($borc->daire_kodu) ?> </td>
-
-                                                <td><?= $borc->adi_soyadi ?>
-                                                    <div>
-                                                        <?php
-                                                        $uyelik_tipi = $borc->uyelik_tipi;
-                                                        $badge_color = $uyelik_tipi == "Kiracı" ? "warning" : "teal"
-                                                        ?>
-                                                        <a href="javascript:void(0)"
-                                                            class="badge text-<?= $badge_color ?> border border-dashed border-gray-500"><?= $uyelik_tipi ?></a>
-                                                        <a href="javascript:void(0)"
-                                                            class="badge text-<?= $oturum_durum_color ?> border border-dashed border-gray-500"><?= $borc->durum ?></a>
-                                                        <a href="javascript:void(0)"
-                                                            class="badge text-teal border border-dashed border-gray-500"><?= $borc->daire_tipi ?></a>
-                                                    </div>
-
-                                                </td>
-                                                <td><?= Date::dmY($borc->giris_tarihi) ?></td>
-                                                <td><?= Date::dmY($borc->cikis_tarihi ?? "") ?></td>
-                                                <td class="text-end">
-                                                    <i class="feather-trending-down fw-bold text-danger"></i>
-
-                                                    <?= Helper::formattedMoney($borc->kalan_anapara)   ?>
-                                                </td>
-                                                <td class="text-end">
-                                                    <?= Helper::formattedMoney($borc->hesaplanan_gecikme_zammi) ?>
-                                                </td>
-                                                <td class="text-end"><?= Helper::formattedMoney($borc->toplam_kalan_borc) ?>
-                                                </td>
-                                                <td>
-                                                    <?= Helper::formattedMoney($borc->kredi_tutari ?? 0) ?>
-                                                </td>
-                                                <td class="text-end text-<?= $color ?>">
-                                                    <?= Helper::formattedMoney(($net_borc)) ?>
-                                                </td>
-                                                <td style="width:5%;">
-                                                    <div class="hstack gap-2 ">
-                                                        <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                            class="avatar-text avatar-md kisi-borc-detay">
-                                                            <i class="feather-eye"></i>
-                                                        </a>
-
-                                                        <?php if (Gate::allows('tahsilat_ekle_sil')) {; ?>
-                                                            <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                                title="Tahsilat Gir"
-                                                                data-kisi-id="<?php echo Security::encrypt($borc->kisi_id) ?>"
-                                                                class="avatar-text avatar-md tahsilat-gir">
-                                                                <i class="bi bi-credit-card-2-front"></i>
-                                                            </a>
-                                                        <?php } ?>
-                                                    </div>
-                                                </td>
-
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
@@ -360,6 +289,69 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 </style>
 
 <script type="module" src="/pages/dues/payment/js/borc-ekle.js?v=<?php echo filemtime("pages/dues/payment/js/borc-ekle.js"); ?>"></script>
+<script>
+    $(function(){
+     
+        table = $('#tahsilatTable').DataTable({
+            processing: true,
+            serverSide: true,
+            retrieve: true,
+            autoWidth: false,
+            ajax: {
+                url: '/pages/dues/payment/server_processing.php',
+                type: 'GET'
+            },
+            columns: [
+                { data: null, orderable: false, render: function(data, type, row, meta){ return meta.row + 1 + meta.settings._iDisplayStart; } },
+                { data: 'daire_kodu' },
+                { data: 'adi_soyadi_html' },
+                { data: 'giris_tarihi' },
+                { data: 'cikis_tarihi' },
+                { data: 'kalan_anapara_formatted', className: 'text-end' },
+                { data: 'hesaplanan_gecikme_zammi_formatted', className: 'text-end' },
+                { data: 'toplam_kalan_borc_formatted', className: 'text-end' },
+                { data: 'kredi_tutari_formatted', className: 'text-end' },
+                { data: 'net_borc_formatted', className: 'text-end' },
+                { data: 'islem_html', orderable: false }
+            ],
+            order: [[1, 'asc']],
+            initComplete: function(settings, json) {
+                var api = this.api();
+                var tblId = settings.sTableId;
+                $('#' + tblId + ' thead').append('<tr class="search-input-row"></tr>');
+                api.columns().every(function(){
+                    var column = this;
+                    var headerText = column.header().textContent;
+                    if(headerText !== 'İşlem'){
+                        var input = document.createElement('input');
+                        input.placeholder = headerText;
+                        input.classList.add('form-control');
+                        input.classList.add('form-control-sm');
+                        input.setAttribute('autocomplete','off');
+                        $('#' + tblId + ' .search-input-row').append($('<th class="search">').append(input));
+                        $(input).on('keyup change', function(){
+                            if(column.search() !== this.value){
+                                column.search(this.value).draw();
+                            }
+                        });
+                    } else {
+                        $('#' + tblId + ' .search-input-row').append('<th></th>');
+                    }
+                });
+            }
+        });
+        var __rt;
+        $(window).on('resize', function(){
+            clearTimeout(__rt);
+            __rt = setTimeout(function(){
+                if ($.fn.dataTable.isDataTable('#tahsilatTable')) {
+                    var dt = $('#tahsilatTable').DataTable();
+                    dt.columns.adjust().draw(false);
+                }
+            }, 150);
+        });
+    });
+</script>
 <script>
     $(document).on('click', '.js-close-send', function(e) {
         e.stopPropagation();
