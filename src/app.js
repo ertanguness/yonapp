@@ -125,8 +125,9 @@ $(document).ready(function () {
     });
   }
   const $others = $(".datatables").not($gg);
+
   if ($others.length) {
-    $others.DataTable({
+    table = $others.DataTable({
       responsive: true,
       dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
       language: {},

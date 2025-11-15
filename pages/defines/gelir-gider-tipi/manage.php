@@ -80,7 +80,18 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
                                         <div class="col-lg-4">
                                             <div class="input-group flex-nowrap w-100">
                                                 <div class="input-group-text"><i class="feather-home"></i></div>
-                                                <?php echo Helper::getGelirGiderTipiSelect('gelir_gider_tipi', $gelirgidertipi->tip ?? null); ?>
+                                            <?php echo Helper::getGelirGiderTipiSelect('gelir_gider_tipi', $gelirgidertipi->tip ?? null); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4 align-items-center">
+                                        <div class="col-lg-2">
+                                            <label for="islem_kodu" class="fw-semibold">İşlem Kodu: </label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-code"></i></div>
+                                                <input type="text" class="form-control" id="islem_kodu" name="islem_kodu" value="<?php echo $gelirgidertipi->islem_kodu ?? ''; ?>">
                                             </div>
                                         </div>
                                     </div>

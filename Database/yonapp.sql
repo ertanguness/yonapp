@@ -905,6 +905,7 @@ CREATE TABLE IF NOT EXISTS `defines` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `site_id` int(11) NOT NULL,
   `define_name` varchar(100) NOT NULL,
+  `islem_kodu` varchar(50) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `type` int(11) NOT NULL,
   `create_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -914,8 +915,8 @@ CREATE TABLE IF NOT EXISTS `defines` (
 -- yonapp.defines: 1 rows tablosu için veriler indiriliyor
 DELETE FROM `defines`;
 /*!40000 ALTER TABLE `defines` DISABLE KEYS */;
-INSERT INTO `defines` (`id`, `site_id`, `define_name`, `description`, `type`, `create_at`) VALUES
-	(7, 121, '3+1', '3+1 Daire', 3, '2025-05-25 15:42:35');
+INSERT INTO `defines` (`id`, `site_id`, `define_name`, `islem_kodu`, `description`, `type`, `create_at`) VALUES
+    (7, 121, '3+1', NULL, '3+1 Daire', 3, '2025-05-25 15:42:35');
 /*!40000 ALTER TABLE `defines` ENABLE KEYS */;
 
 -- tablo yapısı dökülüyor yonapp.dues

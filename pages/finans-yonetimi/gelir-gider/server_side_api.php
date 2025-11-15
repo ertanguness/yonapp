@@ -1,4 +1,20 @@
 <?php
+/**
+ * DataTables server-side endpoint – Gelir/Gider Listesi
+ *
+ * Bu uç nokta DataTables’in POST ettiği standart parametreleri (draw, start, length, search, order, columns)
+ * alır ve beklenen JSON yapısını döndürür.
+ *
+ * Özellikler:
+ * - Global arama: tüm başlıca alanlarda LIKE araması
+ * - Kolon bazlı arama: columns[n].search.value → ilgili DB alanına eşlenir
+ * - Sıralama: sınırlı, güvenli kolon seti üzerinden
+ * - Sayım: toplam ve filtreli kayıt sayısı
+ *
+ * Notlar:
+ * - `$_SESSION['kasa_id']` zorunludur; mevcut kasaya göre filtrelenir
+ * - Dönen `data` hücreleri HTML olarak oluşturulur (rozetler, formatlı tutar vb.)
+ */
 require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 use App\Helper\Security;
@@ -12,11 +28,14 @@ $KasaModel = new KasaModel();
 $kasaHareketModel = new KasaHareketModel();
 header('Content-Type: application/json; charset=utf-8');
 
+// Oturumdan kasa kimliği
 $kasa_id = $_SESSION['kasa_id'] ?? 0;
+// DataTables standart parametreleri
 $draw = intval($_POST['draw'] ?? 1);
 $start = intval($_POST['start'] ?? 0);
 $length = intval($_POST['length'] ?? 50);
 $searchValue = isset($_POST['search']['value']) ? trim((string)$_POST['search']['value']) : '';
+// Kolon aramaları boşsa, global aramayı kolon değerlerinden türet
 if (isset($_POST['columns']) && is_array($_POST['columns'])) {
     $colTerms = [];
     foreach ($_POST['columns'] as $c) {
@@ -25,6 +44,7 @@ if (isset($_POST['columns']) && is_array($_POST['columns'])) {
     }
     if ($searchValue === '' && !empty($colTerms)) { $searchValue = implode(' ', $colTerms); }
 }
+// Sıralama parametrelerini haritala
 $orderColIndex = intval($_POST['order'][0]['column'] ?? 0);
 $orderDir = strtolower($_POST['order'][0]['dir'] ?? 'desc');
 $map = [
@@ -41,6 +61,7 @@ $map = [
 ];
 $orderColumn = $map[$orderColIndex] ?? 'islem_tarihi';
 
+// Kolon bazlı filtreleri hazırla (columns[n].search.value)
 $filters = [];
 if (isset($_POST['columns']) && is_array($_POST['columns'])) {
     $mapCols = [
@@ -59,12 +80,15 @@ if (isset($_POST['columns']) && is_array($_POST['columns'])) {
         if ($val !== '' && isset($mapCols[$idx])) { $filters[$mapCols[$idx]] = $val; }
     }
 }
+// Sayım: toplam ve filtreli kayıt
 $total = $kasaHareketModel->getKasaHareketleriCount($kasa_id, '');
 $filtered = $kasaHareketModel->getKasaHareketleriCount($kasa_id, $searchValue, $filters);
+// Kayıtları getir
 $items = $kasaHareketModel->getKasaHareketleriPaginated($kasa_id, $start, $length, $searchValue, $orderColumn, $orderDir, $filters);
 
 $data = [];
 foreach ($items as $hareket) {
+    // Hücre içeriklerini render et (HTML)
     $enc_id = Security::encrypt($hareket->id);
     $tarih = Date::dmYHIS($hareket->islem_tarihi);
     $islemTipiHtml = (strtolower($hareket->islem_tipi) === 'gelir')
@@ -102,6 +126,7 @@ foreach ($items as $hareket) {
     ];
 }
 
+// DataTables beklenen JSON çıktısı
 echo json_encode([
     'draw' => $draw,
     'recordsTotal' => $total,

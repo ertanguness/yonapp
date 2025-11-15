@@ -9,11 +9,11 @@ use App\Helper\Site;
 
 use Dompdf\Css\Style;
 use Model\UserPaymentModel;
+use Model\KisilerModel;
 
 // Kullanıcı Ödemeleri
 $UserPayment = new UserPaymentModel();
-$user_id = $_SESSION['user']->kisi_id ?? 0;
-$user_id = 82;
+$user_id = $_SESSION['user']->kisi_id ?? ($_SESSION['user']->id ?? 0);
 
 // Kullanıcının Gruplanmış Borç Başlıklarını ve Ödeme Durumlarını Getirir
 $BorcTahsilatDetay = $UserPayment->kisiBorcTahsilatDetay(user_id: $user_id);
@@ -81,8 +81,20 @@ $hesap_ozet = (object)[
 ];
 
 
-$hesap_ozet = $UserPayment->KullaniciToplamBorc(257);
+$hesap_ozet = $UserPayment->KullaniciToplamBorc($user_id);
 $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
+
+$Kisiler = new KisilerModel();
+$kisi = $Kisiler->getKisiByDaireId($user_id);
+$sonTahsilat = null;
+foreach ($BorcTahsilatDetay as $it) {
+    if (($it->islem_turu ?? '') === 'tahsilat') {
+        if (!$sonTahsilat || strtotime($it->islem_tarihi) > strtotime($sonTahsilat)) {
+            $sonTahsilat = $it->islem_tarihi;
+        }
+    }
+}
+$sonHareketler = array_slice(array_reverse($BorcTahsilatDetay), 0, 3);
 
 ?>
 <style>
@@ -252,40 +264,120 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
             </div>
             <div class="card-body p-0">
                 <div class="px-4 pt-4">
-                    <div class="d-sm-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <div class="fs-24 fw-bolder font-montserrat-alt text-uppercase">Dairem</div>
-                            <address class="text-muted">
-                                P.O. Box 18728,<br>
-                                DeLorean New York<br>
-                                VAT No: 2617 348 2752
-                            </address>
-
+                    <div class="row g-4 mb-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary rounded">
+                                    <?php echo Helper::getInitials($kisi->adi_soyadi ?? ($_SESSION['user']->full_name ?? '')); ?>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold"><?php echo htmlspecialchars($kisi->adi_soyadi ?? ($_SESSION['user']->full_name ?? '')); ?></div>
+                                    <div class="fs-12 text-muted"><?php echo htmlspecialchars($kisi->eposta ?? ($_SESSION['user']->email ?? '')); ?></div>
+                                    <div class="fs-12 text-muted"><?php echo htmlspecialchars($kisi->telefon ?? ($_SESSION['user']->phone ?? '')); ?></div>
+                                </div>
+                            </div>
+                            <hr class="border-dashed my-3">
+                            <div class="d-flex flex-column gap-1">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold text-dark">Daire:</span>
+                                    <span class="text-muted"><?php echo htmlspecialchars($kisi->daire_kodu ?? ''); ?></span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold text-dark">Üyelik:</span>
+                                    <span class="text-muted"><?php echo htmlspecialchars($kisi->uyelik_tipi ?? ''); ?></span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold text-dark">Son Tahsilat:</span>
+                                    <span class="text-muted"><?php echo $sonTahsilat ? Date::dmy($sonTahsilat) : '-'; ?></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="lh-lg pt-3 pt-sm-0 text-right">
-                            <h2 class="fs-4 fw-bold text-primary">Özet</h2>
-                            <div class="d-flex">
-                                <span class="fw-bold text-dark">BORÇ (₺) : </span>
-                                <h4><span class="counter text-danger"><?php echo $hesap_ozet->toplam_borc ?>
-                                        ₺</span></h4>
+                        <div class="col-md-6">
+                            <div class="lh-lg pt-3 pt-sm-0 text-right">
+                                <h2 class="fs-4 fw-bold text-primary">Özet</h2>
+                                <div class="d-flex">
+                                    <span class="fw-bold text-dark">BORÇ (₺) : </span>
+                                    <h4><span class="counter text-danger"><?php echo $hesap_ozet->toplam_borc ?> ₺</span></h4>
+                                </div>
+                                <div class="d-flex">
+                                    <span class="fw-bold text-dark">ÖDENEN (₺) : </span>
+                                    <h4><span class="counter text-success"><?php echo $hesap_ozet->toplam_tahsilat ?> ₺</span></h4>
+                                </div>
+                                <div class="d-flex">
+                                    <span class="fw-bold text-dark">KALAN (₺) : </span>
+                                    <h4><span class="counter text-<?php echo $bakiye_color ?>"><?php echo $hesap_ozet->bakiye ?> ₺</span></h4>
+                                </div>
                             </div>
-                            <div class="d-flex">
-                                <span class="fw-bold text-dark">ÖDENEN (₺) : </span>
-                                <h4><span
-                                        class="counter text-success"><?php echo $hesap_ozet->toplam_tahsilat ?>
-                                        ₺</span></h4>
+                        </div>
+                    </div>
+                    <hr class="border-dashed my-4">
+                    <div>
+                        <div class="fs-6 fw-semibold mb-2">Son Hareketler</div>
+                        <ul class="list-unstyled mb-0 activity-feed-1">
+                            <?php foreach ($sonHareketler as $h): $col = (($h->islem_turu ?? '') === 'tahsilat' ? 'success' : 'danger'); ?>
+                                <li class="feed-item feed-item-<?php echo  $col; ?>">
+                                    <div class="d-flex gap-4 justify-content-between">
+                                        <div class="d-flex flex-column">
+                                            <div class="text-truncate-1-line"><a href="javascript:void(0)" class="fw-semibold text-dark">
+                                                <?php echo $h->borc_adi; ?>
+                                            </a></div>
+                                            <span class="text-muted"><?php echo Date::dmy($h->islem_tarihi); ?></span>
+                                            <p class="fs-12 text-muted text-truncate-2-line"><?php echo $h->aciklama; ?></p>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-semibold text-<?php echo  $col; ?> text-uppercase text-muted text-nowrap">
+                                                <?php echo Helper::formattedMoneyWithoutCurrency($h->tutar); ?> ₺
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <hr class="border-dashed my-4">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Aylık Borçlandırmalar</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="chartMonthlyAccruals"></div>
+                                </div>
                             </div>
-                            <div class="d-flex">
-                                <span class="fw-bold text-dark">KALAN (₺) : </span>
-                                <h4><span
-                                        class="counter text-<?php echo $bakiye_color ?>"><?php echo $hesap_ozet->bakiye ?>
-                                        ₺</span></h4>
-
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Aylık Ödemeler</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="chartMonthlyPayments"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Ödenen / Kalan</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="chartPaidVsRemaining"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Aylık Karşılaştırma</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="chartMonthlyCompare"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
 
             </div>
         </div>
@@ -657,5 +749,70 @@ $bakiye_color = $hesap_ozet->bakiye > 0 ? "success" : "danger";
                     document.getElementById(tabId).classList.add('active');
                 });
             });
+
+            const months = (function(){
+                const names = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+                const now = new Date();
+                const arr = [];
+                for(let i=11;i>=0;i--){
+                    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+                    arr.push(names[d.getMonth()]);
+                }
+                return arr;
+            })();
+
+            const accruals = [1200,1400,1350,1600,1550,1700,1800,1750,1650,1900,2000,2100];
+            const payments = [800,900,950,1200,1100,1300,1600,1500,1400,1700,1800,1950];
+
+            const paid = <?php echo (float)($hesap_ozet->toplam_tahsilat ?? 0); ?>;
+            const remaining = Math.max(0, <?php echo (float)($hesap_ozet->toplam_borc ?? 0); ?> - paid);
+
+            if (window.ApexCharts) {
+                const baseColors = {
+                    primary: getComputedStyle(document.documentElement).getPropertyValue('--bs-primary') || '#5e60e8',
+                    success: getComputedStyle(document.documentElement).getPropertyValue('--bs-success') || '#28a745',
+                    danger: getComputedStyle(document.documentElement).getPropertyValue('--bs-danger') || '#dc3545',
+                    gray: '#6c757d'
+                };
+
+                new ApexCharts(document.querySelector('#chartMonthlyAccruals'), {
+                    chart: { type: 'bar', height: 260, toolbar: { show: false } },
+                    series: [{ name: 'Borç', data: accruals }],
+                    xaxis: { categories: months },
+                    colors: [baseColors.danger],
+                    dataLabels: { enabled: false },
+                    grid: { strokeDashArray: 4 }
+                }).render();
+
+                new ApexCharts(document.querySelector('#chartMonthlyPayments'), {
+                    chart: { type: 'bar', height: 260, toolbar: { show: false } },
+                    series: [{ name: 'Ödeme', data: payments }],
+                    xaxis: { categories: months },
+                    colors: [baseColors.success],
+                    dataLabels: { enabled: false },
+                    grid: { strokeDashArray: 4 }
+                }).render();
+
+                new ApexCharts(document.querySelector('#chartPaidVsRemaining'), {
+                    chart: { type: 'donut', height: 260 },
+                    series: [paid, remaining],
+                    labels: ['Ödenen', 'Kalan'],
+                    colors: [baseColors.success, baseColors.danger],
+                    legend: { position: 'bottom' }
+                }).render();
+
+                new ApexCharts(document.querySelector('#chartMonthlyCompare'), {
+                    chart: { type: 'line', height: 260, toolbar: { show: false } },
+                    series: [
+                        { name: 'Borç', data: accruals },
+                        { name: 'Ödeme', data: payments }
+                    ],
+                    xaxis: { categories: months },
+                    colors: [baseColors.danger, baseColors.success],
+                    stroke: { width: 3 },
+                    markers: { size: 0 },
+                    grid: { strokeDashArray: 4 }
+                }).render();
+            }
         });
     </script>

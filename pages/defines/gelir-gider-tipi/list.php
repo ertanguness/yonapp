@@ -67,9 +67,10 @@ $items = $defines->getGelirGiderTipleri();
                                     <thead>
                                         <tr class="text-center">
                                             <th>Sıra</th>
-                                            <th>Adı</th>
+                                            <th>İşlem Kodu</th>
                                             <th>Türü</th>
-                                            <th>Açıklama</th>
+                                            <th style="width: 40%;">Adı</th>
+                                            <th style="width: 20%;">Açıklama</th>
                                             <th>Eklenme Tarihi</th>
                                             <th>İşlem</th>
                                         </tr>
@@ -85,13 +86,14 @@ $items = $defines->getGelirGiderTipleri();
                                             </td>
                                             <tr>
                                                 <td><?php echo $i; ?></td>
-                                                <td><?php echo $item->define_name; ?></td>
+                                                <td><?php echo $item->islem_kodu; ?></td>
                                                 <td>
                                                     <span class="badge bg-<?php echo $item->type_name == 'Gelir' ? 'success' : ($item->type_name == 'Gider' ? 'danger' : 'secondary'); ?>">
                                                         <?php echo $item->type_name; ?>
                                                     </span>
 
                                                 </td>
+                                                <td><?php echo $item->define_name; ?></td>
                                                 <td><?php echo $item->description; ?></td>
                                                 <td><?php echo Date::dmY($item->created_at); ?></td>
 

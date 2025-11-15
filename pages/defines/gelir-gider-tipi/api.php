@@ -43,6 +43,7 @@ if ($_POST["action"] == "gelir-gider-tipi-kaydet") {
             "id" => $id,
             "define_name" => $_POST['gelir_gider_tipi_name'] ?? '',
             "type" => $_POST['gelir_gider_tipi'] ?? '',
+            "islem_kodu" => $_POST['islem_kodu'] ?? null,
             "description" => $_POST['description'] ?? '',
             "site_id" => $_SESSION['site_id'] ?? 0,
         ];
