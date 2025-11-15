@@ -44,6 +44,12 @@ $resolvedRoute = $router->resolve($url);
 // Router artık hangi desenin eşleştiğini biliyor ve bize temiz halini veriyor.
 $page = $router->getPageName() ?? '';
 
+// PDF benzeri özel sayfalar: layout'u basmadan doğrudan çıktıyı üret
+if (preg_match('/-pdf$/', $page)) {
+    call_user_func_array($resolvedRoute['callback'], $resolvedRoute['params']);
+    exit;
+}
+
 
 // // Görünüm (View) için gerekli değişkenleri hazırla
 // $page = preg_replace('/[^a-zA-Z0-9\/\-]/', '', $page); // Güvenlik!

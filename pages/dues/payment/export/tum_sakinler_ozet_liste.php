@@ -19,6 +19,8 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf; // Dompdf'i kullanmak için
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 
 $Finansal = new FinansalRaporModel();
 $Kisiler   = new KisilerModel();
@@ -170,6 +172,39 @@ $sheet = $spreadsheet->getActiveSheet();
 $spreadsheet->getDefaultStyle()->getFont()->setName('DejaVu Sans');
 $spreadsheet->getDefaultStyle()->getFont()->setSize(7);
 $spreadsheet->getActiveSheet()->setTitle('Özet Ödemeler');
+$logoPath = $site->logo_path ?? '';
+$logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/' . ($logoPath ?: 'default-logo.png');
+if (!file_exists($logoFile)) {
+    $logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/default-logo.png';
+}
+$ext = strtolower(pathinfo($logoFile, PATHINFO_EXTENSION));
+$imageCreated = null;
+if ($ext === 'png') { $imageCreated = function_exists('imagecreatefrompng') ? @imagecreatefrompng($logoFile) : null; }
+elseif ($ext === 'jpg' || $ext === 'jpeg') { $imageCreated = function_exists('imagecreatefromjpeg') ? @imagecreatefromjpeg($logoFile) : null; }
+elseif ($ext === 'gif') { $imageCreated = function_exists('imagecreatefromgif') ? @imagecreatefromgif($logoFile) : null; }
+if ($imageCreated) {
+    $md = new MemoryDrawing();
+    $md->setName('Logo');
+    $md->setDescription('Site Logo');
+    $md->setImageResource($imageCreated);
+    $md->setRenderingFunction(MemoryDrawing::RENDERING_PNG);
+    $md->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
+    $md->setHeight(36);
+    $md->setCoordinates('A1');
+    $md->setOffsetX(2);
+    $md->setOffsetY(2);
+    $md->setWorksheet($sheet);
+} else {
+    $drawing = new Drawing();
+    $drawing->setName('Logo');
+    $drawing->setDescription('Site Logo');
+    $drawing->setPath($logoFile);
+    $drawing->setHeight(36);
+    $drawing->setCoordinates('A1');
+    $drawing->setOffsetX(2);
+    $drawing->setOffsetY(2);
+    $drawing->setWorksheet($sheet);
+}
 
 // Sabit kolonlar: PDF'te Telefon, Giriş ve Çıkış istenirse kaldırılabilir
 if ($isPdf) {
@@ -219,6 +254,12 @@ $lastColIdx = $colIndex + 1; // son kolon
 $lastHeaderColumn = Coordinate::stringFromColumnIndex($lastColIdx);
 $sheet->mergeCells('A1:' . $lastHeaderColumn . '1');
 $sheet->setCellValue('A1', 'Borç Bazında Ödemeler Özet');
+// Logoyu başlığın sağ ucuna taşı
+if (isset($md) && $md instanceof MemoryDrawing) {
+    $md->setCoordinates($lastHeaderColumn . '1');
+} else {
+    $drawing->setCoordinates($lastHeaderColumn . '1');
+}
 $sheet->mergeCells('A2:B2');
 $sheet->setCellValue('A2', 'Site Adı:');
 $sheet->mergeCells('C2:' . $lastHeaderColumn . '2');

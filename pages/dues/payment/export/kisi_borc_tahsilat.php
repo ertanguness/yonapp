@@ -21,6 +21,9 @@ use Model\FinansalRaporModel;
 use Dompdf\Options;
 use Dompdf\Dompdf as PDF;
 use Model\KisilerModel;
+use Model\SitelerModel;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 
 
 
@@ -49,6 +52,41 @@ if (empty($kisiHareketler)) {
 // Spreadsheet oluştur
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
+$site_id_session = $_SESSION['site_id'] ?? 0;
+$site = $site_id_session ? (new SitelerModel())->find($site_id_session) : null;
+$logoPath = $site->logo_path ?? '';
+$logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/' . ($logoPath ?: 'default-logo.png');
+if (!file_exists($logoFile)) {
+    $logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/default-logo.png';
+}
+$ext = strtolower(pathinfo($logoFile, PATHINFO_EXTENSION));
+$imageCreated = null;
+if ($ext === 'png') { $imageCreated = function_exists('imagecreatefrompng') ? @imagecreatefrompng($logoFile) : null; }
+elseif ($ext === 'jpg' || $ext === 'jpeg') { $imageCreated = function_exists('imagecreatefromjpeg') ? @imagecreatefromjpeg($logoFile) : null; }
+elseif ($ext === 'gif') { $imageCreated = function_exists('imagecreatefromgif') ? @imagecreatefromgif($logoFile) : null; }
+if ($imageCreated) {
+    $md = new MemoryDrawing();
+    $md->setName('Logo');
+    $md->setDescription('Site Logo');
+    $md->setImageResource($imageCreated);
+    $md->setRenderingFunction(MemoryDrawing::RENDERING_PNG);
+    $md->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
+    $md->setHeight(36);
+    $md->setCoordinates('K1');
+    $md->setOffsetX(2);
+    $md->setOffsetY(2);
+    $md->setWorksheet($sheet);
+} else {
+    $drawing = new Drawing();
+    $drawing->setName('Logo');
+    $drawing->setDescription('Site Logo');
+    $drawing->setPath($logoFile);
+    $drawing->setHeight(36);
+    $drawing->setCoordinates('K1');
+    $drawing->setOffsetX(2);
+    $drawing->setOffsetY(2);
+    $drawing->setWorksheet($sheet);
+}
 
 // Tüm spreadsheet için varsayılan fontu ayarla
 $spreadsheet->getDefaultStyle()->getFont()->setName('DejaVu Sans');

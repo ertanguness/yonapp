@@ -532,6 +532,80 @@ $site_adi = $site->site_adi ?? 'Site';
                             </div>
                         </div>
 
+                        <!-- Mizan Raporu -->
+                        <div class="accordion-item border border-dashed border-gray-300 mb-3">
+                            <h2 class="accordion-header" id="headingMizan">
+                                <button class="accordion-button collapsed bg-light" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapseMizan"
+                                    aria-expanded="false" aria-controls="collapseMizan">
+                                    <div class="d-flex align-items-center w-100">
+                                        <div class="avatar-text avatar-lg bg-soft-secondary text-secondary border-soft-secondary rounded me-3">
+                                            <i class="feather-grid fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold d-block">Mizan Raporu</span>
+                                            <small class="text-muted">Tüm hesapların borç/alacak toplamları ve bakiye</small>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapseMizan" class="accordion-collapse collapse"
+                                aria-labelledby="headingMizan" data-bs-parent="#raporlarAccordion">
+                                <div class="accordion-body bg-white">
+                                    <form id="formMizan" class="row g-3">
+                                        <div class="col-12">
+                                            <div class="alert alert-light border-0 mb-3">
+                                                <i class="feather-info me-2"></i>
+                                                <small>Seçilen döneme göre kasa/banka, gelir/gider ve alacaklar üzerinden mizan oluşturulur.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="mizan_baslangic" class="form-label">
+                                                <i class="feather-calendar me-1"></i>Başlangıç Tarihi
+                                            </label>
+                                            <input type="text" class="form-control flatpickr" id="mizan_baslangic"
+                                                name="mizan_baslangic" placeholder="gg.aa.yyyy"
+                                                value="<?php echo date('01.m.Y'); ?>">
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="mizan_bitis" class="form-label">
+                                                <i class="feather-calendar me-1"></i>Bitiş Tarihi
+                                            </label>
+                                            <input type="text" class="form-control flatpickr" id="mizan_bitis"
+                                                name="mizan_bitis" placeholder="gg.aa.yyyy"
+                                                value="<?php echo date('d.m.Y'); ?>">
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="mizan_format" class="form-label">
+                                                <i class="feather-download me-1"></i>İndirme Formatı
+                                            </label>
+                                            <select class="form-select" id="mizan_format" name="mizan_format">
+                                                <option value="pdf">PDF Belgesi</option>
+                                                <option value="xlsx">Excel (XLSX)</option>
+                                                <option value="csv" disabled>CSV Dosyası</option>
+                                                <option value="html">HTML Sayfası</option>
+                                            </select>
+                                        </div>
+
+                                        <hr class="my-4">
+                                        <div class="col-12 d-flex gap-2">
+                                            <button type="button" class="btn btn-outline-secondary btn-rapor-onizle"
+                                                data-rapor="mizan">
+                                                <i class="feather-eye me-2"></i>Önizle
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-rapor-indir"
+                                                data-rapor="mizan">
+                                                <i class="feather-download me-2"></i>Raporu İndir
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Daire Bazlı Rapor -->
                         <div class="accordion-item border border-dashed border-gray-300 mb-3">
                             <h2 class="accordion-header" id="headingDaire">
@@ -791,7 +865,7 @@ $site_adi = $site->site_adi ?? 'Site';
             const rapor = this.dataset.rapor;
             let url = '';
 
-            switch (rapor) {
+                switch (rapor) {
                 case 'hazirun':
                     const hazirunFormat = document.getElementById('hazirun_format').value;
                     const hazirunBaslik = encodeURIComponent(document.getElementById('hazirun_baslik').value);
@@ -860,6 +934,18 @@ $site_adi = $site->site_adi ?? 'Site';
                     const gelirStartISO = toIsoFromDMY(gelirBaslangic);
                     const gelirEndISO = toIsoFromDMY(gelirBitis);
                     url = `pages/raporlar/export/gelir-gider-raporu.php?start=${encodeURIComponent(gelirStartISO)}&end=${encodeURIComponent(gelirEndISO)}&format=${gelirFormat}&tur=${gelirTur}`;
+                    break;
+
+                case 'mizan':
+                    const mizanBaslangic = document.getElementById('mizan_baslangic').value;
+                    const mizanBitis = document.getElementById('mizan_bitis').value;
+                    const mizanFormat = document.getElementById('mizan_format').value;
+
+                    if (!validateDates(mizanBaslangic, mizanBitis)) return;
+
+                    const mizanStartISO = toIsoFromDMY(mizanBaslangic);
+                    const mizanEndISO = toIsoFromDMY(mizanBitis);
+                    url = `pages/raporlar/export/mizan-raporu.php?start=${encodeURIComponent(mizanStartISO)}&end=${encodeURIComponent(mizanEndISO)}&format=${mizanFormat}`;
                     break;
 
                 case 'daire':
@@ -935,6 +1021,15 @@ $site_adi = $site->site_adi ?? 'Site';
                     const gelirStartISO = toIsoFromDMY(gelirBaslangic);
                     const gelirEndISO = toIsoFromDMY(gelirBitis);
                     url = `pages/raporlar/export/gelir-gider-raporu.php?start=${encodeURIComponent(gelirStartISO)}&end=${encodeURIComponent(gelirEndISO)}&format=html&tur=${gelirTur}`;
+                    break;
+
+                case 'mizan':
+                    const mizanBaslangic = document.getElementById('mizan_baslangic').value;
+                    const mizanBitis = document.getElementById('mizan_bitis').value;
+                    if (!validateDates(mizanBaslangic, mizanBitis)) return;
+                    const mizanStartISO = toIsoFromDMY(mizanBaslangic);
+                    const mizanEndISO = toIsoFromDMY(mizanBitis);
+                    url = `pages/raporlar/export/mizan-raporu.php?start=${encodeURIComponent(mizanStartISO)}&end=${encodeURIComponent(mizanEndISO)}&format=html`;
                     break;
 
                 case 'daire':

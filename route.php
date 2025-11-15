@@ -52,6 +52,15 @@ $router->get('site-duzenle/{id}', fn($id) => require 'pages/management/sites/man
 $router->get('siteler', fn() => require 'pages/management/sites/list.php');
 
 /* ----------------------------------------------------
+|  İŞLETME PROJESİ
+---------------------------------------------------- */
+$router->get('isletme-projesi', fn() => require 'pages/isletme-projesi/list.php');
+$router->get('isletme-projesi-ekle', fn() => require 'pages/isletme-projesi/manage.php');
+$router->get('isletme-projesi-duzenle/{id}', fn($id) => require 'pages/isletme-projesi/manage.php');
+$router->get('isletme-projesi-detay/{id}', fn($id) => require 'pages/isletme-projesi/detail.php');
+$router->get('isletme-projesi-pdf/{id}', fn($id) => require 'pages/isletme-projesi/pdf.php');
+
+/* ----------------------------------------------------
 |  BLOKLAR
 ---------------------------------------------------- */
 $router->get('site-bloklari', fn() => require 'pages/management/blocks/list.php');
@@ -214,4 +223,7 @@ $router->get('ana-sayfa', fn() => require 'pages/home/home.php');
 $router->get('index', fn() => require 'index.php');
 
 $router->get('ssp-test', fn() => require 'pages/server_processing.php');
+
+// Email ve SMS Bildirimleri
+$router->get('bildirimler', fn() => require 'pages/email-sms/list.php');
 

@@ -201,7 +201,7 @@ table thead tr:first-child th {
   vertical-align: middle;
 }
 
-.dataTables_filter {
+#gelirGiderTable_wrapper .dataTables_filter {
   display: none !important;
 }
 

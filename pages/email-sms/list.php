@@ -116,7 +116,7 @@
                     </div>
                 </div>
                 <div class="px-3 w-100 d-flex align-items-center">
-                    <input class="form-control border-0 my-1 w-100 shadow-none" type="email" placeholder="Subject">
+                    <input class="form-control border-0 my-1 w-100 shadow-none" type="text" name="subjectmodal" id="subjectmodal" placeholder="Subject">
                 </div>
                 <div class="editor w-100 m-0">
                     <div class="ht-300 border-bottom-0" id="mailEditorModal"></div>
@@ -131,7 +131,7 @@
                             <span class="btn btn-primary dropdown-toggle" data-bs-toggle="tooltip" data-bs-trigger="hover" title="Send Message"> Send </span>
                         </a>
                         <div class="dropdown-menu">
-                            <a href="javascript:void(0)" class="dropdown-item" data-action-target="#mailActionMessage">
+                            <a href="javascript:void(0)" class="dropdown-item" id="emailSendInstant" data-action-target="#mailActionMessage">
                                 <i class="feather-send me-3"></i>
                                 <span>Instant Send</span>
                             </a>
@@ -328,4 +328,79 @@
             }
         });
     })();
+</script>
+<script>
+    $(function() {
+        var quillModal = new Quill('#mailEditorModal', { theme: 'snow' });
+
+        $('#ccbccToggleModal').on('click', function() {
+            $('#ccbccToggleModalFileds').toggle();
+        });
+
+        $(document).on('click', '#emailSendInstant', function(e) {
+            e.preventDefault();
+            var to = ($('[name="tomailmodal"]').val() || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
+            var cc = ($('[name="ccmailmodal"]').val() || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
+            var bcc = ($('[name="bccmailmodal"]').val() || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
+            var subject = ($('#subjectmodal').val() || '').trim();
+            var message = (quillModal.getText() || '').trim();
+
+            if (!to.length) { Swal.fire({ title: 'Uyarı', text: 'Lütfen en az bir alıcı girin.', icon: 'warning' }); return; }
+            if (!subject) { Swal.fire({ title: 'Uyarı', text: 'Lütfen konu başlığı girin.', icon: 'warning' }); return; }
+            if (!message) { Swal.fire({ title: 'Uyarı', text: 'Lütfen mesaj girin.', icon: 'warning' }); return; }
+
+            $.post('/pages/email-sms/api/APIEmail.php', {
+                action: 'email_gonder',
+                to: JSON.stringify(to),
+                cc: JSON.stringify(cc),
+                bcc: JSON.stringify(bcc),
+                subject: subject,
+                message: message
+            }).done(function(res){
+                try { var data = typeof res === 'string' ? JSON.parse(res) : res; } catch(e) { data = { status:'error', message:'Beklenmeyen yanıt' }; }
+                if (data.status === 'success') {
+                    Swal.fire({ title: 'Başarılı!', text: data.message || 'E-posta gönderildi.', icon: 'success' }).then(function(){
+                        $('[name="tomailmodal"],[name="ccmailmodal"],[name="bccmailmodal"]').val('');
+                        $('#subjectmodal').val('');
+                        quillModal.setText('');
+                        $('#composeMail').modal('hide');
+                        if ($.fn.DataTable && $('#notificationsList').length) {
+                            $('#notificationsList').DataTable().ajax.reload(null, false);
+                        }
+                    });
+                } else {
+                    Swal.fire({ title: 'Hata', text: data.message || 'E-posta gönderilemedi.', icon: 'error' });
+                }
+            }).fail(function(){
+                Swal.fire({ title: 'Hata', text: 'Sunucuya bağlanılamadı.', icon: 'error' });
+            });
+        });
+
+        if ($.fn.DataTable) {
+            $('#notificationsList').DataTable({
+                retrieve :true,
+                ajax: { url: '/pages/email-sms/api/notifications_list.php', dataSrc: '' },
+                responsive: true,
+                order: [[0,'desc']],
+                columns: [
+                    { data: 'id' },
+                    { data: 'type' },
+                    { data: 'recipients', render: function(d){
+                        try { var arr = JSON.parse(d); return Array.isArray(arr) ? arr.join(', ') : d; } catch(e){ return d; }
+                    }},
+                    { data: 'subject' },
+                    { data: 'message' },
+                    { data: 'created_at' },
+                    { data: 'status' },
+                    { data: null, render: function(row){ return '<button class="btn btn-sm btn-outline-secondary" disabled>Detay</button>'; } }
+                ],
+                 initComplete: function (settings, json) {
+        var api = this.api();
+        var tableId = settings.sTableId;
+        attachDtColumnSearch(api, tableId);
+        api.columns.adjust().responsive.recalc();
+      },
+            });
+        }
+    });
 </script>

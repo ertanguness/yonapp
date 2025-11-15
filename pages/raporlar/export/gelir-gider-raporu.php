@@ -25,6 +25,8 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 // Settings sınıfı mevcut ancak hücre cache konfigürasyonu v5'te farklıdır; burada kullanmıyoruz
 
 // --- Veri Çekme ve Hazırlık (Bu kısım projenize göre aynı kalabilir) ---
@@ -53,7 +55,13 @@ $KasaModel = new KasaModel();
 $varsayilan_kasa_id = $KasaModel->varsayilanKasa();
 
 $KasaHareketModel = new KasaHareketModel();
-$selected_kasa_id = isset($_GET['kasa_id']) ? intval($_GET['kasa_id']) : ($varsayilan_kasa_id->id ?? 0);
+$selected_kasa_id = isset($_GET['kasa_id']) ? intval($_GET['kasa_id']) : ($_SESSION['kasa_id'] ?? ($varsayilan_kasa_id->id ?? 0));
+if (!$selected_kasa_id) {
+    $kasalar = $KasaModel->SiteKasalari();
+    if (!empty($kasalar)) {
+        $selected_kasa_id = (int)$kasalar[0]->id;
+    }
+}
 
 // Gelir ve Gider verilerini ayrı ayrı çek
 $gelirler_raw = $KasaHareketModel->getKasaHareketleriByDateRange($selected_kasa_id, $start, $end, 'Gelir');
@@ -78,6 +86,39 @@ foreach ($giderler_list as $v) {
 
 $ss = new Spreadsheet();
 $sheet = $ss->getActiveSheet();
+$logoPath = $site->logo_path ?? '';
+$logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/' . ($logoPath ?: 'default-logo.png');
+if (!file_exists($logoFile)) {
+    $logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/default-logo.png';
+}
+$ext = strtolower(pathinfo($logoFile, PATHINFO_EXTENSION));
+$imageCreated = null;
+if ($ext === 'png') { $imageCreated = function_exists('imagecreatefrompng') ? @imagecreatefrompng($logoFile) : null; }
+elseif ($ext === 'jpg' || $ext === 'jpeg') { $imageCreated = function_exists('imagecreatefromjpeg') ? @imagecreatefromjpeg($logoFile) : null; }
+elseif ($ext === 'gif') { $imageCreated = function_exists('imagecreatefromgif') ? @imagecreatefromgif($logoFile) : null; }
+if ($imageCreated) {
+    $md = new MemoryDrawing();
+    $md->setName('Logo');
+    $md->setDescription('Site Logo');
+    $md->setImageResource($imageCreated);
+    $md->setRenderingFunction(MemoryDrawing::RENDERING_PNG);
+    $md->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
+    $md->setHeight(40);
+    $md->setCoordinates('L1');
+    $md->setOffsetX(2);
+    $md->setOffsetY(2);
+    $md->setWorksheet($sheet);
+} else {
+    $drawing = new Drawing();
+    $drawing->setName('Logo');
+    $drawing->setDescription('Site Logo');
+    $drawing->setPath($logoFile);
+    $drawing->setHeight(40);
+    $drawing->setCoordinates('L1');
+    $drawing->setOffsetX(2);
+    $drawing->setOffsetY(2);
+    $drawing->setWorksheet($sheet);
+}
 $ss->getDefaultStyle()->getFont()->setName('Arial');
 $ss->getDefaultStyle()->getFont()->setSize(10);
 $sheet->setTitle('Gelir Gider Raporu');

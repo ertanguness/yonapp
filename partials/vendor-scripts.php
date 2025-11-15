@@ -51,14 +51,17 @@ if (
     $page == "daire-tipi-listesi" || 
     $page == "gelir-gider-tipi-listesi" || $page == "gelir-gider-tipi-ekle" || $page == "gelir-gider-tipi-duzenle" ||
     $page == "aidat-turu-tanimlama" || $page== "aidat-turu-duzenle" ||   $page == "borclandirma-yap" ||
-    $page == "personeller" || $page == "personel-ekle" || $page == "personel-duzenle"
+    $page == "personeller" || $page == "personel-ekle" || $page == "personel-duzenle" ||
+    $page == "isletme-projesi" || $page == "isletme-projesi-ekle" || $page == "isletme-projesi-duzenle" ||
+    $page == "bildirimler"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
 <!-- <script src="https://cdn.datatables.net/v/bs5/dt-2.3.4/r-3.0.7/datatables.min.js" integrity="sha384-O4V7rOTTcSRflQBTMk8URAYWhGGEMgmmLFrqu3e83FQtze3vmndvrH3GcRdrfXRu" crossorigin="anonymous"></script> -->
     <script src="/assets/vendors/js/dataTables.min.js"></script>
     <script src="/assets/vendors/js/dataTables.bs5.min.js"></script>
-    <!-- Responsive extension -->
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
 <?php  }
 
 //*************USERS********************************* */

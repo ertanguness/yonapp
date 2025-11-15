@@ -2,14 +2,20 @@ let table;
 let row;
 let preloader;
 $(document).ready(function () {
+
+
+
   const tahsilatTable = $("#tahsilatTable");
   const $gg = $("#gelirGiderTable");
   if ($gg.length) {
     table = $gg.DataTable({
       //stateSave: true,
       responsive: true,
+      searching: true,
+      info: true,
+      paging: true,
       autoWidth: true,
-      dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+      dom: 'f t<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
       language: {
         //url: "/assets/js/tr.json",
       },
@@ -40,84 +46,9 @@ $(document).ready(function () {
       initComplete: function (settings, json) {
         var api = this.api();
         var tableId = settings.sTableId;
-
-        $("#" + tableId + " thead").append(
-          '<tr class="search-input-row"></tr>'
-        );
-
-        api.columns().every(function () {
-          let column = this;
-          let title = column.header().textContent;
-
-          if (
-            title != "İşlem" &&
-            title != "Seç" &&
-            title != "#" &&
-            $(column.header()).find('input[type="checkbox"]').length === 0
-          ) {
-            // Input elementini oluştur
-            let input = document.createElement("input");
-            input.placeholder = title;
-            input.classList.add("form-control", "form-control-sm");
-            input.setAttribute("autocomplete", "off");
-
-            // Ortalanmış <th> içine ekle
-            const th = $('<th class="search text-center align-middle">').append(input);
-            $("#" + tableId + " .search-input-row").append(th);
-
-            // Event listener
-            $(input).on("keyup change", function () {
-              if (column.search() !== this.value) {
-                column.search(this.value).draw();
-              }
-            });
-
-            // Sütunun görünürlüğünü kontrol et
-            const isColumnVisible =
-              column.visible() && !$(column.header()).hasClass("dtr-hidden");
-
-            if (!isColumnVisible) {
-              th.hide(); // görünmüyorsa input gizle
-            }
-          } else {
-            // İşlem / seçim sütunları için boş th
-            $("#" + tableId + " .search-input-row").append("<th></th>");
-          }
-        });
-
-        // Responsive resize olayı
-        api.on("responsive-resize", function (e, datatable, columns) {
-          $("#" + tableId + " .search-input-row th").each(function (index) {
-            if (columns[index]) {
-              $(this).show();
-            } else {
-              $(this).hide();
-            }
-          });
-        });
-
-        // State yükleme
-        var state = api.state.loaded();
-        if (state && state.sTableId === tableId) {
-          console.log("State loaded for table:", tableId);
-          var inputs = $("#" + tableId + " thead input");
-
-          inputs.each(function (inputIndex) {
-            var columnIndex = $(this).closest("th").index();
-            var searchValue = state.columns[columnIndex]?.search?.search || "";
-
-            if (searchValue) {
-              $(this).val(searchValue);
-              table.column(columnIndex).search(searchValue);
-            }
-          });
-
-          api.draw();
-        } else {
-          api.state.clear();
-        }
-
+        attachDtColumnSearch(api, tableId);
         api.columns.adjust().responsive.recalc();
+        api.draw();
       },
     });
 
@@ -125,98 +56,32 @@ $(document).ready(function () {
       try { table.columns.adjust().responsive.recalc(); } catch(e) {}
     });
   }
-  const $others = $(".datatables, .datatable").not($gg).not(tahsilatTable);
+
+  // bazı tabloları kendi sayfasında başlatmak istediğim için burada başlatma
+  const exitstsTables = ["mizanTable", "gelirGiderTable", "tahsilatTable","notificationsList"];
+  const $others = $(".datatables, .datatable").not("#" + exitstsTables.join(", #"));
 
   if ($others.length) {
     table = $others.DataTable({
       responsive: true,
-      dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+      searching: true,
+      info: true,
+      paging: true,
+      dom: 'f t<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
       language: {},
       drawCallback: function (settings) {},
       ...getTableSpecificOptions(),
 
-       initComplete: function (settings, json) {
+      initComplete: function (settings, json) {
         var api = this.api();
         var tableId = settings.sTableId;
-
-        $("#" + tableId + " thead").append(
-          '<tr class="search-input-row"></tr>'
-        );
-
-        api.columns().every(function () {
-          let column = this;
-          let title = column.header().textContent;
-
-          if (
-            title != "İşlem" &&
-            title != "Seç" &&
-            title != "#" &&
-            $(column.header()).find('input[type="checkbox"]').length === 0
-          ) {
-            // Input elementini oluştur
-            let input = document.createElement("input");
-            input.placeholder = title;
-            input.classList.add("form-control", "form-control-sm");
-            input.setAttribute("autocomplete", "off");
-
-            // Ortalanmış <th> içine ekle
-            const th = $('<th class="search text-center align-middle">').append(input);
-            $("#" + tableId + " .search-input-row").append(th);
-
-            // Event listener
-            $(input).on("keyup change", function () {
-              if (column.search() !== this.value) {
-                column.search(this.value).draw();
-              }
-            });
-
-            // Sütunun görünürlüğünü kontrol et
-            const isColumnVisible =
-              column.visible() && !$(column.header()).hasClass("dtr-hidden");
-
-            if (!isColumnVisible) {
-              th.hide(); // görünmüyorsa input gizle
-            }
-          } else {
-            // İşlem / seçim sütunları için boş th
-            $("#" + tableId + " .search-input-row").append("<th></th>");
-          }
-        });
-
-        // Responsive resize olayı
-        api.on("responsive-resize", function (e, datatable, columns) {
-          $("#" + tableId + " .search-input-row th").each(function (index) {
-            if (columns[index]) {
-              $(this).show();
-            } else {
-              $(this).hide();
-            }
-          });
-        });
-
-        // State yükleme
-        var state = api.state.loaded();
-        if (state && state.sTableId === tableId) {
-          console.log("State loaded for table:", tableId);
-          var inputs = $("#" + tableId + " thead input");
-
-          inputs.each(function (inputIndex) {
-            var columnIndex = $(this).closest("th").index();
-            var searchValue = state.columns[columnIndex]?.search?.search || "";
-
-            if (searchValue) {
-              $(this).val(searchValue);
-              table.column(columnIndex).search(searchValue);
-            }
-          });
-
-          api.draw();
-        } else {
-          api.state.clear();
-        }
-
+        attachDtColumnSearch(api, tableId);
         api.columns.adjust().responsive.recalc();
       },
+    });
+
+    $(window).on('resize.dt', function(){
+      try { table.columns.adjust().responsive.recalc(); } catch(e) {}
     });
   }
 });
@@ -230,6 +95,51 @@ function getTableSpecificOptions() {
   return {
     ordering: document.getElementById("gelirGiderTable") ? false : true,
   };
+}
+
+function attachDtColumnSearch(api, tableId) {
+  $("#" + tableId + " thead").append('<tr class="search-input-row"></tr>');
+  api.columns().every(function () {
+    let column = this;
+    let title = column.header().textContent;
+    if (title != "İşlem" && title != "Seç" && title != "#" && $(column.header()).find('input[type="checkbox"]').length === 0) {
+      let input = document.createElement("input");
+      input.placeholder = title;
+      input.classList.add("form-control", "form-control-sm");
+      input.setAttribute("autocomplete", "off");
+      const th = $('<th class="search text-center align-middle">').append(input);
+      $("#" + tableId + " .search-input-row").append(th);
+      $(input).on("keyup change", function () {
+        if (column.search() !== this.value) {
+          column.search(this.value).draw();
+        }
+      });
+      const isColumnVisible = column.visible() && !$(column.header()).hasClass("dtr-hidden");
+      if (!isColumnVisible) { th.hide(); }
+    } else {
+      $("#" + tableId + " .search-input-row").append("<th></th>");
+    }
+  });
+  api.on("responsive-resize", function (e, datatable, columns) {
+    $("#" + tableId + " .search-input-row th").each(function (index) {
+      if (columns[index]) { $(this).show(); } else { $(this).hide(); }
+    });
+  });
+  var state = api.state.loaded();
+  if (state && state.sTableId === tableId) {
+    var inputs = $("#" + tableId + " thead input");
+    inputs.each(function () {
+      var columnIndex = $(this).closest("th").index();
+      var searchValue = state.columns[columnIndex]?.search?.search || "";
+      if (searchValue) {
+        $(this).val(searchValue);
+        api.column(columnIndex).search(searchValue);
+      }
+    });
+    api.draw();
+  } else {
+    api.state.clear();
+  }
 }
 
 if ($(".select2").length > 0) {

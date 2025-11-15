@@ -19,6 +19,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 
 $site_id = $_SESSION['site_id'] ?? 0;
 $format = strtolower($_GET['format'] ?? 'pdf');
@@ -154,6 +156,39 @@ $ss->getDefaultStyle()->getFont()->setSize(9);
 $sheet->setTitle('Aidat Raporu');
 //Satır Yüksekliği
 $sheet->getDefaultRowDimension()->setRowHeight(20);
+$logoPath = $site->logo_path ?? '';
+$logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/' . ($logoPath ?: 'default-logo.png');
+if (!file_exists($logoFile)) {
+    $logoFile = $_SERVER['DOCUMENT_ROOT'] . '/assets/images/logo/default-logo.png';
+}
+$ext = strtolower(pathinfo($logoFile, PATHINFO_EXTENSION));
+$imageCreated = null;
+if ($ext === 'png') { $imageCreated = function_exists('imagecreatefrompng') ? @imagecreatefrompng($logoFile) : null; }
+elseif ($ext === 'jpg' || $ext === 'jpeg') { $imageCreated = function_exists('imagecreatefromjpeg') ? @imagecreatefromjpeg($logoFile) : null; }
+elseif ($ext === 'gif') { $imageCreated = function_exists('imagecreatefromgif') ? @imagecreatefromgif($logoFile) : null; }
+if ($imageCreated) {
+    $md = new MemoryDrawing();
+    $md->setName('Logo');
+    $md->setDescription('Site Logo');
+    $md->setImageResource($imageCreated);
+    $md->setRenderingFunction(MemoryDrawing::RENDERING_PNG);
+    $md->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
+    $md->setHeight(40);
+    $md->setCoordinates(($iletisim_bilgileri ? 'K' : 'J') . '1');
+    $md->setOffsetX(2);
+    $md->setOffsetY(2);
+    $md->setWorksheet($sheet);
+} else {
+    $drawing = new Drawing();
+    $drawing->setName('Logo');
+    $drawing->setDescription('Site Logo');
+    $drawing->setPath($logoFile);
+    $drawing->setHeight(40);
+    $drawing->setCoordinates(($iletisim_bilgileri ? 'K' : 'J') . '1');
+    $drawing->setOffsetX(2);
+    $drawing->setOffsetY(2);
+    $drawing->setWorksheet($sheet);
+}
 
 // Başlık
 $lastCol = $iletisim_bilgileri ? 'K' : 'J';
@@ -412,6 +447,10 @@ try {
             if (ob_get_length()) {
                 ob_end_clean();
             }
+            $logo_web = '/assets/images/logo/' . ($site->logo_path ?? 'default-logo.png');
+            if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $logo_web)) {
+                $logo_web = '/assets/images/logo/default-logo.png';
+            }
             echo '<!DOCTYPE html>
 <html>
 <head>
@@ -502,6 +541,9 @@ try {
     </style>
 </head>
 <body>
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:5px;">
+        <img src="' . htmlspecialchars($logo_web) . '" alt="Logo" style="height:40px;object-fit:contain;" />
+    </div>
     <h1>' . strtoupper($site->site_adi ?? 'SİTE') . '</h1>
     <h2>' . htmlspecialchars($rapor_basligi) . '</h2>
     <p class="tarih">Rapor Tarihi: ' . date('d.m.Y H:i') . '</p>

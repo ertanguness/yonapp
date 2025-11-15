@@ -56,7 +56,7 @@ $conn->close(); */
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="email-sms/list">
+                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="bildirimler">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </button>

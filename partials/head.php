@@ -63,7 +63,7 @@ $page = isset($page) ? $page : 'ana-sayfa';
     <link rel="stylesheet" type="text/css" href="/assets/css/theme.min.css" />
     
 	<link rel="stylesheet" type="text/css" href="/assets/vendors/css/dataTables.bs5.min.css">	
-<!-- <link href="https://cdn.datatables.net/v/bs5/dt-2.3.4/r-3.0.7/datatables.min.css" rel="stylesheet" integrity="sha384-RaJlMsTv+nhuWA/3SQzc3dPVUOKfEb08YW4YZsaNK3UNFUhjvLkn/SwJEfKSavGD" crossorigin="anonymous"> -->
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
  
     <!--! END: Vendors CSS-->
     <!--! BEGIN: Custom CSS-->
