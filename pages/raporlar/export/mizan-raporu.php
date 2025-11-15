@@ -20,6 +20,9 @@ $format = strtolower($_GET['format'] ?? 'pdf');
 $start = $_GET['start'] ?? date('Y-m-01');
 $end   = $_GET['end'] ?? date('Y-m-t');
 $isPreview = ($format === 'html');
+$showPeople = ((string)($_GET['people'] ?? '1') === '1');
+$maxPreviewRows = isset($_GET['limit']) ? max(200, (int)$_GET['limit']) : 1200;
+$isPreview = ($format === 'html');
 $maxPreviewRows = isset($_GET['limit']) ? max(200, (int)$_GET['limit']) : 1200;
 
 $Siteler = new SitelerModel();
@@ -119,7 +122,7 @@ $sheet->getStyle('A4:F4')->applyFromArray($thin);
 if (!$isPreview) { $sheet->getStyle('A4:F4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFEFF5'); }
 $sheet->getHeaderFooter()->setOddFooter('&C&B Sayfa &P / &N');
 $sheet->getStyle('C5:F10000')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-$sheet->getStyle('A4:F4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFEFF5');
+if (!$isPreview) { $sheet->getStyle('A4:F4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFEFF5'); }
 
 $r = 5;
 
@@ -228,6 +231,13 @@ $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(4, 4);
 
 // --- Daire Sakinleri Bölümü ---
 try {
+    if ($showPeople) {
+        if ($format === 'pdf') {
+            $stmtCount = $db->prepare("SELECT COUNT(*) FROM kisiler k LEFT JOIN daireler d ON k.daire_id = d.id WHERE d.site_id = :sid");
+            $stmtCount->execute([':sid' => $site_id]);
+            $totalPeople = (int)($stmtCount->fetchColumn() ?: 0);
+            if ($totalPeople > 400) { $showPeople = false; }
+        }
     $startDateOnly = substr($start, 0, 10);
     $endDateOnly   = substr($end, 0, 10);
 
@@ -324,6 +334,7 @@ try {
         if ($isPreview && $rendered >= $maxPreviewRows) { break; }
         $blockName = (string)($pinfo->blok_adi ?? '');
         if ($currBlock !== $blockName) {
+            if ($format === 'pdf' || $format === 'xlsx') { $sheet->setBreak('A' . $r, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::BREAK_ROW); }
             $currBlock = $blockName;
             $sheet->setCellValue('A' . $r, ($blockName !== '' ? ('Blok ' . $blockName) : 'Blok Bilgisi Yok'));
             $sheet->mergeCells('A' . $r . ':B' . $r);
@@ -397,6 +408,7 @@ try {
     }
 
     $sheet->getStyle('C' . $startRow . ':F' . ($sheet->getHighestRow()))->getNumberFormat()->setFormatCode('#,##0.00');
+    }
 } catch (\Exception $e) {
     error_log('Daire sakinleri bölümü üretilemedi: ' . $e->getMessage());
 }
@@ -405,7 +417,13 @@ try {
 $sheet->getPageSetup()->setPrintArea('A1:F' . $sheet->getHighestRow());
 
 $filename = (($site->site_adi ?? 'site')) . '_mizan_' . date('Y_m');
-if ($format === 'pdf' && $sheet->getHighestRow() > 20000) { $format = 'xlsx'; }
+if (
+    $format === 'pdf'
+    && !in_array(strtolower((string)($_GET['force'] ?? '0')), ['1','pdf'], true)
+    && $sheet->getHighestRow() > 50000
+) {
+    $format = 'xlsx';
+}
 
 try {
     switch ($format) {
@@ -416,6 +434,7 @@ try {
             header('Cache-Control: max-age=0');
             if (ob_get_length()) { ob_end_clean(); }
             $writer = new Xlsx($ss);
+            if (method_exists($writer, 'setPreCalculateFormulas')) { $writer->setPreCalculateFormulas(false); }
             if (method_exists($writer, 'setUseDiskCaching')) { $writer->setUseDiskCaching(true, sys_get_temp_dir()); }
             $writer->save('php://output');
             break;
