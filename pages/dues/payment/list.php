@@ -105,20 +105,15 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                         <i class="feather-paperclip"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" style="">
-                        <a href="/pages/dues/payment/export/tum_sakinler_ozet_liste.php?format=html"
-                            target="_blank"
-                            class="dropdown-item">
-                            <i class="bi bi-filetype-pdf me-3"></i>
-                            <span>Html'e Aktar</span>
-                        </a>
-                        <a href="/pages/dues/payment/export/tum_sakinler_ozet_liste.php?format=xlsx" class="dropdown-item"
+                       
+                        <a href="javascript:void(0);" class="dropdown-item js-export-excel"
                             target="_blank">
                             <i class="bi bi-filetype-exe me-3"></i>
                             <span>Excele Aktar</span>
                         </a>
 
                         <div class="dropdown-divider"></div>
-                        <a href="javascript:void(0);" class="dropdown-item">
+                        <a href="/pages/dues/payment/export/tum_sakinler_ozet_liste.php?format=xlsx" class="dropdown-item">
                             <i class="bi bi-filetype-exe me-3"></i>
                             <span>Detaylı Ödeme Listesi Al</span>
                         </a>
@@ -349,6 +344,20 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                     dt.columns.adjust().draw(false);
                 }
             }, 150);
+        });
+        $(document).on('click', '.js-export-excel', function(e){
+            e.preventDefault();
+            var dt = $('#tahsilatTable').DataTable();
+            var params = (dt.ajax && typeof dt.ajax.params === 'function') ? dt.ajax.params() : {};
+            if (params) {
+                delete params.start;
+                delete params.length;
+                delete params.draw;
+            }
+            params = params || {};
+            params.format = 'xlsx';
+            var url = '/pages/dues/payment/export/borc_listesi_excel.php?' + $.param(params);
+            window.open(url, '_blank');
         });
     });
 </script>

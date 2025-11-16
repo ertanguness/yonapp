@@ -72,14 +72,8 @@ if ($page == 'users/list' || $page == 'users/manage') {
 
 
 
-if($page == "bildirimler" || $page == "ana-sayfa") {
-    // assets\js\apps-email-init.min.js
-    echo '<script src="/assets/vendors/js/tagify.min.js"></script>';
-   // echo '<script src="/assets/vendors/js/tagify-data.min.js"></script>';
-    echo '<script src="/assets/vendors/js/quill.min.js"></script>';
-    //echo '<script src="/assets/js/apps-email-init.min.js"></script>';
-
- }
+echo '<script src="/assets/vendors/js/tagify.min.js"></script>';
+echo '<script src="/assets/vendors/js/quill.min.js"></script>';
 //Kullanıcı Ekle
 if ($page == 'kullanici-ekle' || $page == 'kullanici-duzenle' || $page == 'kullanici-listesi') {
     echo '<script src="/pages/kullanici/js/user.js"></script>';
@@ -355,69 +349,8 @@ if($page == "email-sms/sms_gonder_modal"){
 <script src="/src/app.js?v=<?php echo filemtime('src/app.js'); ?>" defer></script>
 
 
-<script>
-    (function(){
-        var isMobile = window.matchMedia("(max-width: 768px)").matches;
-        var isHome = (document.body && document.body.getAttribute('data-page') === 'ana-sayfa');
-        if (isHome && isMobile && !document.querySelector('script[src*="/partials/mobile-menu.js"]')) {
-            var s = document.createElement('script');
-            s.src = '/partials/mobile-menu.js';
-            document.head.appendChild(s);
-        }
-        function toggleFallback(){
-            var $nav = $('.nxl-navigation');
-            var wasActive = $nav.hasClass('mob-navigation-active');
-            setTimeout(function(){
-                var nowActive = $nav.hasClass('mob-navigation-active');
-                if (nowActive === !wasActive) return;
-                if (wasActive) {
-                    $nav.removeClass('mob-navigation-active');
-                    $nav.find('.nxl-menu-overlay').remove();
-                    $('.hamburger').removeClass('is-active');
-                } else {
-                    $nav.addClass('mob-navigation-active');
-                    if ($nav.find('.nxl-menu-overlay').length === 0) {
-                        var $overlay = $('<div class="nxl-menu-overlay"></div>');
-                        $overlay.on('click', function(){
-                            $nav.removeClass('mob-navigation-active');
-                            $nav.find('.nxl-menu-overlay').remove();
-                            $('.hamburger').removeClass('is-active');
-                        });
-                        $nav.append($overlay);
-                    }
-                    $('.hamburger').addClass('is-active');
-                }
-            }, 50);
-        }
-        function observeNav(){
-            var nav = document.querySelector('.nxl-navigation');
-            if (!nav) return;
-            var obs = new MutationObserver(function(){
-                var active = nav.classList.contains('mob-navigation-active');
-                var h = document.querySelector('.hamburger');
-                if (h) h.classList.toggle('is-active', active);
-            });
-            obs.observe(nav, { attributes: true, attributeFilter: ['class'] });
-        }
-        if (isHome && isMobile){
-            observeNav();
-            if (window.jQuery) {
-                jQuery(function(){
-                    $('#mobile-collapse').off('click.mobilefix').on('click.mobilefix', function(e){
-                        e.preventDefault();
-                        if ($('html').hasClass('nxl-horizontal')) return;
-                        toggleFallback();
-                    });
-                });
-            } else {
-                document.addEventListener('DOMContentLoaded', function(){
-                    var btn = document.getElementById('mobile-collapse');
-                    if (btn) btn.addEventListener('click', function(e){ e.preventDefault(); toggleFallback(); });
-                });
-            }
-        }
-    })();
-</script>
+<script src="/partials/mobile-menu.js"></script>
+<script src="/pages/email-sms/js/sms.js"></script>
 
 
 <!--<< All JS Plugins >>-->

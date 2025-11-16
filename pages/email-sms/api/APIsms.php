@@ -3,6 +3,9 @@
 require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 use App\Services\SmsGonderService;
+use Model\SmsModel;
+use Database\Db;
+
 
 
 // Yanıt için standart bir yapı oluşturun.
@@ -20,6 +23,9 @@ $messageText = $postData['message'] ?? ''; // Varsayılan mesaj
 $recipients = $postData['recipients'] ?? [''];
 $msgheader = $postData['senderID'] ?? 'USKUPEVLSIT'; // Varsayılan başlık
 
+$db = Db::getInstance();
+$SmsModel = new SmsModel();
+
 if (empty($messageText) || !is_string($messageText)) {
     throw new Exception("Geçerli bir mesaj metni gönderilmedi.");
 }
@@ -36,19 +42,22 @@ if (SmsGonderService::gonder(
     $apiResponse['status'] = 'success';
     $apiResponse['message'] = count($recipients) . ' alıcıya başarıyla SMS gönderildi.';
     try {
-        $pdo = getDbConnection();
-        $pdo->exec("CREATE TABLE IF NOT EXISTS notifications (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            type VARCHAR(10) NOT NULL,
-            recipients TEXT NOT NULL,
-            subject VARCHAR(255) NULL,
-            message TEXT NOT NULL,
-            status VARCHAR(20) NOT NULL,
-            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
-        $ins = $pdo->prepare("INSERT INTO notifications (type, recipients, subject, message, status) VALUES (?,?,?,?,?)");
-        $ins->execute(['sms', json_encode($recipients, JSON_UNESCAPED_UNICODE), null, $messageText, 'success']);
-    } catch (Exception $e) {}
+        $db->beginTransaction();
+        
+        $data = [
+            'type' => 'sms',
+            'recipients' => json_encode($recipients, JSON_UNESCAPED_UNICODE),
+            'subject' => null,
+            'message' => $messageText,
+            'status' => 'success',
+        ];
+        $SmsModel->saveWithAttr($data);
+        $db->commit();
+    } catch (Exception $e) {
+        $db->rollBack();
+        $apiResponse['message'] = 'SMS gönderilemedi. Hata: ' . $e->getMessage();
+    }
+       
 } else {
     $apiResponse['message'] = 'SMS gönderilemedi.';
 }

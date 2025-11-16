@@ -453,23 +453,7 @@ $geciken_odeme_tutari = $FinansalRaporModel->getGecikenOdemeTutar($site_id);
 </div>
 
 
-<div class="modal fade-scale" id="composeMail" tabindex="-1" aria-labelledby="composeMail" aria-hidden="true" data-bs-dismiss="ou">
-    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-        <div class="modal-content">
 
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="SendMessage" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
-        <div class="modal-content sms-gonder-modal">
-            <!-- İçerik AJAX ile yüklenecek -->
-        </div>
-    </div>
-</div>
 
 
 
@@ -484,8 +468,6 @@ $geciken_odeme_tutari = $FinansalRaporModel->getGecikenOdemeTutar($site_id);
 
 
 <?php include './partials/calender-scripts.php' ?>
-<!-- list.php'nin en altına ekle -->
-<script src="/pages/email-sms/js/sms.js"></script>
 
 
 <style>
@@ -546,4 +528,4 @@ $geciken_odeme_tutari = $FinansalRaporModel->getGecikenOdemeTutar($site_id);
             }
         });
     })();
-</script>   
+</script>

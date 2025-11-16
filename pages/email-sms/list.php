@@ -22,7 +22,7 @@
                 require_once 'pages/components/download.php';
                 ?>
 
-                <a href="javascript:void(0)" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#composeMail">
+                <a href="javascript:void(0)" class="btn btn-primary mail-gonder">
                     <i class="feather-mail me-2"></i>
                     <span>Yeni Email</span>
                 </a>
@@ -80,327 +80,127 @@
 </div>
 
 
-<!-- list.php'nin en altına ekle -->
-<script src="/pages/email-sms/js/sms.js"></script>
-<!--! BEGIN: Compose Mail Modal !-->
-<!--! ================================================================ !-->
-<div class="modal fade-scale" id="composeMail" tabindex="-1" aria-labelledby="composeMail" aria-hidden="true" data-bs-dismiss="ou">
-    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+
+<script>
+    function ensureDataTables(cb){
+        if ($.fn.DataTable) { cb(); return; }
+        var libs = [
+            '/assets/vendors/js/dataTables.min.js',
+            '/assets/vendors/js/dataTables.bs5.min.js'
+        ];
+        var i = 0;
+        function load(){
+            if (i >= libs.length) { cb(); return; }
+            var s = document.createElement('script');
+            s.src = libs[i++];
+            s.onload = load;
+            document.head.appendChild(s);
+        }
+        load();
+    }
+
+    ensureDataTables(function(){
+        $('#notificationsList').DataTable({
+            retrieve: true,
+            ajax: {
+                url: '/pages/email-sms/api/notifications_list.php',
+                type: 'GET',
+                dataSrc: '',
+                error: function(xhr, status, err){
+                    console.error('Bildirimler yüklenirken hata:', status, err, xhr.status, xhr.responseText);
+                    Swal.fire({ title: 'Hata', text: 'Bildirimler yüklenemedi.', icon: 'error' });
+                }
+            },
+            responsive: true,
+            language: {
+                emptyTable: 'Henüz bildirim bulunmuyor',
+                zeroRecords: 'Eşleşen kayıt bulunamadı',
+                processing: 'Yükleniyor...'
+            },
+            order: [[0,'desc']],
+            columns: [
+                { data: 'id' },
+                { data: 'type' },
+                { data: 'recipients', render: function(d){
+                    try { var arr = JSON.parse(d); return Array.isArray(arr) ? arr.join(', ') : d; } catch(e){ return d; }
+                }},
+                { data: 'subject' },
+                { data: 'message' },
+                { data: 'created_at' },
+                { data: 'status' },
+                { data: null, render: function(row){ return '<button class="btn btn-sm btn-outline-secondary btn-detail-notification">Detay</button>'; } }
+            ],
+            initComplete: function (settings, json) {
+                var api = this.api();
+                var tableId = settings.sTableId;
+                attachDtColumnSearch(api, tableId);
+                api.columns.adjust().responsive.recalc();
+            },
+        });
+    });
+</script>
+<div class="modal fade-scale" id="notificationDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
-            <!--! BEGIN: [modal-header] !-->
             <div class="modal-header">
-                <h2 class="d-flex flex-column mb-0">
-                    <span class="fs-18 fw-bold mb-1">Compose Mail</span>
-                    <small class="d-block fs-11 fw-normal text-muted">Compose Your Message</small>
-                </h2>
+                <h5 class="modal-title">Bildirim Detayı</h5>
                 <a href="javascript:void(0)" class="avatar-text avatar-md bg-soft-danger close-icon" data-bs-dismiss="modal">
                     <i class="feather-x text-danger"></i>
                 </a>
             </div>
-            <!--! BEGIN: [modal-body] !-->
-            <div class="modal-body p-0">
-                <div class="position-relative border-bottom">
-                    <div class="px-2 d-flex align-items-center">
-                        <div class="p-0 w-100">
-                            <input class="form-control border-0 text-dark" name="tomailmodal" placeholder="TO">
-                        </div>
-                    </div>
-                    <a href="javascript:void(0)" class="position-absolute top-50 end-0 translate-middle badge bg-gray-100 border border-gray-3 fs-10 fw-semibold text-uppercase text-dark rounded-pill c-pointer z-index-100" id="ccbccToggleModal"><span data-bs-toggle="tooltip" data-bs-trigger="hover" title="CC / BCC" style="font-size: 9px !important">CC / BCC</span></a>
-                </div>
-                <div class="border-bottom mail-cc-bcc-fields" id="ccbccToggleModalFileds" style="display: none">
-                    <div class="px-2 w-100 d-flex align-items-center border-bottom">
-                        <input class="form-control border-0 text-dark" name="ccmailmodal" placeholder="CC">
-                    </div>
-                    <div class="px-2 w-100 d-flex align-items-center">
-                        <input class="form-control border-0 text-dark" name="bccmailmodal" placeholder="BCC">
-                    </div>
-                </div>
-                <div class="px-3 w-100 d-flex align-items-center">
-                    <input class="form-control border-0 my-1 w-100 shadow-none" type="text" name="subjectmodal" id="subjectmodal" placeholder="Subject">
-                </div>
-                <div class="editor w-100 m-0">
-                    <div class="ht-300 border-bottom-0" id="mailEditorModal"></div>
-                </div>
-            </div>
-            <!--! BEGIN: [modal-footer] !-->
-            <div class="modal-footer d-flex align-items-center justify-content-between">
-                <!--! BEGIN: [mail-editor-action-left] !-->
-                <div class="d-flex align-items-center">
-                    <div class="dropdown me-2">
-                        <a href="javascript:void(0)" data-bs-toggle="dropdown" data-bs-offset="0, 0">
-                            <span class="btn btn-primary dropdown-toggle" data-bs-toggle="tooltip" data-bs-trigger="hover" title="Send Message"> Send </span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="javascript:void(0)" class="dropdown-item" id="emailSendInstant" data-action-target="#mailActionMessage">
-                                <i class="feather-send me-3"></i>
-                                <span>Instant Send</span>
-                            </a>
-                            <a href="javascript:void(0);" class="dropdown-item successAlertMessage">
-                                <i class="feather-clock me-3"></i>
-                                <span>Schedule Send</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="javascript:void(0)" class="dropdown-item successAlertMessage">
-                                <i class="feather-x me-3"></i>
-                                <span>Discard Now</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item successAlertMessage">
-                                <i class="feather-edit-3 me-3"></i>
-                                <span>Save as Draft</span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="dropdown me-2 d-none d-sm-block">
-                        <a href="javascript:void(0)" data-bs-toggle="dropdown" data-bs-offset="0, 0">
-                            <span class="btn btn-icon" data-bs-toggle="tooltip" data-bs-trigger="hover" title="Pick Template">
-                                <i class="feather-hash"></i>
-                            </span>
-                        </a>
-                        <div class="dropdown-menu wd-300">
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-file-text me-3"></i>
-                                <span>Welcome you message</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-file-text me-3"></i>
-                                <span>Your issues solved</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-file-text me-3"></i>
-                                <span>Thank you message</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-file-text me-3"></i>
-                                <span>Make a offer message</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-file-text me-3"></i>
-                                <span>Add the Unsubscribe option</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-file-text me-3"></i>
-                                <span>Thank your customer for joining</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-save me-3"></i>
-                                <span>Save as Template</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-sun me-3"></i>
-                                <span>Manage Template</span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="dropdown">
-                        <a href="javascript:void(0)" data-bs-toggle="dropdown" data-bs-offset="0, 0">
-                            <span class="btn btn-icon" data-bs-toggle="tooltip" data-bs-trigger="hover" title="Upload Attachments">
-                                <i class="feather-upload"></i>
-                            </span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-image me-3"></i>
-                                <span>Upload Images</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-video me-3"></i>
-                                <span>Upload Videos</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-mic me-3"></i>
-                                <span>Upload Musics</span>
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item">
-                                <i class="feather-file-text me-3"></i>
-                                <span>Upload Documents</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!--! BEGIN: [mail-editor-action-right] !-->
-                <div class="d-flex align-items-center">
-                    <div class="dropdown me-2">
-                        <a href="javascript:void(0)" data-bs-toggle="dropdown" data-bs-offset="0, 0">
-                            <span class="btn btn-icon" data-bs-toggle="tooltip" data-bs-trigger="hover" title="Editing Actions">
-                                <i class="feather-more-horizontal"></i>
-                            </span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="javascript:void(0)" class="dropdown-item">
-                                    <i class="feather-type me-3"></i>
-                                    <span>Plain Text Mode</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)" class="dropdown-item">
-                                    <i class="feather-check me-3"></i>
-                                    <span>Check Spelling</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)" class="dropdown-item">
-                                    <i class="feather-compass me-3"></i>
-                                    <span>Smart Compose</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)" class="dropdown-item">
-                                    <i class="feather-feather me-3"></i>
-                                    <span>Manage Signature</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <a href="javascript:void(0);" data-bs-dismiss="modal">
-                        <span class="btn btn-icon" data-bs-toggle="tooltip" data-bs-trigger="hover" title="Delete Message">
-                            <i class="feather-x"></i>
-                        </span>
-                    </a>
-                </div>
+            <div class="modal-body" id="notifDetailBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
             </div>
         </div>
     </div>
-</div>
-<!--! ================================================================ !-->
-<!--! END: Compose Mail Modal !-->
-
+    </div>
+<style>
+    #notificationDetail .message-box{ white-space: pre-wrap; }
+    #notificationDetail .notif-block{ border:1px solid #e9ecef; border-radius:8px; }
+    #notificationDetail .notif-chip{ background:#f8f9fa; border:1px solid #e9ecef; border-radius:16px; padding:6px 10px; font-size:12px; }
+</style>
 <script>
-    
-    /** SMS Gönderme Modalini Aç */
-    $(document).on('click', '.sms-gonder', function() {
-        var kisi_id = $(this).data('kisi-id');
-        // SMS gönderme işlemini burada gerçekleştirin
-        $.get("pages/email-sms/sms_gonder_modal.php", {
-            kisi_id: kisi_id,
-            includeFile: ''
-
-        }, function(data) {
-            // Gelen yanıtı işleyin (örneğin, bir modal açarak)
-            $('#SendMessage .modal-content').html(data);
-            $('#SendMessage').modal('show');
-
-            setTimeout(function() {
-                if (typeof window.initSmsModal === 'function') {
-                    //$('#message').text('Merhaba, olarak size hatırlatmak isteriz ki, toplam borcunuz dir. Lütfen en kısa sürede ödeme yapınız.\n\nTeşekkürler.\nSite Yönetimi');
-                    window.initSmsModal();
-                }
-            }, 100);
-        });
-    });
-
-    // Modal ve Offcanvas Z-Index Yönetimi
-    (function() {
-        const BASE = 1050,
-            STEP = 10;
-        
-        document.addEventListener('show.bs.modal', function(e) {
-            const openCount = document.querySelectorAll('.modal.show').length;
-            const modalZ = BASE + (STEP * (openCount + 1)) + 5;
-            e.target.style.zIndex = modalZ;
-            setTimeout(() => {
-                const backdrops = document.querySelectorAll('.modal-backdrop');
-                const bd = backdrops[backdrops.length - 1];
-                if (bd) {
-                    bd.style.zIndex = modalZ - 5;
-                    bd.classList.add('stacked-backdrop');
-                }
-                document.body.classList.add('modal-open');
-            }, 10);
-        });
-
-        document.addEventListener('show.bs.offcanvas', function(e) {
-            const offcanvasZ = BASE + 1050;
-            e.target.style.zIndex = offcanvasZ;
-            setTimeout(() => {
-                const backdrops = document.querySelectorAll('.offcanvas-backdrop');
-                const bd = backdrops[backdrops.length - 1];
-                if (bd) {
-                    bd.style.zIndex = offcanvasZ - 5;
-                }
-            }, 10);
-        });
-
-        document.addEventListener('hidden.bs.modal', function() {
-            if (document.querySelectorAll('.modal.show').length === 0) {
-                document.body.classList.remove('modal-open');
-            }
-        });
-    })();
-</script>
-<script>
-    $(function() {
-        var quillModal = new Quill('#mailEditorModal', { theme: 'snow' });
-
-        $('#ccbccToggleModal').on('click', function() {
-            $('#ccbccToggleModalFileds').toggle();
-        });
-
-        $(document).on('click', '#emailSendInstant', function(e) {
-            e.preventDefault();
-            var to = ($('[name="tomailmodal"]').val() || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
-            var cc = ($('[name="ccmailmodal"]').val() || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
-            var bcc = ($('[name="bccmailmodal"]').val() || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
-            var subject = ($('#subjectmodal').val() || '').trim();
-            var message = (quillModal.getText() || '').trim();
-
-            if (!to.length) { Swal.fire({ title: 'Uyarı', text: 'Lütfen en az bir alıcı girin.', icon: 'warning' }); return; }
-            if (!subject) { Swal.fire({ title: 'Uyarı', text: 'Lütfen konu başlığı girin.', icon: 'warning' }); return; }
-            if (!message) { Swal.fire({ title: 'Uyarı', text: 'Lütfen mesaj girin.', icon: 'warning' }); return; }
-
-            $.post('/pages/email-sms/api/APIEmail.php', {
-                action: 'email_gonder',
-                to: JSON.stringify(to),
-                cc: JSON.stringify(cc),
-                bcc: JSON.stringify(bcc),
-                subject: subject,
-                message: message
-            }).done(function(res){
-                try { var data = typeof res === 'string' ? JSON.parse(res) : res; } catch(e) { data = { status:'error', message:'Beklenmeyen yanıt' }; }
-                if (data.status === 'success') {
-                    Swal.fire({ title: 'Başarılı!', text: data.message || 'E-posta gönderildi.', icon: 'success' }).then(function(){
-                        $('[name="tomailmodal"],[name="ccmailmodal"],[name="bccmailmodal"]').val('');
-                        $('#subjectmodal').val('');
-                        quillModal.setText('');
-                        $('#composeMail').modal('hide');
-                        if ($.fn.DataTable && $('#notificationsList').length) {
-                            $('#notificationsList').DataTable().ajax.reload(null, false);
-                        }
-                    });
-                } else {
-                    Swal.fire({ title: 'Hata', text: data.message || 'E-posta gönderilemedi.', icon: 'error' });
-                }
-            }).fail(function(){
-                Swal.fire({ title: 'Hata', text: 'Sunucuya bağlanılamadı.', icon: 'error' });
-            });
-        });
-
-        if ($.fn.DataTable) {
-            $('#notificationsList').DataTable({
-                retrieve :true,
-                ajax: { url: '/pages/email-sms/api/notifications_list.php', dataSrc: '' },
-                responsive: true,
-                order: [[0,'desc']],
-                columns: [
-                    { data: 'id' },
-                    { data: 'type' },
-                    { data: 'recipients', render: function(d){
-                        try { var arr = JSON.parse(d); return Array.isArray(arr) ? arr.join(', ') : d; } catch(e){ return d; }
-                    }},
-                    { data: 'subject' },
-                    { data: 'message' },
-                    { data: 'created_at' },
-                    { data: 'status' },
-                    { data: null, render: function(row){ return '<button class="btn btn-sm btn-outline-secondary" disabled>Detay</button>'; } }
-                ],
-                 initComplete: function (settings, json) {
-        var api = this.api();
-        var tableId = settings.sTableId;
-        attachDtColumnSearch(api, tableId);
-        api.columns.adjust().responsive.recalc();
-      },
-            });
-        }
+    function escapeHtml(s){
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    $(document).on('click','.btn-detail-notification',function(){
+        var dt = $('#notificationsList').DataTable();
+        var data = dt.row($(this).closest('tr')).data() || {};
+        var type = data.type || '';
+        var subject = data.subject || '';
+        var status = data.status || '';
+        var created = data.created_at || '';
+        var recRaw = data.recipients || '';
+        var recArr;
+        try{ recArr = JSON.parse(recRaw); } catch(e){ recArr = recRaw ? [recRaw] : []; }
+        if(!Array.isArray(recArr)) recArr = [recArr];
+        var chips = recArr.filter(Boolean).map(function(s){ return '<span class="notif-chip">'+escapeHtml(s)+'</span>'; }).join(' ');
+        var message = data.message || '';
+        var icon = (type === 'sms') ? 'feather-smartphone' : 'feather-mail';
+        var avatarClass = (type === 'sms') ? 'bg-soft-success' : 'bg-soft-primary';
+        var statusBadge = (status === 'success') ? '<span class="badge bg-soft-success text-success">Başarılı</span>' : '<span class="badge bg-soft-danger text-danger">Hata</span>';
+        var html = ''+
+            '<div class="d-flex align-items-center gap-3 mb-3">'+
+                '<span class="avatar-text avatar-lg '+avatarClass+'"><i class="'+icon+'"></i></span>'+
+                '<div>'+
+                    '<div class="fw-bold fs-16 text-capitalize">'+escapeHtml(type)+' bildirimi</div>'+
+                    '<div class="text-muted">'+statusBadge+' · '+escapeHtml(created)+'</div>'+
+                '</div>'+
+            '</div>'+
+            '<div class="notif-block mb-3">'+
+                '<div class="d-flex align-items-center gap-2 border-bottom p-2"><i class="feather-hash"></i><strong>Konu</strong></div>'+
+                '<div class="p-3">'+escapeHtml(subject || '—')+'</div>'+
+            '</div>'+
+            '<div class="notif-block mb-3">'+
+                '<div class="d-flex align-items-center gap-2 border-bottom p-2"><i class="feather-users"></i><strong>Alıcılar</strong></div>'+
+                '<div class="p-3 d-flex flex-wrap gap-2">'+chips+'</div>'+
+            '</div>'+
+            '<div class="notif-block mb-2">'+
+                '<div class="d-flex align-items-center gap-2 border-bottom p-2"><i class="feather-file-text"></i><strong>Mesaj</strong></div>'+
+                '<div class="p-3 message-box">'+escapeHtml(message || '—')+'</div>'+
+            '</div>';
+        $('#notifDetailBody').html(html);
+        $('#notificationDetail').modal('show');
     });
 </script>
