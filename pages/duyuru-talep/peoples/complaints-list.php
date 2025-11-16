@@ -1,3 +1,4 @@
+<?php \App\Services\Gate::authorizeOrDie('complaints_peoples_page'); ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -18,7 +19,7 @@
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
               
-                <a href="#" class="btn btn-primary route-link" data-page="notice/peoples/complaints-manage">
+                <a href="#" class="btn btn-primary route-link" data-page="duyuru-talep/peoples/complaints-manage">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Talep</span>
                 </a>
@@ -47,7 +48,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover table-vcenter card-table">
+                            <table class="table table-hover table-vcenter card-table" id="complaintsList">
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th>
@@ -58,32 +59,7 @@
                                         <th>Cevap</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Otoparkta yer sıkıntısı</td>
-                                        <td><span class="badge bg-danger">Şikayet</span></td>
-                                        <td><span class="badge bg-warning">İnceleniyor</span></td>
-                                        <td>12.04.2025 - 14:23</td>
-                                        <td><button class="btn btn-outline-primary btn-sm" disabled><i class="feather-eye me-1"></i> Bekleniyor</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Bahçeye çocuk parkı önerisi</td>
-                                        <td><span class="badge bg-info">Öneri</span></td>
-                                        <td><span class="badge bg-success">Cevaplandı</span></td>
-                                        <td>05.04.2025 - 10:05</td>
-                                        <td><button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#replyModal"><i class="feather-eye me-1"></i> Gör</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Giriş kapısı arızalı</td>
-                                        <td><span class="badge bg-danger">Şikayet</span></td>
-                                        <td><span class="badge bg-success">Cevaplandı</span></td>
-                                        <td>28.03.2025 - 18:15</td>
-                                        <td><button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#replyModal"><i class="feather-eye me-1"></i> Gör</button></td>
-                                    </tr>
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
@@ -113,3 +89,32 @@
         </div>
     </div>
 </div>
+
+<script>
+$(function(){
+  fetch('/pages/duyuru-talep/peoples/api.php?action=complaints_list')
+    .then(r=>r.json())
+    .then(rows=>{
+      const $tb = $('#complaintsList tbody');
+      $tb.empty();
+      rows.forEach(function(r, idx){
+        const typeBadge = r.type === 'Şikayet' ? 'danger' : (r.type === 'Öneri' ? 'info' : 'secondary');
+        const statusBadge = r.status === 'Cevaplandı' ? 'success' : (r.status === 'İnceleniyor' ? 'warning' : 'secondary');
+        const tr = `<tr>
+          <td>${idx+1}</td>
+          <td>${r.title}</td>
+          <td><span class="badge bg-${typeBadge}">${r.type}</span></td>
+          <td><span class="badge bg-${statusBadge}">${r.status}</span></td>
+          <td>${r.created_at}</td>
+          <td><button class="btn btn-outline-primary btn-sm" disabled><i class="feather-eye me-1"></i> Bekleniyor</button></td>
+        </tr>`;
+        $tb.append(tr);
+      });
+      $('#complaintsList').DataTable({
+        retrieve:true,
+        responsive:true,
+        dom:'f t<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>'
+      });
+    });
+});
+</script>

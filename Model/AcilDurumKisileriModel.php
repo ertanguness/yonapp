@@ -18,6 +18,8 @@ class AcilDurumKisileriModel extends Model
     {
         parent::__construct($this->table);
     }
+
+    /**Sitenin ail durum kisilerini getirir */
     
     public function acilDurumKisiEkleTableRow($id, $sira = null)
     {
@@ -72,5 +74,45 @@ class AcilDurumKisileriModel extends Model
         $query = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
         $query->execute([$id]);
         return $query->fetch(PDO::FETCH_OBJ);
+    }
+
+    public function hasColumn(string $column): bool
+    {
+        try {
+            $stmt = $this->db->prepare("SHOW COLUMNS FROM {$this->table} LIKE ?");
+            $stmt->execute([$column]);
+            return (bool)$stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    public function ensureIndexes()
+    {
+        try {
+            $this->db->exec("CREATE INDEX idx_ad ON acil_durum_kisileri(adi_soyadi)");
+        } catch (\Throwable $e) {}
+        try {
+            $this->db->exec("CREATE INDEX idx_tel ON acil_durum_kisileri(telefon)");
+        } catch (\Throwable $e) {}
+        try {
+            $this->db->exec("CREATE INDEX idx_rel ON acil_durum_kisileri(yakinlik)");
+        } catch (\Throwable $e) {}
+        try {
+            $this->db->exec("CREATE INDEX idx_kayit ON acil_durum_kisileri(kayit_tarihi)");
+        } catch (\Throwable $e) {}
+    }
+
+    public function listOrdered(bool $onlyActive = true, ?string $orderCol = null, string $orderDir = 'DESC'): array
+    {
+        $orderCol = $orderCol ?: ($this->hasColumn('kayit_tarihi') ? 'kayit_tarihi' : 'id');
+        $sql = "SELECT * FROM {$this->table}";
+        if ($onlyActive && $this->hasColumn('silinme_tarihi')) {
+            $sql .= " WHERE silinme_tarihi IS NULL";
+        }
+        $sql .= " ORDER BY {$orderCol} " . ($orderDir === 'ASC' ? 'ASC' : 'DESC');
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ) ?: [];
     }
 }

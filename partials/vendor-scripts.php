@@ -37,7 +37,7 @@ if (
     $page == "gelir-gider-islemleri" ||
     $page == "borclandirma-detayi" || $page == "tahsilat-detayi" ||
     $page == "daire-ekle" || $page == "daire-duzenle" ||
-    $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" ||
+    $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" || $page == "site-araclari" || $page == "arac-yonetimi" ||
     $page == "site-sakini-ekle" || $page == "site-sakini-duzenle"  ||
     $page == "kullanici-gruplari" || $page == "kullanici-listesi" ||
     $page == "onay-bekleyen-tahsilatlar" ||
@@ -53,7 +53,8 @@ if (
     $page == "aidat-turu-tanimlama" || $page== "aidat-turu-duzenle" ||   $page == "borclandirma-yap" ||
     $page == "personeller" || $page == "personel-ekle" || $page == "personel-duzenle" ||
     $page == "isletme-projesi" || $page == "isletme-projesi-ekle" || $page == "isletme-projesi-duzenle" ||
-    $page == "bildirimler"
+    $page == "bildirimler" ||
+    $page == "acil-durum-kisileri" || $page == "sikayet-oneri-listesi"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
@@ -191,12 +192,14 @@ if ($page == 'excelden-daire-yukle') {
 //*************APARTMENT******************************** */
 
 //*************PEOPLES BAŞLANGIÇ******************************** */
-if (
-    $page == 'site-sakinleri' ||   $page == 'site-sakini-ekle' || $page == 'site-sakini-duzenle'
-) {
+if ($page == 'site-sakinleri' || $page == 'site-sakini-ekle' || $page == 'site-sakini-duzenle') {
     echo '<script src="/pages/management/peoples/js/kisiBilgileri.js?v=' . filemtime('pages/management/peoples/js/kisiBilgileri.js') . '"></script>';
     echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
     echo '<script src="/pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
+}
+
+if ($page == 'arac-yonetimi' || $page == 'arac-ekle' || $page == 'arac-duzenle') {
+    echo '<script src="/pages/arac-yonetimi/js/araclar.js"></script>';
 }
 
 

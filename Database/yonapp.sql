@@ -19,6 +19,89 @@
 CREATE DATABASE IF NOT EXISTS `yonapp` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 USE `yonapp`;
 
+-- tablo yapısı dökülüyor yonapp.announcements
+DROP TABLE IF EXISTS `announcements`;
+CREATE TABLE IF NOT EXISTS `announcements` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) NOT NULL,
+  `content` text NOT NULL,
+  `target_type` enum('all','block','kisi') NOT NULL DEFAULT 'all',
+  `block_id` int(11) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `status` enum('draft','published','archived') NOT NULL DEFAULT 'draft',
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `block_id` (`block_id`),
+  KEY `status` (`status`),
+  CONSTRAINT `announcements_ibfk_block` FOREIGN KEY (`block_id`) REFERENCES `bloklar` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci COMMENT='Site duyurularını tutar';
+
+-- tablo yapısı dökülüyor yonapp.complaints
+DROP TABLE IF EXISTS `complaints`;
+CREATE TABLE IF NOT EXISTS `complaints` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `type` enum('Şikayet','Öneri','Talep','Diğer') NOT NULL DEFAULT 'Şikayet',
+  `message` text NOT NULL,
+  `attachment_path` varchar(255) DEFAULT NULL,
+  `status` enum('Yeni','İnceleniyor','Cevaplandı','Kapalı') NOT NULL DEFAULT 'Yeni',
+  `admin_reply` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `status` (`status`),
+  CONSTRAINT `complaints_ibfk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci COMMENT='Şikayet/Öneri/Talep kayıtları';
+
+-- tablo yapısı dökülüyor yonapp.surveys
+DROP TABLE IF EXISTS `surveys`;
+CREATE TABLE IF NOT EXISTS `surveys` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `status` enum('Aktif','Sona Erdi') NOT NULL DEFAULT 'Aktif',
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `end_date` (`end_date`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci COMMENT='Anket başlıkları';
+
+-- tablo yapısı dökülüyor yonapp.survey_options
+DROP TABLE IF EXISTS `survey_options`;
+CREATE TABLE IF NOT EXISTS `survey_options` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `survey_id` int(11) NOT NULL,
+  `option_text` varchar(200) NOT NULL,
+  `votes_count` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `survey_id` (`survey_id`),
+  CONSTRAINT `survey_options_ibfk_survey` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci COMMENT='Anket seçenekleri';
+
+-- tablo yapısı dökülüyor yonapp.survey_votes
+DROP TABLE IF EXISTS `survey_votes`;
+CREATE TABLE IF NOT EXISTS `survey_votes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `survey_id` int(11) NOT NULL,
+  `option_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_vote` (`survey_id`,`user_id`),
+  KEY `option_id` (`option_id`),
+  CONSTRAINT `survey_votes_ibfk_survey` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `survey_votes_ibfk_option` FOREIGN KEY (`option_id`) REFERENCES `survey_options` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `survey_votes_ibfk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci COMMENT='Anket oyları';
+
 -- tablo yapısı dökülüyor yonapp.auths
 DROP TABLE IF EXISTS `auths`;
 CREATE TABLE IF NOT EXISTS `auths` (

@@ -11,7 +11,7 @@
     </div>
     <div class="page-header-right ms-auto">
         <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="notice/admin/survey-list">
+            <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="duyuru-talep/admin/survey-list">
                 <i class="feather-arrow-left me-2"></i> Listeye Dön
             </button>
            
@@ -39,7 +39,7 @@
                             (function(){
                               var surveyId = <?php echo isset($id) ? intval(\App\Helper\Security::decrypt($id)) : 0; ?>;
                               if(!surveyId){ return; }
-                              fetch('/pages/notice/admin/api.php?action=survey_results&survey_id='+surveyId)
+                              fetch('/pages/duyuru-talep/admin/api.php?action=survey_results&survey_id='+surveyId)
                                 .then(r=>r.json())
                                 .then(data=>{
                                   document.getElementById('totalVotes').innerText = data.total || 0;

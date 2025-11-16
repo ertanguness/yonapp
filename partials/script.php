@@ -1,4 +1,4 @@
-    <!--! ================================================================ !-->
+<!--! ================================================================ !-->
     <!--! Footer Script !-->
     <!--! ================================================================ !-->
     <!--! BEGIN: Vendors JS !-->
@@ -125,6 +125,12 @@
             z-index: auto;
             pointer-events: auto;
         }
+
+        /* Select2 + Input Group alignment (global) */
+        .input-group .select2-container { flex: 1 1 auto; width: 1% !important; }
+        .select2-container .select2-selection--single { height: 38px; }
+        .select2-container .select2-selection--single .select2-selection__rendered { line-height: 38px; }
+        .select2-container .select2-selection--single .select2-selection__arrow { height: 38px; }
     </style>
     
     <script>
