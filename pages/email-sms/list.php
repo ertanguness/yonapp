@@ -8,8 +8,8 @@
             <li class="breadcrumb-item">Bildirimler</li>
         </ul>
     </div>
-    <div class="page-header-right ms-auto">
-        <div class="page-header-right-items">
+        <div class="page-header-right ms-auto">
+            <div class="page-header-right-items">
             <div class="d-flex d-md-none">
                 <a href="javascript:void(0)" class="page-header-right-close-toggle">
                     <i class="feather-arrow-left me-2"></i>
@@ -17,11 +17,7 @@
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <?php
-                // require_once 'pages/components/search.php';
-                require_once 'pages/components/download.php';
-                ?>
-
+              
                 <a href="javascript:void(0)" class="btn btn-primary mail-gonder">
                     <i class="feather-mail me-2"></i>
                     <span>Yeni Email</span>
@@ -30,6 +26,21 @@
                     <i class="feather-smartphone me-2"></i>
                     <span>Yeni Sms</span>
                 </a>
+                <div class="dropdown">
+                    <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside" aria-expanded="false">
+                        <i class="feather-paperclip"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="javascript:void(0);" class="dropdown-item js-export-notifications" data-format="csv">
+                            <i class="feather-file-text me-3"></i>
+                            <span>CSV olarak indir</span>
+                        </a>
+                        <a href="javascript:void(0);" class="dropdown-item js-export-notifications" data-format="json">
+                            <i class="feather-code me-3"></i>
+                            <span>JSON olarak indir</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="d-md-none d-flex align-items-center">
@@ -78,67 +89,6 @@
         </div>
     </div>
 </div>
-
-
-
-<script>
-    function ensureDataTables(cb){
-        if ($.fn.DataTable) { cb(); return; }
-        var libs = [
-            '/assets/vendors/js/dataTables.min.js',
-            '/assets/vendors/js/dataTables.bs5.min.js'
-        ];
-        var i = 0;
-        function load(){
-            if (i >= libs.length) { cb(); return; }
-            var s = document.createElement('script');
-            s.src = libs[i++];
-            s.onload = load;
-            document.head.appendChild(s);
-        }
-        load();
-    }
-
-    ensureDataTables(function(){
-        $('#notificationsList').DataTable({
-            retrieve: true,
-            ajax: {
-                url: '/pages/email-sms/api/notifications_list.php',
-                type: 'GET',
-                dataSrc: '',
-                error: function(xhr, status, err){
-                    console.error('Bildirimler yüklenirken hata:', status, err, xhr.status, xhr.responseText);
-                    Swal.fire({ title: 'Hata', text: 'Bildirimler yüklenemedi.', icon: 'error' });
-                }
-            },
-            responsive: true,
-            language: {
-                emptyTable: 'Henüz bildirim bulunmuyor',
-                zeroRecords: 'Eşleşen kayıt bulunamadı',
-                processing: 'Yükleniyor...'
-            },
-            order: [[0,'desc']],
-            columns: [
-                { data: 'id' },
-                { data: 'type' },
-                { data: 'recipients', render: function(d){
-                    try { var arr = JSON.parse(d); return Array.isArray(arr) ? arr.join(', ') : d; } catch(e){ return d; }
-                }},
-                { data: 'subject' },
-                { data: 'message' },
-                { data: 'created_at' },
-                { data: 'status' },
-                { data: null, render: function(row){ return '<button class="btn btn-sm btn-outline-secondary btn-detail-notification">Detay</button>'; } }
-            ],
-            initComplete: function (settings, json) {
-                var api = this.api();
-                var tableId = settings.sTableId;
-                attachDtColumnSearch(api, tableId);
-                api.columns.adjust().responsive.recalc();
-            },
-        });
-    });
-</script>
 <div class="modal fade-scale" id="notificationDetail" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -155,10 +105,102 @@
         </div>
     </div>
     </div>
+
+
+<script>
+    function onDataTablesReady(cb){
+        var tries = 0;
+        (function wait(){
+            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable) { cb(); return; }
+            if (tries++ > 50) { console.error('DataTables yüklenemedi'); return; }
+            setTimeout(wait, 100);
+        })();
+    }
+
+    // Arama inputları için app.js fonksiyonunu bekle
+
+    onDataTablesReady(function(){
+        function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+        function toText(html){ var d=document.createElement('div'); d.innerHTML=String(html||''); return (d.textContent||d.innerText||''); }
+        $('#notificationsList').DataTable({
+            retrieve: true,
+            ajax: {
+                url: '/pages/email-sms/api/notifications_list.php',
+                type: 'GET',
+                dataSrc: '',
+                error: function(xhr, status, err){
+                    console.error('Bildirimler yüklenirken hata:', status, err, xhr.status, xhr.responseText);
+                    Swal.fire({ title: 'Hata', text: 'Bildirimler yüklenemedi.', icon: 'error' });
+                }
+            },
+            responsive: true,
+            autoWidth: false,
+            dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+        
+            order: [[0,'desc']],
+            columns: [
+                { data: 'id' },
+                { data: 'type', render: function(d){ var i=d==='sms'?'feather-smartphone':'feather-mail'; var c=d==='sms'?'bg-soft-success text-success':'bg-soft-primary text-primary'; return '<span class="badge '+c+'"><i class="'+i+' me-1"></i>'+esc(d||'')+'</span>'; } },
+                { data: 'recipients', render: function(d){ var arr; try{ arr=JSON.parse(d); }catch(e){ arr=d?[d]:[]; } if(!Array.isArray(arr)) arr=d?[d]:[]; var shown=arr.slice(0,3).map(function(s){ return '<span class="notif-chip-sm" title="'+esc(s)+'">'+esc(s)+'</span>'; }).join(' '); var more=arr.length>3? '<span class="notif-chip-sm" title="'+esc(arr.join(', '))+'">+'+(arr.length-3)+'</span>':''; return shown+(more?(' '+more):''); } },
+                { data: 'subject', render: function(d){ return '<div class="truncate-200 fw-semibold">'+esc(d||'—')+'</div>'; } },
+                { data: 'message', render: function(d){ var t=toText(d||''); return '<div class="truncate-300 text-muted">'+esc(t)+'</div>'; } },
+                { data: 'created_at', render: function(d){ return '<span class="text-muted">'+esc(d||'')+'</span>'; } },
+                { data: 'status', render: function(d){ var ok=d==='success'; var cls=ok?'bg-soft-success text-success':'bg-soft-danger text-danger'; var txt=ok?'Başarılı':'Hata'; return '<span class="badge '+cls+'">'+txt+'</span>'; } },
+                { data: null, render: function(row){ return '<button class="btn btn-sm btn-outline-secondary btn-detail-notification">Detay</button>'; } }
+            ],
+            initComplete: function (settings, json) {
+                var api = this.api();
+                var tableId = settings.sTableId;
+                var tries = 0;
+                (function waitAttach(){
+                    if (typeof window.attachDtColumnSearch === 'function') {
+                        window.attachDtColumnSearch(api, tableId);
+                        api.columns.adjust().responsive.recalc();
+                        return;
+                    }
+                    if (tries++ > 50) { api.columns.adjust().responsive.recalc(); return; }
+                    setTimeout(waitAttach, 100);
+                })();
+            },
+            drawCallback: function(){ $('[data-bs-toggle="tooltip"]').each(function(){ var tt=bootstrap.Tooltip.getInstance(this); if(tt) tt.dispose(); bootstrap.Tooltip.getOrCreateInstance(this); }); }
+        });
+
+        $(document).on('click', '.js-export-notifications', function(e){
+            e.preventDefault();
+            var fmt = $(this).data('format') || 'csv';
+            var dt = $('#notificationsList').DataTable();
+            var params = { format: fmt };
+            var globalSearch = dt.search();
+            if (!globalSearch) {
+                var $g = $('#notificationsList_filter input');
+                if ($g.length) globalSearch = $g.val();
+            }
+            if (globalSearch) params.q = globalSearch;
+            var cols = ['id','type','recipients','subject','message','created_at','status'];
+            cols.forEach(function(name, idx){
+                var s = dt.column(idx).search();
+                if (!s) {
+                    var $inp = $('#notificationsList thead .search-input-row th').eq(idx).find('input');
+                    if ($inp.length) s = $inp.val();
+                }
+                if (s) params['f_' + name] = s;
+            });
+            var url = '/pages/email-sms/api/notifications_export.php?' + $.param(params);
+            window.open(url, '_blank');
+        });
+    });
+</script>
+
 <style>
     #notificationDetail .message-box{ white-space: pre-wrap; }
     #notificationDetail .notif-block{ border:1px solid #e9ecef; border-radius:8px; }
     #notificationDetail .notif-chip{ background:#f8f9fa; border:1px solid #e9ecef; border-radius:16px; padding:6px 10px; font-size:12px; }
+    .notif-chip-sm{ background:#f8f9fa; border:1px solid #e9ecef; border-radius:12px; padding:3px 8px; font-size:11px; }
+    .truncate-200{ max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .truncate-300{ max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #notificationsList thead .search-input-row th{ padding:6px; background:#f8f9fa; }
+    #notificationsList thead .search-input-row input{ height:34px; }
+    .dataTables_wrapper .dataTables_filter input{ border-radius:6px; }
 </style>
 <script>
     function escapeHtml(s){
