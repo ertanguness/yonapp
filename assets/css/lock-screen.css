@@ -1,0 +1,372 @@
+/* Global Lock Screen Styles */
+
+#globalLockScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: slideUp 0.5s ease-out;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Logo arka planı - sol */
+#globalLockScreen::before {
+  content: '';
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 500px;
+  height: 500px;
+  background: url('/assets/images/logo/logo.svg') center/contain no-repeat;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* Logo arka planı - sağ */
+#globalLockScreen::after {
+  content: '';
+  position: absolute;
+  right: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 500px;
+  height: 500px;
+  background: url('/assets/images/logo/logo.svg') center/contain no-repeat;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+#globalLockScreen.show {
+  display: flex !important;
+}
+
+/* Full screen coverage */
+html #globalLockScreen {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+#globalLockOverlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 9998 !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+}
+
+.lock-screen-content {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 60px 40px;
+  max-width: 420px;
+  width: 90%;
+  animation: slideUp 0.5s ease-out;
+  z-index: 10000;
+  position: relative;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+}
+
+.lock-screen-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 30px;
+  background: #3454d1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+  box-shadow: 0 10px 25px rgba(52, 84, 209, 0.4);
+  animation: pulse 2s infinite;
+}
+
+.lock-screen-title {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.lock-screen-subtitle {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #666;
+}
+
+.lock-screen-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 30px auto 15px;
+  object-fit: cover;
+  border: 3px solid #3454d1;
+  display: block;
+}
+
+.lock-screen-user-info {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.lock-screen-user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 5px;
+}
+
+.lock-screen-form {
+  margin: 30px 0;
+}
+
+.lock-screen-input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.lock-screen-input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.lock-screen-input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: #f8f9fa;
+}
+
+.lock-screen-input-group input:focus {
+  outline: none;
+  border-color: #3454d1;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(52, 84, 209, 0.1);
+}
+
+.lock-screen-attempts {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  color: #856404;
+  display: none;
+  text-align: center;
+}
+
+.lock-screen-attempts strong {
+  color: #d32f2f;
+}
+
+.lock-screen-info {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 15px;
+  font-size: 12px;
+  color: #1565c0;
+  display: none;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.lock-screen-info strong {
+  color: #0d47a1;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.lock-screen-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #3454d1;
+  color: white !important;
+  border: 1px solid #3454d1;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lock-screen-btn:hover:not(:disabled) {
+  background-color: #2c47b2;
+  border-color: #2c47b2;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(52, 84, 209, 0.3);
+}
+
+.lock-screen-btn:active {
+  background-color: #2a43a7;
+  border-color: #2a43a7;
+  transform: translateY(0);
+}
+
+.lock-screen-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: #3454d1;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 10px 25px rgba(52, 84, 209, 0.4);
+  }
+  50% {
+    box-shadow: 0 10px 40px rgba(52, 84, 209, 0.6);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  #globalLockScreen::before,
+  #globalLockScreen::after,
+  #profileLockScreen::before,
+  #profileLockScreen::after {
+    width: 300px;
+    height: 300px;
+    opacity: 0.1;
+  }
+  
+  #globalLockScreen::before,
+  #profileLockScreen::before {
+    left: -100px;
+  }
+  
+  #globalLockScreen::after,
+  #profileLockScreen::after {
+    right: -100px;
+  }
+
+  #globalLockScreen,
+  #profileLockScreen {
+    padding: 20px;
+  }
+
+  .lock-screen-content {
+    padding: 40px 25px;
+    border-radius: 15px;
+    width: 100%;
+  }
+
+  .lock-screen-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 35px;
+    margin-bottom: 20px;
+  }
+
+  .lock-screen-title {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .lock-screen-subtitle {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .lock-screen-avatar {
+    width: 50px;
+    height: 50px;
+    margin: 20px auto 10px;
+  }
+
+  .lock-screen-input-group input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .lock-screen-btn {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+
+/* Profile page kilit ekranı için ek stiller */
+#profileLockScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: slideUp 0.5s ease-out;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+#profileLockScreen::before {
+  content: '';
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 500px;
+  height: 500px;
+  background: url('/assets/images/logo/logo.svg') center/contain no-repeat;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+#profileLockScreen::after {
+  content: '';
+  position: absolute;
+  right: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 500px;
+  height: 500px;
+  background: url('/assets/images/logo/logo.svg') center/contain no-repeat;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+#profileLockScreen.show {
+  display: flex;
+}

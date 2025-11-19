@@ -57,36 +57,36 @@ $calendarTypes = [
         'id' => 'dogum',
         'name' => 'Doğum Günü',
         'color' => '#ffffff',
-        'bgColor' => '#e91e63',
-        'borderColor' => '#e91e63',
+        'bgColor' => '#e74c3c',
+        'borderColor' => '#e74c3c',
     ],
     [
         'id' => 'odeme',
         'name' => 'Ödeme',
         'color' => '#ffffff',
-        'bgColor' => '#00bcd4',
-        'borderColor' => '#00bcd4',
+        'bgColor' => '#f39c12',
+        'borderColor' => '#f39c12',
     ],
     [
         'id' => 'bakim',
         'name' => 'Bakım',
         'color' => '#ffffff',
-        'bgColor' => '#ff9800',
-        'borderColor' => '#ff9800',
+        'bgColor' => '#9b59b6',
+        'borderColor' => '#9b59b6',
     ],
     [
         'id' => 'duyuru',
         'name' => 'Duyuru',
         'color' => '#ffffff',
-        'bgColor' => '#673ab7',
-        'borderColor' => '#673ab7',
+        'bgColor' => '#e67e22',
+        'borderColor' => '#e67e22',
     ],
     [
         'id' => 'sosyal',
         'name' => 'Sosyal Etkinlik',
         'color' => '#ffffff',
-        'bgColor' => '#4caf50',
-        'borderColor' => '#4caf50',
+        'bgColor' => '#e74c3c',
+        'borderColor' => '#e74c3c',
     ],
 ];
 
@@ -1031,7 +1031,7 @@ $script = ob_get_clean();
     .tui-full-calendar-month-view .tui-full-calendar-day-grid-item.selected-date {
         background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
         box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2) !important;
-        color: #000000 !important;
+        color: #1976d2 !important;
         font-weight: 600 !important;
         border-radius: 4px !important;
         transition: all 0.2s ease !important;
@@ -1042,7 +1042,7 @@ $script = ob_get_clean();
     .tui-full-calendar-month-view .tui-full-calendar-dayname-date-area[data-date].selected-date {
         background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
         box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2) !important;
-        color: #000000 !important;
+        color: #1976d2 !important;
         font-weight: 600 !important;
         border-radius: 4px !important;
     }
