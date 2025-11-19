@@ -57,36 +57,36 @@ $calendarTypes = [
         'id' => 'dogum',
         'name' => 'Doğum Günü',
         'color' => '#ffffff',
-        'bgColor' => '#e91e63',
-        'borderColor' => '#e91e63',
+        'bgColor' => '#e74c3c',
+        'borderColor' => '#e74c3c',
     ],
     [
         'id' => 'odeme',
         'name' => 'Ödeme',
         'color' => '#ffffff',
-        'bgColor' => '#00bcd4',
-        'borderColor' => '#00bcd4',
+        'bgColor' => '#f39c12',
+        'borderColor' => '#f39c12',
     ],
     [
         'id' => 'bakim',
         'name' => 'Bakım',
         'color' => '#ffffff',
-        'bgColor' => '#ff9800',
-        'borderColor' => '#ff9800',
+        'bgColor' => '#9b59b6',
+        'borderColor' => '#9b59b6',
     ],
     [
         'id' => 'duyuru',
         'name' => 'Duyuru',
         'color' => '#ffffff',
-        'bgColor' => '#673ab7',
-        'borderColor' => '#673ab7',
+        'bgColor' => '#e67e22',
+        'borderColor' => '#e67e22',
     ],
     [
         'id' => 'sosyal',
         'name' => 'Sosyal Etkinlik',
         'color' => '#ffffff',
-        'bgColor' => '#4caf50',
-        'borderColor' => '#4caf50',
+        'bgColor' => '#e74c3c',
+        'borderColor' => '#e74c3c',
     ],
 ];
 
@@ -303,8 +303,25 @@ $script = ob_get_clean();
         .apps-calendar .content-area-body {
             height: auto !important;
             max-height: none !important;
-            overflow: visible !important;
             background: #ffffff;
+        }
+
+        .apps-calendar .content-sidebar,
+        .apps-calendar .content-area {
+            align-self: stretch;
+        }
+
+        .apps-calendar .content-area {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .apps-calendar .content-area-body {
+            flex: 1;
+            overflow: auto;
+            min-height: 680px;
         }
 
         .apps-calendar .content-area-body #tui-calendar-init {
@@ -391,6 +408,14 @@ $script = ob_get_clean();
             min-height: 100px;
         }
 
+        #tui-calendar-init .tui-full-calendar-weekday-grid-line:first-child {
+            border-left: 1px solid #e9ecef !important;
+        }
+
+        #tui-calendar-init .tui-full-calendar-month-week-item:last-child .tui-full-calendar-weekday-grid-line {
+            border-bottom: 1px solid #e9ecef !important;
+        }
+
         .calendar-modal-footer {
             display: flex;
             align-items: center;
@@ -433,13 +458,23 @@ $script = ob_get_clean();
             gap: 0;
             width: 100%;
             align-items: stretch;
+            min-height: 680px;
         }
 
         .apps-calendar .content-sidebar {
             flex: 0 0 280px;
             width: 280px;
-            border-right: 1px solid #e9ecef;
             padding: 1.5rem;
+            overflow: hidden;
+            max-height: none !important;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            border-right: none;
+        }
+
+        .apps-calendar .content-sidebar .content-sidebar-body {
+            flex: 1;
             overflow-y: auto;
         }
 
@@ -449,6 +484,10 @@ $script = ob_get_clean();
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            border: 1px solid #e9ecef;
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+            background: #ffffff;
         }
 
         .apps-calendar .content-area-header {
@@ -668,7 +707,7 @@ $script = ob_get_clean();
                 <!-- [ Main Content ] start -->
                 <div class="main-content d-flex" style="gap: 0;">
                     <!-- [ Content Sidebar ] start -->
-                    <div class="content-sidebar content-sidebar-md" data-scrollbar-target="#psScrollbarInit" style="flex: 0 0 280px; width: 280px; border-right: 1px solid #e9ecef; padding: 1.5rem; overflow-y: auto; max-height: 800px;">
+                    <div class="content-sidebar content-sidebar-md" data-scrollbar-target="#psScrollbarInit">
                         <div class="content-sidebar-header bg-white hstack justify-content-between mb-3" style="padding: 0; border: none;">
                             <h4 class="fw-bolder mb-0">Etkinlik Takvimi</h4>
                             <a href="javascript:void(0);" class="app-sidebar-close-trigger d-flex">
@@ -714,7 +753,7 @@ $script = ob_get_clean();
                     </div>
                     <!-- [ Content Sidebar  ] end -->
                     <!-- [ Main Area  ] start -->
-                    <div class="content-area" data-scrollbar-target="#psScrollbarInit" style="flex: 1; min-width: 0;">
+                    <div class="content-area" data-scrollbar-target="#psScrollbarInit">
                         <div class="content-area-header sticky-top">
                             <div class="page-header-left d-flex align-items-center gap-2">
 
@@ -869,115 +908,6 @@ $script = ob_get_clean();
     </div>
 </div>
 
-<!-- Etkinlik Önizleme Modal -->
-<div class="modal fade" id="calendarEventPreviewModal" tabindex="-1" aria-labelledby="calendarEventPreviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered calendar-event-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div>
-                    <h5 class="modal-title mb-1" id="calendarEventPreviewModalLabel">Etkinlik Detayları</h5>
-                    <p class="text-muted mb-0 small" id="calendarEventPreviewModalSubtitle">Etkinlik bilgileri</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div id="preview-event-color" class="rounded-2 me-3" style="width: 24px; height: 24px;"></div>
-                        <h5 class="mb-0 fw-bold" id="preview-event-title"></h5>
-                    </div>
-                    
-                    <div class="mb-3" id="preview-event-datetime"></div>
-                    
-                    <div class="mb-3 d-none" id="preview-event-location">
-                        <i class="feather-map-pin feather fs-12 me-2"></i>
-                        <span id="preview-location-text"></span>
-                    </div>
-                    
-                    <div class="mb-3 d-none" id="preview-event-description-container">
-                        <h6 class="text-muted mb-2 fw-semibold">Açıklama</h6>
-                        <p class="mb-0" id="preview-event-description"></p>
-                    </div>
-
-                    <div class="pt-2">
-                        <small id="preview-event-type"></small>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer calendar-modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                <div class="action-buttons">
-                    <button type="button" class="btn btn-outline-secondary" id="preview-edit-btn">Düzenle</button>
-                    <button type="button" class="btn btn-outline-danger" id="preview-delete-btn">Sil</button>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="calendarEventModal" tabindex="-1" aria-labelledby="calendarEventModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered calendar-event-modal">
-        <form class="modal-content" id="calendar-event-form" autocomplete="off">
-            <div class="modal-header">
-                <div>
-                    <h5 class="modal-title mb-1" id="calendarEventModalLabel">Etkinlik Kaydı</h5>
-                    <p class="text-muted mb-0 small" id="calendarEventModalSubtitle">Yeni bir etkinlik oluşturun.</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="calendar-event-id" name="event_id">
-                <div class="alert alert-danger d-none" role="alert" id="calendar-form-alert"></div>
-                <div class="mb-3">
-                    <label for="calendar-event-title" class="form-label">Başlık</label>
-                    <input type="text" class="form-control" id="calendar-event-title" name="title" maxlength="255" required>
-                </div>
-                <div class="mb-3">
-                    <label for="calendar-event-type" class="form-label">Etkinlik Türü</label>
-                    <select class="form-select" id="calendar-event-type" name="calendar_id" required>
-                        <?php foreach ($calendarTypes as $type): ?>
-                            <option value="<?php echo htmlspecialchars($type['id'], ENT_QUOTES); ?>">
-                                <?php echo htmlspecialchars($type['name'], ENT_QUOTES); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="calendar-event-start" class="form-label">Başlangıç</label>
-                        <input type="datetime-local" class="form-control" id="calendar-event-start" name="start" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="calendar-event-end" class="form-label">Bitiş</label>
-                        <input type="datetime-local" class="form-control" id="calendar-event-end" name="end" required>
-                    </div>
-                </div>
-                <div class="form-check form-switch my-3">
-                    <input class="form-check-input" type="checkbox" role="switch" id="calendar-event-all-day" name="is_all_day">
-                    <label class="form-check-label" for="calendar-event-all-day">Tüm Gün</label>
-                </div>
-                <div class="mb-3">
-                    <label for="calendar-event-location" class="form-label">Konum</label>
-                    <input type="text" class="form-control" id="calendar-event-location" name="location" maxlength="255">
-                </div>
-                <div class="mb-0">
-                    <label for="calendar-event-description" class="form-label">Açıklama</label>
-                    <textarea class="form-control" id="calendar-event-description" name="description" rows="3"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer calendar-modal-footer">
-                <button type="button" class="btn btn-outline-danger d-none" id="calendar-delete-btn">Etkinliği Sil</button>
-                <div class="action-buttons">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                    <button type="submit" class="btn btn-primary" id="calendar-save-btn">Kaydet</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
 
 <div class="modal fade" id="SendMessage" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
     aria-hidden="true">
@@ -1000,9 +930,117 @@ $script = ob_get_clean();
 </div>
 
 
+<!-- Takvim Modal -->
+<div class="modal fade" id="calendarEventModal" tabindex="-1" aria-labelledby="calendarEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable calendar-event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="calendarEventModalLabel">Etkinlik Kaydı</h5>
+                    <p class="text-muted small mb-0 mt-1" id="calendarEventModalSubtitle">Yeni bir etkinlik oluşturun.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="calendar-form-alert" class="alert d-none" role="alert"></div>
+                <form id="calendar-event-form" novalidate>
+                    <input type="hidden" id="calendar-event-id">
+                    
+                    <!-- Etkinlik Türü -->
+                    <div class="mb-3">
+                        <label for="calendar-event-type" class="form-label">Etkinlik Türü <span class="text-danger">*</span></label>
+                        <select class="form-select" id="calendar-event-type" required>
+                            <option value="">Türü Seçin</option>
+                        </select>
+                        <div class="invalid-feedback">Lütfen etkinlik türü seçin.</div>
+                    </div>
+
+                    <!-- Başlık -->
+                    <div class="mb-3">
+                        <label for="calendar-event-title" class="form-label">Başlık <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="calendar-event-title" placeholder="Etkinlik başlığını girin" required>
+                        <div class="invalid-feedback">Lütfen etkinlik başlığı girin.</div>
+                    </div>
+
+                    <!-- Tüm Gün Etkinliği -->
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="calendar-event-all-day" checked>
+                        <label class="form-check-label" for="calendar-event-all-day">Tüm Gün Etkinliği</label>
+                    </div>
+
+                    <!-- Başlama Tarihi/Saati -->
+                    <div class="mb-3">
+                        <label for="calendar-event-start" class="form-label">Başlama Tarihi <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" id="calendar-event-start" required>
+                        <div class="invalid-feedback">Lütfen başlama tarihi seçin.</div>
+                    </div>
+
+                    <!-- Bitiş Tarihi/Saati -->
+                    <div class="mb-3">
+                        <label for="calendar-event-end" class="form-label">Bitiş Tarihi <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" id="calendar-event-end" required>
+                        <div class="invalid-feedback">Lütfen bitiş tarihi seçin.</div>
+                    </div>
+
+                    <!-- Konum -->
+                    <div class="mb-3">
+                        <label for="calendar-event-location" class="form-label">Konum</label>
+                        <input type="text" class="form-control" id="calendar-event-location" placeholder="Etkinlik konumunu girin">
+                    </div>
+
+                    <!-- Açıklama -->
+                    <div class="mb-3">
+                        <label for="calendar-event-description" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="calendar-event-description" rows="3" placeholder="Etkinlik açıklaması"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-outline-danger d-none" id="calendar-delete-btn">Sil</button>
+                <button type="button" class="btn btn-primary" id="calendar-save-btn">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Etkinlik Önizleme Modal -->
+<div class="modal fade" id="calendarEventPreviewModal" tabindex="-1" aria-labelledby="calendarEventPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered calendar-event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="calendarEventPreviewModalLabel">Etkinlik Detayları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div id="preview-event-color" style="width: 20px; height: 20px;"></div>
+                    <span id="preview-event-type" class="badge bg-primary">Tür</span>
+                </div>
+                <h3 id="preview-event-title">Etkinlik Başlığı</h3>
+                <div id="preview-event-datetime" class="mt-3">
+                    <i class="feather-calendar me-2"></i>
+                    <span id="preview-datetime-text">Tarih ve Saat</span>
+                </div>
+                <div id="preview-event-location" class="mt-2" style="display: none;">
+                    <i class="feather-map-pin me-2"></i>
+                    <span id="preview-location-text">Konum</span>
+                </div>
+                <div id="preview-event-description-container" style="display: none;">
+                    <p class="text-muted small mt-3">Açıklama</p>
+                    <div id="preview-event-description">Açıklama metni</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-outline-danger" id="preview-delete-btn">Sil</button>
+                <button type="button" class="btn btn-primary" id="preview-edit-btn">Düzenle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php include './partials/calender-scripts.php' ?>
-<!-- list.php'nin en altına ekle -->
-<script src="/pages/email-sms/js/sms.js"></script>
 
 
 <style>
@@ -1031,7 +1069,7 @@ $script = ob_get_clean();
     .tui-full-calendar-month-view .tui-full-calendar-day-grid-item.selected-date {
         background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
         box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2) !important;
-        color: #000000 !important;
+        color: #1976d2 !important;
         font-weight: 600 !important;
         border-radius: 4px !important;
         transition: all 0.2s ease !important;
@@ -1042,7 +1080,7 @@ $script = ob_get_clean();
     .tui-full-calendar-month-view .tui-full-calendar-dayname-date-area[data-date].selected-date {
         background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
         box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2) !important;
-        color: #000000 !important;
+        color: #1976d2 !important;
         font-weight: 600 !important;
         border-radius: 4px !important;
     }

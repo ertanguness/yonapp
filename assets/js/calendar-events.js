@@ -961,11 +961,11 @@
                 return;
             }
 
-            const isAllDay = allDaySwitch.checked;
-            const startValue = startInput.value;
-            const endValue = endInput.value || startValue;
-            const title = titleInput.value.trim();
-            const calendarId = typeSelect.value;
+            const isAllDay = allDaySwitch ? allDaySwitch.checked : false;
+            const startValue = startInput ? startInput.value : '';
+            const endValue = endInput ? (endInput.value || startValue) : startValue;
+            const title = titleInput ? titleInput.value.trim() : '';
+            const calendarId = typeSelect ? typeSelect.value : '';
 
             if (!title) {
                 showAlert('Lütfen etkinlik başlığı giriniz.');
@@ -991,15 +991,15 @@
             }
 
             const payload = {
-                action: hiddenIdInput.value ? 'update' : 'create',
-                id: hiddenIdInput.value || null,
+                action: hiddenIdInput && hiddenIdInput.value ? 'update' : 'create',
+                id: hiddenIdInput && hiddenIdInput.value ? hiddenIdInput.value : null,
                 title: title,
                 calendarId: calendarId,
                 start: rangeStart.format('YYYY-MM-DDTHH:mm'),
                 end: rangeEnd.format('YYYY-MM-DDTHH:mm'),
                 isAllDay: isAllDay,
-                location: locationInput.value.trim(),
-                description: descriptionInput.value.trim(),
+                location: locationInput ? locationInput.value.trim() : '',
+                description: descriptionInput ? descriptionInput.value.trim() : '',
             };
 
             persistSchedule(payload)
@@ -1017,7 +1017,7 @@
 
         if (deleteButton) {
             deleteButton.addEventListener('click', function () {
-                const scheduleId = hiddenIdInput.value;
+                const scheduleId = hiddenIdInput ? hiddenIdInput.value : null;
                 if (!scheduleId) {
                     return;
                 }
@@ -1587,6 +1587,12 @@
             borderColor = '#1976d2';
         }
 
+        // Tüm gün etkinlikleri için transparent background + border stil
+        if (item.isAllDay) {
+            bgColor = 'transparent';
+            // borderColor kendi rengini saklıyor
+        }
+
         return {
             id: item.id,
             calendarId: item.calendarId,
@@ -1595,7 +1601,7 @@
             category: item.isAllDay ? 'allday' : 'time',
             start: parseToDate(item.start),
             end: parseToDate(item.end),
-            color: '#1976d2',
+            color: borderColor,
             bgColor: bgColor,
             dragBgColor: bgColor,
             borderColor: borderColor,
@@ -1649,19 +1655,35 @@
 
         if (options.mode === 'edit' && options.schedule) {
             const schedule = options.schedule;
-            hiddenIdInput.value = schedule.id;
-            typeSelect.value = schedule.calendarId;
-            titleInput.value = schedule.title;
-            locationInput.value = schedule.location || '';
-            descriptionInput.value = schedule.body || '';
-            allDaySwitch.checked = Boolean(schedule.isAllDay);
+            if (hiddenIdInput) {
+                hiddenIdInput.value = schedule.id;
+            }
+            if (typeSelect) {
+                typeSelect.value = schedule.calendarId;
+            }
+            if (titleInput) {
+                titleInput.value = schedule.title;
+            }
+            if (locationInput) {
+                locationInput.value = schedule.location || '';
+            }
+            if (descriptionInput) {
+                descriptionInput.value = schedule.body || '';
+            }
+            if (allDaySwitch) {
+                allDaySwitch.checked = Boolean(schedule.isAllDay);
+            }
 
             const startDate = moment(schedule.start.toDate ? schedule.start.toDate() : schedule.start).toDate();
             const endDate = moment(schedule.end.toDate ? schedule.end.toDate() : schedule.end).toDate();
-            startInput.value = moment(startDate).format('YYYY-MM-DDTHH:mm');
-            endInput.value = schedule.isAllDay
-                ? moment(endDate).subtract(1, 'minutes').format('YYYY-MM-DDTHH:mm')
-                : moment(endDate).format('YYYY-MM-DDTHH:mm');
+            if (startInput) {
+                startInput.value = moment(startDate).format('YYYY-MM-DDTHH:mm');
+            }
+            if (endInput) {
+                endInput.value = schedule.isAllDay
+                    ? moment(endDate).subtract(1, 'minutes').format('YYYY-MM-DDTHH:mm')
+                    : moment(endDate).format('YYYY-MM-DDTHH:mm');
+            }
 
             if (deleteButton) {
                 deleteButton.classList.remove('d-none');
@@ -1673,9 +1695,15 @@
 
             const defaultStart = options.start ? moment(options.start) : moment();
             const defaultEnd = options.end ? moment(options.end) : moment(defaultStart).add(1, 'hours');
-            startInput.value = defaultStart.format('YYYY-MM-DDTHH:mm');
-            endInput.value = defaultEnd.format('YYYY-MM-DDTHH:mm');
-            allDaySwitch.checked = Boolean(options.isAllDay);
+            if (startInput) {
+                startInput.value = defaultStart.format('YYYY-MM-DDTHH:mm');
+            }
+            if (endInput) {
+                endInput.value = defaultEnd.format('YYYY-MM-DDTHH:mm');
+            }
+            if (allDaySwitch) {
+                allDaySwitch.checked = Boolean(options.isAllDay);
+            }
         }
 
         if (modalInstance) {
@@ -1687,7 +1715,9 @@
         if (formElement) {
             formElement.reset();
         }
-        hiddenIdInput.value = '';
+        if (hiddenIdInput) {
+            hiddenIdInput.value = '';
+        }
         if (deleteButton) {
             deleteButton.classList.add('d-none');
         }

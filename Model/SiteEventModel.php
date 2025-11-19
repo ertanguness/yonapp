@@ -19,9 +19,11 @@ class SiteEventModel extends Model
     private const CALENDAR_STYLES = [
         'genel' => ['color' => '#ffffff', 'bgColor' => '#1abc9c', 'borderColor' => '#1abc9c'],
         'toplanti' => ['color' => '#ffffff', 'bgColor' => '#3498db', 'borderColor' => '#3498db'],
-        'bakim' => ['color' => '#ffffff', 'bgColor' => '#e67e22', 'borderColor' => '#e67e22'],
-        'duyuru' => ['color' => '#ffffff', 'bgColor' => '#9b59b6', 'borderColor' => '#9b59b6'],
-        'sosyal' => ['color' => '#ffffff', 'bgColor' => '#e74c3c', 'borderColor' => '#e74c3c'],
+        'dogum' => ['color' => '#ffffff', 'bgColor' => '#e91e63', 'borderColor' => '#e91e63'],
+        'odeme' => ['color' => '#ffffff', 'bgColor' => '#00bcd4', 'borderColor' => '#00bcd4'],
+        'bakim' => ['color' => '#ffffff', 'bgColor' => '#ff9800', 'borderColor' => '#ff9800'],
+        'duyuru' => ['color' => '#ffffff', 'bgColor' => '#673ab7', 'borderColor' => '#673ab7'],
+        'sosyal' => ['color' => '#ffffff', 'bgColor' => '#4caf50', 'borderColor' => '#4caf50'],
     ];
 
     public function __construct()
