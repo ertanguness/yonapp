@@ -303,25 +303,8 @@ $script = ob_get_clean();
         .apps-calendar .content-area-body {
             height: auto !important;
             max-height: none !important;
+            overflow: visible !important;
             background: #ffffff;
-        }
-
-        .apps-calendar .content-sidebar,
-        .apps-calendar .content-area {
-            align-self: stretch;
-        }
-
-        .apps-calendar .content-area {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .apps-calendar .content-area-body {
-            flex: 1;
-            overflow: auto;
-            min-height: 680px;
         }
 
         .apps-calendar .content-area-body #tui-calendar-init {
@@ -408,14 +391,6 @@ $script = ob_get_clean();
             min-height: 100px;
         }
 
-        #tui-calendar-init .tui-full-calendar-weekday-grid-line:first-child {
-            border-left: 1px solid #e9ecef !important;
-        }
-
-        #tui-calendar-init .tui-full-calendar-month-week-item:last-child .tui-full-calendar-weekday-grid-line {
-            border-bottom: 1px solid #e9ecef !important;
-        }
-
         .calendar-modal-footer {
             display: flex;
             align-items: center;
@@ -458,23 +433,13 @@ $script = ob_get_clean();
             gap: 0;
             width: 100%;
             align-items: stretch;
-            min-height: 680px;
         }
 
         .apps-calendar .content-sidebar {
             flex: 0 0 280px;
             width: 280px;
+            border-right: 1px solid #e9ecef;
             padding: 1.5rem;
-            overflow: hidden;
-            max-height: none !important;
-            height: auto;
-            display: flex;
-            flex-direction: column;
-            border-right: none;
-        }
-
-        .apps-calendar .content-sidebar .content-sidebar-body {
-            flex: 1;
             overflow-y: auto;
         }
 
@@ -484,10 +449,6 @@ $script = ob_get_clean();
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            border: 1px solid #e9ecef;
-            border-left: none;
-            border-radius: 0 12px 12px 0;
-            background: #ffffff;
         }
 
         .apps-calendar .content-area-header {
@@ -707,7 +668,7 @@ $script = ob_get_clean();
                 <!-- [ Main Content ] start -->
                 <div class="main-content d-flex" style="gap: 0;">
                     <!-- [ Content Sidebar ] start -->
-                    <div class="content-sidebar content-sidebar-md" data-scrollbar-target="#psScrollbarInit">
+                    <div class="content-sidebar content-sidebar-md" data-scrollbar-target="#psScrollbarInit" style="flex: 0 0 280px; width: 280px; border-right: 1px solid #e9ecef; padding: 1.5rem; overflow-y: auto; max-height: 800px;">
                         <div class="content-sidebar-header bg-white hstack justify-content-between mb-3" style="padding: 0; border: none;">
                             <h4 class="fw-bolder mb-0">Etkinlik Takvimi</h4>
                             <a href="javascript:void(0);" class="app-sidebar-close-trigger d-flex">
@@ -753,7 +714,7 @@ $script = ob_get_clean();
                     </div>
                     <!-- [ Content Sidebar  ] end -->
                     <!-- [ Main Area  ] start -->
-                    <div class="content-area" data-scrollbar-target="#psScrollbarInit">
+                    <div class="content-area" data-scrollbar-target="#psScrollbarInit" style="flex: 1; min-width: 0;">
                         <div class="content-area-header sticky-top">
                             <div class="page-header-left d-flex align-items-center gap-2">
 

@@ -1,0 +1,1123 @@
+'use strict';
+
+(function () {
+    const config = window.calendarConfig || null;
+    if (!config) {
+        console.warn('Takvim yapılandırması bulunamadı.');
+        return;
+    }
+
+    // Dropdown menüsü için CSS stilleri ekle
+    function addDropdownStyles() {
+        const style = document.createElement('style');
+        style.textContent = `
+            .dropdown {
+                position: relative;
+            }
+            
+            #dropdownMenu-calendarType + .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                z-index: 1055;
+                display: none;
+                min-width: 12rem;
+                padding: 0.5rem 0;
+                margin: 0.125rem 0 0;
+                font-size: 0.875rem;
+                color: #212529;
+                text-align: left;
+                list-style: none;
+                background-color: #fff;
+                background-clip: padding-box;
+                border: 1px solid rgba(0, 0, 0, 0.15);
+                border-radius: 0.25rem;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+                transform: translateY(0);
+                transition: opacity 0.15s, transform 0.15s;
+            }
+            
+            #dropdownMenu-calendarType + .dropdown-menu.show {
+                display: block !important;
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .calendar-view-option {
+                display: block;
+                width: 100%;
+                padding: 0.5rem 1rem;
+                clear: both;
+                font-weight: 400;
+                color: #212529;
+                text-align: inherit;
+                text-decoration: none;
+                white-space: nowrap;
+                background-color: transparent;
+                border: 0;
+                cursor: pointer;
+                transition: background-color 0.15s ease-in-out;
+            }
+            
+            .calendar-view-option:hover {
+                color: #1e2125;
+                background-color: #f8f9fa;
+            }
+            
+            .calendar-view-option:focus {
+                outline: 0;
+                background-color: #e9ecef;
+            }
+            
+            #dropdownMenu-calendarType {
+                cursor: pointer;
+                user-select: none;
+            }
+            
+            #dropdownMenu-calendarType:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+            
+            /* Haftalık ve günlük görünüm gün başlıkları */
+            .tui-full-calendar-dayname-container {
+                height: auto !important;
+                min-height: 60px;
+                padding: 8px 2px !important;
+                display: flex !important;
+                align-items: stretch !important;
+                gap: 0 !important;
+            }
+
+            .tui-full-calendar-dayname-leftmargin {
+                flex: 0 0 auto !important;
+                position: relative !important;
+                left: 0 !important;
+                margin: 0 !important;
+            }
+
+            .tui-full-calendar-dayname-container .tui-full-calendar-dayname {
+                position: relative !important;
+                left: 0 !important;
+                right: auto !important;
+                top: auto !important;
+                bottom: auto !important;
+                width: auto !important;
+                flex: 1 1 0 !important;
+                margin: 0 !important;
+                padding: 0 2px !important;
+                height: auto !important;
+                display: flex !important;
+                align-items: stretch !important;
+                justify-content: center !important;
+                overflow: visible !important;
+            }
+
+            .tui-full-calendar-dayname-date-area {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 100% !important;
+                min-height: 54px !important;
+                padding: 10px 6px !important;
+                margin: 0 !important;
+                box-sizing: border-box !important;
+                border-radius: 8px !important;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+                border: 1px solid #dee2e6 !important;
+                text-align: center !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.4px !important;
+                font-weight: 600 !important;
+                color: #495057 !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+                transition: all 0.2s ease !important;
+            }
+
+            .tui-full-calendar-dayname-date-area:hover {
+                background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
+                transform: translateY(-1px) !important;
+            }
+
+            .tui-full-calendar-today .tui-full-calendar-dayname-date-area {
+                background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+                color: #1976d2 !important;
+                border-color: #90caf9 !important;
+                box-shadow: 0 4px 8px rgba(25, 118, 210, 0.12) !important;
+            }
+
+            .tui-full-calendar-dayname-date-area .tui-full-calendar-dayname-date {
+                display: none !important;
+            }
+
+            .tui-full-calendar-dayname-date-area .tui-full-calendar-dayname-name {
+                font-size: 0.9rem !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.5px !important;
+                color: #283c50 !important;
+            }
+
+            .tui-full-calendar-week-container {
+                min-height: 600px;
+            }
+            
+            .tui-full-calendar-timegrid-container {
+                min-height: 500px;
+            }
+            
+            .tui-full-calendar-time-date {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                line-height: 1.2;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    if (!window.tui || typeof tui.Calendar !== 'function') {
+        console.error('tui.Calendar kütüphanesi yüklenemedi.');
+        return;
+    }
+
+    if (typeof moment !== 'function') {
+        console.error('moment.js kütüphanesi yüklenemedi.');
+        return;
+    }
+
+    const calendarElement = document.getElementById('tui-calendar-init');
+    if (!calendarElement) {
+        return;
+    }
+
+    const calendars = (config.types || []).map(function (type) {
+        return {
+            id: type.id,
+            name: type.name,
+            color: type.color,
+            bgColor: type.bgColor,
+            dragBgColor: type.bgColor,
+            borderColor: type.borderColor,
+        };
+    });
+
+    const MONTH_VIEW_BASE_OPTIONS = {
+        startDayOfWeek: 1,
+        workweek: false,
+        narrowWeekend: false,
+        scheduleView: false,
+        visibleScheduleCount: 4,
+        isAlways6Weeks: false,
+        visibleWeeksCount: 5,
+    };
+
+    const filters = new Set(calendars.map(function (item) { return item.id; }));
+    const OUTSIDE_MONTH_HIDDEN_CLASS = 'calendar-hide-outside-month';
+    const OUTSIDE_MONTH_EMPTY_WEEK_CLASS = 'calendar-hide-empty-week';
+    const OUTSIDE_MONTH_STYLE_ID = 'calendar-hide-outside-month-style';
+
+    const calendar = new tui.Calendar('#tui-calendar-init', {
+        defaultView: 'month',
+        calendars: calendars,
+        useCreationPopup: false,
+        useDetailPopup: false,
+        taskView: false,
+        scheduleView: ['time'],
+        template: buildTemplates(),
+        week: {
+            startDayOfWeek: 1,
+            showTimezoneCollapseButton: true,
+            hourStart: 7,
+            hourEnd: 22,
+            daynames: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
+            narrowWeekend: false,
+        },
+        month: Object.assign({}, MONTH_VIEW_BASE_OPTIONS),
+        timezone: {
+            zones: [
+                {
+                    timezoneName: config.timezone || 'Europe/Istanbul',
+                    displayLabel: 'Yerel Saat',
+                },
+            ],
+        },
+    });
+
+    // Takvimi ayın başından başlatmak için özel ayar
+    const now = moment();
+    const startOfMonth = now.clone().startOf('month');
+    
+    // Ayın ilk Pazartesi gününden başlat (haftanın başı)
+    const startOfMonthWeek = startOfMonth.clone().startOf('week').add(1, 'day'); // Pazartesi
+    
+    // Takvimi ayarla - ayın başından başlasın
+    calendar.setDate(startOfMonthWeek.toDate(), false);
+
+    const modalElement = document.getElementById('calendarEventModal');
+    const formElement = document.getElementById('calendar-event-form');
+    const deleteButton = document.getElementById('calendar-delete-btn');
+    const alertElement = document.getElementById('calendar-form-alert');
+    const allDaySwitch = document.getElementById('calendar-event-all-day');
+    const startInput = document.getElementById('calendar-event-start');
+    const endInput = document.getElementById('calendar-event-end');
+    const typeSelect = document.getElementById('calendar-event-type');
+    const titleInput = document.getElementById('calendar-event-title');
+    const locationInput = document.getElementById('calendar-event-location');
+    const descriptionInput = document.getElementById('calendar-event-description');
+    const hiddenIdInput = document.getElementById('calendar-event-id');
+    const modalTitleElement = document.getElementById('calendarEventModalLabel');
+    const modalSubtitleElement = document.getElementById('calendarEventModalSubtitle');
+    const modalSaveButton = document.getElementById('calendar-save-btn');
+    const newScheduleButton = document.getElementById('btn-new-schedule');
+
+    const viewAllCheckbox = document.getElementById('viewAllSchedules');
+    const filterInputs = document.querySelectorAll('#calendarList input.calendar-filter');
+    const viewButtons = document.querySelectorAll('.calendar-view-option');
+    const viewDropdownTrigger = document.getElementById('dropdownMenu-calendarType');
+    const navigationButtons = document.querySelectorAll('.menu-navi button[data-action]');
+    const renderRangeElement = document.getElementById('renderRange');
+    const calendarTypeNameElement = document.getElementById('calendarTypeName');
+    const calendarTypeIconElement = document.getElementById('calendarTypeIcon');
+
+    let activeSchedule = null;
+    let modalInstance = null;
+
+    if (modalElement && window.bootstrap && typeof bootstrap.Modal === 'function') {
+        modalInstance = new bootstrap.Modal(modalElement, { backdrop: 'static' });
+    }
+
+    initialiseFilters();
+    initialiseViewControls();
+    initialiseNavigation();
+    initialiseForm();
+    initialiseCalendarEvents();
+    initialiseNewScheduleButton();
+    addDropdownStyles(); // CSS stillerini ekle
+    initialiseViewDropdown();
+    calendar.setOptions({ month: getMonthOptionsForPreset('month') }, true);
+    updateToolbar();
+    refreshSchedules();
+
+    function buildTemplates() {
+        const dayNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+        const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
+                           'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+        
+        return {
+            monthDayname: function (dayname) {
+                return '<span class="calendar-dayname" style="font-weight: 700; font-size: 0.9rem; color: #2c3e50; text-transform: uppercase; letter-spacing: 0.5px;">' + dayNames[dayname.day % 7] + '</span>';
+            },
+            monthGridHeader: function (model) {
+                const date = new Date(model.date);
+                const dayNumber = date.getDate();
+                const isToday = moment(date).isSame(moment(), 'day');
+                const todayStyle = isToday ? 'background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); color: #1976d2; border: 1px solid #90caf9; border-radius: 8px; padding: 6px 4px;' : '';
+                
+                return '<div class="calendar-grid-header" style="text-align: center; padding: 8px 4px; font-weight: 600; font-size: 1.1rem; color: #343a40; ' + todayStyle + '">' +
+                       '<div class="day-number" style="font-weight: 600;">' + dayNumber + '</div>' +
+                       '</div>';
+            },
+            monthGridHeaderExceed: function(hiddenSchedules) {
+                return '<span class="calendar-more-count" style="color: #6c757d; font-size: 0.8rem;">+' + hiddenSchedules + ' daha</span>';
+            },
+            monthGridFooter: function() {
+                return '';
+            },
+            monthGridFooterExceed: function(hiddenSchedules) {
+                return '<span class="calendar-more-count" style="color: #6c757d; font-size: 0.8rem;">+' + hiddenSchedules + ' daha</span>';
+            },
+                const dropdown = bootstrap.Dropdown.getInstance(viewDropdownTrigger);
+                if (dropdown) {
+                    dropdown.hide();
+                }
+            });
+        });
+    }
+
+    function initialiseViewDropdown() {
+        if (!viewDropdownTrigger) {
+            return;
+        }
+        
+        // Manuel dropdown çözümü
+        let isDropdownOpen = false;
+        const dropdownMenu = viewDropdownTrigger.nextElementSibling;
+        
+        if (!dropdownMenu || !dropdownMenu.classList.contains('dropdown-menu')) {
+            console.error('Dropdown menu bulunamadı');
+            return;
+        }
+        
+        // Dropdown butonuna tıklama event'i ekle
+        viewDropdownTrigger.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            isDropdownOpen = !isDropdownOpen;
+            
+            if (isDropdownOpen) {
+                dropdownMenu.classList.add('show');
+                viewDropdownTrigger.setAttribute('aria-expanded', 'true');
+            } else {
+                dropdownMenu.classList.remove('show');
+                viewDropdownTrigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+        
+        // Dropdown dışına tıklandığında kapat
+        document.addEventListener('click', function(event) {
+            if (!viewDropdownTrigger.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                if (isDropdownOpen) {
+                    dropdownMenu.classList.remove('show');
+                    viewDropdownTrigger.setAttribute('aria-expanded', 'false');
+                    isDropdownOpen = false;
+                }
+            }
+        });
+        
+        // Bootstrap dropdown'ı da dene (eğer yüklüyse)
+        if (window.bootstrap && typeof bootstrap.Dropdown === 'function') {
+            try {
+                bootstrap.Dropdown.getOrCreateInstance(viewDropdownTrigger);
+            } catch (e) {
+                console.log('Bootstrap dropdown başlatılamadı, manuel çözüm kullanılıyor');
+            }
+        }
+    }
+
+    function changeCalendarView(view) {
+        if (view === 'day') {
+            // Günlük görünümde bugünün tarihini göster
+            const today = moment().toDate();
+            calendar.setDate(today, true);
+            calendar.changeView('day', true);
+            return;
+        }
+        
+        if (view === 'week') {
+            // Haftalık görünümde bu haftayı göster
+            const today = moment().toDate();
+            calendar.setDate(today, true);
+            calendar.changeView('week', true);
+            return;
+        }
+
+        if (view === 'month') {
+            calendar.setOptions({ month: getMonthOptionsForPreset('month') }, true);
+            // Ayın başına git
+            const firstDayOfMonth = moment().startOf('month').toDate();
+            calendar.setDate(firstDayOfMonth, true);
+            calendar.changeView('month', true);
+            return;
+        }
+
+        if (view === '2weeks' || view === '3weeks') {
+            calendar.setOptions({ month: getMonthOptionsForPreset(view) }, true);
+            calendar.changeView('month', true);
+            return;
+        }
+
+        calendar.setOptions({ month: getMonthOptionsForPreset('month') }, true);
+        calendar.changeView('month', true);
+    }
+
+    function initialiseNavigation() {
+        navigationButtons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                const action = event.currentTarget.getAttribute('data-action');
+                if (action === 'move-prev') {
+                    calendar.prev();
+                }
+                if (action === 'move-next') {
+                    calendar.next();
+                }
+                if (action === 'move-today') {
+                    calendar.today();
+                }
+                updateToolbar();
+                refreshSchedules();
+            });
+        });
+    }
+
+    function initialiseForm() {
+        if (!formElement) {
+            return;
+        }
+
+        formElement.addEventListener('submit', function (event) {
+            event.preventDefault();
+            clearAlert();
+
+            if (!formElement.reportValidity()) {
+                return;
+            }
+
+            const isAllDay = allDaySwitch.checked;
+            const startValue = startInput.value;
+            const endValue = endInput.value || startValue;
+            const title = titleInput.value.trim();
+            const calendarId = typeSelect.value;
+
+            if (!title) {
+                showAlert('Lütfen etkinlik başlığı giriniz.');
+                return;
+            }
+
+            if (!startValue || !endValue) {
+                showAlert('Başlangıç ve bitiş tarihlerini seçiniz.');
+                return;
+            }
+
+            const rangeStart = moment(startValue);
+            const rangeEnd = moment(endValue);
+
+            if (rangeEnd.isBefore(rangeStart)) {
+                showAlert('Bitiş tarihi başlangıç tarihinden önce olamaz.');
+                return;
+            }
+
+            if (!filters.has(calendarId)) {
+                filters.add(calendarId);
+                syncFilterInputs();
+            }
+
+            const payload = {
+                action: hiddenIdInput.value ? 'update' : 'create',
+                id: hiddenIdInput.value || null,
+                title: title,
+                calendarId: calendarId,
+                start: rangeStart.format('YYYY-MM-DDTHH:mm'),
+                end: rangeEnd.format('YYYY-MM-DDTHH:mm'),
+                isAllDay: isAllDay,
+                location: locationInput.value.trim(),
+                description: descriptionInput.value.trim(),
+            };
+
+            persistSchedule(payload)
+                .then(function () {
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                    resetForm();
+                    refreshSchedules();
+                })
+                .catch(function (error) {
+                    showAlert(error.message || 'Etkinlik kaydedilirken bir hata oluştu.');
+                });
+        });
+
+        if (deleteButton) {
+            deleteButton.addEventListener('click', function () {
+                const scheduleId = hiddenIdInput.value;
+                if (!scheduleId) {
+                    return;
+                }
+                clearAlert();
+                persistSchedule({ action: 'delete', id: scheduleId })
+                    .then(function () {
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                        resetForm();
+                        refreshSchedules();
+                    })
+                    .catch(function (error) {
+                        showAlert(error.message || 'Etkinlik silinemedi.');
+                    });
+            });
+        }
+
+        if (modalElement) {
+            modalElement.addEventListener('hidden.bs.modal', resetForm);
+        }
+    }
+
+    function initialiseCalendarEvents() {
+        calendar.on('beforeCreateSchedule', function (event) {
+            if (typeof calendar.clearGridSelections === 'function') {
+                calendar.clearGridSelections();
+            }
+            if (typeof calendar.clearSelections === 'function') {
+                calendar.clearSelections();
+            }
+            openModal({
+                mode: 'create',
+                start: event.start ? event.start.toDate() : new Date(),
+                end: event.end ? event.end.toDate() : moment().add(1, 'hours').toDate(),
+                isAllDay: event.isAllDay || false,
+            });
+        });
+
+        calendar.on('clickSchedule', function (event) {
+            if (!event || !event.schedule) {
+                return;
+            }
+            activeSchedule = event.schedule;
+            openModal({ mode: 'edit', schedule: event.schedule });
+        });
+
+        calendar.on('beforeUpdateSchedule', function (event) {
+            if (!event || !event.schedule || !event.changes) {
+                return;
+            }
+            const schedule = event.schedule;
+            const changes = event.changes;
+            const payload = buildUpdatePayload(schedule, changes);
+
+            persistSchedule(payload)
+                .then(function () {
+                    calendar.updateSchedule(schedule.id, schedule.calendarId, changes);
+                    calendar.render();
+                    updateOutsideMonthVisibility();
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    refreshSchedules();
+                });
+        });
+
+        calendar.on('beforeDeleteSchedule', function (event) {
+            if (!event || !event.schedule) {
+                return;
+            }
+            persistSchedule({ action: 'delete', id: event.schedule.id })
+                .then(refreshSchedules)
+                .catch(function (error) {
+                    console.error(error);
+                });
+        });
+    }
+
+    function initialiseNewScheduleButton() {
+        if (!newScheduleButton) {
+            return;
+        }
+
+        newScheduleButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const start = moment().startOf('hour');
+            const end = moment(start).add(1, 'hours');
+
+            openModal({
+                mode: 'create',
+                start: start.toDate(),
+                end: end.toDate(),
+                isAllDay: false,
+            });
+        });
+    }
+
+    function refreshSchedules() {
+        const filtersArray = Array.from(filters);
+        const rangeStart = calendar.getDateRangeStart();
+        const rangeEnd = calendar.getDateRangeEnd();
+
+        requestSchedules({
+            start: formatForApi(rangeStart),
+            end: formatForApi(rangeEnd),
+            calendars: filtersArray,
+        })
+            .then(function (schedules) {
+                calendar.clear();
+                calendar.createSchedules(schedules.map(mapSchedule));
+                calendar.render();
+                updateOutsideMonthVisibility();
+            })
+            .catch(function (error) {
+                console.error(error);
+                updateOutsideMonthVisibility();
+            });
+    }
+
+    function requestSchedules(payload) {
+        const body = {
+            action: 'list',
+            start: payload.start,
+            end: payload.end,
+            calendars: payload.calendars,
+        };
+
+        // API kimlik doğrulaması için site/firma bilgilerini ekle
+        if (config.siteId) {
+            body.siteId = config.siteId;
+        }
+
+        if (config.firmId) {
+            body.firmId = config.firmId;
+        }
+
+        return sendRequest(body).then(function (response) {
+            return response.data || [];
+        });
+    }
+
+    function persistSchedule(payload) {
+        const requestPayload = Object.assign({}, payload);
+
+        // Oturumdan gelen değerler önceliklidir, payload'ta yoksa ekle
+        if (config.siteId && !requestPayload.siteId) {
+            requestPayload.siteId = config.siteId;
+        }
+
+        if (config.firmId && !requestPayload.firmId) {
+            requestPayload.firmId = config.firmId;
+        }
+
+        return sendRequest(requestPayload).then(function (response) {
+            if (response.status !== 'success') {
+                throw new Error(response.message || 'İşlem tamamlanamadı.');
+            }
+            return response;
+        });
+    }
+
+    function stripHtmlTags(text) {
+        return text.replace(/<[^>]*>/g, '');
+    }
+
+    function sendRequest(payload) {
+        return fetch(config.endpoints.events, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': config.csrfToken || '',
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify(payload),
+        })
+            .then(function (response) {
+                const statusInfo = response.status ? ' (HTTP ' + response.status + ')' : '';
+
+                return response
+                    .clone()
+                    .json()
+                    .catch(function () {
+                        return response.text().then(function (text) {
+                            const cleaned = text ? stripHtmlTags(text).trim() : '';
+                            if (cleaned) {
+                                throw new Error(cleaned + statusInfo);
+                            }
+                            throw new Error('Sunucuya ulaşılamadı.' + statusInfo);
+                        });
+                    })
+                    .then(function (data) {
+                        if (!response.ok) {
+                            const message = data && data.message ? data.message : 'Sunucuya ulaşılamadı.';
+                            throw new Error(message + statusInfo);
+                        }
+                        return data;
+                    });
+            })
+            .catch(function (error) {
+                const message = error && error.message ? error.message : 'Sunucuya ulaşılamadı.';
+                throw new Error(message);
+            });
+    }
+
+    function toMoment(value) {
+        if (!value) {
+            return moment();
+        }
+
+        if (typeof value.toDate === 'function') {
+            return moment(value.toDate());
+        }
+
+        if (value instanceof Date) {
+            return moment(value);
+        }
+
+        return moment(value);
+    }
+
+    function toNativeDate(value) {
+        if (!value) {
+            return new Date();
+        }
+
+        if (typeof value.toDate === 'function') {
+            return value.toDate();
+        }
+
+        if (value instanceof Date) {
+            return value;
+        }
+
+        const parsed = new Date(value);
+        return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+    }
+
+    function formatDateLabel(value, options) {
+        const date = toNativeDate(value);
+        if (Number.isNaN(date.getTime())) {
+            return '';
+        }
+        return new Intl.DateTimeFormat('tr-TR', options).format(date);
+    }
+
+    function parseToDate(value) {
+        if (!value) {
+            return new Date();
+        }
+
+        if (typeof value.toDate === 'function') {
+            return value.toDate();
+        }
+
+        if (value instanceof Date) {
+            return value;
+        }
+
+        const isoCandidate = moment(value, moment.ISO_8601, true);
+        if (isoCandidate.isValid()) {
+            return isoCandidate.toDate();
+        }
+
+        const fallback = moment(value, 'YYYY-MM-DD HH:mm:ss', true);
+        if (fallback.isValid()) {
+            return fallback.toDate();
+        }
+
+        const generic = moment(value);
+        return generic.isValid() ? generic.toDate() : new Date();
+    }
+
+    function mapSchedule(item) {
+        const calendarType = findCalendar(item.calendarId);
+        const baseColors = calendarType ? calendarType : {
+            color: '#ffffff',
+            bgColor: '#1abc9c',
+            borderColor: '#1abc9c',
+        };
+
+        return {
+            id: item.id,
+            calendarId: item.calendarId,
+            title: item.title,
+            isAllDay: Boolean(item.isAllDay),
+            category: item.isAllDay ? 'allday' : 'time',
+            start: parseToDate(item.start),
+            end: parseToDate(item.end),
+            color: baseColors.color,
+            bgColor: item.bgColor || baseColors.bgColor,
+            dragBgColor: item.bgColor || baseColors.bgColor,
+            borderColor: item.borderColor || baseColors.borderColor,
+            location: item.location || '',
+            body: item.description || '',
+            raw: {
+                description: item.description || '',
+                bgColor: item.bgColor || baseColors.bgColor,
+                borderColor: item.borderColor || baseColors.borderColor,
+            },
+        };
+    }
+
+    function buildUpdatePayload(schedule, changes) {
+        const payload = {
+            action: 'update',
+            id: schedule.id,
+            title: changes.title !== undefined ? changes.title : schedule.title,
+            calendarId: changes.calendarId || schedule.calendarId,
+            isAllDay: changes.isAllDay !== undefined ? changes.isAllDay : schedule.isAllDay,
+            location: changes.location !== undefined ? changes.location : schedule.location,
+            description: changes.body !== undefined ? changes.body : schedule.body,
+        };
+
+        const startValue = changes.start ? changes.start : schedule.start;
+        const endValue = changes.end ? changes.end : schedule.end;
+
+        payload.start = toMoment(startValue).format('YYYY-MM-DDTHH:mm');
+        payload.end = toMoment(endValue).format('YYYY-MM-DDTHH:mm');
+
+        return payload;
+    }
+
+    function openModal(options) {
+        clearAlert();
+        resetForm();
+
+        if (modalTitleElement) {
+            modalTitleElement.textContent = options.mode === 'edit' ? 'Etkinliği Düzenle' : 'Yeni Etkinlik';
+        }
+
+        if (modalSubtitleElement) {
+            modalSubtitleElement.textContent = options.mode === 'edit'
+                ? 'Etkinlik bilgilerini güncelleyin.'
+                : 'Yeni bir etkinlik oluşturun.';
+        }
+
+        if (modalSaveButton) {
+            modalSaveButton.textContent = options.mode === 'edit' ? 'Güncelle' : 'Kaydet';
+        }
+
+        if (options.mode === 'edit' && options.schedule) {
+            const schedule = options.schedule;
+            hiddenIdInput.value = schedule.id;
+            typeSelect.value = schedule.calendarId;
+            titleInput.value = schedule.title;
+            locationInput.value = schedule.location || '';
+            descriptionInput.value = schedule.body || '';
+            allDaySwitch.checked = Boolean(schedule.isAllDay);
+
+            const startDate = moment(schedule.start.toDate ? schedule.start.toDate() : schedule.start).toDate();
+            const endDate = moment(schedule.end.toDate ? schedule.end.toDate() : schedule.end).toDate();
+            startInput.value = moment(startDate).format('YYYY-MM-DDTHH:mm');
+            endInput.value = schedule.isAllDay
+                ? moment(endDate).subtract(1, 'minutes').format('YYYY-MM-DDTHH:mm')
+                : moment(endDate).format('YYYY-MM-DDTHH:mm');
+
+            if (deleteButton) {
+                deleteButton.classList.remove('d-none');
+            }
+        } else {
+            if (deleteButton) {
+                deleteButton.classList.add('d-none');
+            }
+
+            const defaultStart = options.start ? moment(options.start) : moment();
+            const defaultEnd = options.end ? moment(options.end) : moment(defaultStart).add(1, 'hours');
+            startInput.value = defaultStart.format('YYYY-MM-DDTHH:mm');
+            endInput.value = defaultEnd.format('YYYY-MM-DDTHH:mm');
+            allDaySwitch.checked = Boolean(options.isAllDay);
+        }
+
+        if (modalInstance) {
+            modalInstance.show();
+        }
+    }
+
+    function resetForm() {
+        if (formElement) {
+            formElement.reset();
+        }
+        hiddenIdInput.value = '';
+        if (deleteButton) {
+            deleteButton.classList.add('d-none');
+        }
+        if (alertElement) {
+            alertElement.textContent = '';
+            alertElement.classList.add('d-none');
+        }
+        if (modalTitleElement) {
+            modalTitleElement.textContent = 'Etkinlik Kaydı';
+        }
+        if (modalSubtitleElement) {
+            modalSubtitleElement.textContent = 'Yeni bir etkinlik oluşturun.';
+        }
+        if (modalSaveButton) {
+            modalSaveButton.textContent = 'Kaydet';
+        }
+    }
+
+    function showAlert(message) {
+        if (!alertElement) {
+            alert(message);
+            return;
+        }
+        alertElement.textContent = message;
+        alertElement.classList.remove('d-none');
+    }
+
+    function clearAlert() {
+        if (!alertElement) {
+            return;
+        }
+        alertElement.textContent = '';
+        alertElement.classList.add('d-none');
+    }
+
+    function syncFilterInputs() {
+        filterInputs.forEach(function (input) {
+            input.checked = filters.has(input.value);
+        });
+        updateViewAllCheckbox();
+    }
+
+    function updateViewAllCheckbox() {
+        if (!viewAllCheckbox) {
+            return;
+        }
+        const allChecked = Array.from(filterInputs).every(function (input) { return input.checked; });
+        viewAllCheckbox.checked = allChecked;
+    }
+
+    function updateToolbar() {
+        const viewName = calendar.getViewName();
+        const options = calendar.getOptions();
+        const currentDate = calendar.getDate();
+        const iconMap = {
+            day: 'feather-list',
+            week: 'feather-umbrella',
+            month: 'feather-grid',
+            two: 'feather-sliders',
+            three: 'feather-framer',
+        };
+
+        let label = 'Aylık';
+        let icon = iconMap.month;
+        if (viewName === 'day') {
+            label = 'Günlük';
+            icon = iconMap.day;
+        } else if (viewName === 'week') {
+            label = 'Haftalık';
+            icon = iconMap.week;
+        } else if (viewName === 'month') {
+            const visibleWeeks = options.month && options.month.visibleWeeksCount;
+            if (visibleWeeks === 2) {
+                label = '2 Haftalık';
+                icon = iconMap.two;
+            } else if (visibleWeeks === 3) {
+                label = '3 Haftalık';
+                icon = iconMap.three;
+            } else if (visibleWeeks === 5) {
+                label = 'Aylık';
+                icon = iconMap.month;
+            }
+        }
+
+        if (calendarTypeNameElement) {
+            calendarTypeNameElement.textContent = label;
+        }
+        if (calendarTypeIconElement) {
+            calendarTypeIconElement.className = 'feather calendar-icon fs-12 me-1 ' + icon;
+        }
+
+        if (renderRangeElement) {
+            let text = '';
+            if (viewName === 'day') {
+                text = formatDateLabel(currentDate, { day: '2-digit', month: 'long', year: 'numeric' });
+            } else if (viewName === 'month') {
+                text = formatDateLabel(currentDate, { month: 'long', year: 'numeric' });
+            } else {
+                const start = calendar.getDateRangeStart();
+                const end = calendar.getDateRangeEnd();
+                const startText = formatDateLabel(start, { day: '2-digit', month: 'long', year: 'numeric' });
+                const endText = formatDateLabel(end, { day: '2-digit', month: 'long', year: 'numeric' });
+                text = startText + ' - ' + endText;
+            }
+            renderRangeElement.textContent = text;
+        }
+    }
+
+    function formatForApi(date) {
+        return toMoment(date).format('YYYY-MM-DD HH:mm:ss');
+    }
+
+    function findCalendar(id) {
+        return calendars.find(function (item) { return item.id === id; });
+    }
+
+    function ensureOutsideMonthStyle() {
+        if (document.getElementById(OUTSIDE_MONTH_STYLE_ID)) {
+            return;
+        }
+
+        const style = document.createElement('style');
+        style.id = OUTSIDE_MONTH_STYLE_ID;
+        style.textContent = '#tui-calendar-init .' + OUTSIDE_MONTH_HIDDEN_CLASS + ' { visibility: hidden; pointer-events: none; }\n' +
+            '#tui-calendar-init .' + OUTSIDE_MONTH_HIDDEN_CLASS + ' .tui-full-calendar-schedule { display: none !important; }\n' +
+            '#tui-calendar-init .' + OUTSIDE_MONTH_EMPTY_WEEK_CLASS + ' { display: none; }';
+        document.head.appendChild(style);
+    }
+
+    function updateOutsideMonthVisibility() {
+        if (!calendarElement) {
+            return;
+        }
+
+        let dayCells = calendarElement.querySelectorAll('.tui-full-calendar-month-day');
+
+        if (!dayCells.length) {
+            dayCells = calendarElement.querySelectorAll('[data-date]');
+        }
+
+        if (!dayCells.length) {
+            return;
+        }
+
+        const viewName = calendar.getViewName();
+        const weekRows = calendarElement.querySelectorAll('.tui-full-calendar-month-week-item');
+
+        if (viewName !== 'month') {
+            dayCells.forEach(function (cell) {
+                cell.classList.remove(OUTSIDE_MONTH_HIDDEN_CLASS);
+            });
+            weekRows.forEach(function (row) {
+                row.classList.remove(OUTSIDE_MONTH_EMPTY_WEEK_CLASS);
+            });
+            return;
+        }
+
+        ensureOutsideMonthStyle();
+
+        const currentDate = calendar.getDate();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+
+        dayCells.forEach(function (cell) {
+            let dateValue = cell.getAttribute('data-date');
+
+            if (!dateValue && cell.dataset && cell.dataset.date) {
+                dateValue = cell.dataset.date;
+            }
+
+            if (!dateValue) {
+                const fallback = cell.querySelector('[data-date]');
+                if (fallback) {
+                    dateValue = fallback.getAttribute('data-date');
+                }
+            }
+
+            if (!dateValue) {
+                cell.classList.remove(OUTSIDE_MONTH_HIDDEN_CLASS);
+                return;
+            }
+
+            const parsed = new Date(dateValue);
+
+            if (!Number.isNaN(parsed.getTime()) && parsed.getMonth() === currentMonth && parsed.getFullYear() === currentYear) {
+                cell.classList.remove(OUTSIDE_MONTH_HIDDEN_CLASS);
+            } else {
+                cell.classList.add(OUTSIDE_MONTH_HIDDEN_CLASS);
+            }
+        });
+
+        weekRows.forEach(function (row) {
+            const rowCells = row.querySelectorAll('.tui-full-calendar-month-day');
+            if (!rowCells.length) {
+                row.classList.remove(OUTSIDE_MONTH_EMPTY_WEEK_CLASS);
+                return;
+            }
+            const hasVisibleDay = Array.from(rowCells).some(function (cell) {
+                return !cell.classList.contains(OUTSIDE_MONTH_HIDDEN_CLASS);
+            });
+            if (hasVisibleDay) {
+                row.classList.remove(OUTSIDE_MONTH_EMPTY_WEEK_CLASS);
+            } else {
+                row.classList.add(OUTSIDE_MONTH_EMPTY_WEEK_CLASS);
+            }
+        });
+    }
+
+    function getMonthOptionsForPreset(preset) {
+        const options = Object.assign({}, MONTH_VIEW_BASE_OPTIONS);
+
+        if (preset === '2weeks') {
+            options.visibleWeeksCount = 2;
+            options.isAlways6Weeks = false;
+        } else if (preset === '3weeks') {
+            options.visibleWeeksCount = 3;
+            options.isAlways6Weeks = false;
+        } else {
+            options.visibleWeeksCount = 5;
+            options.isAlways6Weeks = false;
+        }
+
+        return options;
+    }
+})();

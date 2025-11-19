@@ -35,6 +35,23 @@ $new_query_string = http_build_query($query_params);
 // Yeni URL oluştur
 $new_url = $url_parts['path'] . '?' . $new_query_string;
 
+// Kullanıcı avatarı için dinamik yol
+$avatarPath = "/assets/images/avatar/1.png";
+try {
+    if (isset($_SESSION['user']->id)) {
+        $uid = (int)$_SESSION['user']->id;
+        $baseFs = rtrim($_SERVER['DOCUMENT_ROOT'], '\\/') . "/uploads/avatars/user_{$uid}";
+        foreach (["jpg","jpeg","png","webp"] as $ext) {
+            $candidate = $baseFs . "." . $ext;
+            if (file_exists($candidate)) {
+                $avatarPath = "/uploads/avatars/user_{$uid}.{$ext}";
+                break;
+            }
+        }
+    }
+} catch (\Throwable $e) {
+    // sessiz geç
+}
 ?>
 <!--! ================================================================ !-->
 <!--! [Start] Header !-->
@@ -146,12 +163,12 @@ $new_url = $url_parts['path'] . '?' . $new_query_string;
 
                 <div class="dropdown nxl-h-item">
                     <a href="javascript:void(0);" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
-                        <img src="/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar me-0" />
+                        <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" alt="user-image" class="img-fluid user-avtar me-0" />
                     </a>
                     <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown">
                         <div class="dropdown-header">
                             <div class="d-flex align-items-center">
-                                <img src="/assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar" />
+                                <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" alt="user-image" class="img-fluid user-avtar" />
                                 <div>
                                     <h6 class="text-dark mb-0"><?php echo $_SESSION["user"]->full_name; ?> <span
                                             class="badge bg-soft-success text-success ms-1">PRO</span></h6>
@@ -161,11 +178,11 @@ $new_url = $url_parts['path'] . '?' . $new_query_string;
                             </div>
                         </div>
 
-                        <a href="javascript:void(0);" class="dropdown-item">
+                        <a href="/profile" class="dropdown-item">
                             <i class="feather-user"></i>
                             <span>Profil</span>
                         </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
+                        <a href="javascript:void(0);" class="dropdown-item" id="headerLockScreenBtn">
                             <i class="feather-lock"></i>
                             <span>Kilit Ekranı</span>
                         </a>
@@ -184,3 +201,40 @@ $new_url = $url_parts['path'] . '?' . $new_query_string;
 <!--! ================================================================ !-->
 <!--! [End] Header !-->
 <!--! ================================================================ !-->
+
+<!-- Global Kilit Ekranı -->
+<div id="globalLockScreen" style="display: none;">
+    <div class="lock-screen-content">
+        <div class="lock-screen-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h2 class="lock-screen-title">Profil Korumalı</h2>
+        <p class="lock-screen-subtitle">Bu alanı görüntülemek için şifrenizi girin</p>
+        
+        <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" class="lock-screen-avatar" alt="avatar">
+        <div class="lock-screen-user-info">
+            <div class="lock-screen-user-name"><?= htmlspecialchars($_SESSION['user']->full_name ?? '', ENT_QUOTES, 'UTF-8') ?></div>
+        </div>
+        
+        <form id="globalLockForm" class="lock-screen-form">
+            <div class="lock-screen-input-group">
+                <label>Şifreniz</label>
+                <input type="password" id="globalLockPassword" placeholder="Şifrenizi girin" autocomplete="current-password" autofocus>
+            </div>
+            
+            <div id="globalLockAttemptsContainer" class="lock-screen-attempts">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Kalan deneme: <span id="globalLockAttempts">3</span>
+            </div>
+            
+            <div id="globalLockInfoContainer" class="lock-screen-info" style="display: none;">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Şifreyi hatırlamıyorsanız:</strong> 3 kez yanlış girişte otomatik olarak çıkış yapılacaksınız.
+            </div>
+            
+            <button type="button" id="globalUnlockBtn" class="lock-screen-btn">
+                <i class="fas fa-unlock me-2"></i>Kilidi Aç
+            </button>
+        </form>
+    </div>
+</div>

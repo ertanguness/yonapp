@@ -327,6 +327,15 @@ if($page == "email-sms/sms_gonder_modal"){
 }
 
 
+// Profil sayfası scripti
+if ($page == 'profile') {
+    echo '<script src="/pages/profile/profile.js"></script>';
+}
+
+// Global kilit ekranı - tüm sayfalarda
+echo '<link rel="stylesheet" href="/assets/css/lock-screen.css">';
+echo '<script src="/assets/js/lock-screen.js"></script>';
+
 
 ?>
 

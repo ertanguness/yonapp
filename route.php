@@ -213,7 +213,7 @@ $router->get('kayit-basarili', fn() => require 'register-success.php');
 $router->get('logout', fn() => require 'logout.php');
 $router->get('forgot-password', fn() => require 'forgot_password.php');
 $router->get('reset-password', fn() => require 'reset_password.php');
-$router->get('profile', fn() => require 'profile.php');
+$router->get('profile', fn() => require 'pages/profile/profile.php');
 $router->get('unauthorize', fn() => require 'pages/authorize.php');
 
 /* ----------------------------------------------------
