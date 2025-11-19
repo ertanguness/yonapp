@@ -37,7 +37,7 @@ if (
     $page == "gelir-gider-islemleri" ||
     $page == "borclandirma-detayi" || $page == "tahsilat-detayi" ||
     $page == "daire-ekle" || $page == "daire-duzenle" ||
-    $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" ||
+    $page == "siteler" || $page == "site-bloklari" || $page == "site-daireleri" || $page == "site-sakinleri" || $page == "site-araclari" || $page == "arac-yonetimi" ||
     $page == "site-sakini-ekle" || $page == "site-sakini-duzenle"  ||
     $page == "kullanici-gruplari" || $page == "kullanici-listesi" ||
     $page == "onay-bekleyen-tahsilatlar" ||
@@ -53,7 +53,8 @@ if (
     $page == "aidat-turu-tanimlama" || $page== "aidat-turu-duzenle" ||   $page == "borclandirma-yap" ||
     $page == "personeller" || $page == "personel-ekle" || $page == "personel-duzenle" ||
     $page == "isletme-projesi" || $page == "isletme-projesi-ekle" || $page == "isletme-projesi-duzenle" ||
-    $page == "bildirimler"
+    $page == "bildirimler" ||
+    $page == "acil-durum-kisileri" || $page == "sikayet-oneri-listesi"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
@@ -72,14 +73,8 @@ if ($page == 'users/list' || $page == 'users/manage') {
 
 
 
-if($page == "bildirimler" || $page == "ana-sayfa") {
-    // assets\js\apps-email-init.min.js
-    echo '<script src="/assets/vendors/js/tagify.min.js"></script>';
-   // echo '<script src="/assets/vendors/js/tagify-data.min.js"></script>';
-    echo '<script src="/assets/vendors/js/quill.min.js"></script>';
-    //echo '<script src="/assets/js/apps-email-init.min.js"></script>';
-
- }
+echo '<script src="/assets/vendors/js/tagify.min.js"></script>';
+echo '<script src="/assets/vendors/js/quill.min.js"></script>';
 //Kullanıcı Ekle
 if ($page == 'kullanici-ekle' || $page == 'kullanici-duzenle' || $page == 'kullanici-listesi') {
     echo '<script src="/pages/kullanici/js/user.js"></script>';
@@ -197,12 +192,14 @@ if ($page == 'excelden-daire-yukle') {
 //*************APARTMENT******************************** */
 
 //*************PEOPLES BAŞLANGIÇ******************************** */
-if (
-    $page == 'site-sakinleri' ||   $page == 'site-sakini-ekle' || $page == 'site-sakini-duzenle'
-) {
+if ($page == 'site-sakinleri' || $page == 'site-sakini-ekle' || $page == 'site-sakini-duzenle') {
     echo '<script src="/pages/management/peoples/js/kisiBilgileri.js?v=' . filemtime('pages/management/peoples/js/kisiBilgileri.js') . '"></script>';
     echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
     echo '<script src="/pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
+}
+
+if ($page == 'arac-yonetimi' || $page == 'arac-ekle' || $page == 'arac-duzenle') {
+    echo '<script src="/pages/arac-yonetimi/js/araclar.js"></script>';
 }
 
 
@@ -364,14 +361,8 @@ echo '<script src="/assets/js/lock-screen.js"></script>';
 <script src="/src/app.js?v=<?php echo filemtime('src/app.js'); ?>" defer></script>
 
 
-<!-- Eğer görünüm mobile ise veya sayfa ana sayfa ise  -->
-<script>
-    if (window.matchMedia("(max-width: 768px)").matches || window.location.pathname === "/ana-sayfa") {
-        // Mobile spesifik scriptler
-        document.write('<script src="/partials/mobile-menu.js"><\/script>');
-        console.log("Mobile menu script yüklendi.");
-    }
-</script>
+<script src="/partials/mobile-menu.js"></script>
+<script src="/pages/email-sms/js/sms.js"></script>
 
 
 <!--<< All JS Plugins >>-->

@@ -21,7 +21,7 @@ class Model extends SSPModel
 
     public function __construct($table = null)
     {
-        $this->table = $table ?: $this->getTableName();
+        $this->table = $table ?: ($this->table ?? $this->getTableName());
         $this->db = \getDbConnection();
     }
 

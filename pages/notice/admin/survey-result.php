@@ -26,39 +26,40 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">Anket Başlığı: <strong>Yeni Otopark Düzenlemesi</strong></h5>
-                            <span class="text-muted small">Bitiş Tarihi: 2025-05-01</span>
+                            <h5 class="mb-0">Anket Sonuçları</h5>
+                            <span class="text-muted small" id="surveyMeta"></span>
                         </div>
                         <div class="card-body">
-                            <p class="mb-4">Toplam Oy Sayısı: <strong>48</strong></p>
+                            <p class="mb-4">Toplam Oy Sayısı: <strong id="totalVotes">0</strong></p>
 
                             <!-- Seçenek Sonuçları -->
-                            <div class="mb-4">
-                                <label class="fw-semibold">1. Otopark yeniden düzenlensin</label>
-                                <div class="progress mb-1">
-                                    <div class="progress-bar bg-primary" style="width: 60%;">60%</div>
-                                </div>
-                                <small class="text-muted">Oy Sayısı: 29</small>
-                            </div>
+                            <div id="resultsWrapper"></div>
 
-                            <div class="mb-4">
-                                <label class="fw-semibold">2. Mevcut hali kalsın</label>
-                                <div class="progress mb-1">
-                                    <div class="progress-bar bg-secondary" style="width: 30%;">30%</div>
-                                </div>
-                                <small class="text-muted">Oy Sayısı: 14</small>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="fw-semibold">3. Fikrim yok</label>
-                                <div class="progress mb-1">
-                                    <div class="progress-bar bg-warning" style="width: 10%;">10%</div>
-                                </div>
-                                <small class="text-muted">Oy Sayısı: 5</small>
-                            </div>
-
-                            <!-- İsteğe bağlı: Daire Grafiği (yer tutucu) -->
-                            <!-- Buraya chart.js veya benzeri ile grafik de entegre edilebilir -->
+                            <script>
+                            (function(){
+                              var surveyId = <?php echo isset($id) ? intval(\App\Helper\Security::decrypt($id)) : 0; ?>;
+                              if(!surveyId){ return; }
+                              fetch('/pages/notice/admin/api.php?action=survey_results&survey_id='+surveyId)
+                                .then(r=>r.json())
+                                .then(data=>{
+                                  document.getElementById('totalVotes').innerText = data.total || 0;
+                                  var wrap = document.getElementById('resultsWrapper');
+                                  wrap.innerHTML = '';
+                                  (data.options||[]).forEach(function(o,idx){
+                                    var color = idx%2===0 ? 'primary' : 'secondary';
+                                    var block = `
+                                      <div class="mb-4">
+                                        <label class="fw-semibold">${o.option_text}</label>
+                                        <div class="progress mb-1">
+                                          <div class="progress-bar bg-${color}" style="width:${o.percent}%">${o.percent}%</div>
+                                        </div>
+                                        <small class="text-muted">Oy Sayısı: ${o.votes}</small>
+                                      </div>`;
+                                    wrap.insertAdjacentHTML('beforeend', block);
+                                  });
+                                });
+                            })();
+                            </script>
 
                         </div>
                         

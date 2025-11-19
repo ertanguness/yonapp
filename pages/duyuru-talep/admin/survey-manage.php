@@ -1,3 +1,4 @@
+<?php \App\Services\Gate::authorizeOrDie('survey_admin_page'); ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -10,10 +11,10 @@
     </div>
     <div class="page-header-right ms-auto">
         <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="notice/admin/survey-list">
+            <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="duyuru-talep/admin/survey-list">
                 <i class="feather-arrow-left me-2"></i> Listeye Dön
             </button>
-            <button type="submit" class="btn btn-primary" id="saveNotification">
+            <button type="submit" class="btn btn-primary" id="saveSurvey">
                 <i class="feather-send me-2"></i> Yayınla
             </button>
         </div>
@@ -31,13 +32,13 @@
                                 <!-- Anket Başlığı -->
                                 <div class="mb-4">
                                     <label for="pollTitle" class="form-label fw-semibold">Anket Başlığı</label>
-                                    <input type="text" class="form-control" id="pollTitle" placeholder="Anket başlığını giriniz..." required>
+                                    <input type="text" class="form-control" id="pollTitle" name="title" placeholder="Anket başlığını giriniz..." required>
                                 </div>
 
                                 <!-- Açıklama (opsiyonel) -->
                                 <div class="mb-4">
                                     <label for="pollDescription" class="form-label fw-semibold">Açıklama (Opsiyonel)</label>
-                                    <textarea class="form-control" id="pollDescription" rows="3" placeholder="Açıklama giriniz..."></textarea>
+                                    <textarea class="form-control" id="pollDescription" name="description" rows="3" placeholder="Açıklama giriniz..."></textarea>
                                 </div>
 
                                 <!-- Seçenekler -->
@@ -59,7 +60,7 @@
                                 <!-- Bitiş Tarihi -->
                                 <div class="mb-4">
                                     <label for="pollEndDate" class="form-label fw-semibold">Bitiş Tarihi</label>
-                                    <input type="date" class="form-control" id="pollEndDate" required>
+                                    <input type="date" class="form-control" id="pollEndDate" name="end_date" required>
                                 </div>
 
                                 <!-- Yayınla Butonu -->
@@ -93,6 +94,19 @@ document.addEventListener("DOMContentLoaded", function () {
         if (e.target.classList.contains('removeOption')) {
             e.target.closest('.input-group').remove();
         }
+    });
+
+    document.getElementById('pollForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        const fd = new FormData(this);
+        fd.append('action','survey_save');
+        fetch('/pages/duyuru-talep/admin/api.php', { method:'POST', body: fd })
+          .then(r=>r.json())
+          .then(data=>{
+            var title = data.status === 'success' ? 'Başarılı' : 'Hata';
+            swal.fire({ title, text: data.message, icon: data.status, confirmButtonText:'Tamam' });
+            if(data.status==='success') { window.location = 'index?p=duyuru-talep/admin/survey-list'; }
+          });
     });
 });
 </script>

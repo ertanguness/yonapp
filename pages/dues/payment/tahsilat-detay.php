@@ -57,7 +57,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
             $site_id = $_SESSION['site_id'];
             $site = $SiteModel->find($site_id);
             // WhatsApp mesajı oluştur (URL encode edilmiş)
-            $wa_telefon = preg_replace('/[^0-9]/', '', '5079432723'); // Sadece rakamlar
+            $wa_telefon = preg_replace('/[^0-9]/', '', $kisi->telefon); // Sadece rakamlar
             if (substr($wa_telefon, 0, 1) === '0') {
                 $wa_telefon = '90' . substr($wa_telefon, 1); // 0 varsa 90 ile değiştir (Türkiye kodu)
             } elseif (strlen($wa_telefon) === 10) {
@@ -213,7 +213,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                     </div>
 
                 </div>
-                <div class="overflow-auto tasks-items-wrapper" style="height: calc(100vh - 400px);">
+                <div class="overflow-auto tasks-items-wrapper" style="height: calc(100vh - 480px);">
                     <div class="card-body custom-card-action p-0">
                         <div class="table-responsive tickets-items-wrapper">
                             <table class="table table-hover mb-0">
@@ -303,7 +303,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                         </div>
                     </div>
                 </div>
-                <div class="overflow-auto tasks-items-wrapper" style="height: calc(100vh - 380px);">
+                <div class="overflow-auto tasks-items-wrapper" style="height: calc(100vh - 460px);">
                     <div class="card-body custom-card-action p-0">
                         <div class="table-responsive tickets-items-wrapper">
                             <table class="table table-hover mb-0">

@@ -1,6 +1,5 @@
 <?php
 require_once dirname(__DIR__, levels: 4) . '/configs/bootstrap.php';
-session_start();
 $site_id = $_SESSION['site_id'] ?? 0;
 
 use Model\BloklarModel;

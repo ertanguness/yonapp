@@ -16,7 +16,7 @@ class BlokHelper
     /* Sitenin bloklarını select olarak döndürür 
     * return: string
     */
-    public function blokSelect($id = "bloklar",$all = true)
+    public function BlokSelect($id = "bloklar",$all = true,$selected = null)
     {
         $site_id = $_SESSION["site_id"];
         $bloklar = $this->model->SiteBloklari($site_id);
@@ -26,7 +26,8 @@ class BlokHelper
             $select .= '<option value="all">Tüm Site</option>'; // Tüm bloklar seçeneği
         }
         foreach ($bloklar as $blok) { // 
-            $select .= '<option value="' . $blok->id . '">' . $blok->blok_adi . '</option>'; // 
+            $selected_attr = $selected == $blok->id ? 'selected' : '';
+            $select .= '<option value="' . $blok->id . '" ' . $selected_attr . '>' . $blok->blok_adi . '</option>'; //  
         }
         $select .= '</select>';
         return $select;

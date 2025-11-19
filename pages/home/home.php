@@ -908,115 +908,6 @@ $script = ob_get_clean();
     </div>
 </div>
 
-<!-- Etkinlik Önizleme Modal -->
-<div class="modal fade" id="calendarEventPreviewModal" tabindex="-1" aria-labelledby="calendarEventPreviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered calendar-event-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div>
-                    <h5 class="modal-title mb-1" id="calendarEventPreviewModalLabel">Etkinlik Detayları</h5>
-                    <p class="text-muted mb-0 small" id="calendarEventPreviewModalSubtitle">Etkinlik bilgileri</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div id="preview-event-color" class="rounded-2 me-3" style="width: 24px; height: 24px;"></div>
-                        <h5 class="mb-0 fw-bold" id="preview-event-title"></h5>
-                    </div>
-                    
-                    <div class="mb-3" id="preview-event-datetime"></div>
-                    
-                    <div class="mb-3 d-none" id="preview-event-location">
-                        <i class="feather-map-pin feather fs-12 me-2"></i>
-                        <span id="preview-location-text"></span>
-                    </div>
-                    
-                    <div class="mb-3 d-none" id="preview-event-description-container">
-                        <h6 class="text-muted mb-2 fw-semibold">Açıklama</h6>
-                        <p class="mb-0" id="preview-event-description"></p>
-                    </div>
-
-                    <div class="pt-2">
-                        <small id="preview-event-type"></small>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer calendar-modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                <div class="action-buttons">
-                    <button type="button" class="btn btn-outline-secondary" id="preview-edit-btn">Düzenle</button>
-                    <button type="button" class="btn btn-outline-danger" id="preview-delete-btn">Sil</button>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="calendarEventModal" tabindex="-1" aria-labelledby="calendarEventModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered calendar-event-modal">
-        <form class="modal-content" id="calendar-event-form" autocomplete="off">
-            <div class="modal-header">
-                <div>
-                    <h5 class="modal-title mb-1" id="calendarEventModalLabel">Etkinlik Kaydı</h5>
-                    <p class="text-muted mb-0 small" id="calendarEventModalSubtitle">Yeni bir etkinlik oluşturun.</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="calendar-event-id" name="event_id">
-                <div class="alert alert-danger d-none" role="alert" id="calendar-form-alert"></div>
-                <div class="mb-3">
-                    <label for="calendar-event-title" class="form-label">Başlık</label>
-                    <input type="text" class="form-control" id="calendar-event-title" name="title" maxlength="255" required>
-                </div>
-                <div class="mb-3">
-                    <label for="calendar-event-type" class="form-label">Etkinlik Türü</label>
-                    <select class="form-select" id="calendar-event-type" name="calendar_id" required>
-                        <?php foreach ($calendarTypes as $type): ?>
-                            <option value="<?php echo htmlspecialchars($type['id'], ENT_QUOTES); ?>">
-                                <?php echo htmlspecialchars($type['name'], ENT_QUOTES); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="calendar-event-start" class="form-label">Başlangıç</label>
-                        <input type="datetime-local" class="form-control" id="calendar-event-start" name="start" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="calendar-event-end" class="form-label">Bitiş</label>
-                        <input type="datetime-local" class="form-control" id="calendar-event-end" name="end" required>
-                    </div>
-                </div>
-                <div class="form-check form-switch my-3">
-                    <input class="form-check-input" type="checkbox" role="switch" id="calendar-event-all-day" name="is_all_day">
-                    <label class="form-check-label" for="calendar-event-all-day">Tüm Gün</label>
-                </div>
-                <div class="mb-3">
-                    <label for="calendar-event-location" class="form-label">Konum</label>
-                    <input type="text" class="form-control" id="calendar-event-location" name="location" maxlength="255">
-                </div>
-                <div class="mb-0">
-                    <label for="calendar-event-description" class="form-label">Açıklama</label>
-                    <textarea class="form-control" id="calendar-event-description" name="description" rows="3"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer calendar-modal-footer">
-                <button type="button" class="btn btn-outline-danger d-none" id="calendar-delete-btn">Etkinliği Sil</button>
-                <div class="action-buttons">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                    <button type="submit" class="btn btn-primary" id="calendar-save-btn">Kaydet</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
 
 <div class="modal fade" id="SendMessage" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
     aria-hidden="true">
@@ -1040,8 +931,6 @@ $script = ob_get_clean();
 
 
 <?php include './partials/calender-scripts.php' ?>
-<!-- list.php'nin en altına ekle -->
-<script src="/pages/email-sms/js/sms.js"></script>
 
 
 <style>

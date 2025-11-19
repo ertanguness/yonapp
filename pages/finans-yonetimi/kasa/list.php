@@ -126,7 +126,11 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a class="dropdown-item printBTN" href="javascript:void(0)">
+                                                    <a class="dropdown-item kasa-transfer"
+                                                       href="javascript:void(0)"
+                                                       data-source-id="<?= $enc_id ?>"
+                                                       data-source-name="<?= htmlspecialchars($kasa->kasa_adi) ?>"
+                                                       data-source-bakiye="<?= (float)($kasa->bakiye ?? 0) ?>">
                                                         <i class="feather feather-refresh-ccw me-3"></i>
                                                         <span>Transfer Yap</span>
                                                     </a>
@@ -231,5 +235,95 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
     }
 
 
- 
+    $(document).on('click', '.kasa-transfer', function () {
+        const encId = this.getAttribute('data-source-id');
+        const name = this.getAttribute('data-source-name');
+        const bakiye = parseFloat(this.getAttribute('data-source-bakiye') || '0');
+
+        document.getElementById('transferSourceId').value = encId;
+        document.getElementById('transferSourceName').textContent = name || '-';
+        document.getElementById('transferSourceBalance').textContent = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(bakiye);
+
+        const $sel = $('#target_kasa_id');
+        $sel.empty();
+        $sel.append(new Option('Seçiniz', ''));
+        (window.kasalarOptions || []).forEach(function(k){
+            if (k.enc !== encId) {
+                $sel.append(new Option(k.name, k.enc));
+            }
+        });
+
+        const modalEl = document.getElementById('kasaTransferModal');
+        const m = new bootstrap.Modal(modalEl);
+        m.show();
+
+        $("#kasaTransferModal .select2").select2({ dropdownParent: $("#kasaTransferModal") });
+        $("#transfer_tarih").flatpickr({ dateFormat: "Y-m-d", locale: "tr", defaultDate: new Date() });
+    });
+</script>
+
+<!-- Kasa Transfer Modal -->
+<div class="modal fade" id="kasaTransferModal" tabindex="-1" aria-labelledby="kasaTransferModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content rounded-3 shadow-sm border-0">
+            <div class="modal-header py-3 px-3">
+                <h5 class="modal-title mb-0 d-flex align-items-center gap-2" id="kasaTransferModalLabel">
+                    <span class="avatar-text avatar-sm bg-white text-primary rounded"><i class="feather-refresh-ccw"></i></span>
+                    <span>Transfer: <span id="transferSourceName" class="fw-semibold">-</span></span>
+                </h5>
+                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Kapat</button>
+            </div>
+            <form id="kasaTransferForm" method="post">
+                <div class="modal-body px-4 py-4">
+                    <div class="card card-body bg-light mb-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="text-muted">Mevcut Bakiye</span>
+                            <span id="transferSourceBalance" class="fw-bold text-dark"></span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="action" value="kasa_transfer">
+                    <input type="hidden" name="source_kasa_id" id="transferSourceId" value="">
+                    <input type="hidden" name="csrf_token" value="<?php echo Security::csrf(); ?>">
+
+                    <div class="mb-3">
+                        <label for="target_kasa_id" class="form-label">Hedef Kasa</label>
+                        <select class="form-control select2" id="target_kasa_id" name="target_kasa_id" required></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transfer_tutar" class="form-label">Transfer Tutarı</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="feather-dollar-sign"></i></span>
+                            <input type="text" class="form-control money" id="transfer_tutar" name="transfer_tutar" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transfer_tarih" class="form-label">Transfer Tarihi</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="feather-calendar"></i></span>
+                            <input type="text" class="form-control flatpickr" id="transfer_tarih" name="transfer_tarih" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-1">
+                        <label for="transfer_aciklama" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="transfer_aciklama" name="transfer_aciklama" minlength="10" required placeholder="Transfer nedeni, referans vb."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pt-0 pb-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" id="kasaTransferSubmit">Transfer Yap</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+<script>
+    window.kasalarOptions = [
+        <?php foreach ($kasalar as $k) { ?>
+        { enc: "<?php echo Security::encrypt($k->id); ?>", name: "<?php echo htmlspecialchars($k->kasa_adi); ?>" },
+        <?php } ?>
+    ];
 </script>

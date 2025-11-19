@@ -8,10 +8,13 @@ use App\Helper\Helper;
 use Model\KasaModel;
 use Model\KasaHareketModel;
 use Model\DefinesModel;
+use Database\Db;
 
 $KasaModel = new KasaModel();
 $kasaHareketModel = new KasaHareketModel();
 $Tanımlamalar = new DefinesModel();
+$db = Db::getInstance();
+$logger = \getlogger();
 
 if ($_POST['action'] == 'gelir-gider-kaydet') {
     $islem_id = Security::decrypt($_POST['islem_id'] ?? 0);
@@ -123,37 +126,63 @@ if ($_POST['action'] == 'gelir-gider-sil') {
     $KasaFinansalDurum = null;
 
     try {
+        $db->beginTransaction();
 
         //Önce kayıt var mı ve silinebilir mi kontrol et
         $kasaHareket = $kasaHareketModel->find($islem_id, true);
-        if (!$kasaHareket || $kasaHareket->guncellenebilir != 1) {
+        $logger->info('Gelir Gider Silme İşlemi', ['kasa_hareket' => json_encode($kasaHareket)]);
+        if (!$kasaHareket || (int)($kasaHareket->guncellenebilir ?? 0) !== 1) {
             throw new Exception("Kayıt bulunamadı veya silinemez.");
         }
 
-        //Kayıt varsa sil
-        $deleted = $kasaHareketModel->delete($islem_id);
-        if (!$deleted) {
-            throw new Exception("Kayıt silinemedi.");
+        // Kasa Transferi ise eşleşen tüm kayıtları sil
+        if (strtolower(trim((string)($kasaHareket->kategori ?? ''))) === 'kasa transferi' && !empty($kasaHareket->makbuz_no)) {
+            $pairs = $kasaHareketModel->findWhere(['makbuz_no' => $kasaHareket->makbuz_no]);
+            foreach ($pairs as $p) {
+                if ((int)($p->guncellenebilir ?? 0) === 1) {
+                    $logger->info('Gelir Gider Silme İşlemi başladı', ['kasa_hareket' => json_encode($p)]);
+                    $kasaHareketModel->softDelete($p->id);
+                }
+            }
+        } else {
+            // Tekil silme
+            $deleted = $kasaHareketModel->softDelete($islem_id);
+            if (!$deleted) {
+                $logger->error('Gelir Gider Silme İşlemi', ['kasa_hareket' => json_encode($kasaHareket)]);
+                throw new Exception("Kayıt silinemedi.");
+            }
         }
 
         //Kasa Ozet bilgilerini getir
-        $KasaFinansalDurum = $KasaModel->KasaFinansalDurum($kasaHareket->kasa_id);
+        $KasaFinansalDurum = $KasaModel->KasaFinansalDurum($kasa_id);
+
 
         //Para formatında formatla
-        $KasaFinansalDurum->toplam_gelir = Helper::formattedMoney($KasaFinansalDurum->toplam_gelir ?? 0);
-        $KasaFinansalDurum->toplam_gider = Helper::formattedMoney($KasaFinansalDurum->toplam_gider ?? 0);
-        $KasaFinansalDurum->bakiye = Helper::formattedMoney($KasaFinansalDurum->bakiye ?? 0);
+        if ($KasaFinansalDurum) {
+            $KasaFinansalDurum->toplam_gelir = Helper::formattedMoney($KasaFinansalDurum->toplam_gelir ?? 0);
+            $KasaFinansalDurum->toplam_gider = Helper::formattedMoney($KasaFinansalDurum->toplam_gider ?? 0);
+            $KasaFinansalDurum->bakiye = Helper::formattedMoney($KasaFinansalDurum->bakiye ?? 0);
+        }
 
+        $db->commit();
         $status = "success";
         $message = "Kayıt başarıyla silindi.";
     } catch (Exception $ex) {
+        try {
+            $db->rollBack();
+        } catch (Exception $e) {
+        }
         $status = "error";
         $message = $ex->getMessage();
     }
     $res = [
         "status" => $status,
         "message" => $message,
-        "data" => $KasaFinansalDurum
+        "data" => [
+            'toplam_gelir' => $KasaFinansalDurum->toplam_gelir ?? "0,00 TL",
+            'toplam_gider' => $KasaFinansalDurum->toplam_gider ?? "0,00 TL",
+            'bakiye' => $KasaFinansalDurum->bakiye ?? "0,00 TL",
+        ]
     ];
 
     echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

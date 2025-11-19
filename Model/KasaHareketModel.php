@@ -187,7 +187,7 @@ class KasaHareketModel extends Model
         $orderDir = strtolower($orderDir) === 'asc' ? 'ASC' : 'DESC';
 
         $query = "SELECT kh.*, k.adi_soyadi AS adi_soyadi, d.daire_kodu AS daire_kodu 
-                  FROM {$this->table} kh
+                  FROM {$this->view} kh
                   LEFT JOIN kisiler k ON kh.kisi_id = k.id
                   LEFT JOIN daireler d ON k.daire_id = d.id
                   WHERE kh.kasa_id = :kasa_id 

@@ -1,3 +1,4 @@
+<?php \App\Services\Gate::authorizeOrDie('complaints_peoples_page'); ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -74,7 +75,14 @@
 <script>
 document.getElementById("complaintForm").addEventListener("submit", function(e) {
     e.preventDefault();
-    document.getElementById("formResult").classList.remove("d-none");
-    this.reset();
+    const fd = new FormData(this);
+    fd.append('action','complaint_save');
+    fetch('/pages/duyuru-talep/peoples/api.php', { method:'POST', body: fd })
+      .then(r=>r.json())
+      .then(data=>{
+        var title = data.status === 'success' ? 'Başarılı' : 'Hata';
+        swal.fire({ title, text: data.message, icon: data.status, confirmButtonText:'Tamam' });
+        if(data.status==='success') { this.reset(); }
+      });
 });
 </script>

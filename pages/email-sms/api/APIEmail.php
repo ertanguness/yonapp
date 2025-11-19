@@ -3,6 +3,11 @@
 require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 use App\Services\MailGonderService;
+use Model\EmailModel;
+use Database\Db;
+
+$db = Db::getInstance();
+$MailModel = new EmailModel();
 
 
 
@@ -32,19 +37,20 @@ if(!is_array($toEmail) || empty($toEmail)){
             $status = "success";
             $message = count($toEmail) . " alıcıya email başarıyla gönderildi.";
             try {
-                $pdo = getDbConnection();
-                $pdo->exec("CREATE TABLE IF NOT EXISTS notifications (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    type VARCHAR(10) NOT NULL,
-                    recipients TEXT NOT NULL,
-                    subject VARCHAR(255) NULL,
-                    message TEXT NOT NULL,
-                    status VARCHAR(20) NOT NULL,
-                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
-                $ins = $pdo->prepare("INSERT INTO notifications (type, recipients, subject, message, status) VALUES (?,?,?,?,?)");
-                $ins->execute(['email', json_encode($toEmail, JSON_UNESCAPED_UNICODE), $konu, $mesaj, 'success']);
-            } catch (Exception $e) {}
+                $db->beginTransaction();
+                $data = [
+                    'type' => 'email',
+                    'recipients' => json_encode($toEmail, JSON_UNESCAPED_UNICODE),
+                    'subject' => $konu,
+                    'message' => $mesaj,
+                    'status' => 'success',
+                ];
+                $MailModel->saveWithAttr($data);
+                $db->commit();
+            } catch (Exception $e) {
+                $db->rollBack();
+                $res['message'] = 'Email gönderilemedi. Hata: ' . $e->getMessage();
+            }
             
     } else {
         $status = "error";
