@@ -28,7 +28,7 @@ class KisiHelper
 
 
 
-    public  function KisiSelect($name = 'kisi', $id = null, $disabled = false,$zeroOption = false)
+    public  function KisiSelect($name = 'kisi', $id = null, $disabled = false,$zeroOption = false,$multiple = false)
     {
         $site_id = $_SESSION['site_id'] ?? 0; // Kullanıcının site_id'sini al, eğer yoksa 0 olarak ayarla
         $query = $this->db->prepare("SELECT 
@@ -43,7 +43,7 @@ class KisiHelper
 
         $select = '<select name="' . $name . '" class="form-select select2" id="' . $name . '" 
         ' . ($disabled ? 'disabled' : '') . '  data-placeholder="Kişi Seçiniz" data-select2-id="' . $name . '"
-        style="width:100%">';
+        style="width:100%" ' . ($multiple ? 'multiple' : '') . '>';
         if($zeroOption){
             $select .= '<option value="">Kişi Seçiniz</option>';
         }

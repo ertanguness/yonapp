@@ -2,6 +2,7 @@
 
 use App\Helper\Helper;
 use App\Services\Gate;
+use App\Helper\Security;
 use Model\AcilDurumKisileriModel;
 
 Gate::authorizeOrDie('acil_durum_kisileri_view', '', false);
@@ -64,6 +65,7 @@ $AcilDurumKisiModel = new AcilDurumKisileriModel();
                                 $m = new AcilDurumKisileriModel();
                                 $rows = $m->listOrdered(true);
                                 foreach ($rows as $r):
+                                    $enc_id = Security::encrypt((int)$r->id);
                                     $telRaw = (string)($r->telefon ?? '');
                                     $telDigits = preg_replace('/\D+/', '', $telRaw);
                                     $telFmt = $telDigits ? preg_replace('/^(\d{3})(\d{3})(\d{2})(\d{2})$/', '+90 $1 $2 $3 $4', $telDigits) : '-';
@@ -79,8 +81,8 @@ $AcilDurumKisiModel = new AcilDurumKisileriModel();
                                         <td><?php echo htmlspecialchars($dateTxt); ?></td>
                                         <td>
                                             <div class="hstack gap-2">
-                                                <a href="javascript:void(0)" class="avatar-text avatar-md btn-edit" data-id="<?php echo (int)$r->id; ?>"><i class="feather-edit"></i></a>
-                                                <a href="javascript:void(0)" class="avatar-text avatar-md btn-del" data-id="<?php echo (int)$r->id; ?>" data-name="<?php echo htmlspecialchars($r->adi_soyadi ?? ''); ?>"><i class="feather-trash-2"></i></a>
+                                                <a href="javascript:void(0)" class="avatar-text avatar-md btn-edit" data-id="<?php echo $enc_id; ?>"><i class="feather-edit"></i></a>
+                                                <a href="javascript:void(0)" class="avatar-text avatar-md btn-del" data-id="<?php echo $enc_id; ?>" data-name="<?php echo htmlspecialchars($r->adi_soyadi ?? ''); ?>"><i class="feather-trash-2"></i></a>
                                             </div>
                                         </td>
                                     </tr>
@@ -117,19 +119,33 @@ $AcilDurumKisiModel = new AcilDurumKisileriModel();
 
 <script src="/pages/acil-durum-kisileri/js/acil_durum_kisileri.js"></script>
 <script>
+    let $modalUrl = '/pages/acil-durum-kisileri/modal/acil_durum_kisi_modal.php';
     $('#btnYeniKisi').on('click', function() {
-        $.get('/pages/acil-durum-kisileri/modal/acil_durum_kisi_modal.php', function(html) {
+        $.get($modalUrl, function(html) {
             var $modal = $('#mdlAcil');
             $modal.find('.modal-content').html(html);
             $modal.modal('show');
             $modal.find('.select2').select2({
                 dropdownParent: $modal,
             })
-$("#selBlok").trigger('change');
-
+            $("#selBlok").trigger('change');
         });
-        
+
 
     });
 
+    $(document).on("click", ".btn-edit", function() {
+        var id = $(this).data("id");
+        //get ile modala id'yi gönder
+        $.get($modalUrl + '?id=' + id, function(html) {
+            var $modal = $('#mdlAcil');
+            $modal.find('.modal-content').html(html);
+            $modal.modal('show');
+            $modal.find('.select2').select2({
+                dropdownParent: $modal,
+            })
+            $("#selBlok").trigger('change');
+        });
+
+    });
 </script>

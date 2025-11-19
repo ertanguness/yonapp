@@ -1,0 +1,5 @@
+GET list ok: yes
+POST create status: success id=6
+GET single status: success title=Test Duyuru
+PUT update status: success
+DELETE status: success

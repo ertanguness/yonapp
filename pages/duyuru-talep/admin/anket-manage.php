@@ -11,11 +11,11 @@
     </div>
     <div class="page-header-right ms-auto">
         <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="duyuru-talep/admin/survey-list">
+            <a href="/anket-listesi" class="btn btn-outline-secondary route-link me-2">
                 <i class="feather-arrow-left me-2"></i> Listeye Dön
-            </button>
+            </a>
             <button type="submit" class="btn btn-primary" id="saveSurvey">
-                <i class="feather-send me-2"></i> Yayınla
+                <i class="feather-send me-2"></i> Kaydet
             </button>
         </div>
     </div>
@@ -63,6 +63,22 @@
                                     <input type="date" class="form-control" id="pollEndDate" name="end_date" required>
                                 </div>
 
+                                <!-- Başlangıç Tarihi -->
+                                <div class="mb-4">
+                                    <label for="pollStartDate" class="form-label fw-semibold">Başlangıç Tarihi</label>
+                                    <input type="date" class="form-control" id="pollStartDate" name="start_date">
+                                </div>
+
+                                <!-- Durum -->
+                                <div class="mb-4">
+                                    <label for="pollStatus" class="form-label fw-semibold">Durum</label>
+                                    <select class="form-select" id="pollStatus" name="status">
+                                        <option value="Taslak">Taslak</option>
+                                        <option value="Aktif" selected>Aktif</option>
+                                        <option value="Pasif">Pasif</option>
+                                    </select>
+                                </div>
+
                                 <!-- Yayınla Butonu -->
                                
                             </div>
@@ -74,39 +90,7 @@
     </div>
 </div>
 
-<!-- JS: Seçenek Ekle / Sil -->
+<script src="/pages/duyuru-talep/admin/js/anket.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const addBtn = document.getElementById('addOption');
-    const wrapper = document.getElementById('optionsWrapper');
-
-    addBtn.addEventListener('click', () => {
-        const div = document.createElement('div');
-        div.classList.add('input-group', 'mb-2');
-        div.innerHTML = `
-            <input type="text" name="options[]" class="form-control" placeholder="Yeni Seçenek" required>
-            <button type="button" class="btn btn-outline-danger removeOption">Sil</button>
-        `;
-        wrapper.appendChild(div);
-    });
-
-    wrapper.addEventListener('click', function (e) {
-        if (e.target.classList.contains('removeOption')) {
-            e.target.closest('.input-group').remove();
-        }
-    });
-
-    document.getElementById('pollForm').addEventListener('submit', function(e){
-        e.preventDefault();
-        const fd = new FormData(this);
-        fd.append('action','survey_save');
-        fetch('/pages/duyuru-talep/admin/api.php', { method:'POST', body: fd })
-          .then(r=>r.json())
-          .then(data=>{
-            var title = data.status === 'success' ? 'Başarılı' : 'Hata';
-            swal.fire({ title, text: data.message, icon: data.status, confirmButtonText:'Tamam' });
-            if(data.status==='success') { window.location = 'index?p=duyuru-talep/admin/survey-list'; }
-          });
-    });
-});
+$(function(){ window.SurveyUI && window.SurveyUI.initManage(); });
 </script>

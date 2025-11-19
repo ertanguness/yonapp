@@ -54,7 +54,7 @@ if (
     $page == "personeller" || $page == "personel-ekle" || $page == "personel-duzenle" ||
     $page == "isletme-projesi" || $page == "isletme-projesi-ekle" || $page == "isletme-projesi-duzenle" ||
     $page == "bildirimler" ||
-    $page == "acil-durum-kisileri" || $page == "sikayet-oneri-listesi"
+    $page == "acil-durum-kisileri" || $page == "sikayet-oneri-listesi" || $page == "duyuru-listesi"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  

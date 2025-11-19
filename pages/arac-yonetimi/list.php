@@ -28,7 +28,7 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
                     <i class="bi bi-filetype-xlsx me-2"></i>
                    
                 </a>
-                <a href="javascript:void(0)" id="openNewCar" class="btn btn-primary">
+                <a href="javascript:void(0)" id="btnYeniArac" class="btn btn-primary">
                     <i class="feather-plus me-2"></i>
                     Yeni Araç
                 </a>
@@ -51,7 +51,7 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover datatables" id="aracList">
+                                <table class="table table-hover" id="aracList">
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>
@@ -84,10 +84,10 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
                                                 <td><?= htmlspecialchars($row->marka_model ?? '-') ?></td>
                                                 <td>
                                                     <div class="hstack gap-2">
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md edit-car" title="Düzenle" data-id="<?= $enc_id ?>">
+                                                    <a href="javascript:void(0);" class="avatar-text avatar-md btn-edit" title="Düzenle" data-id="<?= $enc_id ?>">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" class="avatar-text avatar-md delete-car" data-id="<?= $enc_id ?>" data-name="<?= htmlspecialchars($row->plaka) ?>">
+                                                    <a href="javascript:void(0);" class="avatar-text avatar-md btn-del" data-id="<?= $enc_id ?>" data-name="<?= htmlspecialchars($row->plaka) ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>
@@ -107,57 +107,16 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
 <script src="/src/blok-daire.js"></script>
 <script src="/src/daire-kisi.js"></script>
 
-<div id="modalContainer"></div>
+<div id="carModal" class="custom-modal">
+    <div class="modal fade-scale" id="mdlCar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const btn = document.getElementById('openNewCar');
-        if (!btn) return;
-        btn.addEventListener('click', function() {
-            const kisiId = 0;
-            fetch(`pages/arac-yonetimi/content/CarModal.php?kisi_id=${kisiId}`)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('modalContainer').innerHTML = html;
-                    const modalEl = document.getElementById('aracEkleModal');
-                    let aracModal = new bootstrap.Modal(modalEl);
-                    $(modalEl).on('shown.bs.modal', function(){
-                        var $m = $(this);
-                        try {
-                            $m.find('.select2').each(function(){
-                                if ($(this).hasClass('select2-hidden-accessible')) $(this).select2('destroy');
-                            });
-                        } catch(e){}
-                        $m.find('.select2').select2({ dropdownParent: $m, width: '100%', placeholder: 'Seçiniz', allowClear: true });
-                    });
-                    aracModal.show();
-                })
-                .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
-        });
-        document.addEventListener('click', function(e) {
-            const editBtn = e.target.closest('.edit-car');
-            if (editBtn) {
-                e.preventDefault();
-                const encId = editBtn.getAttribute('data-id');
-                fetch('pages/arac-yonetimi/content/CarModal.php?id=' + encodeURIComponent(encId))
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('modalContainer').innerHTML = html;
-                        const modalEl = document.getElementById('aracEkleModal');
-                        let aracModal = new bootstrap.Modal(modalEl);
-                        $(modalEl).on('shown.bs.modal', function(){
-                            var $m = $(this);
-                            try {
-                                $m.find('.select2').each(function(){
-                                    if ($(this).hasClass('select2-hidden-accessible')) $(this).select2('destroy');
-                                });
-                            } catch(e){}
-                            $m.find('.select2').select2({ dropdownParent: $m, width: '100%', placeholder: 'Seçiniz', allowClear: true });
-                        });
-                        aracModal.show();
-                    })
-                    .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
-            }
-        });
-    });
-</script>
+<script src="/pages/arac-yonetimi/js/araclar.js"></script>

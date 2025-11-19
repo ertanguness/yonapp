@@ -103,7 +103,7 @@ if ($method === 'POST' && isset($_POST['action'])) {
     }
 
     if ($action === 'acil-kisi-sil') {
-        Gate::can('acil_durum_kisileri_manage');
+        Gate::can('acil_durum_kisi_sil');
         $idRaw = $_POST['id'] ?? null;
         $id = $idRaw ? (is_numeric($idRaw) ? (int)$idRaw : (int)Security::decrypt($idRaw)) : 0;
         try {

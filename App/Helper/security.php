@@ -3,6 +3,7 @@
 namespace App\Helper;
 
 use App\Services\FlashMessageService;
+use Model\SitelerModel;
 
 class Security
 {
@@ -139,15 +140,32 @@ public static function decrypt($data)
     return openssl_decrypt($encrypted_data, $method, $key, OPENSSL_RAW_DATA, $iv, $tag);
 }
 
-    /**Eğer site_id null ise site-ekle sayfasına yönlendir */
-public static function ensureSiteSelected($redirectUri = 'site-ekle')
+public static function ensureSiteSelected($redirectUri = '/site-ekle')
     {
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
+        $normalizedCurrent = trim($currentPath, '/');
+        $normalizedRedirect = trim($redirectUri, '/');
+        if ($normalizedCurrent === $normalizedRedirect) {
+            return;
+        }
 
-        if ($_SESSION['site_id'] == null ) {
+        $siteId = $_SESSION['site_id'] ?? null;
+        $needsRedirect = false;
+        if (empty($siteId)) {
+            $needsRedirect = true;
+        } else {
+            $Sites = new SitelerModel();
+            $site = $Sites->SiteBilgileri($siteId);
+            if (!$site) {
+                $_SESSION['site_id'] = null;
+                $needsRedirect = true;
+            }
+        }
 
-            FlashMessageService::add( "info","Uyarı!", "Lütfen önce bir site seçin veya ekleyin.  ");
+        if ($needsRedirect) {
+            FlashMessageService::add("info", "Uyarı!", "Lütfen önce bir site seçin veya ekleyin.");
             header("Location: $redirectUri");
-            exit();
+            exit;
         }
     }
 

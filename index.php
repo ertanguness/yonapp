@@ -20,8 +20,8 @@ $authController = new AuthController();
 //giriş ve demo süresi kontrolü
 $authController->checkAuthentication();
 
-/**site_id kontrolü */
-Security::ensureSiteSelected("/company-list.php");
+// /**site_id kontrolü */
+// Security::ensureSiteSelected("company-list.php");
 
 
 // 3. Adım: ROTA TESPİTİ (SAYFANIN EN BAŞINDA)
@@ -43,6 +43,10 @@ $resolvedRoute = $router->resolve($url);
 // 3. SAYFA ADINI AL (SİHİR BURADA GERÇEKLEŞİYOR)
 // Router artık hangi desenin eşleştiğini biliyor ve bize temiz halini veriyor.
 $page = $router->getPageName() ?? '';
+$skipPagesForSiteCheck = ['site-ekle','siteler','site-duzenle','sign-in','kayit-ol','logout','forgot-password','reset-password'];
+if (!in_array($page, $skipPagesForSiteCheck, true)) {
+    Security::ensureSiteSelected('/site-ekle');
+}
 
 // PDF benzeri özel sayfalar: layout'u basmadan doğrudan çıktıyı üret
 if (preg_match('/-pdf$/', $page)) {

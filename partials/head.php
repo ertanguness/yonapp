@@ -80,7 +80,7 @@ $page = isset($page) ? $page : 'ana-sayfa';
 		<![endif]-->
     <?php echo (isset($css) ? $css   : '')?>
 
-	<?php if($page == "bildirimler" || $page == "ana-sayfa") { ?>
+	<?php if($page == "bildirimler" || $page == "ana-sayfa" || $page == "duyuru-ekle") { ?>
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/tagify.min.css">
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/tagify-data.min.css">
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/quill.min.css">

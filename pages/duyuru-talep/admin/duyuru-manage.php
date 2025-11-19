@@ -1,4 +1,19 @@
-<?php \App\Services\Gate::authorizeOrDie('announcements_admin_page'); ?>
+<?php 
+
+use \App\Services\Gate;
+use App\Helper\BlokHelper;
+use App\Helper\KisiHelper;
+
+$BlokHelper = new BlokHelper();
+$KisiHelper = new KisiHelper();
+
+Gate::authorizeOrDie('announcements_admin_page'); 
+
+
+
+
+
+?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -55,7 +70,8 @@
                                             <label for="content" class="fw-semibold">İçerik:</label>
                                         </div>
                                         <div class="col-lg-10">
-                                            <textarea name="content" id="content" rows="6" class="form-control summernote" placeholder="Duyuru içeriği" required></textarea>
+                                            <div id="contentEditor" class="form-control" style="min-height: 200px;"></div>
+                                            <input type="hidden" name="content" id="content">
                                         </div>
                                     </div>
 
@@ -67,23 +83,36 @@
                                         <div class="col-lg-4">
                                             <div class="input-group flex-nowrap">
                                                 <span class="input-group-text"><i class="feather-users"></i></span>
-                                                <select name="target_type" id="target_type" class="form-select" required>
+                                                <select name="target_type" id="target_type" class="form-select select2" required>
                                                     <option value="all">Tüm Site</option>
                                                     <option value="block">Blok</option>
                                                     <option value="kisi">Kişi</option>
                                                 </select>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <!-- Blok Seçimi -->
+                                    <div class="row mb-4 align-items-center d-none" id="blockSelectRow">
                                         <div class="col-lg-2">
                                             <label class="fw-semibold">Blok:</label>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="input-group flex-nowrap">
                                                 <span class="input-group-text"><i class="feather-home"></i></span>
-                                                <select name="block_id" id="block_id" class="form-select">
-                                                    <option value="">Seçiniz</option>
-                                                </select>
+                                                <?php echo $BlokHelper->BlokSelect("block_id", false); ?>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Kişi Seçimi (çoklu) -->
+                                    <div class="row mb-4 align-items-center d-none" id="kisiSelectRow">
+                                        <div class="col-lg-2">
+                                            <label class="fw-semibold">Kişiler:</label>
+                                        </div>
+                                        <div class="col-lg-10">
+                                            <div class="form-text mb-2">Bir veya birden fazla kişi seçebilirsiniz.</div>
+                                            <?php echo $KisiHelper->KisiSelect("kisi_ids", null, false, true, true); ?>
                                         </div>
                                     </div>
 
@@ -116,7 +145,7 @@
                                     </div>
 
                                     <!-- E-Posta Önizleme -->
-                                    <div class="row mb-4 d-none" id="emailPreviewSection">
+                                    <div class="row mb-4" id="emailPreviewSection">
                                         <div class="col-lg-2">
                                             <label class="fw-semibold">Önizleme:</label>
                                         </div>
@@ -138,20 +167,4 @@
     </div>
 </div>
 
-<script>
-$(function(){
-  $('#announcementForm').on('submit', function(e){
-    e.preventDefault();
-    const form = this;
-    const fd = new FormData(form);
-    fd.append('action','announcement_save');
-    fetch('/pages/duyuru-talep/admin/api.php', { method:'POST', body: fd })
-      .then(r=>r.json())
-      .then(data=>{
-        var title = data.status === 'success' ? 'Başarılı' : 'Hata';
-        swal.fire({ title, text: data.message, icon: data.status, confirmButtonText: 'Tamam' });
-        if(data.status==='success') { window.location = 'index?p=duyuru-talep/admin/announcements-list'; }
-      });
-  });
-});
-</script>
+<script src="/pages/duyuru-talep/admin/js/duyuru.js"></script>

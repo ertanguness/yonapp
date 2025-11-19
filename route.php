@@ -106,31 +106,37 @@ $router->get('site-araclari-excel', fn() => require 'pages/arac-yonetimi/export.
 /* ----------------------------------------------------
 |  DUYURU & TALEP
 ---------------------------------------------------- */
-$router->get('sikayet-oneri-listesi', fn() => require 'pages/notice/admin/complaints-list.php');
 $router->get('sikayet-oneri--duzenle', fn() => require 'pages/duyuru-talep/admin/announcements-manage.php');
+//duyuru listesi
+$router->get('duyuru-listesi', fn() => require 'pages/duyuru-talep/admin/duyuru-list.php');
+//duyuru ekle
+$router->get('duyuru-ekle', fn() => require 'pages/duyuru-talep/admin/duyuru-manage.php');
 
-$router->get('notice/peoples/announcements-list', fn() => require 'pages/duyuru-talep/peoples/announcements-list.php');
+
+
+/* ----------------------------------------------------
+|  ŞİKAYET & ÖNERİ
+---------------------------------------------------- */
+$router->get('sikayet-oneri-listesi', fn() => require 'pages/duyuru-talep/admin/sikayet-oneri-list.php');
+$router->get('admin/sikayet-oneri-listesi', fn() => require 'pages/duyuru-talep/admin/sikayet-oneri-list.php');
+$router->get('admin/sikayet-oneri-manage', fn() => require 'pages/duyuru-talep/admin/sikayet-oneri-manage.php');
+
+// Kullanıcı (Sakin) tarafı
+$router->get('sakin/sikayet-oneri-listem', fn() => require 'pages/duyuru-talep/users/sikayet-oneri-list.php');
+$router->get('sakin/sikayet-oneri-ekle', fn() => require 'pages/duyuru-talep/users/sikayet-oneri-manage.php');
+
 
 $router->get('notice/admin/complaints-list', fn() => require 'pages/notice/admin/complaints-list.php');
 $router->get('notice/peoples/complaints-list', fn() => require 'pages/duyuru-talep/peoples/complaints-list.php');
 $router->get('notice/peoples/complaints-manage', fn() => require 'pages/duyuru-talep/peoples/complaints-manage.php');
 
-$router->get('notice/admin/survey-list', fn() => require 'pages/duyuru-talep/admin/survey-list.php');
-$router->get('notice/admin/survey-manage', fn() => require 'pages/duyuru-talep/admin/survey-manage.php');
-$router->get('notice/admin/survey-result/{id}', fn($id) => require 'pages/duyuru-talep/admin/survey-result.php');
-$router->get('notice/peoples/survey-list', fn() => require 'pages/duyuru-talep/peoples/survey-list.php');
+$router->get('anket-listesi', fn() => require 'pages/duyuru-talep/admin/anket-list.php');
 
-// Yeni slug'lar
-$router->get('duyuru-talep/admin/announcements-list', fn() => require 'pages/duyuru-talep/admin/announcements-list.php');
-$router->get('duyuru-talep/admin/announcements-manage', fn() => require 'pages/duyuru-talep/admin/announcements-manage.php');
-$router->get('duyuru-talep/peoples/announcements-list', fn() => require 'pages/duyuru-talep/peoples/announcements-list.php');
-$router->get('duyuru-talep/admin/complaints-list', fn() => require 'pages/notice/admin/complaints-list.php');
-$router->get('duyuru-talep/peoples/complaints-list', fn() => require 'pages/duyuru-talep/peoples/complaints-list.php');
-$router->get('duyuru-talep/peoples/complaints-manage', fn() => require 'pages/duyuru-talep/peoples/complaints-manage.php');
-$router->get('duyuru-talep/admin/survey-list', fn() => require 'pages/duyuru-talep/admin/survey-list.php');
-$router->get('duyuru-talep/admin/survey-manage', fn() => require 'pages/duyuru-talep/admin/survey-manage.php');
-$router->get('duyuru-talep/admin/survey-result/{id}', fn($id) => require 'pages/duyuru-talep/admin/survey-result.php');
-$router->get('duyuru-talep/peoples/survey-list', fn() => require 'pages/duyuru-talep/peoples/survey-list.php');
+$router->get('anket-ekle', fn() => require 'pages/duyuru-talep/admin/anket-manage.php');
+$router->get('anket-duzenle/{id}', fn($id) => require 'pages/duyuru-talep/admin/anket-manage.php');
+
+
+
 /* ----------------------------------------------------
 |  BAKIM – ARIZA – PERİYODİK BAKIM
 ---------------------------------------------------- */

@@ -1,7 +1,6 @@
 $(function () {
   var peopleCache = {};
 
-
   function resetForm() {
     // $('#frmAcil')[0].reset();
     $("#frmId").val("");
@@ -9,7 +8,6 @@ $(function () {
     $("#selDaire").empty().append('<option value="">Seçiniz</option>');
     $("#selKisi").empty().append('<option value="">Seçiniz</option>');
   }
-
 
   function loadApartments(blokId, selectedId) {
     console.log("blokId:", blokId);
@@ -93,8 +91,38 @@ $(function () {
     }
   });
 
- 
-  $("#btnKaydet").on("click", function () {
+  $(document).on("click", "#btnKaydet", function () {
+    var form = $("#frmAcil");
+
+    form.validate({
+      rules :{
+        frmName: {
+          required: true
+        },
+        selKisi: {
+          required: true
+        },
+        frmRel: {
+          required: true
+        }
+      },
+      messages: {
+        frmName: {
+          required: "Lütfen ad soyad giriniz"
+        },
+        selKisi: {
+          required: "Lütfen Kişi giriniz"
+        },
+        frmRel: {
+          required: "Lütfen yakınlık giriniz"
+        }
+      }
+      
+    });
+    if (!form.valid()) {
+      return;
+    }
+
     var payload = {
       action: "acil-kisi-kaydet",
       id: $("#frmId").val(),
@@ -103,6 +131,8 @@ $(function () {
       telefon: $("#frmPhone").val(),
       yakinlik: $("#frmRel").val()
     };
+
+    console.log(payload);
     $("#expProgress").show();
     $("#expBar").css("width", "25%");
     $.ajax({
@@ -122,9 +152,10 @@ $(function () {
             title: "Başarılı",
             text: resp.message || "Kayıt başarılı",
             icon: "success"
+          }).then(() => {
+
+            location.reload();
           });
-          $("#mdlAcil").modal("hide");
-          location.reload();
         } else {
           Swal.fire({
             title: "Hata",
@@ -140,57 +171,7 @@ $(function () {
       });
   });
 
-  $(document).on("click", ".btn-edit", function () {
-    var id = $(this).data("id");
-    $.ajax({
-      url: "/pages/acil-durum-kisileri/api.php",
-      type: "POST",
-      data: { action: "acil-kisi-getir", id: id },
-      dataType: "json"
-    }).done(function (resp) {
-      if (resp.status !== "success") {
-        Swal.fire({
-          title: "Hata",
-          text: resp.message || "Kayıt bulunamadı",
-          icon: "error"
-        });
-        return;
-      }
-      var d = resp.data || {};
-      $("#frmId").val(d.id);
-      $.ajax({
-        url: "/pages/acil-durum-kisileri/api.php",
-        type: "POST",
-        data: { action: "kisi-detay-getir", id: d.kisi_id },
-        dataType: "json"
-      })
-        .done(function (r2) {
-          var kisi = r2.data || {};
-          var blokId = kisi.blok_id || "";
-          var daireId = kisi.daire_id || "";
-          resetForm();
-          $("#frmId").val(d.id);
-          loadBlocks(blokId);
-          if (blokId) {
-            loadApartments(blokId, daireId);
-            if (daireId) {
-              loadPeople(daireId, d.kisi_id);
-            }
-          }
-          $("#frmName").val(d.adi_soyadi || "");
-          $("#frmPhone").val(d.telefon || "");
-          $("#frmRel").val(d.yakinlik || "");
-          $("#mdlAcil").modal("show");
-        })
-        .fail(function () {
-          Swal.fire({
-            title: "Hata",
-            text: "Kişi bilgisi alınamadı",
-            icon: "error"
-          });
-        });
-    });
-  });
+
 
   $(document).on("click", ".btn-del", function () {
     var id = $(this).data("id");
@@ -216,8 +197,9 @@ $(function () {
               title: "Başarılı",
               text: resp.message || "Kayıt silindi",
               icon: "success"
+            }).then(() => {
+              location.reload();
             });
-            location.reload();
           } else {
             Swal.fire({
               title: "Hata",
@@ -232,11 +214,7 @@ $(function () {
     });
   });
 
-
   (function wait() {
-
-
-
     if ($.fn && $.fn.DataTable) {
       $("#tblAcil").DataTable({
         retrieve: true,
@@ -263,4 +241,19 @@ $(function () {
       setTimeout(wait, 100);
     }
   })();
+
+  $(document).on("shown.bs.modal", "#mdlAcil", function () {
+    var $m = $(this);
+    var blokId = $m.find("#selBlok").val();
+    var dsAttr = $m.find("#selDaire").attr("data-selected");
+    var ksAttr = $m.find("#selKisi").attr("data-selected");
+    var daireSel = dsAttr && Number(dsAttr) > 0 ? dsAttr : "";
+    var kisiSel = ksAttr && Number(ksAttr) > 0 ? ksAttr : "";
+    if (blokId) {
+      loadApartments(blokId, daireSel);
+      if (daireSel) {
+        loadPeople(daireSel, kisiSel);
+      }
+    }
+  });
 });

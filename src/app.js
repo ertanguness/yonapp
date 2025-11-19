@@ -64,10 +64,9 @@ $(document).ready(function () {
   if ($others.length) {
     table = $others.DataTable({
       responsive: true,
-      searching: true,
       info: true,
       paging: true,
-      dom: 'f t<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+      dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
       language: {},
       drawCallback: function (settings) {},
       ...getTableSpecificOptions(),
