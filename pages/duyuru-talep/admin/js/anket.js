@@ -105,7 +105,6 @@
     async initListServerRendered(){
       await ensureDataTables();
       const $tb = $('#surveyList tbody');
-      $('#surveyList').DataTable({ retrieve:true, responsive:true, dom:'f t<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>' });
       $tb.on('click', '.btn-del', async function(){
         const idEnc = this.getAttribute('data-id');
         const ok = await swal.fire({ title:'Silinsin mi?', text:'Bu işlem geri alınamaz', icon:'warning', showCancelButton:true, confirmButtonText:'Evet', cancelButtonText:'Hayır' });

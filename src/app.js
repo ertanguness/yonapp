@@ -58,10 +58,11 @@ $(document).ready(function () {
   }
 
   // bazı tabloları kendi sayfasında başlatmak istediğim için burada başlatma
-  const exitstsTables = ["mizanTable", "gelirGiderTable", "tahsilatTable","notificationsList","announcementList","surveyList","complaintsList"];
+  const exitstsTables = ["mizanTable", "gelirGiderTable", "tahsilatTable","notificationsList"];
   const $others = $(".datatables, .datatable").not("#" + exitstsTables.join(", #"));
 
-  if ($others.length) {
+  if ($others.length>0) {
+    // console.log($others);
     table = $others.DataTable({
       responsive: true,
       info: true,
