@@ -21,13 +21,23 @@
 </div>
 
 <div class="main-content">
+      <?php
+    $title = "Anket Listesi";
+    $text = "Yayınlanan anketlerinizi görüntüleyebilir, detaylara ulaşabilir ve düzenleme işlemleri yapabilirsiniz.";
+    require_once 'pages/components/alert.php';
+    ?>
+    <style>
+        .table-responsive{ overflow: visible !important; }
+        .dropdown-menu{ z-index: 1090; }
+    </style>
     <div class="row">
         <div class="container-xl">
+            
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-body table-responsive">
-                            <table class="table table-hover table-bordered align-middle" id="surveyList">
+                        <div class="card-body table-responsive" style="overflow: visible;">
+                            <table class="table table-hover table-bordered datatables" id="surveyList">
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th>
@@ -54,6 +64,15 @@
                                                 <div class="btn-group align-items-baseline">
                                                     <a href="/anket-ekle?survey_id=<?= (int)$r->id ?>" class="btn btn-outline-primary btn-sm route-link"><i class="feather-edit-2"></i> Düzenle</a>
                                                     <button class="btn btn-outline-danger btn-sm btn-del" data-id="<?= $idEnc ?>"><i class="feather-trash-2"></i> Sil</button>
+                                                    <a href="/anket-sonuc/<?= $idEnc ?>" class="btn btn-outline-info btn-sm route-link"><i class="feather-bar-chart-2"></i> Sonuçlar</a>
+                                                    <div class="dropdown d-inline-block ms-1">
+                                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown"><i class="feather-shuffle"></i> Durum</button>
+                                                        <div class="dropdown-menu">
+                                                            <?php foreach (["Taslak","Onay Bekliyor","Yayında","Aktif","Pasif","Reddedildi"] as $st): ?>
+                                                                <a href="#" class="dropdown-item change-status" data-id="<?= (int)$r->id ?>" data-status="<?= $st ?>"><?= $st ?></a>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -69,6 +88,3 @@
 </div>
 
 <script src="/pages/duyuru-talep/admin/js/anket.js"></script>
-<script>
-$(function(){ window.SurveyUI && window.SurveyUI.initListServerRendered && window.SurveyUI.initListServerRendered(); });
-</script>

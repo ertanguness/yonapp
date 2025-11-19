@@ -129,15 +129,19 @@ $router->get('sakin/sikayet-oneri-duzenle/{id}', fn($id) => require 'pages/duyur
 
 
 
-$router->get('notice/admin/complaints-list', fn() => require 'pages/notice/admin/complaints-list.php');
-$router->get('notice/peoples/complaints-list', fn() => require 'pages/duyuru-talep/peoples/complaints-list.php');
-$router->get('notice/peoples/complaints-manage', fn() => require 'pages/duyuru-talep/peoples/complaints-manage.php');
-
+/* ----------------------------------------------------
+|  ANKET
+---------------------------------------------------- */
 $router->get('anket-listesi', fn() => require 'pages/duyuru-talep/admin/anket-list.php');
-
 $router->get('anket-ekle', fn() => require 'pages/duyuru-talep/admin/anket-manage.php');
 $router->get('anket-duzenle/{id}', fn($id) => require 'pages/duyuru-talep/admin/anket-manage.php');
+$router->get('anket-sonuc/{id}', fn($id) => require 'pages/duyuru-talep/admin/anket-sonuc.php');
+$router->get('anket-sonuc/{id}', function($id){ $GLOBALS['id'] = $id; require 'pages/duyuru-talep/admin/anket-sonuc.php'; });
+$router->get('anket-api', fn() => require 'pages/duyuru-talep/admin/api/APIAnket.php');
 
+
+//Kullanıcı anket listesi
+$router->get('sakin/anket-listesi', fn() => require 'pages/duyuru-talep/users/anket-list.php');
 
 
 /* ----------------------------------------------------

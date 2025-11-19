@@ -43,7 +43,7 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover table-vcenter  datatables">
+                                <table class="table table-hover table-vcenter datatables">
                                     <thead class="table-light">
                                         <tr>
                                             <th>#</th>
