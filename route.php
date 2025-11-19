@@ -124,6 +124,9 @@ $router->get('admin/sikayet-oneri-manage', fn() => require 'pages/duyuru-talep/a
 // Kullanıcı (Sakin) tarafı
 $router->get('sakin/sikayet-oneri-listem', fn() => require 'pages/duyuru-talep/users/sikayet-oneri-list.php');
 $router->get('sakin/sikayet-oneri-ekle', fn() => require 'pages/duyuru-talep/users/sikayet-oneri-manage.php');
+$router->get('sakin/sikayet-oneri-duzenle/{id}', fn($id) => require 'pages/duyuru-talep/users/sikayet-oneri-manage.php');
+$router->get('sakin/sikayet-oneri-duzenle/{id}', fn($id) => require 'pages/duyuru-talep/users/sikayet-oneri-manage.php');
+
 
 
 $router->get('notice/admin/complaints-list', fn() => require 'pages/notice/admin/complaints-list.php');
