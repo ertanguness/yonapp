@@ -113,7 +113,7 @@ $(function(){
         <tr>
           <td>${i++}</td>
           <td>${r.title ?? '-'}</td>
-          <td>${r.user_id ?? '-'}</td>
+          <td>${r.kisi_id ?? '-'}</td>
           <td><span class="badge bg-${typeBadge}">${r.type ?? '-'}</span></td>
           <td><span class="badge bg-${statusBadge}">${r.status ?? '-'}</span></td>
           <td>${r.created_at ?? '-'}</td>

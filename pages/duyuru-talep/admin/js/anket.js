@@ -1,6 +1,30 @@
 ;(function(){
   const API_URL = '/pages/duyuru-talep/admin/api/APIAnket.php';
 
+  async function ensureDataTables(){
+    if (typeof jQuery === 'undefined' || typeof $ === 'undefined') { return; }
+    if ($.fn && $.fn.DataTable) { return; }
+    const head = document.head;
+    const cssHref = '/assets/vendors/css/dataTables.bs5.min.css';
+    if (!document.querySelector(`link[href="${cssHref}"]`)){
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = cssHref;
+      head.appendChild(link);
+    }
+    await new Promise(res=>{
+      const s1 = document.createElement('script');
+      s1.src = '/assets/vendors/js/dataTables.min.js';
+      s1.onload = ()=>{
+        const s2 = document.createElement('script');
+        s2.src = '/assets/vendors/js/dataTables.bs5.min.js';
+        s2.onload = res;
+        head.appendChild(s2);
+      };
+      head.appendChild(s1);
+    });
+  }
+
   const SurveyAPI = {
     async list(){
       const r = await fetch(`${API_URL}?action=surveys_list`);
@@ -44,6 +68,7 @@
 
   const SurveyUI = {
     async initList(){
+      await ensureDataTables();
       const rows = await SurveyAPI.list();
       const $tb = $('#surveyList tbody');
       $tb.empty();
@@ -78,8 +103,8 @@
       });
     },
     async initListServerRendered(){
+      await ensureDataTables();
       const $tb = $('#surveyList tbody');
-      $('#surveyList').DataTable({ retrieve:true, responsive:true, dom:'f t<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>' });
       $tb.on('click', '.btn-del', async function(){
         const idEnc = this.getAttribute('data-id');
         const ok = await swal.fire({ title:'Silinsin mi?', text:'Bu işlem geri alınamaz', icon:'warning', showCancelButton:true, confirmButtonText:'Evet', cancelButtonText:'Hayır' });
@@ -89,6 +114,16 @@
           await swal.fire({ title, text: res.message, icon: res.status });
           if (res.status === 'success') { this.closest('tr').remove(); }
         }
+      });
+      $tb.on('click', '.change-status', async function(e){
+        e.preventDefault();
+        const id = this.getAttribute('data-id');
+        const status = this.getAttribute('data-status');
+        const fd = new FormData(); fd.append('action','change_status'); fd.append('id', id); fd.append('status', status);
+        const r = await fetch(API_URL, { method:'POST', body: fd }); const res = await r.json();
+        const title = res.status==='success'?'Güncellendi':'Hata';
+        await swal.fire({ title, text: res.message, icon: res.status });
+        if (res.status==='success') { location.reload(); }
       });
     },
     async initManage(){

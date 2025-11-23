@@ -1,6 +1,16 @@
 <?php 
+use App\Helper\Helper;
+use Model\SikayetOneriModel;
 use App\Controllers\AuthController;
+use App\Helper\Security;
+
 AuthController::checkAuthentication();
+$user = AuthController::user();
+$siteId = $_SESSION['site_id'] ?? null;
+$model = new SikayetOneriModel();
+$rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
+
+// Helper::dd($rows);
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -13,12 +23,15 @@ AuthController::checkAuthentication();
         </ul>
     </div>
     <div class="page-header-right ms-auto">
-        <a href="index?p=sakin/sikayet-oneri-ekle" class="btn btn-primary">
+        <a href="/sakin/sikayet-oneri-ekle" class="btn btn-primary">
             <i class="feather-plus me-2"></i> Yeni Talep Ekle
         </a>
     </div>
-    </div>
+</div>
 
+<script>
+
+</script>
 <div class="main-content">
     <div class="row">
         <div class="container-xl">
@@ -30,17 +43,49 @@ AuthController::checkAuthentication();
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover table-vcenter card-table">
+                                <table class="table table-hover table-vcenter datatables">
                                     <thead class="table-light">
                                         <tr>
                                             <th>#</th>
                                             <th>Başlık</th>
-                                            <th>İçerik</th>
+                                            <th style="width: 40%;">İçerik</th>
                                             <th>Durum</th>
                                             <th>Oluşturulma</th>
+                                            <th class="text-center" style="width: 10%;">İşlem</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="userComplaintsBody"></tbody>
+                                    <tbody>
+                                        <?php if (!empty($rows)):
+                                            $i = 1;
+                                            foreach ($rows as $r):
+                                                $enc_id = Security::encrypt($r->id);
+                                                $statusBadge = ($r->status === 'Cevaplandı') ? 'success' : (($r->status === 'İnceleniyor') ? 'warning' : 'secondary');
+                                                $contentShort = htmlspecialchars(($r->message ?? ''), ENT_QUOTES, 'UTF-8');
+                                               
+                                                if (mb_strlen($contentShort) > 80) { $contentShort = mb_substr($contentShort, 0, 77) . '...'; }
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $i++; ?></td>
+                                            <td><?php echo htmlspecialchars($r->title ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><?php echo $contentShort ?: '-'; ?></td>
+                                            <td><span class="badge bg-<?php echo $statusBadge; ?>"><?php echo htmlspecialchars($r->status ?? 'Yeni', ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                            <td><?php echo htmlspecialchars($r->created_at ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td>
+                                                <div class="hstack gap-2">
+                                                        <a href="javascript:void(0);" class="avatar-text avatar-md duyuru-goruntule" data-id="<?= $enc_id ?>">
+                                                            <i class="feather-eye"></i>
+                                                        </a>
+                                                        <a href="/sakin/sikayet-oneri-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md sikayet-oneri-duzenle" title="Düzenle">
+                                                            <i class="feather-edit"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0);" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md sikayet-oneri-sil">
+                                                            <i class="feather-trash-2"></i>
+                                                        </a>
+                                                    </div>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; endif; ?>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -51,36 +96,4 @@ AuthController::checkAuthentication();
     </div>
 </div>
 
-<script>
-$(function(){
-  function renderRows(rows){
-    const tbody = $('#userComplaintsBody');
-    tbody.empty();
-    let i=1;
-    rows.forEach(r=>{
-      const contentShort = (r.content || '').length > 80 ? (r.content.substring(0, 77) + '...') : (r.content || '-');
-      const tr = `
-        <tr>
-          <td>${i++}</td>
-          <td>${r.title ?? '-'}</td>
-          <td>${contentShort}</td>
-          <td><span class="badge bg-secondary">${r.status ?? 'Yeni'}</span></td>
-          <td>${r.created_at ?? '-'}</td>
-        </tr>`;
-      tbody.append(tr);
-    });
-  }
-
-  function loadList(){
-    fetch('/pages/duyuru-talep/users/api/APISikayet_oneri.php?action=list')
-      .then(r=>r.json())
-      .then(data=>{
-        if(data.status==='success'){
-          renderRows(data.data || []);
-        }
-      });
-  }
-
-  loadList();
-});
-</script>
+<script src="/pages/duyuru-talep/users/js/sikayet-oneri.js"></script>

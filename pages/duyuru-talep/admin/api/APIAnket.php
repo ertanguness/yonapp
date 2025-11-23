@@ -5,20 +5,22 @@ header('Content-Type: application/json; charset=utf-8');
 use App\Helper\Security;
 use App\Services\Gate;
 use Model\AnketModel;
+use Model\AnketOyModel;
 
 try {
     $skipAuth = defined('UNIT_TEST') && UNIT_TEST === true;
     if (!$skipAuth) { Security::checkLogin(); }
-    if (!$skipAuth && !Gate::can('survey_admin_page')) {
-        http_response_code(403);
-        echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim']);
-        exit;
-    }
+    // if (!$skipAuth && !Gate::can('admin_anket_sayfa')) {
+    //     http_response_code(403);
+    //     echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim']);
+    //     exit;
+    // }
 
     $method = $_SERVER['REQUEST_METHOD'];
     $exit = function(){ if (!(defined('UNIT_TEST') && UNIT_TEST === true)) { exit; } };
     $action = $_GET['action'] ?? $_POST['action'] ?? null;
     $model = new AnketModel();
+    $votes = new AnketOyModel();
 
     if ($method === 'GET' && in_array($action, ['surveys_list','list'])) {
         $rows = $model->all();
@@ -92,6 +94,14 @@ try {
         $exit();
     }
 
+    if ($method === 'POST' && $action === 'change_status') {
+        $id = $_POST['id'] ?? null; $status = $_POST['status'] ?? null;
+        if (!$id || !$status) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID ve durum gerekli']); $exit(); }
+        $model->updateById((int)$id, ['status' => $status]);
+        echo json_encode(['status'=>'success','message'=>'Durum güncellendi']);
+        $exit();
+    }
+
     if (in_array($action, ['delete'])) {
         $idEnc = $_POST['id'] ?? $_GET['id'] ?? null; // Şifreli ID beklenir
         if (!$idEnc) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID gerekli']); $exit(); }
@@ -106,3 +116,38 @@ try {
     http_response_code(500);
     echo json_encode(['status'=>'error','message'=>'Sunucu hatası','error'=> $e->getMessage()]);
 }
+    if ($action === 'vote') {
+        if (!$skipAuth) { Security::checkLogin(); }
+        $surveyId = intval($_POST['survey_id'] ?? $_GET['survey_id'] ?? 0);
+        $option = trim($_POST['option'] ?? $_GET['option'] ?? '');
+        if (!$surveyId || $option === '') { http_response_code(400); echo json_encode(['status'=>'error','message'=>'Geçersiz parametre']); $exit(); }
+        $row = $model->find($surveyId);
+        if (!$row) { http_response_code(404); echo json_encode(['status'=>'error','message'=>'Anket bulunamadı']); $exit(); }
+        $opts = json_decode($row->options_json ?: '[]', true);
+        if (!in_array($option, $opts, true)) { http_response_code(422); echo json_encode(['status'=>'error','message'=>'Geçersiz seçenek']); $exit(); }
+        $userId = $_SESSION['user']->id ?? null;
+        $votes->addVote($surveyId, $option, $userId);
+        $model->updateWhere('id', $surveyId, ['total_votes' => ($row->total_votes ?? 0) + 1]);
+        echo json_encode(['status'=>'success','message'=>'Oy kaydedildi']);
+        $exit();
+    }
+
+    if ($method === 'GET' && $action === 'results') {
+        $surveyId = intval($_GET['survey_id'] ?? 0);
+        if (!$surveyId) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID gerekli']); $exit(); }
+        $row = $model->find($surveyId);
+        if (!$row) { http_response_code(404); echo json_encode(['status'=>'error','message'=>'Kayıt bulunamadı']); $exit(); }
+        $res = $votes->getResults($surveyId);
+        $opts = json_decode($row->options_json ?: '[]', true);
+        $total = $res['total'];
+        $byOpt = [];
+        foreach ($opts as $o) { $byOpt[$o] = 0; }
+        foreach ($res['rows'] as $r) { $byOpt[$r['option_text']] = (int)$r['votes']; }
+        $options = [];
+        foreach ($byOpt as $text => $count) {
+            $percent = $total > 0 ? round(($count * 100.0) / $total) : 0;
+            $options[] = ['option_text'=>$text, 'votes'=>$count, 'percent'=>$percent];
+        }
+        echo json_encode(['status'=>'success','total'=>$total,'options'=>$options]);
+        $exit();
+    }

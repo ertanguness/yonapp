@@ -1,6 +1,19 @@
-<?php 
+<?php
+
 use App\Controllers\AuthController;
+use App\Helper\Alert;
+use App\Helper\Helper;
+use App\Helper\Security;
+use Model\SikayetOneriModel;
+
 AuthController::checkAuthentication();
+
+$id = Security::decrypt($id ?? 0);
+$model = new SikayetOneriModel();
+$sikayet = $id ? $model->find($id) : null;
+$idEnc = $sikayet ? Security::encrypt($sikayet->id) : null;
+$type = $sikayet->type ?? 'Şikayet';
+
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -17,7 +30,7 @@ AuthController::checkAuthentication();
             <i class="feather-arrow-left me-2"></i> Listeye Dön
         </a>
     </div>
-    </div>
+</div>
 
 <div class="main-content">
     <div class="row">
@@ -26,30 +39,35 @@ AuthController::checkAuthentication();
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header border-bottom">
-                            <h5 class="card-title mb-0">Form</h5>
+                            <h5 class="card-title mb-0">Şikayet & Öneri Düzenle</h5>
+                            <button class="btn btn-secondary ms-auto me-2" onclick="history.back()">
+                            <i class="feather-arrow-left me-2"></i>    
+                            İptal</button>
+                            <button class="btn btn-primary" id="btnSubmit">
+                                <i class="feather-send me-2"></i>    
+                            Gönder</button>
                         </div>
                         <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Tür</label>
-                                    <select class="form-select" id="inpType">
-                                        <option value="Şikayet">Şikayet</option>
-                                        <option value="Öneri">Öneri</option>
-                                    </select>
+                            <form id="formSikayetOneri">
+                                <input type="text" id="id" name="id" value="<?= $idEnc ?? '' ?>">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Tür</label>
+                                        <select class="form-select select2" id="inpType" name="inpType">
+                                            <option value="Şikayet" <?= $type == 'Şikayet' ? 'selected' : '' ?>>Şikayet</option>
+                                            <option value="Öneri" <?= $type == 'Öneri' ? 'selected' : '' ?>>Öneri</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label">Başlık</label>
+                                        <input type="text" class="form-control" id="inpTitle" name="inpTitle" placeholder="Kısa başlık" value="<?= $sikayet->title ?? '' ?>">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">İçerik</label>
+                                        <textarea class="form-control" id="inpContent" name="inpContent" rows="6" placeholder="Detaylı açıklama"><?= $sikayet->message ?? '' ?></textarea>
+                                    </div>
                                 </div>
-                                <div class="col-md-8">
-                                    <label class="form-label">Başlık</label>
-                                    <input type="text" class="form-control" id="inpTitle" placeholder="Kısa başlık">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">İçerik</label>
-                                    <textarea class="form-control" id="inpContent" rows="6" placeholder="Detaylı açıklama"></textarea>
-                                </div>
-                            </div>
-                            <div class="mt-4 d-flex justify-content-end gap-2">
-                                <button class="btn btn-secondary" onclick="history.back()">İptal</button>
-                                <button class="btn btn-primary" id="btnSubmit">Gönder</button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -59,27 +77,5 @@ AuthController::checkAuthentication();
 </div>
 
 <script>
-$(function(){
-  $('#btnSubmit').on('click', function(){
-    const type = $('#inpType').val();
-    const title = $('#inpTitle').val().trim();
-    const content = $('#inpContent').val().trim();
-    if(!title || !content){
-      swal.fire({ title:'Hata', text:'Başlık ve içerik zorunludur', icon:'error' });
-      return;
-    }
-    const fd = new FormData();
-    fd.append('action','create');
-    fd.append('type', type);
-    fd.append('title', title);
-    fd.append('content', content);
-    fetch('/pages/duyuru-talep/users/api/APISikayet_oneri.php', { method:'POST', body: fd })
-      .then(r=>r.json())
-      .then(data=>{
-        var titleMsg = data.status === 'success' ? 'Başarılı' : 'Hata';
-        swal.fire({ title: titleMsg, text: data.message, icon: data.status, confirmButtonText:'Tamam' })
-          .then(()=>{ if(data.status==='success'){ window.location.href = 'index?p=sakin/sikayet-oneri-listem'; } });
-      });
-  });
-});
+    
 </script>

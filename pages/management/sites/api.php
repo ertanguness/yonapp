@@ -27,10 +27,9 @@ if ($_POST["action"] == "save_sites") {
 
     $lastInsertId = $Siteler->saveWithAttr($data);
 
-    /* Eğer bu kişinin kaydedilen ilk sitesi ise sesion'da tutulan site_id'yi de güncelle */
-    $ilksiteMi = $Siteler->countWhere("user_id", $_SESSION["user"]->id ) ;
+    $ilksiteMi = $Siteler->countWhere("user_id", $_SESSION["user"]->id );
     if ($ilksiteMi == 1) {
-        $_SESSION["site_id"] = $lastInsertId;
+        $_SESSION["site_id"] = Security::decrypt($lastInsertId);
     }
 
     $res = [
