@@ -71,6 +71,37 @@ if ($_POST["action"] == "save_apartment") {
     echo json_encode($res);
 }
 
+if ($_POST["action"] == "check_block_units") {
+    $block_id = $_POST["block_id"];
+    
+    // Blok bilgilerini al
+    $blokModel = new \Model\BloklarModel();
+    $block = $blokModel->Blok($block_id);
+    
+    if (!$block) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Blok bulunamadı"
+        ]);
+        exit;
+    }
+    
+    // Mevcut daire sayısını al
+    $existingUnits = count($daireModel->BlokDaireleri($block_id));
+    $definedUnits = (int)($block->daire_sayisi ?? 0);
+    
+    echo json_encode([
+        "status" => "success",
+        "existing_units" => $existingUnits,
+        "defined_units" => $definedUnits,
+        "can_add_more" => $existingUnits < $definedUnits,
+        "message" => $existingUnits >= $definedUnits ? 
+            "Bu blokta tanımlı {$definedUnits} adet bağımsız bölüm vardır. Mevcut daireler: {$existingUnits}" : 
+            "Bu blokta {$definedUnits} adet bağımsız bölüm tanımlanmış. Mevcut daireler: {$existingUnits}"
+    ]);
+    exit;
+}
+
 if ($_POST["action"] == "delete_apartment") {
     $daireModel->delete($_POST["id"]);
 

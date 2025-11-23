@@ -172,7 +172,69 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
         const blockSelect = document.getElementById('blockName');
         const flatNumberInput = document.getElementById('flatNumber');
         const hiddenCodeInput = document.getElementById('daire_kodu');
-        const statusCheckbox = document.getElementById('status');
+
+        // Blok seçildiğinde bağımsız bölüm kontrolü
+        function checkBlockUnits() {
+            const blockId = blockSelect.value;
+            if (!blockId) return;
+
+            // AJAX isteği gönder
+            $.ajax({
+                url: '/pages/management/apartment/api.php',
+                type: 'POST',
+                data: {
+                    action: 'check_block_units',
+                    block_id: blockId
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.status === 'success') {
+                        if (!data.can_add_more) {
+                            Swal.fire({
+                                title: '⚠️ Blok Dolu',
+                                html: `<div style="text-align: left;">
+                                    <p><strong>${data.defined_units}</strong> adet bağımsız bölüm tanımlanmış.</p>
+                                    <p><strong>${data.existing_units}</strong> adet daire zaten tanımlı.</p>
+                                    <p class="text-danger">Bu blok için yeni daire tanımlaması yapılamaz!</p>
+                                </div>`,
+                                icon: 'warning',
+                                confirmButtonText: 'Tamam'
+                            });
+                            
+                            // Form alanlarını devre dışı bırak
+                            $('#flatNumber').prop('disabled', true);
+                            $('#floor').prop('disabled', true);
+                            $('#save_apartment').prop('disabled', true);
+                        } else {
+                            // Form alanlarını aktif et
+                            $('#flatNumber').prop('disabled', false);
+                            $('#floor').prop('disabled', false);
+                            $('#save_apartment').prop('disabled', false);
+                            
+                            if (data.existing_units > 0) {
+                                // Uyarı mesajı göster ama izin ver
+                                Swal.fire({
+                                    title: 'ℹ️ Blok Bilgisi',
+                                    html: `<div style="text-align: left;">
+                                        <p>Bu blokta <strong>${data.existing_units}</strong> adet daire tanımlı.</p>
+                                        <p>Toplam bağımsız bölüm sayısı: <strong>${data.defined_units}</strong></p>
+                                        <p class="text-success">Yeni daire tanımlayabilirsiniz.</p>
+                                    </div>`,
+                                    icon: 'info',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            }
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Blok kontrol hatası:', error);
+                }
+            });
+        }
 
         function generateDaireKodu() {
             const selectedOption = blockSelect.options[blockSelect.selectedIndex];
@@ -216,16 +278,22 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
             }
         }
 
-        blockSelect.addEventListener('change', generateDaireKodu);
+        // Blok değiştiğinde kontrol et
+        $('#blockName').on('change', function() {
+            checkBlockUnits();
+            generateDaireKodu();
+        });
         
-        flatNumberInput.addEventListener('blur', function () {
-            if (flatNumberInput.value.trim()) {
+        // Daire numarası değiştiğinde kod üret
+        $('#flatNumber').on('blur', function () {
+            if ($(this).val().trim()) {
                 generateDaireKodu();
             }
         });
 
+        // Sayfa yüklendiğinde kod üret (yeni kayıt için)
         if (!hiddenCodeInput.value) {
-            generateDaireKodu(); // sadece yeni kayıt için üret
+            generateDaireKodu();
         }
     });
 </script>

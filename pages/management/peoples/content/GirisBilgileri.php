@@ -188,7 +188,7 @@ try {
 
 <!-- Kişinin Giriş Kayıtları -->
 <div class="table-responsive">
-    <table class="table table-hover datatables" id="kisiGirisKayitlari">
+    <table class="table table-hover datatables w-100" id="kisiGirisKayitlari">
         <thead>
             <tr class="text-center">
                 <th>#</th>

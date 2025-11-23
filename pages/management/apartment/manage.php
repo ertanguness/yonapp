@@ -148,3 +148,6 @@ $id =  Security::decrypt($id ?? 0);
         }
     });
 </script>
+
+<!-- JavaScript dosyalarını ekle -->
+<script src="/pages/management/apartment/apartment.js"></script>

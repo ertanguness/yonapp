@@ -22,7 +22,7 @@ $DaireTipi = new DefinesModel();
 $daire = $Daireler->DaireBilgisi($_SESSION['site_id'], $id);
 $blok = $Bloklar->Blok($daire->blok_id);
 $kisiler = $Kisiler->DaireKisileri($id);
-$daireTürü = $DaireTipi->daireTipiGetir($_SESSION['site_id'], $daire->daire_tipi);
+$daireTürü = $DaireTipi->daireTipiGetir($daire->daire_tipi);
 
 $site = $Siteler->find($daire->site_id ?? 0);
 if (!$site) {
@@ -79,9 +79,6 @@ if (!$site) {
                 ?>
             </div>
         </div>
-
-
-
         <div class="mb-3 d-flex">
             <div style="width: 130px; font-weight: 600;">Daire Tipi:</div>
             <div><?= $daireTürü->define_name ?></div>
@@ -98,12 +95,9 @@ if (!$site) {
             <div style="width: 130px; font-weight: 600;">Arsa Payı:</div>
             <div><?= htmlspecialchars($daire->arsa_payi) ?></div>
         </div>
-
-
     </div>
-
     <div class="px-4 gap-2 d-flex align-items-center ht-80 border border-end-0 border-gray-2">
         <a href="javascript:void(0);" class="btn btn-danger w-50" data-bs-dismiss="offcanvas">Kapat</a>
-        <a href="index?p=management/apartment/manage&id=<?= Security::encrypt($daire->id) ?>" class="btn btn-primary w-50">Düzenle</a>
+        <a href="daire-duzenle/<?= Security::encrypt($daire->id) ?>" class="btn btn-primary w-50">Düzenle</a>
     </div>
 </div>

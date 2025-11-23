@@ -79,7 +79,7 @@ $router->get('daireleri-excelden-yukle', fn() => require 'pages/management/apart
 |  DAİRE TİPLERİ
 ---------------------------------------------------- */
 $router->get('daire-tipi-listesi', fn() => require 'pages/defines/apartment-type/list.php');
-$router->get('daire-tipi-ekle', fn() => require 'pages/defines/apartment-type/manage.php');
+$router->get('daire-turu-ekle', fn() => require 'pages/defines/apartment-type/manage.php');
 $router->get('daire-tipi-duzenle/{id}', fn($id) => require 'pages/defines/apartment-type/manage.php');
 
 /* ----------------------------------------------------

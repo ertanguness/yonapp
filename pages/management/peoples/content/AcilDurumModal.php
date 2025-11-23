@@ -113,11 +113,14 @@ $daireler = $Daireler->BlokDaireleri($kisiBilgileri->blok_id ?? 0);
                         <label for="yakinlik" class="form-label fw-semibold">Yakınlık Derecesi:</label>
                         <div class="input-group flex-nowrap w-100">
                             <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
-                            <?php echo Form::Select2(
-                                'yakinlik', 
-                                ["" => "Lütfen Yakınlık Durumunu Seçiniz"] + Helper::RELATIONSHIP,
-                                isset($acilKisi->yakinlik) ? $acilKisi->yakinlik : ""
-                            ) ?>
+                            <select class="form-select" name="yakinlik" id="yakinlik">
+                                <?php $seciliYakinlik = $acilKisi->yakinlik ?? null; ?>
+                                <?php foreach (Helper::RELATIONSHIP as $k => $v): ?>
+                                    <option value="<?= htmlspecialchars($k) ?>" <?= ($seciliYakinlik !== null && $seciliYakinlik == $k) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($v) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                            
                         </div>
                     </div>

@@ -29,7 +29,7 @@ $daireTipi = $Tanimlamalar->daireTipiGetir($id);
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <a href="/daire-turu-listesi" class="btn btn-outline-secondary route-link me-2">
+                <a href="/daire-tipi-listesi" class="btn btn-outline-secondary route-link me-2">
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
                 </a>

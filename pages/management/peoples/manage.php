@@ -163,8 +163,8 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
         document.addEventListener('click', function(e) {
             if (e.target && e.target.id === 'ekle_araba') {
                 const kisiId = document.getElementById('kisi_id').value;
-
-                fetch(`pages/management/peoples/content/AracModal.php?kisi_id=${kisiId}`)
+                // Kök path kullan ve çift encode engelle
+                fetch(`/pages/management/peoples/content/AracModal.php?kisi_id=${kisiId}`)
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('modalContainer').innerHTML = html;
@@ -176,7 +176,7 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
 
             if (e.target && e.target.id === 'ekle_acildurum') {
                 const kisiId = document.getElementById('kisi_id').value;
-                fetch(`pages/management/peoples/content/AcilDurumModal.php?kisi_id=${kisiId}`)
+                fetch(`/pages/management/peoples/content/AcilDurumModal.php?kisi_id=${kisiId}`)
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('modalContainer').innerHTML = html;

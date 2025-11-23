@@ -168,6 +168,16 @@ $apartments = $Apartment->SitedekiDaireler($_SESSION['site_id'] ?? null);
     <div id="daireDetay"></div>
 
 </div>
+
+<script>
+// Debug: Check current page and script loading
+console.log('=== APARTMENT LIST PAGE DEBUG ===');
+console.log('Current page (list.php):', document.body.getAttribute('data-page'));
+console.log('jQuery available:', typeof jQuery !== 'undefined');
+console.log('Delete buttons found:', document.querySelectorAll('.delete-apartment').length);
+console.log('Body data-page attribute:', $('body').attr('data-page'));
+console.log('=== END DEBUG ===');
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', function(e) {

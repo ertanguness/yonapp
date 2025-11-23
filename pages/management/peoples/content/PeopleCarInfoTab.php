@@ -10,11 +10,21 @@ $Kisiler = new KisilerModel();
 $Bloklar = new BloklarModel();
 $Daireler = new DairelerModel();
 
-// $id burada dışarıdan gelen kişi ID'si null ise, tüm araçları listeleyecek , $id varsa o araca ait bilgileri getirecek
-$kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac', $id ?? null);
+// Dış kapsamdaki $id (manage.php içinde decrypt edildi) mevcut kişi ID'si; yeni kayıt ise 0/false
+$kisiId = isset($id) ? (int)$id : 0;
+$kisi   = $kisiId ? $Kisiler->KisiBilgileri($kisiId) : null;
+
+// Kişi yoksa yeni kayıt ekranındayız: uyarı ver ve listeyi göstermeyelim
+if (!$kisi) {
+    echo '<div class="alert alert-warning">Kişi seçilmedi veya henüz kaydedilmedi. Araç bilgileri ekleyebilmek için önce kişi kaydını tamamlayın.</div>';
+    return;
+}
+
+// Kişi varsa sadece o kişiye ait araç kayıtlarını getir
+$kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac', $kisiId);
 ?>
 <div class="table-responsive">
-    <table class="table table-hover datatables" id="aracList">
+    <table class="table table-hover datatables w-100" id="aracList">
         <thead>
             <tr class="text-center">
                 <th>#</th>

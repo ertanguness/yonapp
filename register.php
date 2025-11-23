@@ -147,6 +147,12 @@ include './partials/head.php';
                             <input type="text" class="form-control" name="company_name" id="company_name" placeholder="Firma adını giriniz!" value="<?php echo $company_name ?? '' ?>">
                         </div>
 
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                <i class="feather-info me-1"></i>
+                                Şifre en az 6 karakter olmalı, büyük harf, küçük harf, sayı ve özel karakter içermelidir.
+                            </small>
+                        </div>
                         <div class="mb-4 generate-pass">
                             <div class="input-group field">
                                 <input type="password" class="form-control password" id="password" name="password" placeholder="Şifre Giriniz" value="<?php echo $password ?? '' ?>">
@@ -282,6 +288,7 @@ include './partials/head.php';
     </main>
 
 	<script src="assets/vendors/js/lslstrength.min.js"></script>
+	<script src="assets/vendors/js/lslstrength-fixed.js"></script>
 	
 	<script src="assets/vendors/js/cleave.min.js"></script>
 	
