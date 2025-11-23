@@ -56,7 +56,7 @@ if (
     $page == "bildirimler" ||
     $page == "acil-durum-kisileri" || $page == "sikayet-oneri-listesi" || $page == "duyuru-listesi" ||
     $page == "sakin/sikayet-oneri-listem" || $page == "sikayet-oneri-duzenle" ||
-    $page == "anket-listesi" || $page ="duyuru-listesi"
+    $page == "anket-listesi" || $page == "duyuru-listesi"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
@@ -141,6 +141,7 @@ if ($page == 'dues/debit/upload-from-xls') {
 if ($page == 'dues/debit/detail') {
     echo '<script src="pages/dues/debit/js/detail.js"></script>';
 }
+//cho "<script>console.log('".$page."')</script>";
 if ($page == 'excelden-odeme-yukle') {
     echo '<script src="/pages/dues/payment/js/upload.js"></script>';
 }
