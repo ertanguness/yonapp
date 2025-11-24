@@ -1,30 +1,3 @@
-<?php
-$site_id = $_SESSION['site_id'] ?? 0;
-
-use Model\BloklarModel;
-use Model\DefinesModel;
-use Model\DairelerModel;
-use App\Helper\DefinesHelper;
-
-$Block = new BloklarModel();
-$daireModel = new DairelerModel();
-$definesModel = new DefinesModel();
-$DefinesHelper = new DefinesHelper();
-
-$blocks = $Block->SiteBloklari($site_id);
-$daire = $daireModel->DaireBilgisi($site_id, $id ?? 0);
-$apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
-
-
-/** Hiç apartman tipi yoksa uyarı ver */
-if (empty($apartmentTypes)) {
-    echo '<div class="alert alert-warning" role="alert">
-        Hiç apartman tipi yok. Lütfen önce apartman tipini ekleyin.
-    </div>';
-}
-
-
-?>
 
 <div class="card-body apartment-info">
     <div class="row mb-4 align-items-center">

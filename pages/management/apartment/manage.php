@@ -1,9 +1,40 @@
 <?php
 
 use App\Helper\Security;
+use Model\BloklarModel;
+use Model\DefinesModel;
+use Model\DairelerModel;
+use App\Helper\DefinesHelper;
+use App\Services\FlashMessageService;
+
+$Block = new BloklarModel();
+$daireModel = new DairelerModel();
+$definesModel = new DefinesModel();
+$DefinesHelper = new DefinesHelper();
+
 
 $enc_id = $id ?? 0;
 $id =  Security::decrypt($id ?? 0);
+$site_id = $_SESSION['site_id'] ?? 0;
+
+
+$blocks = $Block->SiteBloklari($site_id);
+$daire = $daireModel->DaireBilgisi($site_id, $id ?? 0);
+$apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
+
+
+/** Hiç apartman tipi yoksa uyarı ver */
+if (empty($apartmentTypes)) {
+    FlashMessageService::add(
+                       'warning', 
+                      'Bu site için apartman tipi bulunmamaktadır. Lütfen apartman tipini ekleyin.', 
+                    'apartman-tipi-bulunamadi');
+    
+}
+
+
+
+
 
 
 ?>
