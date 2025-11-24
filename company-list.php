@@ -648,9 +648,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
     <!-- Topbar -->
     <div class="page-content">
 
-        <?php
-        include_once 'partials/_flash_messages.php';
-        ?>
+        <?php include_once 'partials/_flash_messages.php';  ?>
 
         <div class="topbar mb-3">
             <div class="topbar-container">

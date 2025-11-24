@@ -27,8 +27,8 @@ $apartmentTypes = $definesModel->getDefinesTypes($site_id, 3);
 if (empty($apartmentTypes)) {
     FlashMessageService::add(
                        'warning', 
-                      'Bu site için apartman tipi bulunmamaktadır. Lütfen apartman tipini ekleyin.', 
-                    'apartman-tipi-bulunamadi');
+                      'Uyarı!', 
+                    'Bu site için apartman tipi bulunmamaktadır. Lütfen apartman tipini ekleyin.');
     
 }
 
@@ -93,7 +93,12 @@ if (empty($apartmentTypes)) {
 <div class="main-content">
 
     <div class="row">
+
         <div class="container-xl">
+        <!-- Hata Mesajlarını burada göster -->
+        <?php include_once 'partials/_flash_messages.php';  ?>
+
+
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
