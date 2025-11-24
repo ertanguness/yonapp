@@ -1,3 +1,7 @@
+<?php 
+
+?>
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">

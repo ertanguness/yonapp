@@ -44,6 +44,7 @@ if($_POST['action'] == 'kasa_kaydet'){
             "site_id" => $site_id,
             "kasa_adi" => $_POST['kasa_adi'],
             "iban" => $_POST['iban'],
+            "varsayilan_mi" => $_POST['varsayilan_mi'] ?? 0,
             "aciklama" => $_POST['aciklama'],
            
         ];

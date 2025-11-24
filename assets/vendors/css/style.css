@@ -484,3 +484,31 @@ table.dataTable thead th.search {
 table.dataTable thead th.search input {
   text-align: center;
 }
+.dt-empty-modern {
+    text-align: center;
+    padding: 80px 20px;
+    color: #444;
+    font-family: Inter, Arial, sans-serif;
+}
+
+.dt-empty-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
+    stroke: #555;
+    opacity: .6;
+}
+
+.dt-empty-modern h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: #222;
+    font-weight: 600;
+}
+
+.dt-empty-modern p {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+

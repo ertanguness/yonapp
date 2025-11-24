@@ -12,7 +12,7 @@ $(document).ready(function () {
       info: true,
       paging: true,
       autoWidth: true,
-      dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+      dom: 't<"row m-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
       language: {
         //url: "/assets/js/tr.json",
       },
@@ -32,6 +32,37 @@ $(document).ready(function () {
       serverSide: true,
       processing: true,
       deferRender: true,
+        language: {
+        decimal: "",
+        emptyTable: `
+        <div class="dt-empty-modern">
+           <svg data-id="3" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-gray-500 dark:text-gray-400"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+
+            <h4 class="mt-2">Herhangi bir kayıt yok!</h4>
+            <p>Yeni bir kayıt oluşturabilirsiniz.</p>
+        </div>
+    `,
+        info: "_TOTAL_ kayıttan _START_ - _END_ gösteriliyor",
+        infoEmpty: "Kayıt bulunamadı",
+        infoFiltered: "(toplam _MAX_ kayıttan filtrelendi)",
+        infoPostFix: "",
+        thousands: ",",
+        lengthMenu: "_MENU_ kayıt göster",
+        loadingRecords: "Yükleniyor...",
+        processing: " İşleniyor...",
+        search: "Arama:",
+        zeroRecords: "Eşleşen kayıt bulunamadı",
+        paginate: {
+          first: "İlk",
+          last: "Son",
+          next: "Sonraki",
+          previous: "Önceki"
+        },
+        aria: {
+          sortAscending: ": artan sütuna sırala",
+          sortDescending: ": azalan sütuna sırala"
+        }
+      },
       ajax: {
         url: "/pages/finans-yonetimi/gelir-gider/server_side_api.php",
         type: "POST",
@@ -77,7 +108,14 @@ $(document).ready(function () {
       paging: true,
       language: {
         decimal: "",
-        emptyTable: "Tablo boş",
+        emptyTable: `
+        <div class="dt-empty-modern">
+           <svg data-id="3" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-gray-500 dark:text-gray-400"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+
+            <h4 class="mt-2">Herhangi bir kayıt yok!</h4>
+            <p>Yeni bir kayıt oluşturabilirsiniz.</p>
+        </div>
+    `,
         info: "_TOTAL_ kayıttan _START_ - _END_ gösteriliyor",
         infoEmpty: "Kayıt bulunamadı",
         infoFiltered: "(toplam _MAX_ kayıttan filtrelendi)",
@@ -100,7 +138,7 @@ $(document).ready(function () {
         }
       },
 
-      dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+      dom: 't<"row m-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
       drawCallback: function (settings) {},
       ...getTableSpecificOptions(),
 

@@ -7,6 +7,7 @@ use App\Helper\Helper;
 use App\Services\Gate;
 use Model\KasaModel;
 use Model\KasaHareketModel;
+use App\Services\FlashMessageService;
 
 
 Gate::authorizeOrDie("income_expense_add_update");
@@ -18,6 +19,13 @@ $KisiHelper = new KisiHelper();
 // Kasa ID'yi belirle
 $kasa_id = null;
 $kasa_hareketleri = [];
+
+/** Sitenin herhangi bir kasası yoksa kasa ekleme sayfasına gönder */
+if (!$Kasa->varsayilanKasa()) {
+    FlashMessageService::add("warning", "Uyarı!", "Sitenizde herhangi bir kasa yok. Lütfen önce kasa ekleyin.");
+    header("Location: /kasa-ekle");
+    exit;
+}
 
 //1. Önce session'dan kontrol et
 if (isset($_SESSION["kasa_id"]) && !empty($_SESSION["kasa_id"])) {

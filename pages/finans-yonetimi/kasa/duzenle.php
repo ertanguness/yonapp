@@ -59,6 +59,10 @@ $kasa = $KasaModel->find($id);
     ?>
     <div class="row">
         <div class="container-xl">
+
+        <!-- /** Flashmessage dahil et */ -->
+         <?php include 'partials/_flash_messages.php'; ?>
+
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
