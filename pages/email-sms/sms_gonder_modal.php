@@ -5,6 +5,9 @@ use Model\KisilerModel;
 use Model\TahsilatModel;
 use Model\FinansalRaporModel;
 use Model\SitelerModel;
+use App\Helper\SettingsHelper;
+
+
 
 use App\Services\Gate;
 
@@ -17,6 +20,8 @@ $SiteModel = new SitelerModel();
 $KisiModel = new KisilerModel();
 $TahsilatModel = new TahsilatModel();
 $FinansalRaporModel = new FinansalRaporModel();
+$SettingsHelper = new SettingsHelper();
+
 
 
 $id = Security::decrypt($_GET['id'] ?? 0);
@@ -203,11 +208,7 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
                 <form id="smsForm">
                     <!-- Gönderen Adı (Alfanümerik) -->
                     <div class="mb-4">
-                        <select name="senderId" id="senderId" class="form-control select2">
-                            <option value="USKUPEVLSIT" selected>USKUPEVLSIT</option>
-                            <option value="FIRMAUNVANI">FIRMAUNVANI</option>
-                            <option value="Diger">Diğer</option>
-                        </select>
+                        <?php echo $SettingsHelper->getMessageSubjects(); ?>
                     </div>
 
                     <!-- Alıcılar (Tag Sistemi) -->

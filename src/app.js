@@ -2,9 +2,6 @@ let table;
 let row;
 let preloader;
 $(document).ready(function () {
-
-
-
   const tahsilatTable = $("#tahsilatTable");
   const $gg = $("#gelirGiderTable");
   if ($gg.length) {
@@ -15,7 +12,7 @@ $(document).ready(function () {
       info: true,
       paging: true,
       autoWidth: true,
-      dom: 'f t<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+      dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
       language: {
         //url: "/assets/js/tr.json",
       },
@@ -38,7 +35,9 @@ $(document).ready(function () {
       ajax: {
         url: "/pages/finans-yonetimi/gelir-gider/server_side_api.php",
         type: "POST",
-        data: function (d) { d.action = "datatable-list"; },
+        data: function (d) {
+          d.action = "datatable-list";
+        },
         dataSrc: "data"
       },
       ordering: false,
@@ -49,26 +48,59 @@ $(document).ready(function () {
         attachDtColumnSearch(api, tableId);
         api.columns.adjust().responsive.recalc();
         api.draw();
-      },
+      }
     });
 
-    $(window).on('resize.gg', function(){
-      try { table.columns.adjust().responsive.recalc(); } catch(e) {}
+    $(window).on("resize.gg", function () {
+      try {
+        table.columns.adjust().responsive.recalc();
+      } catch (e) {}
     });
   }
 
   // bazı tabloları kendi sayfasında başlatmak istediğim için burada başlatma
-  const exitstsTables = ["mizanTable", "gelirGiderTable", "tahsilatTable","notificationsList"];
-  const $others = $(".datatables, .datatable").not("#" + exitstsTables.join(", #"));
+  const exitstsTables = [
+    "mizanTable",
+    "gelirGiderTable",
+    "tahsilatTable",
+    "notificationsList"
+  ];
+  const $others = $(".datatables, .datatable").not(
+    "#" + exitstsTables.join(", #")
+  );
 
-  if ($others.length>0) {
+  if ($others.length > 0) {
     // console.log($others);
     table = $others.DataTable({
       responsive: true,
       info: true,
       paging: true,
+      language: {
+        decimal: "",
+        emptyTable: "Tablo boş",
+        info: "_TOTAL_ kayıttan _START_ - _END_ gösteriliyor",
+        infoEmpty: "Kayıt bulunamadı",
+        infoFiltered: "(toplam _MAX_ kayıttan filtrelendi)",
+        infoPostFix: "",
+        thousands: ",",
+        lengthMenu: "_MENU_ kayıt göster",
+        loadingRecords: "Yükleniyor...",
+        processing: " İşleniyor...",
+        search: "Arama:",
+        zeroRecords: "Eşleşen kayıt bulunamadı",
+        paginate: {
+          first: "İlk",
+          last: "Son",
+          next: "Sonraki",
+          previous: "Önceki"
+        },
+        aria: {
+          sortAscending: ": artan sütuna sırala",
+          sortDescending: ": azalan sütuna sırala"
+        }
+      },
+
       dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
-      language: {},
       drawCallback: function (settings) {},
       ...getTableSpecificOptions(),
 
@@ -77,15 +109,16 @@ $(document).ready(function () {
         var tableId = settings.sTableId;
         attachDtColumnSearch(api, tableId);
         api.columns.adjust().responsive.recalc();
-      },
+      }
     });
 
-    $(window).on('resize.dt', function(){
-      try { table.columns.adjust().responsive.recalc(); } catch(e) {}
+    $(window).on("resize.dt", function () {
+      try {
+        table.columns.adjust().responsive.recalc();
+      } catch (e) {}
     });
   }
 });
-
 
 $("#exportExcel").on("click", function () {
   table.button(".buttons-excel").trigger();
@@ -93,7 +126,7 @@ $("#exportExcel").on("click", function () {
 
 function getTableSpecificOptions() {
   return {
-    ordering: document.getElementById("gelirGiderTable") ? false : true,
+    ordering: document.getElementById("gelirGiderTable") ? false : true
   };
 }
 
@@ -102,27 +135,41 @@ function attachDtColumnSearch(api, tableId) {
   api.columns().every(function () {
     let column = this;
     let title = column.header().textContent;
-    if (title != "İşlem" && title != "Seç" && title != "#" && $(column.header()).find('input[type="checkbox"]').length === 0) {
+    if (
+      title != "İşlem" &&
+      title != "Seç" &&
+      title != "#" &&
+      $(column.header()).find('input[type="checkbox"]').length === 0
+    ) {
       let input = document.createElement("input");
       input.placeholder = title;
       input.classList.add("form-control", "form-control-sm");
       input.setAttribute("autocomplete", "off");
-      const th = $('<th class="search text-center align-middle">').append(input);
-      $("#" + tableId + " .search-input-row").append(th);
+      const th = $('<th class="search text-center align-middle">').append(
+        input
+      );
+      $("#" + tableId + " thead .search-input-row").append(th);
       $(input).on("keyup change", function () {
         if (column.search() !== this.value) {
           column.search(this.value).draw();
         }
       });
-      const isColumnVisible = column.visible() && !$(column.header()).hasClass("dtr-hidden");
-      if (!isColumnVisible) { th.hide(); }
+      const isColumnVisible =
+        column.visible() && !$(column.header()).hasClass("dtr-hidden");
+      if (!isColumnVisible) {
+        th.hide();
+      }
     } else {
-      $("#" + tableId + " .search-input-row").append("<th></th>");
+      $("#" + tableId + " thead .search-input-row").append("<th></th>");
     }
   });
   api.on("responsive-resize", function (e, datatable, columns) {
-    $("#" + tableId + " .search-input-row th").each(function (index) {
-      if (columns[index]) { $(this).show(); } else { $(this).hide(); }
+    $("#" + tableId + " thead .search-input-row th").each(function (index) {
+      if (columns[index]) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
     });
   });
   var state = api.state.loaded();
@@ -145,24 +192,6 @@ function attachDtColumnSearch(api, tableId) {
 if ($(".select2").length > 0) {
   $(".select2").select2();
 
-  // $("#products").select2({
-  //   dropdownParent: $(".modal")
-  // });
-  // $(".modal .select2").select2({
-  //   dropdownParent: $(".modal")
-  // });
-  // $("#amount_money").select2({
-  //   dropdownParent: $(".modal")
-  // });
-  // // $("#firm_cases").select2({
-  // //   dropdownParent: $(".modal")
-  // // });
-  // $(
-  //   "#wage_cut_month, #wage_cut_year,#income_month, #income_year, #payment_month, #payment_year"
-  // ).select2({
-  //   dropdownParent: $(".modal")
-  // });
-
   // Modal'daki select2'lerin dropdown parent'ını modal yap
   $(".modal .select2").each(function () {
     $(this).select2({ dropdownParent: $(this).parent() });
@@ -178,15 +207,15 @@ $(document).ready(function () {
         "Arial",
         "Arial Black",
         "Comic Sans MS",
-        "Courier New",
+        "Courier New"
       ],
       addDefaultFonts: "inter",
       callbacks: {
         onInit: function () {
           $(".summernote").summernote("height", summernoteHeight);
           $(".summernote").summernote("fontName", "inter");
-        },
-      },
+        }
+      }
     });
   }
 });
@@ -194,11 +223,8 @@ $(document).ready(function () {
 if ($(".flatpickr:not(.time-input)").length > 0) {
   $(".flatpickr:not(.time-input)").flatpickr({
     dateFormat: "d.m.Y",
-    locale: "tr", // locale for this instance only
+    locale: "tr" // locale for this instance only
   });
-
-
-
 }
 
 function formatNumber(num) {
@@ -218,11 +244,11 @@ $(document).on("click", ".route-link", function () {
 });
 if ($(".select2").length > 0) {
   $(".select2.islem").select2({
-    tags: true,
+    tags: true
   });
 }
 
-function dtSearchInput(tableId, column, value) { }
+function dtSearchInput(tableId, column, value) {}
 
 //Geri dönüş yapmadan kayıt silme işlemi
 function deleteRecord(
@@ -254,7 +280,7 @@ function deleteRecord(
   AlertConfirm(confirmMessage).then((result) => {
     fetch(url, {
       method: "POST",
-      body: formData,
+      body: formData
     })
       //Gelen yanıtı json'a çevir
       .then((response) => response.json())
@@ -273,7 +299,7 @@ function deleteRecord(
         Swal.fire({
           title: title,
           html: data.message,
-          icon: icon,
+          icon: icon
         }).then((result) => {
           if (result.isConfirmed) {
             if (data.status == "success") tableRow.remove().draw(false);
@@ -317,7 +343,7 @@ async function deleteRecordByReturn(
     try {
       const response = await fetch(url, {
         method: "POST",
-        body: formData,
+        body: formData
       });
       const data = await response.json();
 
@@ -333,7 +359,7 @@ async function deleteRecordByReturn(
       await Swal.fire({
         title: title,
         text: data.message,
-        icon: icon,
+        icon: icon
       });
 
       if (data.status == "success") {
@@ -357,7 +383,7 @@ function AlertConfirm(confirmMessage = "Emin misiniz?") {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Evet, Sil!",
+      confirmButtonText: "Evet, Sil!"
     }).then((result) => {
       if (result.isConfirmed) {
         resolve(true); // Kullanıcı onayladı, işlemi devam ettir
@@ -368,14 +394,13 @@ function AlertConfirm(confirmMessage = "Emin misiniz?") {
   });
 }
 
-
 function getCurrentPageSlug() {
   const slug = window.location.pathname.match(/\/([^\/=]+)(?:\/|=|$)/);
-  return slug ? slug[1] : '';
+  return slug ? slug[1] : "";
 }
 
 $(document).on("change", "#mySite", function () {
-  var page = getCurrentPageSlug() || 'ana-sayfa';
+  var page = getCurrentPageSlug() || "ana-sayfa";
   window.location = "/set-session.php?p=" + page + "&site_id=" + $(this).val();
 });
 
@@ -388,7 +413,7 @@ function getTowns(cityId, targetElement) {
   console.log("Fetching towns for city ID:", cityId);
   fetch("api/il-ilce.php", {
     method: "POST",
-    body: formData,
+    body: formData
   })
     .then((response) => response.json())
     .then((data) => {
@@ -406,7 +431,7 @@ function checkPersonId(id) {
     swal.fire({
       title: "Hata",
       icon: "warning",
-      text: "Öncelikle personeli kaydetmeniz gerekir!",
+      text: "Öncelikle personeli kaydetmeniz gerekir!"
     });
     return false;
   }
@@ -418,7 +443,7 @@ function checkId(id, item) {
     swal.fire({
       title: "Hata",
       icon: "warning",
-      text: "Öncelikle " + item + " kaydetmeniz gerekir!",
+      text: "Öncelikle " + item + " kaydetmeniz gerekir!"
     });
     return false;
   }
@@ -450,7 +475,7 @@ if ($(".money").length > 0) {
       digits: 2,
       autoGroup: true,
       rightAlign: false,
-      removeMaskOnSubmit: true,
+      removeMaskOnSubmit: true
     });
   });
 
@@ -458,7 +483,7 @@ if ($(".money").length > 0) {
   $(document).on("focus", ".flatpickr:not(.time-input)", function () {
     $(this).inputmask("99.99.9999", {
       placeholder: "gg.aa.yyyy",
-      clearIncomplete: true,
+      clearIncomplete: true
     });
   });
 }
@@ -489,7 +514,7 @@ $.validator.setDefaults({
     } else {
       error.insertAfter(element);
     }
-  },
+  }
 });
 
 //Jquery validate ile yapılan doğrulamalarda para birimi formatı için
@@ -527,16 +552,18 @@ function addCustomValidationValidValue() {
  * Kısayol Tuşları atamak için fonksiyon
  */
 function setupShortcut(shortcutKey, callback) {
-  $(document).on('keydown', function (event) {
+  $(document).on("keydown", function (event) {
     // Ctrl + <shortcutKey> kombinasyonunu kontrol et
-    if (event.ctrlKey && event.key.toLowerCase() === shortcutKey.toLowerCase()) {
+    if (
+      event.ctrlKey &&
+      event.key.toLowerCase() === shortcutKey.toLowerCase()
+    ) {
       event.preventDefault(); // Varsayılan işlemi engelle
 
       // Dışarıdan gelen callback fonksiyonunu çalıştır
       callback();
     }
   });
-
 }
 // Kullanım örneği:
 //setupShortcut('s', function() {
@@ -551,21 +578,28 @@ function setupShortcut(shortcutKey, callback) {
  * @param {string} loadingText - Yükleme sırasında gösterilecek metin
  * @param {string} normalText - Normal durumda gösterilecek metin
  */
-function setButtonLoading(buttonSelector, isLoading = false, loadingText = 'Yükleniyor...', normalText = null) {
+function setButtonLoading(
+  buttonSelector,
+  isLoading = false,
+  loadingText = "Yükleniyor...",
+  normalText = null
+) {
   var $button = $(buttonSelector);
 
   if (isLoading) {
     // Orijinal metni sakla (eğer normalText verilmemişse)
     if (!normalText) {
-      $button.data('original-text', $button.html());
+      $button.data("original-text", $button.html());
     }
 
     // Yükleme durumunu ayarla
-    $button.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${loadingText}`);
+    $button.html(
+      `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${loadingText}`
+    );
     $button.prop("disabled", true);
   } else {
     // Normal duruma döndür
-    var originalText = normalText || $button.data('original-text') || 'Kaydet';
+    var originalText = normalText || $button.data("original-text") || "Kaydet";
     $button.html(originalText);
     $button.prop("disabled", false);
   }

@@ -298,20 +298,25 @@ Object.defineProperty(messageTextarea, 'value', {
             updateCharCounter();
           });
        
+      }else{
+        swal.fire({
+          title: "Hata!",
+          text: data.message,
+          icon: "error",
+          confirmButtonText: "Tamam"
+        })
+    
       }
     })
     .catch((error) => {
       console.error('SMS gönderme hatası:', error);
-      if (typeof Swal !== 'undefined') {
+
         Swal.fire({
           title: "Hata!",
           text: "SMS gönderilirken bir sorun oluştu.",
           icon: "error",
           confirmButtonText: "Tamam"
         });
-      } else {
-        alert("SMS gönderilirken bir sorun oluştu.");
-      }
     });
   }
 

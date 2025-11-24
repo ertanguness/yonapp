@@ -39,6 +39,10 @@ if ($q !== '') {
 }
 
 $where = '';
+// site filtresi
+$siteId = isset($_SESSION['site_id']) ? (int)$_SESSION['site_id'] : 0;
+if ($siteId > 0) { $conds[] = 'site_id = :site_id'; $binds[':site_id'] = $siteId; }
+
 if ($conds) { $where = 'WHERE ' . implode(' AND ', $conds); }
 
 $sql = "SELECT id, type, recipients, subject, message, status, created_at FROM notifications $where ORDER BY id DESC";

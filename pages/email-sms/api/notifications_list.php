@@ -41,8 +41,12 @@ if ($isDataTables) {
 // Basit listeleme (server-side değilse)
 $db = Db::getInstance()->connect();
 try {
-    $stmt = $db->prepare("SELECT id, type, recipients, subject, message, status, created_at FROM notifications ORDER BY id DESC");
-    $stmt->execute();
+    $stmt = $db->prepare("SELECT id, type, recipients, subject, message, status, created_at FROM notifications 
+        WHERE site_id = :site_id
+        ORDER BY id DESC");
+    $stmt->execute([
+        ':site_id' => $_SESSION['site_id']
+    ]);
     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
     echo json_encode($rows, JSON_UNESCAPED_UNICODE);
 } catch (\Throwable $e) {

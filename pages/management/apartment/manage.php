@@ -28,14 +28,10 @@ if (empty($apartmentTypes)) {
     FlashMessageService::add(
                        'warning', 
                       'Uyarı!', 
-                    'Bu site için apartman tipi bulunmamaktadır. Lütfen apartman tipini ekleyin.');
-    
+                    'Bu site için daire tipi bulunmamaktadır. Lütfen daire tipini ekleyin.Daire tipi eklemek için <a href="/daire-turu-ekle" target="_blank">tıklayınız</a>');
+   
+   
 }
-
-
-
-
-
 
 ?>
 <div class="page-header">
@@ -97,6 +93,8 @@ if (empty($apartmentTypes)) {
         <div class="container-xl">
         <!-- Hata Mesajlarını burada göster -->
         <?php include_once 'partials/_flash_messages.php';  ?>
+        
+       
 
 
             <div class="row row-deck row-cards">

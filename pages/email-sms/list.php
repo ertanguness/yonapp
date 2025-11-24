@@ -133,19 +133,31 @@
                     Swal.fire({ title: 'Hata', text: 'Bildirimler yüklenemedi.', icon: 'error' });
                 }
             },
+            serverSide: false,
+            processing: true,
             responsive: true,
             autoWidth: false,
             dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
-        
+            language: {
+                emptyTable: "Gösterilecek kayıt yok",
+                info: "Toplam _TOTAL_ kayıt içerisinden _START_ - _END_ gösteriliyor",
+                infoEmpty: "Kayıt yok",
+                lengthMenu: "Göster _MENU_ kayıt",
+                loadingRecords: "Yükleniyor...",
+                processing: "Yükleniyor...",
+                search: "Ara:",
+                paginate: { previous: "Önceki", next: "Sonraki" }
+            },
+            
             order: [[0,'desc']],
             columns: [
                 { data: 'id' },
                 { data: 'type', render: function(d){ var i=d==='sms'?'feather-smartphone':'feather-mail'; var c=d==='sms'?'bg-soft-success text-success':'bg-soft-primary text-primary'; return '<span class="badge '+c+'"><i class="'+i+' me-1"></i>'+esc(d||'')+'</span>'; } },
                 { data: 'recipients', render: function(d){ var arr; try{ arr=JSON.parse(d); }catch(e){ arr=d?[d]:[]; } if(!Array.isArray(arr)) arr=d?[d]:[]; var shown=arr.slice(0,3).map(function(s){ return '<span class="notif-chip-sm" title="'+esc(s)+'">'+esc(s)+'</span>'; }).join(' '); var more=arr.length>3? '<span class="notif-chip-sm" title="'+esc(arr.join(', '))+'">+'+(arr.length-3)+'</span>':''; return shown+(more?(' '+more):''); } },
                 { data: 'subject', render: function(d){ return '<div class="truncate-200 fw-semibold">'+esc(d||'—')+'</div>'; } },
-                { data: 'message', render: function(d){ var t=toText(d||''); return '<div class="truncate-300 text-muted">'+esc(t)+'</div>'; } },
-                { data: 'created_at', render: function(d){ return '<span class="text-muted">'+esc(d||'')+'</span>'; } },
-                { data: 'status', render: function(d){ var ok=d==='success'; var cls=ok?'bg-soft-success text-success':'bg-soft-danger text-danger'; var txt=ok?'Başarılı':'Hata'; return '<span class="badge '+cls+'">'+txt+'</span>'; } },
+                { data: 'message', render: function(d){ var t=toText(d||''); return '<div class="truncate-300 text-muted">'+esc(t||'')+'</div>'; } },
+                { data: 'created_at', render: function(d){ var val=String(d||''); var pretty=val.replace('T',' ').replace(/\.\d+Z?$/,''); return '<span class="text-muted">'+esc(pretty)+'</span>'; } },
+                { data: 'status', render: function(d){ var s=String(d||'').toLowerCase(); var ok=(s==='success'||s==='başarılı'||s==='00'); var cls=ok?'bg-soft-success text-success':'bg-soft-danger text-danger'; var txt=ok?'Başarılı':'Hata'; return '<span class="badge '+cls+'">'+txt+'</span>'; } },
                 { data: null, render: function(row){ return '<button class="btn btn-sm btn-outline-secondary btn-detail-notification">Detay</button>'; } }
             ],
             initComplete: function (settings, json) {
@@ -198,7 +210,7 @@
     .notif-chip-sm{ background:#f8f9fa; border:1px solid #e9ecef; border-radius:12px; padding:3px 8px; font-size:11px; }
     .truncate-200{ max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .truncate-300{ max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #notificationsList thead .search-input-row th{ padding:6px; background:#f8f9fa; }
+    #notificationsList thead .search-input-row th{ padding:6px; background:#f8f9fa; border-bottom:1px solid #e9ecef; }
     #notificationsList thead .search-input-row input{ height:34px; }
     .dataTables_wrapper .dataTables_filter input{ border-radius:6px; }
 </style>

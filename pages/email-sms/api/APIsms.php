@@ -46,6 +46,7 @@ if (SmsGonderService::gonder(
         
         $data = [
             'type' => 'sms',
+            'site_id' => $_SESSION['site_id'],
             'recipients' => json_encode($recipients, JSON_UNESCAPED_UNICODE),
             'subject' => null,
             'message' => $messageText,

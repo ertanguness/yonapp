@@ -1,4 +1,5 @@
 <?php
+
 namespace Model;
 
 
@@ -16,19 +17,40 @@ class SettingsModel extends Model
 
     /** 
      * Sitenin tüm ayarlarını anahtar-değer çifti olarak döner
-     * @return object|null
+     * @return array|null
      */
     public function getAllSettingsAsKeyValue()
     {
+
         $siteId = isset($_SESSION['site_id']) ? (int) $_SESSION['site_id'] : 0;
         if ($siteId === 0) {
             return null;
         }
 
-        $sql = $this->db->prepare("SELECT set_name, set_value FROM $this->table WHERE site_id = ?");
+        
+        $sql = $this->db->prepare("SELECT set_name, set_value 
+                                            FROM $this->table 
+                                            WHERE site_id = ?");
         $sql->execute([$siteId]);
-        return $sql->fetchAll(PDO::FETCH_KEY_PAIR) ?? null;
+        return $sql->fetchAll(PDO::FETCH_KEY_PAIR);
     }
+
+    /** Sitenin Mesaj Gonderen Başlıklarını döndürür */
+    public function getMessageSenders()
+    {
+        $siteId = isset($_SESSION['site_id']) ? (int) $_SESSION['site_id'] : 0;
+        if ($siteId === 0) {
+            return null;
+        }
+        $sql = "SELECT set_value FROM {$this->table} 
+                WHERE site_id = :site_id 
+                AND set_name = 'sms_baslik'";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['site_id' => $siteId]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+
 
     public function getSettings($set_name)
     {

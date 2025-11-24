@@ -4,6 +4,9 @@ namespace App\Services;
 
 use Exception;
 use Model\SettingsModel;
+use App\Services\FileLogger;
+
+$logger = new FileLogger('sms_gonder.log');
 
 
 
@@ -25,16 +28,25 @@ class SmsGonderService
             // API bilgilerini al (öncelik: env > ayarlar > varsayılan)
             $Settings = new SettingsModel();
             $allSettings = $Settings->getAllSettingsAsKeyValue();
+            $logger->info(json_encode([
+                "site_id" => $_SESSION['site_id'],
+                "settings" => $allSettings
+            ]));
 
-            $username = $_ENV['NETGSM_USER'] ?? $allSettings['sms_api_kullanici'] ?? '';
-            $password = $_ENV['NETGSM_PASS'] ?? $allSettings['sms_api_sifre'] ?? '';
-            $msgheader = $gondericiBaslik ?? $_ENV['NETGSM_HEADER'] ?? $allSettings['sms_baslik'] ?? 'YONAPP';
-
+            $username =  $allSettings['sms_api_kullanici'] ?? '';
+            $password =  $allSettings['sms_api_sifre'] ?? '';
+            $msgheader = $gondericiBaslik ?? $allSettings['sms_baslik'] ?? 'YONAPP';
+         
             if (empty($username) || empty($password)) {
-                throw new Exception("SMS API kimlik bilgileri eksik.");
-            }
+                $response = json_encode([
+                    'status' => 'error',
+                    'message' => 'SMS API kimlik bilgileri eksik.'
+                ]);
+                echo ($response);
+                exit;
+                //throw new Exception("SMS API kimlik bilgileri eksik.");
 
-          //  echo "<pre>Gönderici: $msgheader\nKullanıcı: $username\nŞifre: " . str_repeat('*', strlen($password)) . "\n</pre>"; exit;
+            }
 
             // Mesaj dizisini oluştur
             $messagesPayload = [];
