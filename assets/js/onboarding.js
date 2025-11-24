@@ -54,8 +54,8 @@ const renderModal = (data) => {
   )).join('');
   const html = `
     <div class="onb-overlay" style="position:fixed;inset:0;background:rgba(17,24,39,.55);backdrop-filter:blur(2px);z-index:9998"></div>
-    <div class="onb-modal" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;width:680px;max-width:92%;">
-      <div class="card shadow-lg" style="border-radius:14px;overflow:hidden;">
+    <div class="onb-modal" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:9999;">
+      <div class="card shadow-lg" style="width:680px;max-width:100%;max-height:90vh;border-radius:14px;overflow:hidden;">
         <div class="card-header" style="background:linear-gradient(90deg,#0ea5e9,#6366f1);color:#fff;">
           <div class="d-flex align-items-center gap-2">
             <span class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-20 rounded" style="width:28px;height:28px;">
@@ -64,7 +64,7 @@ const renderModal = (data) => {
             <div class="fw-semibold">İlk Kurulum Checklist</div>
           </div>
         </div>
-        <div class="card-body">
+        <div class="card-body" style="max-height:60vh;overflow:auto;">
           <div class="mb-2">
             <div class="progress" style="height: 14px;background:#eef2ff;">
               <div class="progress-bar" role="progressbar" style="width:${progressPct}%;background:linear-gradient(90deg,#22c55e,#06b6d4);">${progressPct}%</div>
