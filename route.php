@@ -250,6 +250,11 @@ $router->get('rapor/{tarih}', function ($tarih) {
 $router->get('ayarlar', fn() => require 'pages/settings/manage.php');
 
 /* ----------------------------------------------------
+|  ONBOARDING / İLK KURULUM DURUMU
+---------------------------------------------------- */
+$router->get('ilk-kurulum-durumu', fn() => require 'pages/onboarding/status.php');
+
+/* ----------------------------------------------------
 |  AUTH – LOGIN – PROFILE
 ---------------------------------------------------- */
 $router->get('sign-in', fn() => require 'sign-in.php');

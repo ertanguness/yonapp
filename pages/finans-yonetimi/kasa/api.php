@@ -11,6 +11,7 @@ use Model\KasaModel;
 use Model\KasaHareketModel;
 
 use Database\Db;
+use App\Modules\Onboarding\Events\OnboardingEvents;
 
 $db = Db::getInstance();
 $logger = \getlogger();
@@ -61,13 +62,14 @@ if($_POST['action'] == 'kasa_kaydet'){
         $status = "error";
         $message = $ex->getMessage();
     }
-    $res = [
-        "status" => $status,
-        "message" => $message,
-        "data" => $data,
-        "row" => $lastInsertId
-    ];
-    echo json_encode($res);
+        $res = [
+            "status" => $status,
+            "message" => $message,
+            "data" => $data,
+            "row" => $lastInsertId
+        ];
+        echo json_encode($res);
+        try { if (($ilkKasami ?? 0) == 0) { OnboardingEvents::complete('create_default_cash_account', $site_id ?? null); } } catch (\Throwable $e) {}
 }
 
 /* Kasa Silme*/
@@ -129,6 +131,7 @@ if($_POST["action"] == "varsayilan_kasa_yap"){
 
         $db->commit();
         Alert::success("Kasa varsayılan olarak ayarlandı");
+        try { OnboardingEvents::complete('set_default_cash_account', $_SESSION['site_id'] ?? null); } catch (\Throwable $e) {}
     } catch (PDOException $ex) {
         $db->rollBack();
         Alert::error($ex->getMessage());

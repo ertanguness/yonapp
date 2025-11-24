@@ -8,6 +8,7 @@ use Model\DairelerModel;
 use App\Helper\Security;
 use App\Services\ExcelHelper;
 use App\Services\FlashMessageService;
+use App\Modules\Onboarding\Events\OnboardingEvents;
 
 $daireModel = new DairelerModel();
 
@@ -69,6 +70,8 @@ if ($_POST["action"] == "save_apartment") {
         "message" => "Başarılı! Daire başarıyla kaydedildi.",
     ];
     echo json_encode($res);
+
+    try { OnboardingEvents::complete('add_apartments', $site_id ?? null); } catch (\Throwable $e) {}
 }
 
 if ($_POST["action"] == "check_block_units") {

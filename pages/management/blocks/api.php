@@ -4,6 +4,7 @@ require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
 
 use Model\BloklarModel;
 use App\Helper\Security;
+use App\Modules\Onboarding\Events\OnboardingEvents;
 
 $Blocks = new BloklarModel();
 
@@ -49,6 +50,8 @@ if ($_POST["action"] == "save_blocks") {
         "status" => "success",
         "message" => "Bloklar başarıyla kaydedildi."
     ]);
+
+    try { OnboardingEvents::complete('add_blocks', $_SESSION["site_id"] ?? null); } catch (\Throwable $e) {}
 }
 
 

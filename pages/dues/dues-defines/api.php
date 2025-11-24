@@ -7,6 +7,7 @@ use App\Helper\Date;
 use App\Helper\Helper;
 use Model\DueModel;
 use Model\DueDetailModel;
+use App\Modules\Onboarding\Events\OnboardingEvents;
 
 $Due = new DueModel();
 $DueDetail = new DueDetailModel();
@@ -143,6 +144,7 @@ if ($_POST["action"] == "save_dues") {
             "message" => "<strong>" . $_POST["due_name"] . "</strong><br><br> başarıyla kaydedildi.",
         ];
         $db->commit();
+        try { OnboardingEvents::complete('add_dues_types', $_SESSION['site_id'] ?? null); } catch (\Throwable $e) {}
     } catch (Exception $e) {
         $db->rollBack();
         $res = [

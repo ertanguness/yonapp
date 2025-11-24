@@ -8,6 +8,7 @@ use Model\DairelerModel;
 use Model\KisilerModel;
 use App\Helper\Date;
 use Database\DB;
+use App\Modules\Onboarding\Events\OnboardingEvents;
 
 $Daireler = new DairelerModel();
 $Kisiler = new KisilerModel();
@@ -119,6 +120,7 @@ if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
         "message" => $message,
     ];
     echo json_encode($res);
+    if ($status === 'success') { try { OnboardingEvents::complete('add_people', $site_id ?? null); } catch (\Throwable $e) {} }
     exit;
 }
 

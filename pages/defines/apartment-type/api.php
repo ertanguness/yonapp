@@ -3,6 +3,7 @@ require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
 
 use Model\DefinesModel;
 use App\Helper\Security;
+use App\Modules\Onboarding\Events\OnboardingEvents;
 
 $Defines = new DefinesModel();
 $site_id = $_SESSION["site_id"] ?? null;
@@ -41,6 +42,7 @@ if ($_POST["action"] == "saveApartmentType") {
             "message" => "Daire tipi başarıyla kaydedildi.",
         ];
         echo json_encode($res);
+        try { OnboardingEvents::complete('add_flat_types', $site_id ?? null); } catch (\Throwable $e) {}
     }
 }
 if ($_POST["action"] == "delete-apartment-type") {

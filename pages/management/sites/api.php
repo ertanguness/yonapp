@@ -6,6 +6,7 @@ use Model\SitelerModel;
 use App\Helper\Security;
 use App\Services\FlashMessageService;
 use App\Controllers\AuthController; // AuthController'ı da kullanabiliriz
+use App\Modules\Onboarding\Events\OnboardingEvents;
 
 $Siteler = new SitelerModel();
 
@@ -41,6 +42,8 @@ if ($_POST["action"] == "save_sites") {
 
     ];
     echo json_encode($res);
+
+    try { OnboardingEvents::complete('create_site', $_SESSION["site_id"] ?? null); } catch (\Throwable $e) {}
 }
 
 if ($_POST["action"] == "delete-Siteler") {

@@ -94,6 +94,8 @@ if (preg_match('/-pdf$/', $page)) {
         <?php include './partials/footer.php'; ?>
     </main>
 
+    <div id="onboarding-checklist-root"></div>
+
     <div class="modal fade-scale" id="composeMail" tabindex="-1" aria-labelledby="composeMail" aria-hidden="true" data-bs-dismiss="ou">
         <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
             <div class="modal-content">

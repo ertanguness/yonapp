@@ -486,7 +486,7 @@ table.dataTable thead th.search input {
 }
 .dt-empty-modern {
     text-align: center;
-    padding: 80px 20px;
+    padding: 30px 20px;
     color: #444;
     font-family: Inter, Arial, sans-serif;
 }
