@@ -8,6 +8,8 @@ use Model\UserRolesModel;
 $UserGroups = new UserRolesModel();
 
 $usergroups = $UserGroups->getUserGroups();
+$ownerID = $_SESSION["owner_id"];
+echo "veri sahibi" .  $ownerID;
 
 ?>
 

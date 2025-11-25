@@ -2,7 +2,7 @@ let table;
 let row;
 let preloader;
 $(document).ready(function () {
-  const tahsilatTable = $("#tahsilatTable");
+  //const tahsilatTable = $("#tahsilatTable");
   const $gg = $("#gelirGiderTable");
   if ($gg.length) {
     table = $gg.DataTable({
@@ -11,8 +11,8 @@ $(document).ready(function () {
       searching: true,
       info: true,
       paging: true,
-      autoWidth: true,
-      dom: 't<"row m-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
+      autoWidth: false,
+      dom: 't<"row g-0 mt-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
       language: {
         //url: "/assets/js/tr.json",
       },
@@ -103,44 +103,8 @@ $(document).ready(function () {
   if ($others.length > 0) {
     // console.log($others);
     table = $others.DataTable({
-      responsive: true,
-      info: true,
-      paging: true,
-      language: {
-        decimal: "",
-        emptyTable: `
-        <div class="dt-empty-modern">
-           <svg data-id="3" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-gray-500 dark:text-gray-400"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
-
-            <h4 class="mt-2">Herhangi bir kayıt yok!</h4>
-            <p>Yeni bir kayıt oluşturabilirsiniz.</p>
-        </div>
-    `,
-        info: "_TOTAL_ kayıttan _START_ - _END_ gösteriliyor",
-        infoEmpty: "Kayıt bulunamadı",
-        infoFiltered: "(toplam _MAX_ kayıttan filtrelendi)",
-        infoPostFix: "",
-        thousands: ",",
-        lengthMenu: "_MENU_ kayıt göster",
-        loadingRecords: "Yükleniyor...",
-        processing: " İşleniyor...",
-        search: "Arama:",
-        zeroRecords: "Eşleşen kayıt bulunamadı",
-        paginate: {
-          first: "İlk",
-          last: "Son",
-          next: "Sonraki",
-          previous: "Önceki"
-        },
-        aria: {
-          sortAscending: ": artan sütuna sırala",
-          sortDescending: ": azalan sütuna sırala"
-        }
-      },
-
-      dom: 't<"row m-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
       drawCallback: function (settings) {},
-      ...getTableSpecificOptions(),
+      ...getDtDefaults(),
 
       initComplete: function (settings, json) {
         var api = this.api();
@@ -162,12 +126,7 @@ $("#exportExcel").on("click", function () {
   table.button(".buttons-excel").trigger();
 });
 
-function getTableSpecificOptions() {
-  return {
-    ordering: document.getElementById("gelirGiderTable") ? false : true
-  };
-}
-
+/** Datatable sütun arama özelliği */
 function attachDtColumnSearch(api, tableId) {
   $("#" + tableId + " thead").append('<tr class="search-input-row"></tr>');
   api.columns().every(function () {
@@ -229,12 +188,13 @@ function attachDtColumnSearch(api, tableId) {
   }
 }
 
+/** Datatable varsayılan ayarları */
 function getDtDefaults() {
   return {
     responsive: true,
     info: true,
     paging: true,
-    autoWidth: false,
+    autoWidth: true,
     language: {
       decimal: "",
       emptyTable:
@@ -280,6 +240,7 @@ function getDtDefaults() {
   };
 }
 
+/** Datatable başlatma ayarları */
 function initDataTable(selector, overrides) {
   var base = getDtDefaults();
   var userInit = overrides && overrides.initComplete;

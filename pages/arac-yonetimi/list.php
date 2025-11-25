@@ -26,7 +26,7 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <a href="/site-araclari-excel?format=xlsx" class="btn btn-outline-secondary">
                     <i class="bi bi-filetype-xlsx me-2"></i>
-                   
+
                 </a>
                 <a href="javascript:void(0)" id="btnYeniArac" class="btn btn-primary">
                     <i class="feather-plus me-2"></i>
@@ -51,7 +51,7 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover" id="aracList">
+                                <table class="table table-hover datatables" id="aracList">
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>
@@ -84,10 +84,10 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
                                                 <td><?= htmlspecialchars($row->marka_model ?? '-') ?></td>
                                                 <td>
                                                     <div class="hstack gap-2">
-                                                    <a href="javascript:void(0);" class="avatar-text avatar-md btn-edit" title="Düzenle" data-id="<?= $enc_id ?>">
+                                                        <a href="javascript:void(0);" class="avatar-text avatar-md btn-edit" title="Düzenle" data-id="<?= $enc_id ?>">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                    <a href="javascript:void(0);" class="avatar-text avatar-md btn-del" data-id="<?= $enc_id ?>" data-name="<?= htmlspecialchars($row->plaka) ?>">
+                                                        <a href="javascript:void(0);" class="avatar-text avatar-md btn-del" data-id="<?= $enc_id ?>" data-name="<?= htmlspecialchars($row->plaka) ?>">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>
@@ -117,6 +117,6 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
             </div>
         </div>
     </div>
-    </div>
+</div>
 
 <script src="/pages/arac-yonetimi/js/araclar.js"></script>
