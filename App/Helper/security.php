@@ -142,6 +142,13 @@ public static function decrypt($data)
 
 public static function ensureSiteSelected($redirectUri = '/site-ekle')
     {
+
+        /** Kullanıcı alt kullanıcı ise kontrol yapma */
+        $isSubUser = $_SESSION['user']->owner_id != 0 ? true : false;
+        if ($isSubUser) {
+            return;
+        }
+
         $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
         $normalizedCurrent = trim($currentPath, '/');
         $normalizedRedirect = trim($redirectUri, '/');
