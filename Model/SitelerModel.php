@@ -21,6 +21,11 @@ class SitelerModel extends Model
     public function Sitelerim()
     {
         $user_id = $_SESSION['user']->id; // Kullanıcının ID'sini alıyoruz
+        /** Kullanıcı alt kullanıcı ise kontrol yapma */
+        $isSubUser = $_SESSION['user']->owner_id > 0 ? true : false;
+        if ($isSubUser) {
+            $user_id = $_SESSION['user']->owner_id;
+        }
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE user_id = ?");
         $sql->execute([$user_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
