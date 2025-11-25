@@ -22,7 +22,7 @@ $GorevYerleri = $GörevYeriModel->GorevYerleri();
             <h5 class="m-b-10">Güvenlik ve Ziyaretçi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Güvenlik Yönetimi</li>
         </ul>
     </div>

@@ -98,7 +98,7 @@ switch ($hedef_tipi) {
             <h5 class="m-b-10">Borçlar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item"><a href="index?p=dues/debit/list">Borç Listesi</a></li>
             <li class="breadcrumb-item">Excelden Borç Yükle</li>
         </ul>
