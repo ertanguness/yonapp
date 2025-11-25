@@ -637,6 +637,9 @@ if ($_POST["action"] == "borclandir") {
 }
 
 if ($_POST["action"] == "borclandirma_sil") {
+
+
+
     $id = $_POST["id"];
     //İlişkili tahsilatlar varsa silinmesin
     $tahsilat = $TahsilatDetay->BorclandirmaTahsilatVarmi($id);
@@ -649,15 +652,13 @@ if ($_POST["action"] == "borclandirma_sil") {
         exit;
     }
 
-
-
     try {
         $BorcDetay->BorclandirmaDetaylariniSil($id);
-        $Borc->delete($id);
+        $Borc->softDelete(Security::decrypt($id));
 
         $res = [
             "status" => "success",
-            "message" => "Borçlandırma başarı ile silindi!",
+            "message" => "Borçlandırma başarı ile silindi!" ,
             "id" => $id
         ];
     } catch (PDOException $e) {
