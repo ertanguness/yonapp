@@ -144,7 +144,7 @@ public static function ensureSiteSelected($redirectUri = '/site-ekle')
     {
 
         /** Kullanıcı alt kullanıcı ise kontrol yapma */
-        $isSubUser = $_SESSION['user']->owner_id == 0 ? true : false;
+        $isSubUser = $_SESSION['user']->owner_id > 0 ? true : false;
         if ($isSubUser) {
             return;
         }
