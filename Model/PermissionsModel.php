@@ -85,6 +85,7 @@ class PermissionsModel extends Model
     {
         $sql = "SELECT id, title, description, group_name, permission_level, is_required 
                 FROM {$this->table}
+                WHERE is_active = 1
                 ORDER BY group_name, id";
         $stmt = $this->db->query($sql);
 
