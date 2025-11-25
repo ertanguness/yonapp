@@ -114,6 +114,8 @@ table tr td .p-3.border.rounded.text-center {
             pageLength: 25
         });
 
+        // processing göstergesi için DataTables'in kendi elemanı kullanılacak
+
         // 2. Detay Butonuna Tıklama Olayını Dinle
         $('#tahsilatlarTable tbody').on('click', 'button.tahsilat-detay-goster', function() {
             const $button = $(this);
@@ -295,3 +297,8 @@ table tr td .p-3.border.rounded.text-center {
 
     }
 </script>
+<style>
+  .card-body { overflow-x: hidden; }
+  #tahsilatlarTable { width: 100%; }
+  .dataTables_processing { position: static !important; margin: .5rem 0; padding: .5rem 1rem; border-radius: 8px; background: #f8f9fa; box-shadow: 0 1px 2px rgba(0,0,0,.06); font-size: 14px; }
+</style>

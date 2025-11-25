@@ -26,7 +26,7 @@ foreach ($records as $borc) {
     $borc->durum = $borc->durum ?? '';
     $borc->daire_tipi = $borc->daire_tipi ?? '';
 
-    $adiHtml = '<div>'.htmlspecialchars((string)($borc->adi_soyadi ?? '')).'</div>'
+    $adiHtml = '<div><a href="/site-sakini-duzenle/'.urlencode($encId).'">'.htmlspecialchars((string)($borc->adi_soyadi ?? '')).'</a></div>'
         .'<div>'
         .'<a href="javascript:void(0)" class="badge text-'.$badgeColor.' border border-dashed border-gray-500">'.htmlspecialchars((string)($borc->uyelik_tipi ?? '')).'</a>'
         .'<a href="javascript:void(0)" class="badge text-'.$oturumDurumColor.' border border-dashed border-gray-500">'.htmlspecialchars($borc->durum).'</a>'

@@ -214,7 +214,7 @@ function getDtDefaults() {
       thousands: ",",
       lengthMenu: "_MENU_ kayıt göster",
       loadingRecords: "Yükleniyor...",
-      processing: " İşleniyor...",
+      processing: '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Yükleniyor...',
       search: "Arama:",
       zeroRecords: "Eşleşen kayıt bulunamadı",
       paginate: {
