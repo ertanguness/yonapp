@@ -53,8 +53,10 @@ $AcilDurumKisiModel = new AcilDurumKisileriModel();
                             <thead>
                                 <tr class="text-center">
                                     <th>#</th>
-                                    <th>Ad Soyad</th>
-                                    <th>Telefon</th>
+                                    <th>Daire Kodu</th>
+                                    <th>Daire Sakini</th>
+                                    <th>Yakını Ad Soyad</th>
+                                    <th>Yakın Telefon</th>
                                     <th>Yakınlık</th>
                                     <th>Kayıt Tarihi</th>
                                     <th>İşlem</th>
@@ -75,6 +77,8 @@ $AcilDurumKisiModel = new AcilDurumKisileriModel();
                                 ?>
                                     <tr class="text-center">
                                         <td><?php echo (int)$r->id; ?></td>
+                                        <td><?php echo htmlspecialchars($r->daire_kodu ?? '-'); ?></td>
+                                        <td><?php echo htmlspecialchars($r->daire_sakini ?? '-'); ?></td>
                                         <td><?php echo htmlspecialchars($r->adi_soyadi ?? '-'); ?></td>
                                         <td><?php echo htmlspecialchars($telFmt); ?></td>
                                         <td><?php echo htmlspecialchars($relTxt); ?></td>

@@ -148,7 +148,10 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                                 Sıra
                                             </th>
                                             <th style="width:7%">Daire Kodu</th>
-                                            <th>Ad Soyad</th>
+                                            <th>
+                                           
+                                            Ad Soyad
+                                            </th>
                                             <th>Giriş Tarihi</th>
                                             <th>Çıkış Tarihi</th>
                                             <th class="text-end" style="width:11%">Borç Tutarı</th>
@@ -285,13 +288,21 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 
 <script type="module" src="/pages/dues/payment/js/borc-ekle.js?v=<?php echo filemtime("pages/dues/payment/js/borc-ekle.js"); ?>"></script>
 <script>
-    $(function(){
+    function onDataTablesReady(cb){
+        var tries = 0;
+        (function wait(){
+            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+            if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
+            setTimeout(wait, 100);
+        })();
+    }
+
+    onDataTablesReady(function(){
      
-        table = $('#tahsilatTable').DataTable({
+        table = initDataTable('#tahsilatTable',{
             processing: true,
             serverSide: true,
             retrieve: true,
-            autoWidth: false,
             ajax: {
                 url: '/pages/dues/payment/server_processing.php',
                 type: 'GET'
@@ -310,30 +321,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 { data: 'islem_html', orderable: false }
             ],
             order: [[1, 'asc']],
-            initComplete: function(settings, json) {
-                var api = this.api();
-                var tblId = settings.sTableId;
-                $('#' + tblId + ' thead').append('<tr class="search-input-row"></tr>');
-                api.columns().every(function(){
-                    var column = this;
-                    var headerText = column.header().textContent;
-                    if(headerText !== 'İşlem'){
-                        var input = document.createElement('input');
-                        input.placeholder = headerText;
-                        input.classList.add('form-control');
-                        input.classList.add('form-control-sm');
-                        input.setAttribute('autocomplete','off');
-                        $('#' + tblId + ' .search-input-row').append($('<th class="search">').append(input));
-                        $(input).on('keyup change', function(){
-                            if(column.search() !== this.value){
-                                column.search(this.value).draw();
-                            }
-                        });
-                    } else {
-                        $('#' + tblId + ' .search-input-row').append('<th></th>');
-                    }
-                });
-            }
+            // initComplete ortak fonksiyonda geliyor (attachDtColumnSearch)
         });
         var __rt;
         $(window).on('resize', function(){

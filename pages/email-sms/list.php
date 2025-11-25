@@ -111,8 +111,8 @@
     function onDataTablesReady(cb){
         var tries = 0;
         (function wait(){
-            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable) { cb(); return; }
-            if (tries++ > 50) { console.error('DataTables yüklenemedi'); return; }
+            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+            if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
             setTimeout(wait, 100);
         })();
     }
@@ -122,7 +122,7 @@
     onDataTablesReady(function(){
         function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
         function toText(html){ var d=document.createElement('div'); d.innerHTML=String(html||''); return (d.textContent||d.innerText||''); }
-        $('#notificationsList').DataTable({
+        initDataTable('#notificationsList',{
             retrieve: true,
             ajax: {
                 url: '/pages/email-sms/api/notifications_list.php',
@@ -135,19 +135,6 @@
             },
             serverSide: false,
             processing: true,
-            responsive: true,
-            autoWidth: false,
-            dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
-            language: {
-                emptyTable: "Gösterilecek kayıt yok",
-                info: "Toplam _TOTAL_ kayıt içerisinden _START_ - _END_ gösteriliyor",
-                infoEmpty: "Kayıt yok",
-                lengthMenu: "Göster _MENU_ kayıt",
-                loadingRecords: "Yükleniyor...",
-                processing: "Yükleniyor...",
-                search: "Ara:",
-                paginate: { previous: "Önceki", next: "Sonraki" }
-            },
             
             order: [[0,'desc']],
             columns: [
@@ -160,20 +147,6 @@
                 { data: 'status', render: function(d){ var s=String(d||'').toLowerCase(); var ok=(s==='success'||s==='başarılı'||s==='00'); var cls=ok?'bg-soft-success text-success':'bg-soft-danger text-danger'; var txt=ok?'Başarılı':'Hata'; return '<span class="badge '+cls+'">'+txt+'</span>'; } },
                 { data: null, render: function(row){ return '<button class="btn btn-sm btn-outline-secondary btn-detail-notification">Detay</button>'; } }
             ],
-            initComplete: function (settings, json) {
-                var api = this.api();
-                var tableId = settings.sTableId;
-                var tries = 0;
-                (function waitAttach(){
-                    if (typeof window.attachDtColumnSearch === 'function') {
-                        window.attachDtColumnSearch(api, tableId);
-                        api.columns.adjust().responsive.recalc();
-                        return;
-                    }
-                    if (tries++ > 50) { api.columns.adjust().responsive.recalc(); return; }
-                    setTimeout(waitAttach, 100);
-                })();
-            },
             drawCallback: function(){ $('[data-bs-toggle="tooltip"]').each(function(){ var tt=bootstrap.Tooltip.getInstance(this); if(tt) tt.dispose(); bootstrap.Tooltip.getOrCreateInstance(this); }); }
         });
 

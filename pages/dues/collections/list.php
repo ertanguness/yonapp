@@ -85,9 +85,17 @@ table tr td .p-3.border.rounded.text-center {
 </div>
 
 <script>
-    let url = "pages/dues/collections/api.php"; // API URL'si
-    $(function() {
-        let table = $('#tahsilatlarTable').DataTable({
+    let url = "pages/dues/collections/api.php";
+    function onDataTablesReady(cb){
+        var tries = 0;
+        (function wait(){
+            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+            if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
+            setTimeout(wait, 100);
+        })();
+    }
+    onDataTablesReady(function() {
+        let table = initDataTable('#tahsilatlarTable',{
             destroy: true,
             processing: true,
             serverSide: true,
@@ -102,37 +110,7 @@ table tr td .p-3.border.rounded.text-center {
                 { data: 5 }
             ],
             order: [[1, 'desc']],
-            pageLength: 25,
-            initComplete: function (settings, json) {
-                var api = this.api();
-                var tableId = settings.sTableId;
-
-                $('#' + tableId + ' thead .search-input-row').remove();
-                $('#' + tableId + ' thead').append('<tr class="search-input-row"></tr>');
-
-                api.columns().every(function () {
-                    let column = this;
-                    let title = column.header().textContent.trim();
-
-                    if (title !== 'Detay') {
-                        let input = document.createElement('input');
-                        input.placeholder = title;
-                        input.classList.add('form-control', 'form-control-sm');
-                        input.setAttribute('autocomplete', 'off');
-
-                        const th = $('<th class="search text-center align-middle">').append(input);
-                        $('#' + tableId + ' .search-input-row').append(th);
-
-                        $(input).on('keyup change', function () {
-                            if (column.search() !== this.value) {
-                                column.search(this.value).draw();
-                            }
-                        });
-                    } else {
-                        $('#' + tableId + ' .search-input-row').append('<th></th>');
-                    }
-                });
-            }
+            pageLength: 25
         });
 
         // 2. Detay Butonuna Tıklama Olayını Dinle
