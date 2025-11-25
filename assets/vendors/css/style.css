@@ -113,7 +113,7 @@ div:where(.swal2-icon-content) {
   /* font-size: 13px; */
   /* font-weight: 600; */
   padding: 4px !important;
-  border-color: #e5e7eb;
+  border-color: #ccc;
 }
 
 .select2-container
