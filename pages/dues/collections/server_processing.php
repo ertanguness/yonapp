@@ -56,9 +56,41 @@ $columns = [
     [ 'db' => 'kkk.kullanilan_kredi', 'dt' => 13 ],
 ];
 
+$baseCond = 'bl.site_id = :site_id AND t.silinme_tarihi IS NULL AND t.tutar >= 0';
+$bindings = [ ':site_id' => $siteId ];
+
+// Sütun bazlı arama eşlemesi (istemci index → DB kolonları)
+$colSearchMap = [
+    0 => ['t.makbuz_no'],
+    1 => ['t.islem_tarihi'],
+    2 => ['kisi.adi_soyadi','d.daire_kodu'],
+    3 => ['t.aciklama','kasa.kasa_adi'],
+    4 => ['t.tutar','kkk.kullanilan_kredi'],
+    // 5 Detay sütunu arama dışı
+];
+
+if (!empty($_GET['columns']) && is_array($_GET['columns'])) {
+    $idx = 0;
+    foreach ($_GET['columns'] as $c) {
+        $val = trim($c['search']['value'] ?? '');
+        if ($val !== '' && isset($colSearchMap[$idx])) {
+            $orParts = [];
+            foreach ($colSearchMap[$idx] as $col) {
+                $param = ":s{$idx}_" . str_replace(['.'], ['_'], $col);
+                $orParts[] = "$col LIKE $param";
+                $bindings[$param] = "%$val%";
+            }
+            if (!empty($orParts)) {
+                $baseCond .= ' AND (' . implode(' OR ', $orParts) . ')';
+            }
+        }
+        $idx++;
+    }
+}
+
 $whereAll = [
-    'condition' => 'bl.site_id = :site_id AND t.silinme_tarihi IS NULL AND t.tutar >= 0',
-    'bindings' => [ ':site_id' => $siteId ]
+    'condition' => $baseCond,
+    'bindings' => $bindings,
 ];
 
 echo json_encode(SSPModel::complex($_GET, $pdo, $table, $primaryKey, $columns, null, $whereAll));

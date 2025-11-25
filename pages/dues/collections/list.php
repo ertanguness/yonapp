@@ -95,19 +95,20 @@ table tr td .p-3.border.rounded.text-center {
         })();
     }
     onDataTablesReady(function() {
-        let table = initDataTable('#tahsilatlarTable',{
-            destroy: true,
+        table = initDataTable('#tahsilatlarTable',{
             processing: true,
             serverSide: true,
-            stateSave: true,
             ajax: '/pages/dues/collections/server_processing.php',
             columns: [
-                { data: 0 },
-                { data: 1 },
-                { data: 2 },
-                { data: 3 },
-                { data: 4 },
-                { data: 5 }
+                { data: 0, name: 'makbuz_no' },
+                { data: 1, name: 'odeme_tarihi' },
+                { data: 2, name: 'kisi_daire' },
+                { data: 3, name: 'aciklama_kasa' },
+                { data: 4, name: 'tutar' },
+                { data: 5, name: 'detay' }
+            ],
+            columnDefs: [
+              { targets: 5, orderable: false, searchable: false }
             ],
             order: [[1, 'desc']],
             pageLength: 25

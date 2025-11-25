@@ -135,6 +135,7 @@ function attachDtColumnSearch(api, tableId) {
     let title = $header.text().trim() || $header.attr("data-title") || $header.attr("aria-label") || "";
     if (
       title != "İşlem" &&
+      title != "Detay" &&
       title != "Seç" &&
       title != "#" &&
       title != "Sıra" &&
