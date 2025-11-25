@@ -16,18 +16,26 @@ class DueDetailModel extends Model
         parent::__construct($this->table);
     }
 
-
+const BORCLANDIRMA_TIPI = [
+    "all" => "Tüm Sakinler",
+];
 
     /** Tanımlı Borçlandırmaları getirir 
      * 
     */
     public function getTanimliBorclandirmalar()
     {
+        $caseSql = "CASE dd.borclandirma_tipi ";
+        foreach (self::BORCLANDIRMA_TIPI as $key => $label) {
+            $caseSql .= "WHEN " . $this->db->quote($key) . " THEN " . $this->db->quote($label) . " ";
+        }
+        $caseSql .= "ELSE dd.borclandirma_tipi END";
+
         $sql = "SELECT 
                     dd.id,
                     dd.due_id,
                     GROUP_CONCAT(
-                        DISTINCT CONCAT(dd.borclandirma_tipi, ' (', dd.tutar, ' ₺)', ' (', dd.ceza_orani, '%)')
+                        DISTINCT CONCAT(" . $caseSql . ", ' (', dd.tutar, ' ₺)', ' (', dd.ceza_orani, '%)')
                             SEPARATOR '<br>'
                         ) AS borclandirma_tipi_tutar,
                     dd.tutar,
@@ -48,7 +56,7 @@ class DueDetailModel extends Model
                     ON dd.daire_tipi_ids LIKE CONCAT('%\"', dfn.id, '\"%')
                 WHERE dd.silinme_tarihi IS null
                 and d.site_id = ?
-                GROUP BY dd.due_id;)";
+                GROUP BY dd.due_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$_SESSION['site_id'] ]);
         return $stmt->fetchAll(PDO::FETCH_OBJ) ?? [];

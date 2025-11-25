@@ -758,6 +758,7 @@ class KisilerModel extends Model
      */
     public function BorclandirilacakAktifKisileriGetir(int $site_id, string $borcBaslangicTarihi, string $borcBitisTarihi, $daireTipi = "Konut")
     {
+       
         $sql = 
            "SELECT 
                 k.id, k.adi_soyadi, k.uyelik_tipi, k.giris_tarihi, k.cikis_tarihi,
@@ -775,7 +776,7 @@ class KisilerModel extends Model
                     OR k.cikis_tarihi = '0000-00-00'
                     OR k.cikis_tarihi >= :borc_baslangic
                 )
-            and df.mulk_tipi = :daire_tipi
+                
             ORDER BY
                 d.id, k.uyelik_tipi DESC";
     
@@ -783,7 +784,6 @@ class KisilerModel extends Model
         $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
         $stmt->bindParam(':borc_baslangic', $borcBaslangicTarihi, PDO::PARAM_STR);
         $stmt->bindParam(':borc_bitis', $borcBitisTarihi, PDO::PARAM_STR);
-        $stmt->bindParam(':daire_tipi', $daireTipi, PDO::PARAM_STR);
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_OBJ);

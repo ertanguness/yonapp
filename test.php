@@ -15,10 +15,9 @@ use Model\KisilerModel;
 $KisiModel = new KisilerModel();
 
 $kisiler = $KisiModel->BorclandirilacakAktifKisileriGetir(
-    site_id: $_SESSION['site_id'],
-    borcBaslangicTarihi: '2025-05-01',
-    borcBitisTarihi: '2025-05-31',
-    daireTipi: 'İşyeri'
+    site_id: 24,
+    borcBaslangicTarihi: '2025-11-01',
+    borcBitisTarihi: '2025-11-30'
 );
 
 echo '<pre>';
