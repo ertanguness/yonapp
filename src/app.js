@@ -153,6 +153,7 @@ function attachDtColumnSearch(api, tableId) {
       $(input).on("keyup change", function () {
         if (column.search() !== this.value) {
           column.search(this.value).draw();
+          console.log(column.search());
         }
       });
       const isColumnVisible =
