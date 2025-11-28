@@ -3,7 +3,9 @@ use Model\KisilerModel;
 use Model\DairelerModel;
 use Model\BloklarModel;
 use Model\AraclarModel;
+use Model\AcilDurumKisileriModel;
 use App\Helper\Helper;
+use App\Helper\Security;
 
 $user_id = (int) ($_SESSION['user']->kisi_id ?? ($_SESSION['user']->id ?? 0));
 $site_id = (int) ($_SESSION['site_id'] ?? 0);
@@ -15,6 +17,7 @@ $Kisiler = new KisilerModel();
 $Daireler = new DairelerModel();
 $Bloklar = new BloklarModel();
 $Araclar = new AraclarModel();
+$AcilDurum = new AcilDurumKisileriModel();
 
 // Tüm site kişileri
 $allPersons = $Kisiler->SiteTumKisileri($site_id);
@@ -70,6 +73,7 @@ if ($selectedTenantId) {
 // Araç bilgileri (öncelik seçili kiracı, yoksa malik)
 $carOwnerId = (int)($tenantForSelected->id ?? ($ownerForSelected->id ?? 0));
 $cars = $carOwnerId ? $Araclar->KisiAracBilgileri($carOwnerId) : [];
+$emergencyList = $carOwnerId ? $AcilDurum->findWhere(['kisi_id' => $carOwnerId], 'id DESC') : [];
 ?>
 
 <div class="page-header">
@@ -220,15 +224,24 @@ $cars = $carOwnerId ? $Araclar->KisiAracBilgileri($carOwnerId) : [];
                     <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#carModal">Ekle</button>
                 </div>
                 <div class="card-body">
-                    <?php if (!empty($cars)) { foreach ($cars as $car) { ?>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-text avatar-md bg-soft-info text-info border-soft-info rounded">
-                                <i class="feather-car"></i>
+                    <?php if (!empty($cars)) { foreach ($cars as $car) { $encId = \App\Helper\Security::encrypt((int)($car->id ?? 0)); ?>
+                    <div class="hstack gap-3 justify-content-between" data-car-row-id="<?php echo (int)($car->id ?? 0); ?>">
+                        <div class="hstack gap-3">
+                            <div class="wd-7 ht-7 bg-info rounded-circle"></div>
+                            <div class="ps-3 border-start border-3 border-info rounded">
+                                <a href="javascript:void(0);" class="fw-semibold mb-1 text-truncate-1-line">
+                                    <?php echo htmlspecialchars($car->plaka ?? '-') . ' • ' . htmlspecialchars($car->marka_model ?? ''); ?>
+                                </a>
+                                <a href="javascript:void(0);" class="fs-12 text-muted">
+                                    <i class="feather-car fs-10 me-1"></i>
+                                    <span class="fw-normal"><?php echo htmlspecialchars($car->renk ?? '-') . ' • ' . htmlspecialchars($car->arac_tipi ?? '-'); ?></span>
+                                </a>
                             </div>
-                            <div class="fw-semibold"><?php echo htmlspecialchars(($car->plaka ?? '-')) . ' ' . htmlspecialchars(($car->marka_model ?? '')); ?></div>
                         </div>
-                        <a href="javascript:void(0);" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#carModal" data-car-id="<?php echo (int)($car->id ?? 0); ?>" data-car-plaka="<?php echo htmlspecialchars($car->plaka ?? ''); ?>" data-car-marka="<?php echo htmlspecialchars($car->marka_model ?? ''); ?>">Düzenle</a>
+                        <div class="hstack gap-2">
+                            <a href="javascript:void(0);" class="avatar-text avatar-md" data-car-id="<?php echo $encId; ?>" data-bs-toggle="modal" data-bs-target="#carModal"><i class="feather-edit"></i></a>
+                            <a href="javascript:void(0);" class="avatar-text avatar-md delete-car" data-id="<?php echo $encId; ?>"><i class="feather-trash-2"></i></a>
+                        </div>
                     </div>
                     <hr class="border-dashed my-3">
                     <?php } } else { ?>
@@ -245,18 +258,27 @@ $cars = $carOwnerId ? $Araclar->KisiAracBilgileri($carOwnerId) : [];
                     <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#emergencyModal">Ekle</button>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-text avatar-md bg-soft-danger text-danger border-soft-danger rounded">
-                                <i class="feather-phone"></i>
-                            </div>
-                            <div>
-                                <div class="fw-semibold">-</div>
-                                <div class="fs-12 text-muted">-</div>
+                    <?php if (!empty($emergencyList)) { foreach ($emergencyList as $em) { $relText = App\Helper\Helper::RELATIONSHIP[$em->yakinlik ?? ''] ?? '-'; $emEncId = \App\Helper\Security::encrypt((int)($em->id ?? 0)); ?>
+                    <div class="hstack gap-3 justify-content-between" data-em-row-id="<?php echo Security::encrypt($em->id ?? 0); ?>">
+                        <div class="hstack gap-3">
+                            <div class="wd-7 ht-7 bg-danger rounded-circle"></div>
+                            <div class="ps-3 border-start border-3 border-danger rounded">
+                                <a href="javascript:void(0);" class="fw-semibold mb-1 text-truncate-1-line"><?php echo htmlspecialchars($em->adi_soyadi ?? '-'); ?></a>
+                                <a href="javascript:void(0);" class="fs-12 text-muted">
+                                    <i class="feather-phone fs-10 me-1"></i>
+                                    <span class="fw-normal"><?php echo htmlspecialchars($em->telefon ?? '-'); ?> • <?php echo htmlspecialchars($relText); ?></span>
+                                </a>
                             </div>
                         </div>
-                        <a href="javascript:void(0);" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#emergencyModal" data-em-name="<?php echo htmlspecialchars($ownerForSelected->adi_soyadi ?? ''); ?>" data-em-phone="<?php echo htmlspecialchars($ownerForSelected->telefon ?? ''); ?>" data-em-relation="Yakın">Düzenle</a>
+                        <div class="hstack gap-2">
+                            <a href="javascript:void(0);" class="avatar-text avatar-md" data-em-id="<?php echo $emEncId; ?>" data-bs-toggle="modal" data-bs-target="#emergencyModal"><i class="feather-edit"></i></a>
+                            <a href="javascript:void(0);" class="avatar-text avatar-md delete-em" data-id="<?php echo $emEncId; ?>"><i class="feather-trash-2"></i></a>
+                        </div>
                     </div>
+                    <hr class="border-dashed my-3">
+                    <?php } } else { ?>
+                        <div class="alert alert-info mb-0">Kayıtlı acil iletişim kişisi bulunamadı.</div>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -265,20 +287,52 @@ $cars = $carOwnerId ? $Araclar->KisiAracBilgileri($carOwnerId) : [];
 
 <div class="modal fade" id="carModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
-    <form class="modal-content">
+    <form class="modal-content" id="car-form">
       <div class="modal-header">
-        <h5 class="modal-title">Araç</h5>
+        <div class="hstack gap-3 align-items-center">
+          <div class="avatar-text avatar-md bg-soft-info text-info border-soft-info rounded"><i class="feather-car"></i></div>
+          <h5 class="modal-title mb-0">Araç</h5>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <input type="hidden" id="car-id">
+        <input type="hidden" id="car-id" name="id" value="<?php echo \App\Helper\Security::encrypt(0); ?>">
+        <input type="hidden" id="car-kisi-id" name="kisi_id" value="<?php echo (int)$carOwnerId; ?>">
         <div class="mb-3">
           <label class="form-label">Plaka</label>
-          <input type="text" class="form-control" id="car-plaka">
+          <div class="input-group">
+            <span class="input-group-text"><i class="feather-hash"></i></span>
+            <input type="text" class="form-control" id="car-plaka" name="plaka" required pattern="^[A-Z0-9\s-]{5,12}$">
+          </div>
+          <div class="form-text">Örn: 34 ABC 123</div>
         </div>
         <div class="mb-0">
           <label class="form-label">Marka/Model</label>
-          <input type="text" class="form-control" id="car-marka">
+          <div class="input-group">
+            <span class="input-group-text"><i class="feather-truck"></i></span>
+            <input type="text" class="form-control" id="car-marka" name="marka_model" required>
+          </div>
+        </div>
+        <div class="mt-3">
+          <label class="form-label">Renk</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="feather-droplet"></i></span>
+            <input type="text" class="form-control" id="car-renk" name="renk">
+          </div>
+        </div>
+        <div class="mt-3">
+          <label class="form-label">Araç Tipi</label>
+            <div class="input-group flex-nowrap w-100">
+
+            <span class="input-group-text"><i class="feather-truck"></i></span>
+            <select class="form-select select2" id="car-tipi" name="arac_tipi">
+              <option value="">Seçiniz</option>
+              <option value="Otomobil">Otomobil</option>
+              <option value="Motosiklet">Motosiklet</option>
+              <option value="Kamyonet">Kamyonet</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -291,23 +345,47 @@ $cars = $carOwnerId ? $Araclar->KisiAracBilgileri($carOwnerId) : [];
 
 <div class="modal fade" id="emergencyModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
-    <form class="modal-content">
+    <form class="modal-content" id="em-form">
       <div class="modal-header">
-        <h5 class="modal-title">Acil İletişim</h5>
+        <div class="hstack gap-3 align-items-center">
+          <div class="avatar-text avatar-md bg-soft-danger text-danger border-soft-danger rounded"><i class="feather-phone"></i></div>
+          <h5 class="modal-title mb-0">Acil İletişim</h5>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+        <input type="hidden" id="em-id" name="id" value="<?php echo \App\Helper\Security::encrypt(0); ?>">
+        <input type="hidden" id="em-kisi-id" name="kisi_id" value="<?php echo (int)$carOwnerId; ?>">
         <div class="mb-3">
           <label class="form-label">Ad Soyad</label>
-          <input type="text" class="form-control" id="em-name">
+          <div class="input-group">
+            <span class="input-group-text"><i class="feather-user"></i></span>
+            <input type="text" class="form-control" id="em-name" name="adi_soyadi" required>
+          </div>
         </div>
         <div class="mb-3">
           <label class="form-label">Telefon</label>
-          <input type="text" class="form-control" id="em-phone">
+          <div class="input-group">
+            <span class="input-group-text"><i class="feather-smartphone"></i></span>
+            <input type="text" class="form-control" id="em-phone" name="telefon" required pattern="^\d{10}$">
+          </div>
+          <div class="form-text">10 haneli, boşluksuz</div>
         </div>
         <div class="mb-0">
-          <label class="form-label">Yakınlık</label>
-          <input type="text" class="form-control" id="em-relation">
+           <label class="form-label">Yakınlık</label>
+            <div class="input-group flex-nowrap w-100">
+                <div class="input-group-text">
+                    <i class="feather-briefcase"></i>
+                </div>
+                <?php echo Helper::relationshipSelect('yakinlik',1); ?>
+            </div>
+        </div>
+        <div class="mt-3">
+          <label class="form-label">İletişim Notları</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="feather-edit-2"></i></span>
+            <textarea class="form-control" id="em-notes" name="notlar" rows="3"></textarea>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -318,23 +396,4 @@ $cars = $carOwnerId ? $Araclar->KisiAracBilgileri($carOwnerId) : [];
   </div>
   </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  var carModal = document.getElementById('carModal');
-  carModal.addEventListener('show.bs.modal', function(e){
-    var btn = e.relatedTarget;
-    if (!btn) return;
-    document.getElementById('car-id').value = btn.getAttribute('data-car-id')||'';
-    document.getElementById('car-plaka').value = btn.getAttribute('data-car-plaka')||'';
-    document.getElementById('car-marka').value = btn.getAttribute('data-car-marka')||'';
-  });
-  var emModal = document.getElementById('emergencyModal');
-  emModal.addEventListener('show.bs.modal', function(e){
-    var btn = e.relatedTarget;
-    if (!btn) return;
-    document.getElementById('em-name').value = btn.getAttribute('data-em-name')||'';
-    document.getElementById('em-phone').value = btn.getAttribute('data-em-phone')||'';
-    document.getElementById('em-relation').value = btn.getAttribute('data-em-relation')||'';
-  });
-});
-</script>
+<script src="/pages/home/site-sakini/js/sakin.js"></script>

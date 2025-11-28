@@ -74,13 +74,18 @@ foreach ($records as $borc) {
 
 $recordsTotal = count($rows);
 
+$normalize = function($s){
+    $t = mb_strtolower((string)$s, 'UTF-8');
+    return preg_replace('/\x{0307}/u', '', $t);
+};
+
 // Global arama (ad, daire kodu)
 if (!empty($request['search']['value'])) {
-    $q = mb_strtolower(trim($request['search']['value']));
-    $rows = array_values(array_filter($rows, function($r) use ($q) {
+    $q = $normalize(trim($request['search']['value']));
+    $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
         return (
-            mb_strpos(mb_strtolower($r['_adi_soyadi']), $q) !== false ||
-            mb_strpos(mb_strtolower($r['daire_kodu']), $q) !== false
+            mb_strpos($normalize($r['_adi_soyadi']), $q) !== false ||
+            mb_strpos($normalize($r['daire_kodu']), $q) !== false
         );
     }));
 }
@@ -144,25 +149,25 @@ if (!empty($request['columns']) && is_array($request['columns'])) {
     foreach ($request['columns'] as $idx => $reqCol) {
         $val = trim($reqCol['search']['value'] ?? '');
         if ($val === '') continue;
-        $q = mb_strtolower($val);
+        $q = $normalize($val);
         if ($idx === 1) { // daire_kodu
-            $rows = array_values(array_filter($rows, function($r) use ($q) {
-                return mb_strpos(mb_strtolower($r['daire_kodu']), $q) !== false;
+            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
+                return mb_strpos($normalize($r['daire_kodu']), $q) !== false;
             }));
         }
         else if ($idx === 2) { // ad soyad
-            $rows = array_values(array_filter($rows, function($r) use ($q) {
-                return mb_strpos(mb_strtolower($r['_adi_soyadi']), $q) !== false;
+            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
+                return mb_strpos($normalize($r['_adi_soyadi']), $q) !== false;
             }));
         }
         else if ($idx === 3) { // giris_tarihi (formatted)
-            $rows = array_values(array_filter($rows, function($r) use ($q) {
-                return mb_strpos(mb_strtolower($r['giris_tarihi']), $q) !== false;
+            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
+                return mb_strpos($normalize($r['giris_tarihi']), $q) !== false;
             }));
         }
         else if ($idx === 4) { // cikis_tarihi (formatted)
-            $rows = array_values(array_filter($rows, function($r) use ($q) {
-                return mb_strpos(mb_strtolower($r['cikis_tarihi']), $q) !== false;
+            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
+                return mb_strpos($normalize($r['cikis_tarihi']), $q) !== false;
             }));
         }
         // Diğer kolonlar için gerekirse filtre eklenebilir
