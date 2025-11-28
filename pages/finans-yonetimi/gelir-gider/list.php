@@ -10,7 +10,7 @@ use Model\KasaHareketModel;
 use App\Services\FlashMessageService;
 
 
-Gate::authorizeOrDie("income_expense_add_update");
+Gate::authorizeOrDie("gelir_gider_ekle_guncelle_sil");
 
 $Kasa = new KasaModel();
 $KasaHareket = new KasaHareketModel();

@@ -57,7 +57,7 @@ class Gate
         // Bu metodu bir sonraki adımda güncelleyeceğiz.
         $userPermissions = $permissionModel->getPermissionsForUser($user->id);
 
-        return in_array($permissionName, $userPermissions);
+        return in_array($permissionName, $userPermissions) ? true : false;
     }
 
 
@@ -146,5 +146,19 @@ public static function can(string $permissionName): void
         exit;
     }
 }
+
+   /** Site sakini mi değil mi ?
+     * 
+     * @return boolean
+     */
+    public static function isResident()
+    {
+        if($_SESSION["user"]->roles == 3){
+            return true;
+        }
+        return false;
+    }
+
+
 
 }

@@ -47,16 +47,20 @@ class UserModel extends Model
             'main_user' => 0
         ];
 
-        $sql = "SELECT * FROM $this->table u 
-                WHERE owner_id = :owner_id 
-                AND is_main_user = :main_user";
+        $sql = "SELECT u.*,r.role_name FROM $this->table u
+                LEFT JOIN user_roles r ON u.roles = r.id
+                WHERE u.owner_id = :owner_id
+                --AND r.guncellenebilir = :guncellenebilir
+                AND u.is_main_user = :main_user";
+
+       // $params['guncellenebilir'] = 1;
 
         if ($type !== null) {
-            $sql .= " AND roles = :roles";
+            $sql .= " AND u.roles = :roles";
             $params['roles'] = Security::decrypt($type);
         }
 
-        $sql .= " ORDER BY id DESC";
+        $sql .= " ORDER BY u.id DESC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);

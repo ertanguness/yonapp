@@ -25,7 +25,7 @@ $icraOdemeler = $IcraOdeme->IcraOdemeBilgileri($id);
             <h5 class="m-b-10">İcra Takip Detayları</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item"><a href="icra-takip.php">İcra Takibi</a></li>
             <li class="breadcrumb-item">Detaylar</li>
         </ul>

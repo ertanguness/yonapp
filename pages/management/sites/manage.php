@@ -3,6 +3,7 @@
 use Model\SitelerModel;
 use App\Helper\Security;
 use App\Helper\Cities;
+use App\Services\Gate;
 
 $Sites = new SitelerModel();
 $cities = new Cities();
@@ -10,6 +11,8 @@ $cities = new Cities();
 
 /**Site sakini bu sayfayı görmeyecek */
 Security::ensureNotResident();
+
+Gate::authorizeOrDie("site_ekle_guncelle_sil");
 
 $enc_id = $id ?? 0;
 

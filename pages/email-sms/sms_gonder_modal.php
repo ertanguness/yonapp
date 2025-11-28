@@ -279,7 +279,11 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
             </div>
 
             <!-- Butonlar -->
-            <div class="p-2">
+            <div class="p-2 d-flex">
+                <!-- Kapat Butonu ekle -->
+                 <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i> Kapat
+                </button>
 
                 <button type="button" form="smsForm" id="smsGonderBtn" class="btn btn-primary px-4 ms-2">
                     <i class="fas fa-paper-plane me-2"></i> Gönder

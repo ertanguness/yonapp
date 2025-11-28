@@ -108,7 +108,6 @@ $ilce = $cities->getTownName($site->ilce ?? null);
     </div>
 
     <div class="px-4 gap-2 d-flex align-items-center ht-80 border border-end-0 border-gray-2">
-        <a href="javascript:void(0);" class="btn btn-danger w-50" data-bs-dismiss="offcanvas">Kapat</a>
-        <a href="index?p=management/sites/manage&id=<?= Security::encrypt($site->id) ?>" class="btn btn-primary w-50">Düzenle</a>
+        <a href="javascript:void(0);" class="btn btn-danger w-100" data-bs-dismiss="offcanvas">Kapat</a>
     </div>
 </div>

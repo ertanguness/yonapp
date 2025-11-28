@@ -142,6 +142,13 @@ public static function decrypt($data)
 
 public static function ensureSiteSelected($redirectUri = '/site-ekle')
     {
+
+        /** Kullanıcı alt kullanıcı ise kontrol yapma */
+        $isSubUser = $_SESSION['user']->owner_id > 0 ? true : false;
+        if ($isSubUser) {
+            return;
+        }
+
         $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
         $normalizedCurrent = trim($currentPath, '/');
         $normalizedRedirect = trim($redirectUri, '/');
@@ -169,14 +176,16 @@ public static function ensureSiteSelected($redirectUri = '/site-ekle')
         }
     }
 
+ 
+
 /** Eğer giriş yapan kullanıcının rolü site sakini ise başka sayfalara girmesini engelle
  */
 public static function ensureNotResident()
     {
-        //Kullanıcı tipi site sakini ise atla
+        //Kullanıcı tipi site sakini ise ana sayfaya yönlendir
         if ($_SESSION['user']->roles == 3) {
             FlashMessageService::add( "error","Yetkisiz Erişim!", "Bu sayfaya erişim yetkiniz bulunmamaktadır.  ");
-            header('Location: /borclarim');
+            header('Location: /sakin/ana-sayfa');
             exit();
         }
     }

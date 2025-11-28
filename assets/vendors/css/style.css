@@ -113,7 +113,7 @@ div:where(.swal2-icon-content) {
   /* font-size: 13px; */
   /* font-weight: 600; */
   padding: 4px !important;
-  border-color: #e5e7eb;
+  border-color: #ccc;
 }
 
 .select2-container
@@ -512,3 +512,24 @@ table.dataTable thead th.search input {
 }
 
 
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+    content: "+" !important;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    font-weight: 700;
+    color: #fff;
+    background-color: #64798b;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+    margin-right: .5em;
+}
+
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
+    content: "-" !important;
+    background-color: #d9534f;
+    line-height: 14px;
+
+}

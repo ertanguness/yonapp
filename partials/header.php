@@ -105,43 +105,14 @@ try {
                         ?>
                     </div>
                 </div>
-                <div class="d-flex align-items-center ms-2 text-nowrap">
-                    <a href="/yonetici-aidat-odeme"
-                        class="d-flex align-items-center gap-2 py-07 px-2 rounded-1 cursor-pointer border border-dashed border-gray-5 text-decoration-none">
-                        <i class="bi bi-wallet"></i>
-                        <span class="fs-12 text-muted">Yönetici Aidat Ödeme</span>
-                    </a>
-                </div>
-                <div class="d-flex align-items-center ms-2">
-                    <a href="site-ekle"
-                        class="d-flex align-items-center gap-2 py-07 px-2 rounded-1 cursor-pointer border border-dashed border-gray-5 text-decoration-none">
-                        <i class="bi bi-safe"></i>
-                        <span class="fs-12 text-muted">Borçlandırma</span>
-                    </a>
-                </div>
+               
             </div>
         </div>
         <!--! [Start] Header Right !-->
         <div class="header-right ms-auto">
             <div class="d-flex align-items-center">
 
-                <div class="dropdown nxl-h-item nxl-header-search">
-                    <a href="javascript:void(0);" class="nxl-head-link me-0" data-bs-toggle="dropdown"
-                        data-bs-auto-close="outside">
-                        <i class="feather-search"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-search-dropdown">
-                        <div class="input-group search-form">
-                            <span class="input-group-text">
-                                <i class="feather-search fs-6 text-muted"></i>
-                            </span>
-                            <input type="text" class="form-control search-input-field" placeholder="Search...." />
-                            <span class="input-group-text">
-                                <button type="button" class="btn-close"></button>
-                            </span>
-                        </div>
-                    </div>
-                </div>
+               
 
                 <div class="nxl-h-item d-none d-sm-flex">
                     <div class="full-screen-switcher">

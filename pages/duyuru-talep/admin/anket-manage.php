@@ -5,7 +5,7 @@
             <h5 class="m-b-10">Yeni Anket Oluştur</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Anket Yönetimi</li>
         </ul>
     </div>

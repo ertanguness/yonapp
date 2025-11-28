@@ -41,7 +41,7 @@ $(document).on("click", "#userSaveBtn", function () {
         },
         minlength: 8, // Bu kural, eğer parola girilmişse her zaman geçerli olur
       },
-      user_role: {
+      user_roles: {
         required: true,
       },
       gorevi: {
@@ -73,7 +73,7 @@ $(document).on("click", "#userSaveBtn", function () {
         required: "Parola zorunludur.",
         minlength: "Parola en az 8 karakter olmalıdır.",
       },
-      user_role: {
+      user_roles: {
         required: "Rol seçimi zorunludur.",
       },
       gorevi: {

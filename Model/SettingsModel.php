@@ -141,4 +141,5 @@ class SettingsModel extends Model
 
         return $affected;
     }
+
 }

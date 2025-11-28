@@ -62,8 +62,8 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
 
     $due                        = $Due->find($borc_tipi_id);
     $tanimliBorc                = $DueDetail->find($id);
-    
-    
+
+
     //Borç tipine ait tanımlanmış borçlar getirilir
     $tanimliBorclar             = $DueDetail->findWhere([
         "due_id"                => $borc_tipi_id,
@@ -71,99 +71,211 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
 
 
     try {
-    $db->beginTransaction();
-    
-    $data = [
-        "id" => 0,
-        "site_id"               => $site_id,
-        "borc_tipi_id"          => $borc_tipi_id,
-        "baslangic_tarihi"      => $baslangic_tarihi_str,
-        "bitis_tarihi"          => $bitis_tarihi_str,
-        "aciklama"              => $_POST["aciklama"]
-    ];
+        $db->beginTransaction();
 
-    // if ($id == 0) {
-    //     $data["borc_tipi_id"] = Security::decrypt($_POST["borc_baslik"]);
-    // }
-    
-    $lastInsertId = $Borc->saveWithAttr($data) ?? $_POST["tanimli_borc_tipi_id"]; ;
-    
-    $data = [];
-    foreach ($tanimliBorclar as $borc) {
-        $borclandirma_tipi = $borc->borclandirma_tipi;
-        $tutar                  = $borc->tutar;
+        $data = [
+            "id" => 0,
+            "site_id"               => $site_id,
+            "borc_tipi_id"          => $borc_tipi_id,
+            "baslangic_tarihi"      => $baslangic_tarihi_str,
+            "bitis_tarihi"          => $bitis_tarihi_str,
+            "aciklama"              => $_POST["aciklama"]
+        ];
 
-        $logger->info("Borçlandırma tipi: " . $borclandirma_tipi . ", Tutar: " . $tutar);
+        // if ($id == 0) {
+        //     $data["borc_tipi_id"] = Security::decrypt($_POST["borc_baslik"]);
+        // }
 
-        if ($borclandirma_tipi =="evsahibi" || $borclandirma_tipi == "sakinler" || $borclandirma_tipi == "isyerisakinleri") {
+        $lastInsertId = $Borc->saveWithAttr($data) ?? $_POST["tanimli_borc_tipi_id"];;
 
+        $data = [];
+        foreach ($tanimliBorclar as $borc) {
+            $borclandirma_tipi = $borc->borclandirma_tipi;
+            $tutar                  = $borc->tutar;
 
-            $mulk_tipi = ($borclandirma_tipi == "sakinler" || $borclandirma_tipi == "evsahibi") ? "Konut" : "İşyeri";
-       
-            // 1. O dönemde aktif olan TÜM kişileri, daire bilgileriyle birlikte çek.
-            $borclandirilacakKisiler = $Kisiler->BorclandirilacakAktifKisileriGetir(
-                                                                            $site_id, 
-                                                                $baslangic_tarihi_str, 
-                                                                    $bitis_tarihi_str,
-                                                                          $mulk_tipi);
+            $logger->info("Borçlandırma tipi: " . $borclandirma_tipi . ", Tutar: " . $tutar);
+
+            if ($borclandirma_tipi == "all") {
+
+                $baslangic_tarihi_str = Date::Ymd($_POST["baslangic_tarihi"]);
+                $bitis_tarihi_str = Date::Ymd($_POST["bitis_tarihi"]);
+
+                // 1. O dönemde aktif olan TÜM kişileri, daire bilgileriyle birlikte çek.
+                //$borclandirilacakKisiler = $Kisiler->BorclandirilacakAktifKisileriGetir($site_id, $baslangic_tarihi_str, $bitis_tarihi_str);
+                $borclandirilacakKisiler = $Kisiler->BorclandirilacakAktifKisileriGetir($site_id, $baslangic_tarihi_str, $bitis_tarihi_str);
 
 
-            $logger->info("Borçlandırılacak kişiler: " . json_encode(["kisiler" => $borclandirilacakKisiler,
-                                                                    "mulk_tipi" => $mulk_tipi,
-                                                                    "borclandirma_tipi" => $borclandirma_tipi,
-                                                                    "baslangic_tarihi" => $baslangic_tarihi_str,
-                                                                    "bitis_tarihi" => $bitis_tarihi_str,
-                                                                ]));
+                $logger->info("Borçlandırılacak kişiler: " . json_encode([
+                    "site_id" => $site_id,
+                    "baslangic_tarihi" => $baslangic_tarihi_str,
+                    "bitis_tarihi" => $bitis_tarihi_str,
+                ]));
 
-            // 2. Bu düz listeyi, daire bazında gruplanmış bir diziye dönüştür.
-            $dairelerVeSakinleri = [];
-            foreach ($borclandirilacakKisiler as $kisi) {
-                // Anahtar olarak daire_id'yi kullanarak kişileri grupla.
-                $dairelerVeSakinleri[$kisi->daire_id][] = $kisi;
-            }
-
-            // *** PERFORMANS OPTİMİZASYONU: Tüm daireleri tek seferde çek ***
-            $daireIds = array_keys($dairelerVeSakinleri);
-            $dairelerMap = $Daire->findByIds($daireIds);
-
-            // Batch insert için kayıtları topla
-            $batchRecords = [];
-
-            // 3. DAİRE bazında döngüye başla.
-            // Anahtar ($daire_id) ve değer ($sakinler -> o dairedeki kişilerin listesi)
-            foreach ($dairelerVeSakinleri as $daire_id => $sakinler) {
-
-                //Daire aidattan muaf ise daireyi atla (batch'ten al)
-                $daire = $dairelerMap[$daire_id] ?? null;
-                if (!$daire || $daire->aidattan_muaf) {
-                    $logger->info("Daire ID {$daire_id} aidattan muaf veya bulunamadı, atlanıyor.");
-                    continue; // Bu daireyi atla
+                // 2. Bu düz listeyi, daire bazında gruplanmış bir diziye dönüştür.
+                $dairelerVeSakinleri = [];
+                foreach ($borclandirilacakKisiler as $kisi) {
+                    // Anahtar olarak daire_id'yi kullanarak kişileri grupla.
+                    $dairelerVeSakinleri[$kisi->daire_id][] = $kisi;
                 }
 
-                // 4. Bu dairedeki EV SAHİBİNİ ve TÜM KİRACILARI ayıkla.
-                $evSahibi = null;
-                $kiracilar = []; // Kiracıları bir dizi olarak topla
+                // *** PERFORMANS OPTİMİZASYONU: Tüm daireleri tek seferde çek ***
+                $daireIds = array_keys($dairelerVeSakinleri);
+                $dairelerMap = $Daire->findByIds($daireIds);
 
-                foreach ($sakinler as $sakin) {
-                    if ($sakin->uyelik_tipi == 'Ev Sahibi' || $sakin->uyelik_tipi == 'Kat Maliki' || $sakin->uyelik_tipi == 1) {
-                        $evSahibi = $sakin;
-                    } else if ($borclandirma_tipi != "evsahibi" && ($sakin->uyelik_tipi == 'Kiracı' || $sakin->uyelik_tipi == 2)) {
-                        $kiracilar[] = $sakin; // Her kiracıyı diziye ekle
+                // Batch insert için kayıtları topla
+                $batchRecords = [];
+
+                // 3. DAİRE bazında döngüye başla.
+                // Anahtar ($daire_id) ve değer ($sakinler -> o dairedeki kişilerin listesi)
+                foreach ($dairelerVeSakinleri as $daire_id => $sakinler) {
+
+                    //Daire aidattan muaf ise daireyi atla (batch'ten al)
+                    $daire = $dairelerMap[$daire_id] ?? null;
+                    if (!$daire || $daire->aidattan_muaf) {
+                        $logger->info("Daire ID {$daire_id} aidattan muaf veya bulunamadı, atlanıyor.");
+                        continue; // Bu daireyi atla
                     }
+
+                    // 4. Bu dairedeki EV SAHİBİNİ ve TÜM KİRACILARI ayıkla.
+                    $evSahibi = null;
+                    $kiracilar = []; // Kiracıları bir dizi olarak topla
+
+                    foreach ($sakinler as $sakin) {
+                        if ($sakin->uyelik_tipi == 'Ev Sahibi' || $sakin->uyelik_tipi == 'Kat Maliki' || $sakin->uyelik_tipi == 1) {
+                            $evSahibi = $sakin;
+                        } else if ($sakin->uyelik_tipi == 'Kiracı' || $sakin->uyelik_tipi == 2) {
+                            $kiracilar[] = $sakin; // Her kiracıyı diziye ekle
+                        }
+                    }
+
+                    // Güvenlik kontrolü: Eğer bir dairede ev sahibi yoksa (veri tutarsızlığı), bu daireyi atla.
+                    if (!$evSahibi) {
+                        $logger->info("Daire ID {$daire_id} için ev sahibi bulunamadı, atlanıyor.");
+                        continue;
+                    }
+
+                    // Ortak verileri ve tutarları hazırla
+                    $faturaBaslangic = new DateTime($baslangic_tarihi_str);
+                    $faturaBitis = new DateTime($bitis_tarihi_str);
+                    $toplamKiraciPayi = 0; // O ayki tüm kiracıların toplam borcunu tutacak değişken
+
+                    $logger->info("Daireye borçlandirma yapılıyor : Daire ID: {$daire_id}, 
+                                                                          Tutar: {$tutar}, 
+                                                                          Ev Sahibi ID: {$evSahibi->id},
+                                                                          Kiracı : " . json_encode($kiracilar) . ",
+                                                                          Başlangıç: {$faturaBaslangic->format('Y-m-d')}, 
+                                                                          Bitiş: {$faturaBitis->format('Y-m-d')}");
+
+
+                    /********** TAM AY BORÇLANDIRMA (TEK KİŞİ) **********/
+
+                    // Borçlandırılacak kişiyi belirle: Kiracı varsa öncelik onundur, yoksa ev sahibidir.
+                    // Not: !empty($kiracilar) kontrolü, kiracı olup olmadığını doğrular.
+                    $borcluKisi = !empty($kiracilar) ? $kiracilar[0] : $evSahibi;
+
+                    //Açıklama alanı boş ise, hesaplanan tutara göre açıklama belirle
+                    if (empty($_POST["aciklama"])) {
+                        $aciklama = "Aidat" . " (" .
+                            $baslangic_tarihi->format('d.m.Y') . " - " .
+                            $faturaBitis->format('d.m.Y') . ")";
+                    } else {
+                        $aciklama = $_POST["aciklama"];
+                    }
+
+                    $tamAyData = [
+                        "borclandirma_id"           => Security::decrypt($lastInsertId),
+                        "kisi_id"                   => $borcluKisi->id,
+                         "borc_adi"                 => $due->due_name,
+                        "daire_id"                  => $daire_id,
+                        "tutar"                     => $tutar,
+                        "ceza_orani"                => $borc->ceza_orani,
+                        "baslangic_tarihi"          => $faturaBaslangic->format('Y-m-d'),
+                        "bitis_tarihi"              => $faturaBitis->format('Y-m-d'),
+                        "son_odeme_tarihi"          => $faturaBitis->format('Y-m-d'),
+                        "aciklama"                  => $aciklama,
+                        "kalan_borc"                => $tutar, // Başlangıçta kalan borç = tutar
+                    ];
+
+                    // Batch için topla
+                    $batchRecords[] = $tamAyData;
+                } // Daire bazlı döngü sonu
+
+                // *** PERFORMANS OPTİMİZASYONU: Tüm kayıtları tek sorguda ekle ***
+                if (!empty($batchRecords)) {
+                    $BorcDetay->batchInsert($batchRecords);
+                    $logger->info("Batch insert: " . count($batchRecords) . " kayıt eklendi.");
+                }
+            } else if ($borclandirma_tipi == "evsahibi" || $borclandirma_tipi == "sakinler" || $borclandirma_tipi == "isyerisakinleri") {
+
+
+                $mulk_tipi = ($borclandirma_tipi == "sakinler" || $borclandirma_tipi == "evsahibi") ? "Konut" : "İşyeri";
+
+                // 1. O dönemde aktif olan TÜM kişileri, daire bilgileriyle birlikte çek.
+                $borclandirilacakKisiler = $Kisiler->BorclandirilacakAktifKisileriGetir(
+                    $site_id,
+                    $baslangic_tarihi_str,
+                    $bitis_tarihi_str,
+                    $mulk_tipi
+                );
+
+
+                $logger->info("Borçlandırılacak kişiler: " . json_encode([
+                    "kisiler" => $borclandirilacakKisiler,
+                    "mulk_tipi" => $mulk_tipi,
+                    "borclandirma_tipi" => $borclandirma_tipi,
+                    "baslangic_tarihi" => $baslangic_tarihi_str,
+                    "bitis_tarihi" => $bitis_tarihi_str,
+                ]));
+
+                // 2. Bu düz listeyi, daire bazında gruplanmış bir diziye dönüştür.
+                $dairelerVeSakinleri = [];
+                foreach ($borclandirilacakKisiler as $kisi) {
+                    // Anahtar olarak daire_id'yi kullanarak kişileri grupla.
+                    $dairelerVeSakinleri[$kisi->daire_id][] = $kisi;
                 }
 
-                // Güvenlik kontrolü: Eğer bir dairede ev sahibi yoksa (veri tutarsızlığı), bu daireyi atla.
-                if (!$evSahibi) {
-                    $logger->info("Daire ID {$daire_id} için ev sahibi bulunamadı, atlanıyor.");
-                    continue;
-                }
+                // *** PERFORMANS OPTİMİZASYONU: Tüm daireleri tek seferde çek ***
+                $daireIds = array_keys($dairelerVeSakinleri);
+                $dairelerMap = $Daire->findByIds($daireIds);
 
-                // Ortak verileri ve tutarları hazırla
-                $faturaBaslangic = new DateTime($baslangic_tarihi_str);
-                $faturaBitis = new DateTime($bitis_tarihi_str);
-                $toplamKiraciPayi = 0; // O ayki tüm kiracıların toplam borcunu tutacak değişken
+                // Batch insert için kayıtları topla
+                $batchRecords = [];
 
-                $logger->info("Daireye borçlandirma yapılıyor : Daire ID: {$daire_id}, 
+                // 3. DAİRE bazında döngüye başla.
+                // Anahtar ($daire_id) ve değer ($sakinler -> o dairedeki kişilerin listesi)
+                foreach ($dairelerVeSakinleri as $daire_id => $sakinler) {
+
+                    //Daire aidattan muaf ise daireyi atla (batch'ten al)
+                    $daire = $dairelerMap[$daire_id] ?? null;
+                    if (!$daire || $daire->aidattan_muaf) {
+                        $logger->info("Daire ID {$daire_id} aidattan muaf veya bulunamadı, atlanıyor.");
+                        continue; // Bu daireyi atla
+                    }
+
+                    // 4. Bu dairedeki EV SAHİBİNİ ve TÜM KİRACILARI ayıkla.
+                    $evSahibi = null;
+                    $kiracilar = []; // Kiracıları bir dizi olarak topla
+
+                    foreach ($sakinler as $sakin) {
+                        if ($sakin->uyelik_tipi == 'Ev Sahibi' || $sakin->uyelik_tipi == 'Kat Maliki' || $sakin->uyelik_tipi == 1) {
+                            $evSahibi = $sakin;
+                        } else if ($borclandirma_tipi != "evsahibi" && ($sakin->uyelik_tipi == 'Kiracı' || $sakin->uyelik_tipi == 2)) {
+                            $kiracilar[] = $sakin; // Her kiracıyı diziye ekle
+                        }
+                    }
+
+                    // Güvenlik kontrolü: Eğer bir dairede ev sahibi yoksa (veri tutarsızlığı), bu daireyi atla.
+                    if (!$evSahibi) {
+                        $logger->info("Daire ID {$daire_id} için ev sahibi bulunamadı, atlanıyor.");
+                        continue;
+                    }
+
+                    // Ortak verileri ve tutarları hazırla
+                    $faturaBaslangic = new DateTime($baslangic_tarihi_str);
+                    $faturaBitis = new DateTime($bitis_tarihi_str);
+                    $toplamKiraciPayi = 0; // O ayki tüm kiracıların toplam borcunu tutacak değişken
+
+                    $logger->info("Daireye borçlandirma yapılıyor : Daire ID: {$daire_id}, 
                                                                           Tutar: {$tutar}, 
                                                                           Ev Sahibi ID: {$evSahibi->id},
                                                                           Kiracı : " . json_encode($kiracilar) . ",
@@ -173,59 +285,57 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
                 // 5. KARAR MEKANİZMASI: Bu dairede borç paylaşımı olacak mı?
 
 
-                /********** TAM AY BORÇLANDIRMA (TEK KİŞİ) **********/
-                // Borçlandırılacak kişiyi belirle: Kiracı varsa öncelik onundur, yoksa ev sahibidir.
-                // Not: !empty($kiracilar) kontrolü, kiracı olup olmadığını doğrular.
-                $borcluKisi = !empty($kiracilar) ? $kiracilar[0] : $evSahibi;
+                    /********** TAM AY BORÇLANDIRMA (TEK KİŞİ) **********/
+                    // Borçlandırılacak kişiyi belirle: Kiracı varsa öncelik onundur, yoksa ev sahibidir.
+                    // Not: !empty($kiracilar) kontrolü, kiracı olup olmadığını doğrular.
+                    $borcluKisi = !empty($kiracilar) ? $kiracilar[0] : $evSahibi;
 
-                //Açıklama alanı boş ise, hesaplanan tutara göre açıklama belirle
-                if (empty($_POST["aciklama"])) {
-                    $aciklama = "Aidat" . " (" .
-                        $baslangic_tarihi->format('d.m.Y') . " - " .
-                        $faturaBitis->format('d.m.Y') . ")";
-                } else {
-                    $aciklama = $_POST["aciklama"];
+                    //Açıklama alanı boş ise, hesaplanan tutara göre açıklama belirle
+                    if (empty($_POST["aciklama"])) {
+                        $aciklama = "Aidat" . " (" .
+                            $baslangic_tarihi->format('d.m.Y') . " - " .
+                            $faturaBitis->format('d.m.Y') . ")";
+                    } else {
+                        $aciklama = $_POST["aciklama"];
+                    }
+
+                    $tamAyData = [
+                        "borclandirma_id"       => Security::decrypt($lastInsertId),
+                        "kisi_id"               => $borcluKisi->id,
+                        "borc_adi"              => $due->due_name,
+                        "daire_id"              => $daire_id,
+                        "tutar"                 => $tutar,
+                        "ceza_orani"            => $borc->ceza_orani,
+                        "borclandirma_tarihi"   => $borclandirma_tarihi_str,
+                        "baslangic_tarihi"      => $faturaBaslangic->format('Y-m-d'),
+                        "bitis_tarihi"          => $faturaBitis->format('Y-m-d'),
+                        "son_odeme_tarihi"      => $faturaBitis->format('Y-m-d'),
+                        "aciklama"              => $aciklama,
+                        "kalan_borc"            => $tutar, // Başlangıçta kalan borç = tutar
+                        // ... $data'dan gelen diğer ortak alanlar
+                    ];
+
+                    // Batch için topla
+                    $batchRecords[] = $tamAyData;
+                } // Daire bazlı döngü sonu
+
+                // *** PERFORMANS OPTİMİZASYONU: Tüm kayıtları tek sorguda ekle ***
+                if (!empty($batchRecords)) {
+                    $BorcDetay->batchInsert($batchRecords);
+                    $logger->info("Batch insert: " . count($batchRecords) . " kayıt eklendi.");
                 }
+            } elseif ($borclandirma_tipi == "dairetipi") {
+                // Daire tipi bazlı borçlandırma işlemleri burada yapılacak
+                // İlgili kodları ekleyin
 
-                $tamAyData = [
-                    "borclandirma_id"       => Security::decrypt($lastInsertId),
-                    "kisi_id"               => $borcluKisi->id,
-                    "borc_adi"              => $due->due_name,
-                    "daire_id"              => $daire_id,
-                    "tutar"                 => $tutar,
-                    "ceza_orani"            => $borc->ceza_orani,
-                    "borclandirma_tarihi"   => $borclandirma_tarihi_str,
-                    "baslangic_tarihi"      => $faturaBaslangic->format('Y-m-d'),
-                    "bitis_tarihi"          => $faturaBitis->format('Y-m-d'),
-                    "son_odeme_tarihi"      => $faturaBitis->format('Y-m-d'),
-                    "aciklama"              => $aciklama,
-                    "kalan_borc"            => $tutar, // Başlangıçta kalan borç = tutar
-                    // ... $data'dan gelen diğer ortak alanlar
-                ];
-
-                // Batch için topla
-                $batchRecords[] = $tamAyData;
-            } // Daire bazlı döngü sonu
-
-            // *** PERFORMANS OPTİMİZASYONU: Tüm kayıtları tek sorguda ekle ***
-            if (!empty($batchRecords)) {
-                $BorcDetay->batchInsert($batchRecords);
-                $logger->info("Batch insert: " . count($batchRecords) . " kayıt eklendi.");
             }
-        } elseif($borclandirma_tipi == "dairetipi") {
-            // Daire tipi bazlı borçlandırma işlemleri burada yapılacak
-            // İlgili kodları ekleyin
-
         }
+        $db->commit();
 
-    }
-    $db->commit();
-
-    $logger->info("Borçlandırma işlemi tamamlandı.");
-    $status = "success";
-    $message = "Tanımlı borçlandırma işlemi başarılı.";
-
-    }catch (Exception $e) {
+        $logger->info("Borçlandırma işlemi tamamlandı.");
+        $status = "success";
+        $message = "Tanımlı borçlandırma işlemi başarılı.";
+    } catch (Exception $e) {
         $db->rollBack();
         $logger->error("Borçlandırma işlemi sırasında hata: " . $e->getMessage());
         $status = "error";
@@ -245,7 +355,7 @@ if ($_POST["action"] == "borclandir") {
     $id = Security::decrypt($_POST["borc_id"]);
     $user_id = $_SESSION["user"]->id;
     $gun_bazli = isset($_POST["day_based"]) ? true : false; // Gün bazlı mı kontrolü
-    
+
     $logger = \getLogger();
 
     try {
@@ -258,9 +368,8 @@ if ($_POST["action"] == "borclandir") {
 
             if ($existingBorc) {
                 $borclandirma_turu = $existingBorc->hedef_tipi;
-            }else{
+            } else {
                 $borclandirma_turu = $_POST["hedef_tipi"];
-
             }
         } else {
             $borclandirma_turu = $_POST["hedef_tipi"];
@@ -317,7 +426,11 @@ if ($_POST["action"] == "borclandir") {
             $borclandirilacakKisiler = $Kisiler->BorclandirilacakAktifKisileriGetir($site_id, $baslangic_tarihi_str, $bitis_tarihi_str);
 
 
-            $logger->info("Borçlandırılacak kişiler: " . json_encode($borclandirilacakKisiler));
+            $logger->info("Borçlandırılacak kişiler: " . json_encode([
+                "site_id" => $site_id,
+                "baslangic_tarihi" => $baslangic_tarihi_str,
+                "bitis_tarihi" => $bitis_tarihi_str,
+            ]));
 
             // 2. Bu düz listeyi, daire bazında gruplanmış bir diziye dönüştür.
             $dairelerVeSakinleri = [];
@@ -351,6 +464,7 @@ if ($_POST["action"] == "borclandir") {
                 $kiracilar = []; // Kiracıları bir dizi olarak topla
 
                 foreach ($sakinler as $sakin) {
+                    $logger->info("Kişi ID: {$sakin->id}, Uyelik Tipi: {$sakin->uyelik_tipi}, Adı Soyadı: {$sakin->adi_soyadi}");
                     if ($sakin->uyelik_tipi == 'Ev Sahibi' || $sakin->uyelik_tipi == 'Kat Maliki' || $sakin->uyelik_tipi == 1) {
                         $evSahibi = $sakin;
                     } else if ($sakin->uyelik_tipi == 'Kiracı' || $sakin->uyelik_tipi == 2) {
@@ -637,6 +751,9 @@ if ($_POST["action"] == "borclandir") {
 }
 
 if ($_POST["action"] == "borclandirma_sil") {
+
+
+
     $id = $_POST["id"];
     //İlişkili tahsilatlar varsa silinmesin
     $tahsilat = $TahsilatDetay->BorclandirmaTahsilatVarmi($id);
@@ -649,11 +766,9 @@ if ($_POST["action"] == "borclandirma_sil") {
         exit;
     }
 
-
-
     try {
         $BorcDetay->BorclandirmaDetaylariniSil($id);
-        $Borc->delete($id);
+        $Borc->softDelete(Security::decrypt($id));
 
         $res = [
             "status" => "success",

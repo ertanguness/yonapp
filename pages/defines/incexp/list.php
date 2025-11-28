@@ -20,7 +20,7 @@ $user_id = $_SESSION['user']->id;
             <h5 class="m-b-10">Tanımlamalar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Gelir Gider İşlemleri</li>
         </ul>
     </div>

@@ -33,7 +33,7 @@ class UserRolesModel extends Model
                                    WHERE owner_id = :owner_id 
                                    ORDER BY id DESC");
         $sql->execute([
-            'owner_id' => $ownerID,
+            'owner_id' => $ownerID
         ]);
 
         return $sql->fetchAll(PDO::FETCH_OBJ) ?? [];

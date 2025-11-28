@@ -32,6 +32,15 @@ if ($_POST["action"] == "kullanici-kaydet") {
         exit;
     }
 
+    //** Roles boş ise kayıt yapma */
+    if(empty($_POST['user_roles'])) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Kullanıcı Rolü boş olamaz.'
+        ]);
+        exit;
+    }
+
       
     
     try {

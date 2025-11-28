@@ -167,26 +167,26 @@ $(function () {
     });
   });
 
-  (function wait() {
-    if ($.fn && $.fn.DataTable) {
-      $("#aracList").DataTable({
-        retrieve: true,
-        responsive: true,
-        autoWidth: false,
-        dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
-        order: [[0, "desc"]],
-        initComplete: function (settings) {
-          var api = this.api();
-          if (typeof window.attachDtColumnSearch === "function") {
-            window.attachDtColumnSearch(api, settings.sTableId);
-            api.columns.adjust().responsive.recalc();
-          }
-        }
-      });
-    } else {
-      setTimeout(wait, 100);
-    }
-  })();
+  // (function wait() {
+  //   if ($.fn && $.fn.DataTable) {
+  //     $("#aracList").DataTable({
+  //       retrieve: true,
+  //       responsive: true,
+  //       autoWidth: false,
+  //       dom: 't<"row m-2"<"col-md-4"i><"col-md-4"l><"col-md-4 float-end"p>>',
+  //       order: [[0, "desc"]],
+  //       initComplete: function (settings) {
+  //         var api = this.api();
+  //         if (typeof window.attachDtColumnSearch === "function") {
+  //           window.attachDtColumnSearch(api, settings.sTableId);
+  //           api.columns.adjust().responsive.recalc();
+  //         }
+  //       }
+  //     });
+  //   } else {
+  //     setTimeout(wait, 100);
+  //   }
+  // })();
 
   $("#btnYeniArac").on("click", function () {
     $.get(modalUrl, function (html) {

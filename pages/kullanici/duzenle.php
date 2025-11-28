@@ -3,13 +3,16 @@
 use Model\UserModel;
 use App\Helper\Security;
 use App\Helper\UserHelper;
+use App\Services\Gate;
 
 
 $User = new UserModel();
 $UserHelper = new UserHelper();
 
 //Sayfa başlarında eklenecek alanlar
-//$perm->checkAuthorize("user_add_update");
+Gate::authorizeOrDie("kullanici_ekle_guncelle_sil");
+
+
 $id = isset($_GET["id"]) ? Security::decrypt($_GET['id']) : 0;
 $new_id = isset($_GET["id"]) ? $_GET['id'] : 0;
 
@@ -30,7 +33,7 @@ $user = $User->find($id);
             <h5 class="m-b-10"> Kullanıcılar </h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Yeni Kullanıcı Ekle</li>
         </ul>
     </div>
@@ -83,7 +86,7 @@ $user = $User->find($id);
                     <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#proposalTab">Genel Bilgiler</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tasksTab">Giriş Kayıtları</button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#loginsTab">Giriş Kayıtları</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#notesTab">Aktiviteler</button>
@@ -100,91 +103,7 @@ $user = $User->find($id);
                     <span>Back</span>
                 </a>
             </div>
-            <div class="proposal-action-btn">
-                <div class="d-md-none d-lg-flex">
-                    <a href="javascript:void(0);" class="action-btn" data-bs-toggle="tooltip" title=""
-                        data-bs-original-title="Views Trackign">
-                        <i class="feather-eye"></i>
-                    </a>
-                </div>
-                <div class="d-md-none d-lg-flex">
-                    <a href="javascript:void(0);" class="action-btn" data-bs-toggle="tooltip" title=""
-                        data-bs-original-title="Send to Email">
-                        <i class="feather-mail"></i>
-                    </a>
-                </div>
-                <div class="d-md-none d-lg-flex">
-                    <a href="proposal-edit.html" class="action-btn" data-bs-toggle="tooltip" title=""
-                        data-bs-original-title="Edit Proposal">
-                        <i class="feather-edit"></i>
-                    </a>
-                </div>
-                <div class="dropdown">
-                    <a href="javascript:void(0);" class="action-btn dropdown-toggle c-pointer" data-bs-toggle="dropdown"
-                        data-bs-offset="0, 2" data-bs-auto-close="outside">Convert</a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-check-square me-3"></i>
-                            <span>Draft</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-dollar-sign me-3"></i>
-                            <span>Invoice</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-cast me-3"></i>
-                            <span>Estimate</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="dropdown">
-                    <a class="action-btn dropdown-toggle c-pointer" data-bs-toggle="dropdown" data-bs-offset="0, 2"
-                        data-bs-auto-close="outside">More</a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-eye me-3"></i>
-                            <span>View</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-copy me-3"></i>
-                            <span>Copy</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-link me-3"></i>
-                            <span>Attachment</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-book-open me-3"></i>
-                            <span>Make as Open</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-send me-3"></i>
-                            <span>Make as Sent</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-edit me-3"></i>
-                            <span>Make as Draft</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-crop me-3"></i>
-                            <span>Make as Revised</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-check-circle me-3"></i>
-                            <span>Make as Accepted</span>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-plus me-3"></i>
-                            <span>Create New</span>
-                        </a>
-                        <a href="javascript:void(0);" class="dropdown-item">
-                            <i class="feather-trash-2 me-3"></i>
-                            <span>Delete Proposal</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+         
         </div>
     </div>
 </div>
@@ -216,8 +135,26 @@ $user = $User->find($id);
 
             </div>
         </div>
-        <div class="tab-pane fade" id="tasksTab">
-
+        <div class="tab-pane fade" id="loginsTab" data-user-id="<?php echo (int)$id; ?>">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <table id="userLoginsTable" class="table table-striped table-bordered datatables" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Giriş Zamanı</th>
+                                        <th>Çıkış Zamanı</th>
+                                        <th>IP</th>
+                                        <th>Tarayıcı</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="tab-pane fade" id="notesTab">
 
@@ -231,8 +168,34 @@ $user = $User->find($id);
    
 
     // Kullanım örneği:
-    setupShortcut('s', function() {
+    //setupShortcut('s', function() {
         // Burada yapılacak işlemi tanımlıyoruz
-        $('#userSaveBtn').trigger('click');
+       // $('#userSaveBtn').trigger('click');
+    //});
+
+    document.addEventListener('shown.bs.tab', function (e) {
+        var target = e.target && e.target.getAttribute('data-bs-target');
+        if (target === '#loginsTab') {
+            if (!$('#userLoginsTable').hasClass('dataTable')) {
+                const userId = document.getElementById('loginsTab').dataset.userId || 0;
+                $('#userLoginsTable').DataTable({
+                    serverSide: true,
+                    processing: true,
+                    ajax: {
+                        url: '/pages/kullanici/api/logins.php',
+                        type: 'GET',
+                        data: function(d){ d.user_id = userId; }
+                    },
+                    columns: [
+                        { data: 0 },
+                        { data: 1 },
+                        { data: 2 },
+                        { data: 3 }
+                    ],
+                    order: [[0, 'desc']],
+                    responsive: true,
+                });
+            }
+        }
     });
 </script>

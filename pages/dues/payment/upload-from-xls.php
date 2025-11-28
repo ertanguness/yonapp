@@ -4,7 +4,7 @@
             <h5 class="m-b-10">Excelden Ödeme Yükle</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item"><a href="index?p=dues/payment/list">Borç Listesi</a></li>
             <li class="breadcrumb-item">Excelden Ödeme Yükle</li>
         </ul>

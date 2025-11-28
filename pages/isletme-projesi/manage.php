@@ -3,9 +3,17 @@
 use App\Helper\Date;
 use App\Helper\Helper;
 use App\Helper\Security;
+use Model\SitelerModel;
 use Model\IsletmeProjesiModel;
 
 Security::ensureSiteSelected();
+
+$SiteModel = new SitelerModel();
+
+$site = $SiteModel->find($_SESSION['site_id']);
+
+$site_adi = $site->site_adi ?? '';
+$site_adresi = $site->tam_adres ?? '';
 
 $enc_id = $id ?? 0;
 $id = Security::decrypt($id ?? 0) ?? 0;
@@ -42,6 +50,21 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
     </div>
 </div>
 
+<div class="bg-white py-3 border-bottom rounded-0 p-md-0 mb-0 ">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="nav-tabs-wrapper page-content-left-sidebar-wrapper">
+            <ul class="nav nav-tabs nav-tabs-custom-style" id="projectTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#projeBilgileriTab">Proje Bilgileri</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#gelirGiderTab">Gelir-Gider Bilgileri</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 <div class="main-content">
     <div class="row">
         <div class="container-xl">
@@ -50,10 +73,9 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
                     <div class="card">
                         <form id="projectForm" method="POST">
                             <input type="hidden" name="id" id="proje_id" value="<?php echo $enc_id ?? 0; ?>">
-                            <div class="card-header">
-                                <h5>Proje Bilgileri</h5>
-                            </div>
                             <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade active show" id="projeBilgileriTab">
                                 <div class="row mb-3">
                                     <div class="col-lg-6">
                                         <label class="fw-semibold">Proje Adı</label>
@@ -61,14 +83,14 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
                                     </div>
                                     <div class="col-lg-6">
                                         <label class="fw-semibold">Apartman/Site Adı</label>
-                                        <input type="text" class="form-control" name="apartman_site_adi" id="apartman_site_adi" value="<?php echo htmlspecialchars($proje->apartman_site_adi ?? '') ?>" required>
+                                        <input type="text" class="form-control" name="apartman_site_adi" id="apartman_site_adi" value="<?php echo htmlspecialchars($proje->apartman_site_adi ?? $site_adi) ?>" required>
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
                                     <div class="col-lg-12">
                                         <label class="fw-semibold">Adres</label>
-                                        <textarea class="form-control" name="adres" id="adres" rows="2"><?php echo htmlspecialchars($proje->adres ?? '') ?></textarea>
+                                        <textarea class="form-control" name="adres" id="adres" rows="2"><?php echo htmlspecialchars($proje->adres ?? $site_adresi) ?></textarea>
                                     </div>
                                 </div>
 
@@ -105,20 +127,21 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
 
                                 <div class="row mb-3">
                                     <div class="col-lg-6">
-                                        <label class="fw-semibold">Ödeme Planı ve Takvimi</label>
+                                        <label class="fw-semibold">Ödeme Planı/Takvimi</label>
                                         <textarea class="form-control" name="odeme_plani" id="odeme_plani" rows="3"><?php echo htmlspecialchars($proje->odeme_plani ?? '') ?></textarea>
-                                        <textarea class="form-control mt-2" name="takvim" id="takvim" rows="3"><?php echo htmlspecialchars($proje->takvim ?? '') ?></textarea>
+                                      
                                     </div>
+
                                     <div class="col-lg-6">
                                         <label class="fw-semibold">Geçerlilik ve Güncelleme Mekanizması</label>
                                         <textarea class="form-control" name="guncelleme_mekanizmasi" id="guncelleme_mekanizmasi" rows="3"><?php echo htmlspecialchars($proje->guncelleme_mekanizmasi ?? '') ?></textarea>
                                     </div>
                                 </div>
-
+<hr class="text-blue">
                                 <div class="row mb-3">
                                     <div class="col-lg-3">
                                         <label class="fw-semibold">Genel Kurul Türü</label>
-                                        <select class="form-select" name="genel_kurul_turu" id="genel_kurul_turu">
+                                        <select class="form-select select2" name="genel_kurul_turu" id="genel_kurul_turu">
                                             <option value="">Seçiniz</option>
                                             <option value="olagan" <?php echo (($proje->genel_kurul_turu ?? '')=='olagan')?'selected':''; ?>>Olağan</option>
                                             <option value="olaganustu" <?php echo (($proje->genel_kurul_turu ?? '')=='olaganustu')?'selected':''; ?>>Olağanüstü</option>
@@ -130,7 +153,7 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
                                     </div>
                                     <div class="col-lg-3">
                                         <label class="fw-semibold">Kurul Onay Durumu</label>
-                                        <select class="form-select" name="kurul_onay_durumu" id="kurul_onay_durumu">
+                                        <select class="form-select select2" name="kurul_onay_durumu" id="kurul_onay_durumu">
                                             <option value="beklemede" <?php echo (($proje->kurul_onay_durumu ?? 'beklemede')=='beklemede')?'selected':''; ?>>Beklemede</option>
                                             <option value="kabul" <?php echo (($proje->kurul_onay_durumu ?? '')=='kabul')?'selected':''; ?>>Kabul</option>
                                             <option value="red" <?php echo (($proje->kurul_onay_durumu ?? '')=='red')?'selected':''; ?>>Red</option>
@@ -149,7 +172,7 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
                                     </div>
                                     <div class="col-lg-3">
                                         <label class="fw-semibold">Bildirim Yöntemi</label>
-                                        <select class="form-select" name="bildirim_yontemi" id="bildirim_yontemi">
+                                        <select class="form-select select2" name="bildirim_yontemi" id="bildirim_yontemi">
                                             <option value="">Seçiniz</option>
                                             <option value="elden" <?php echo (($proje->bildirim_yontemi ?? '')=='elden')?'selected':''; ?>>Elden İmza</option>
                                             <option value="taahhutlu" <?php echo (($proje->bildirim_yontemi ?? '')=='taahhutlu')?'selected':''; ?>>İadeli Taahhütlü</option>
@@ -191,7 +214,7 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
                                 <div class="row mb-3">
                                     <div class="col-lg-3">
                                         <label class="fw-semibold">Paylandırma Esası</label>
-                                        <select class="form-select" name="paylandirma_esasi" id="paylandirma_esasi">
+                                        <select class="form-select select2" name="paylandirma_esasi" id="paylandirma_esasi">
                                             <option value="">Seçiniz</option>
                                             <option value="arsa_payi" <?php echo (($proje->paylandirma_esasi ?? '')=='arsa_payi')?'selected':''; ?>>Arsa Payı</option>
                                             <option value="metrekare" <?php echo (($proje->paylandirma_esasi ?? '')=='metrekare')?'selected':''; ?>>Metrekare</option>
@@ -207,6 +230,8 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
                                     </div>
                                 </div>
 
+                                    </div>
+                                    <div class="tab-pane fade" id="gelirGiderTab">
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="card border">
@@ -268,6 +293,8 @@ $giderKalemleri = $id ? $Model->getKalemleri($id, 'gider') : [];
                                                 <div class="p-2 text-muted fs-12">Kategori önerileri: Bakım-Onarım, Temizlik, Güvenlik, Sigorta, Yönetici Ücretleri, Diğer, Beklenmedik (Rezerv ayrı alan olarak yukarıda)</div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
                                     </div>
                                 </div>
 

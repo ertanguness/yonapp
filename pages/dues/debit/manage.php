@@ -175,6 +175,7 @@ switch ($hedef_tipi) {
                                     <?php foreach ($tanimli_borclandirmalar as $borclandirma):
                                         $enc_id = Security::encrypt($borclandirma->id);
                                         $enc_borc_tipi_id = Security::encrypt($borclandirma->due_id);
+                                        
 
                                     ?>
                                         <tr>
@@ -187,7 +188,7 @@ switch ($hedef_tipi) {
                                             <td data-daire-tipi-ids="<?php echo $borclandirma->daire_tipi_ids; ?>"><?php echo $borclandirma->daire_tipleri; ?></td>
                                             <td>
                                                 <div class="hstack gap-2 ">
-                                                    <a href="/borclandirilacak-kisiler/<?php echo $enc_id ?>" class="avatar-text avatar-md">
+                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>" class="avatar-text avatar-md borclandirma-detay">
                                                         <i class="feather-eye"></i>
                                                     </a>
                                                     <a href="#"
@@ -492,6 +493,60 @@ switch ($hedef_tipi) {
     </div>
 </div>
 
+<!-- Borçlandırma Detayı Modalı -->
+<div class="modal fade" id="borclandirmaDetayModal" tabindex="-1" aria-labelledby="borclandirmaDetayLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-3">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center w-100">
+                    <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary rounded me-3">
+                        <i class="feather-file-text"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="fw-semibold" id="detay_due_name"></div>
+                            <span class="badge bg-soft-primary text-primary border-soft-primary" id="detay_donem_badge"></span>
+                        </div>
+                        <div class="text-muted fs-12">Borçlandırma özeti</div>
+                    </div>
+                    <button type="button" class="btn-close ms-3" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+            </div>
+            <div class="modal-body pt-3">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 rounded border border-dashed h-100">
+                            <div class="d-flex align-items-center mb-2"><i class="feather-dollar-sign me-2 text-primary"></i><span class="fw-semibold">Kime / Tutar / Gecikme Oranı</span></div>
+                            <div id="detay_tutar_oran" class="text-dark"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded border border-dashed h-100">
+                            <div class="d-flex align-items-center mb-2"><i class="feather-users me-2 text-primary"></i><span class="fw-semibold">Kişi(ler)</span></div>
+                            <div id="detay_kisiler" class="d-flex flex-wrap gap-1"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded border border-dashed h-100">
+                            <div class="d-flex align-items-center mb-2"><i class="feather-home me-2 text-primary"></i><span class="fw-semibold">Blok</span></div>
+                            <div id="detay_bloklar" class="d-flex flex-wrap gap-1"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded border border-dashed h-100">
+                            <div class="d-flex align-items-center mb-2"><i class="feather-grid me-2 text-primary"></i><span class="fw-semibold">Daire Tipi(leri)</span></div>
+                            <div id="detay_daire_tipleri" class="d-flex flex-wrap gap-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
 
@@ -548,6 +603,32 @@ switch ($hedef_tipi) {
 
         // Diğer alanları da isterseniz doldurabilirsiniz
         $('#borclandirModal').modal('show');
+    });
+
+    $(document).on('click', '.borclandirma-detay', function(e) {
+        e.preventDefault();
+        var $tr = $(this).closest('tr');
+        var cells = $tr.find('td');
+        var dueName = $(cells[1]).text().trim();
+        var kimeTutarOran = $(cells[2]).text().trim();
+        var donem = $(cells[3]).text().trim();
+        var kisiler = $(cells[4]).text().trim();
+        var bloklar = $(cells[5]).text().trim();
+        var daireTipleri = $(cells[6]).text().trim();
+
+        function toChips(text) {
+            var items = (text || '').split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s.length; });
+            if (!items.length) return '-';
+            return items.map(function(i){ return '<span class="badge bg-soft-primary text-primary border-soft-primary">'+ i +'</span>'; }).join(' ');
+        }
+        $('#detay_due_name').text(dueName);
+        $('#detay_tutar_oran').text(kimeTutarOran);
+        $('#detay_donem_badge').text(donem);
+        $('#detay_kisiler').html(toChips(kisiler));
+        $('#detay_bloklar').html(toChips(bloklar));
+        $('#detay_daire_tipleri').html(toChips(daireTipleri));
+
+        $('#borclandirmaDetayModal').modal('show');
     });
 
     $('#modal_borclandir_kaydet').on('click', function() {

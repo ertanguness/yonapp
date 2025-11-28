@@ -4,7 +4,7 @@
             <h5 class="m-b-10">Anket Sonuçları</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item"><a href="index?p=polls/admin/list">Anket Listesi</a></li>
             <li class="breadcrumb-item">Sonuçlar</li>
         </ul>

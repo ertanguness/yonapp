@@ -13,6 +13,9 @@ $definesModel = new DefinesModel();
 $DefinesHelper = new DefinesHelper();
 
 
+/**Site sakininin bu sayfaya girmesini engelle */
+Security::ensureNotResident();
+
 $enc_id = $id ?? 0;
 $id =  Security::decrypt($id ?? 0);
 $site_id = $_SESSION['site_id'] ?? 0;

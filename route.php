@@ -1,6 +1,7 @@
 <?php
 
 use App\Router;
+use App\Services\Gate;
 
 // ROUTER BAŞLAT
 $router = new Router();
@@ -20,7 +21,7 @@ $router->get('borclandirma-detayi/{id}', fn($id) => require 'pages/dues/debit/de
 $router->get('borclandirma-kisi-ekle/{id}', fn($id) => require 'pages/dues/debit/single-manage.php');
 $router->get('borclandirma-kisi-duzenle/{id}/{detay_id}', fn($id,$detay_id) => require 'pages/dues/debit/single-manage.php');
 
-$router->get('borclarim', fn() => require 'pages/dues/user-payment/list.php');
+$router->get('borclarim', fn() => require 'pages/home/site-sakini/home.php');
 $router->get('borclandirma-excelden-yukle/{id}', fn($id) => require 'pages/dues/debit/upload-from-xls.php');
 
 /* ----------------------------------------------------
@@ -269,11 +270,26 @@ $router->get('unauthorize', fn() => require 'pages/authorize.php');
 /* ----------------------------------------------------
 |  ANA SAYFA & GENEL
 ---------------------------------------------------- */
-$router->get('ana-sayfa', fn() => require 'pages/home/home.php');
+$router->get('ana-sayfa', function () {
+    if (Gate::isResident()) {
+        require 'pages/home/site-sakini/home.php';
+    } else {
+        require 'pages/home/home.php';
+    }
+});
 $router->get('index', fn() => require 'index.php');
 
 $router->get('ssp-test', fn() => require 'pages/server_processing.php');
 
 // Email ve SMS Bildirimleri
 $router->get('bildirimler', fn() => require 'pages/email-sms/list.php');
+$router->get('sakin/ana-sayfa', fn() => require 'pages/home/site-sakini/home.php');
+$router->get('sakin/finans', fn() => require 'pages/home/site-sakini/finans.php');
+$router->get('sakin/daire', fn() => require 'pages/home/site-sakini/daire.php');
+$router->get('sakin/duyurular', fn() => require 'pages/home/site-sakini/duyurular.php');
+$router->get('sakin/talep', fn() => require 'pages/home/site-sakini/talep.php');
+$router->get('sakin/anketler', fn() => require 'pages/home/site-sakini/anketler.php');
+$router->get('sakin/belgeler', fn() => require 'pages/home/site-sakini/belgeler.php');
+$router->get('sakin/iletisim', fn() => require 'pages/home/site-sakini/iletisim.php');
+$router->get('sakin/profil', fn() => require 'pages/home/site-sakini/profil.php');
 

@@ -1,8 +1,9 @@
 <?php
 
-use App\Helper\Security;
-use Model\SitelerModel;
+use App\Services\Gate;
 use Model\BloklarModel;
+use Model\SitelerModel;
+use App\Helper\Security;
 
 $Bloklar = new BloklarModel();
 $Siteler = new SitelerModel();
@@ -10,18 +11,22 @@ $Siteler = new SitelerModel();
 $Sitem = $Siteler->Sitelerim();
 
 $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
+/** ekleme güncelleme ve silme yetisi var mı */
+$egsYetkiVarmi = Gate::allows("site_ekle_guncelle_sil");
+$siteGuncelleyebilir = $egsYetkiVarmi == true ? "update-Siteler" : "yetki-yok";
+$siteSilebilir = $egsYetkiVarmi == true ? "delete-Siteler" : "yetki-yok";
 
 ?>
 <style>
-  #siteDetayOffcanvas {
-    z-index: 1060 !important;
-  }
+    #siteDetayOffcanvas {
+        z-index: 1060 !important;
+    }
 </style>
 
 
 <div class="page-header">
 
-  
+
 
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -42,14 +47,15 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                 <?php
-              //  require_once 'pages/components/search.php';
-               // require_once 'pages/components/download.php'
+                //  require_once 'pages/components/search.php';
+                // require_once 'pages/components/download.php'
                 ?>
-
-                <a href="site-ekle" class="btn btn-primary route-link">
-                    <i class="feather-plus me-2"></i>
-                    <span>Yeni Site Ekle</span>
-                </a>
+                <?php if ($egsYetkiVarmi): ?>
+                    <a href="site-ekle" class="btn btn-primary route-link">
+                        <i class="feather-plus me-2"></i>
+                        <span>Yeni Site Ekle</span>
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
         <div class="d-md-none d-flex align-items-center">
@@ -61,7 +67,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 </div>
 
 <div class="main-content">
-  
+
     <?php
     $title = "Siteler Listesi!";
     $text = "Sitelerinizi görüntüleyip ekleme, düzenleme, silme ve yeni site tanımlama işlemlerinizi  yapabilirsiniz.";
@@ -96,7 +102,7 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 
                                         ?>
                                             <tr class="text-center">
-                                            <td><?php echo $i; ?></td>
+                                                <td><?php echo $i; ?></td>
                                                 <td><a data-page="Siteler/manage&id=<?php echo $id ?>" href="#">
                                                         <?php echo $Siteler->site_adi; ?>
                                                     </a>
@@ -112,17 +118,20 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
                                                             data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                       
-                                                        <a href="site-duzenle/<?php echo $enc_id; ?>"
-                                                            class="avatar-text avatar-md">
+
+                                                        <a href="<?php echo $egsYetkiVarmi == true ? "site-duzenle/" . $enc_id : "#"; ?>"
+                                                            class="avatar-text avatar-md <?php echo $siteGuncelleyebilir; ?>" 
+                                                           >
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);"
                                                             data-name="<?php echo $Siteler->site_adi ?>"
                                                             data-id="<?php echo $enc_id ?>"
-                                                            class="avatar-text avatar-md delete-Siteler"
+                                                            class="avatar-text avatar-md <?php echo $siteSilebilir; ?>"
                                                             data-id="<?php echo $enc_id; ?>"
-                                                            data-name="<?php echo $Siteler->site_adi; ?>">
+                                                            data-name="<?php echo $Siteler->site_adi; ?>"
+            
+                                                            >
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>
@@ -144,29 +153,39 @@ $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
 
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('click', function(e) {
-        const target = e.target.closest('.openSiteDetay');
-        if (target) {
-            const id = target.getAttribute('data-id');
-            Pace.restart?.();
 
-            fetch('pages/management/sites/content/siteDetay.php?id=' + id)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('siteDetay').innerHTML = html;
-                    // DOM'a yeni offcanvas eklendikten sonra bul
-                    const canvasElement = document.getElementById('siteDetayOffcanvas');
-                    if (canvasElement) {
-                        const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
-                        offcanvasInstance.show();
-                    }
-                })
-                .catch(error => {
-                    console.error('Detay yüklenemedi:', error);
-                    alert('Bir hata oluştu.');
-                });
-        }
+    $(document).on('click', '.yetki-yok', function() {
+        swal.fire({
+            title: "Uyarı",
+            text: "Bu işlemi yapmak için yetkiniz yok.",
+            icon: "warning",
+            confirmButtonText: "Tamam"
+        });
+    
     });
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.openSiteDetay');
+            if (target) {
+                const id = target.getAttribute('data-id');
+                Pace.restart?.();
+
+                fetch('pages/management/sites/content/siteDetay.php?id=' + id)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('siteDetay').innerHTML = html;
+                        // DOM'a yeni offcanvas eklendikten sonra bul
+                        const canvasElement = document.getElementById('siteDetayOffcanvas');
+                        if (canvasElement) {
+                            const offcanvasInstance = new bootstrap.Offcanvas(canvasElement);
+                            offcanvasInstance.show();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Detay yüklenemedi:', error);
+                        alert('Bir hata oluştu.');
+                    });
+            }
+        });
+    });
 </script>

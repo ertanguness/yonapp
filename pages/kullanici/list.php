@@ -21,7 +21,7 @@ $User = new UserModel();
             <h5 class="m-b-10">Kullanıcılar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Kullanıcı Listesi</li>
         </ul>
     </div>
@@ -91,7 +91,7 @@ $User = new UserModel();
                                         ?>
                                             <tr>
                                                 <td class="text-center"><?php echo $i; ?></td>
-                                                <td><?php echo $User->roleName($user->roles ?? ''); ?></td>
+                                                <td><?php echo $user->role_name ; ?></td>
                                                 <td><?php echo $user->full_name; ?></td>
                                                 <td><?php echo $user->email; ?></td>
                                                 <td class="text-start"><?php echo $user->phone; ?></td>

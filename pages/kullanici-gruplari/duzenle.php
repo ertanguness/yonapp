@@ -22,7 +22,7 @@ $role = $UserRolesModel->find($id);
             <h5 class="m-b-10">Yetki Yönetimi</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Yetki Grubu Ekle</li>
         </ul>
     </div>
@@ -117,6 +117,16 @@ $role = $UserRolesModel->find($id);
 </div>
 
 <script>
+    if (typeof setupShortcut !== 'function') {
+        window.setupShortcut = function(shortcutKey, callback) {
+            document.addEventListener('keydown', function (event) {
+                if (event.ctrlKey && String(event.key||'').toLowerCase() === String(shortcutKey||'').toLowerCase()) {
+                    event.preventDefault();
+                    try { callback(); } catch(e) {}
+                }
+            });
+        };
+    }
     $(document).ready(function() {
         setupShortcut('s',function(){
             document.getElementById('saveRoleBtn').click();

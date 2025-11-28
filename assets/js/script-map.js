@@ -5,7 +5,7 @@ const page = document.body.dataset.page;
 
 /* ✅ DataTables gereken tüm sayfalar */
 const dataTablesPages = [
-    "dues/dues-defines/list","offers/list","reports/list","kullanici/list",
+    "dues/dues-defines/list","offers/list","reports/list","kullanici/list","kullanici-duzenle",
     "kullanici-gruplari","bakim-ariza-takip","periyodik-bakim","maliyet-faturalandirma",
     "missions/list","missions/process/list","missions/headers/manage","missions/headers/list",
     "uye/list","dues/debit/detail","dues/payment/list","dues/debit/list","daire-turu-listesi",

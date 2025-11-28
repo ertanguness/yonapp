@@ -16,7 +16,7 @@ $site_adi = $site->site_adi ?? 'Site';
             <h5 class="m-b-10">Raporlar</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home/list">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Raporlar</li>
         </ul>
     </div>
@@ -753,6 +753,79 @@ $site_adi = $site->site_adi ?? 'Site';
                             </div>
                         </div>
 
+                        <!-- Kişi Bazında Detaylı Hesap Dökümü -->
+                        <div class="accordion-item border border-dashed border-gray-300 mb-3">
+                            <h2 class="accordion-header" id="headingKisiDetay">
+                                <button class="accordion-button collapsed bg-light" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapseKisiDetay"
+                                    aria-expanded="false" aria-controls="collapseKisiDetay">
+                                    <div class="d-flex align-items-center w-100">
+                                        <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary rounded me-3">
+                                            <i class="feather-user-check fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold d-block">Kişi Bazında Detaylı Hesap Dökümü</span>
+                                            <small class="text-muted">Seçilen kişilerin detaylı hesap hareketleri</small>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapseKisiDetay" class="accordion-collapse collapse"
+                                aria-labelledby="headingKisiDetay" data-bs-parent="#raporlarAccordion">
+                                <div class="accordion-body bg-white">
+                                    <form id="formKisiDetay" class="row g-3">
+                                        <div class="col-12">
+                                            <div class="alert alert-light border-0 mb-3">
+                                                <i class="feather-info me-2"></i>
+                                                <small>Bir veya birden fazla kişiyi seçerek ayrıntılı hesap dökümlerini alabilirsiniz.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <label for="kisi_ids" class="form-label">
+                                                <i class="feather-users me-1"></i>Kişiler
+                                            </label>
+                                            <select class="form-control select2" id="kisi_ids" name="kisi_ids[]" multiple>
+                                                <?php
+                                                $Kisiler = new Model\KisilerModel();
+                                                $kisiList = $Kisiler->getAktifKisilerBySite($_SESSION['site_id']);
+                                                foreach ($kisiList as $k): ?>
+                                                    <option value="<?php echo $k->id; ?>">
+                                                        <?php echo ($k->blok_adi ?? '') . ' - ' . ($k->daire_kodu ?? '') . ' - ' . ($k->adi_soyadi ?? ''); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <small class="text-muted">Çoklu seçim yapabilirsiniz</small>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="kisi_format" class="form-label">
+                                                <i class="feather-download me-1"></i>İndirme Formatı
+                                            </label>
+                                            <select class="form-control select2" id="kisi_format" name="kisi_format">
+                                                <option value="pdf">PDF Belgesi</option>
+                                                <option value="xlsx">Excel (XLSX)</option>
+                                                <option value="csv">CSV Dosyası</option>
+                                                <option value="html">HTML Sayfası</option>
+                                            </select>
+                                        </div>
+
+                                        <hr class="my-4">
+                                        <div class="col-12 d-flex gap-2">
+                                            <button type="button" class="btn btn-outline-secondary btn-rapor-onizle"
+                                                data-rapor="kisi-detay">
+                                                <i class="feather-eye me-2"></i>Önizle
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-rapor-indir"
+                                                data-rapor="kisi-detay">
+                                                <i class="feather-download me-2"></i>Raporu İndir
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -961,6 +1034,13 @@ $site_adi = $site->site_adi ?? 'Site';
 
                     url = `pages/raporlar/export/blok_kisi_hesap_ozetleri_export.php?blok_id=${hesapBlok}&format=${hesapFormat}&sadece_borclu=${hesapSadeceBorclu}`;
                     break;
+                case 'kisi-detay':
+                    const kisiSecimler = $('#kisi_ids').val() || [];
+                    const kisiFormat = document.getElementById('kisi_format').value;
+                    if (!kisiSecimler.length) { alert('Lütfen en az bir kişi seçiniz.'); return; }
+                    const kisiParam = encodeURIComponent(kisiSecimler.join(','));
+                    url = `pages/raporlar/export/kisi_bazinda_hesap_dokumu.php?kisi_ids=${kisiParam}&format=${kisiFormat}`;
+                    break;
             }
 
             if (url) {
@@ -1041,6 +1121,12 @@ $site_adi = $site->site_adi ?? 'Site';
                     const hesapBlok = document.getElementById('hesap_blok').value;
                     const hesapSadeceBorclu = document.getElementById('hesap_sadece_borclu').checked ? '1' : '0';
                     url = `pages/raporlar/export/blok_kisi_hesap_ozetleri_export.php?blok_id=${hesapBlok}&format=html&sadece_borclu=${hesapSadeceBorclu}`;
+                    break;
+                case 'kisi-detay':
+                    const kisiSecimler2 = $('#kisi_ids').val() || [];
+                    if (!kisiSecimler2.length) { alert('Lütfen en az bir kişi seçiniz.'); return; }
+                    const kisiParam2 = encodeURIComponent(kisiSecimler2.join(','));
+                    url = `pages/raporlar/export/kisi_bazinda_hesap_dokumu.php?kisi_ids=${kisiParam2}&format=html`;
                     break;
             }
 

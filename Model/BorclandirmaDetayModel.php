@@ -511,10 +511,23 @@ class BorclandirmaDetayModel extends Model
      */
     public function BorclandirmaDetaylariniSil($borclandirma_id): void
     {
+        // Gelen ID’yi decrypt et; bozuk / geçersiz ise hata fırlat
         $borclandirma_id = Security::decrypt($borclandirma_id);
-        // Borçlandırma id'sine göre borçlandırma detayını sil
-        $sql = $this->db->prepare("DELETE FROM {$this->table} WHERE borclandirma_id = ?");
-        $sql->execute([$borclandirma_id]);
+        if ($borclandirma_id === false) {
+            throw new \InvalidArgumentException('Geçersiz borçlandırma ID’si.');
+        }
+
+        // Soft-delete: silinme_tarihi ve silen kullanıcıyı güncelle
+        $sql = $this->db->prepare("
+            UPDATE {$this->table}
+            SET silinme_tarihi = NOW(),
+                silen_kullanici = :user_id
+            WHERE borclandirma_id = :borc_id
+        ");
+        $sql->execute([
+            ':user_id' => $_SESSION['user']->id,
+            ':borc_id' => $borclandirma_id
+        ]);
     }
 
     /* ***************************************************************************************/

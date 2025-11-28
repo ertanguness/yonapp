@@ -56,7 +56,9 @@ if (
     $page == "bildirimler" ||
     $page == "acil-durum-kisileri" || $page == "sikayet-oneri-listesi" || $page == "duyuru-listesi" ||
     $page == "sakin/sikayet-oneri-listem" || $page == "sikayet-oneri-duzenle" ||
-    $page == "anket-listesi" || $page == "duyuru-listesi"
+    $page == "anket-listesi" || $page == "duyuru-listesi" ||
+    $page == "arac-yonetimi" ||
+    $page == "kullanici-ekle"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  

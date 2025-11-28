@@ -106,10 +106,10 @@ class AcilDurumKisileriModel extends Model
     public function listOrdered(bool $onlyActive = true, ?string $orderCol = null, string $orderDir = 'DESC'): array
     {
         $orderCol = $orderCol ?: ($this->hasColumn('kayit_tarihi') ? 'kayit_tarihi' : 'id');
-        $sql = "SELECT * FROM {$this->table}";
-        if ($onlyActive && $this->hasColumn('silinme_tarihi')) {
-            $sql .= " WHERE silinme_tarihi IS NULL";
-        }
+        $sql = "SELECT acd.*,k.adi_soyadi as daire_sakini,d.daire_kodu FROM {$this->table} acd
+            LEFT JOIN kisiler k ON k.id =acd.kisi_id
+            LEFT JOIN daireler d ON d.id = k.daire_id ";
+     
         $sql .= " ORDER BY {$orderCol} " . ($orderDir === 'ASC' ? 'ASC' : 'DESC');
         $stmt = $this->db->prepare($sql);
         $stmt->execute();

@@ -85,55 +85,36 @@ table tr td .p-3.border.rounded.text-center {
 </div>
 
 <script>
-    let url = "pages/dues/collections/api.php"; // API URL'si
-    $(function() {
-        let table = $('#tahsilatlarTable').DataTable({
-            destroy: true,
+    let url = "pages/dues/collections/api.php";
+    function onDataTablesReady(cb){
+        var tries = 0;
+        (function wait(){
+            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+            if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
+            setTimeout(wait, 100);
+        })();
+    }
+    onDataTablesReady(function() {
+        table = initDataTable('#tahsilatlarTable',{
             processing: true,
             serverSide: true,
-            stateSave: true,
             ajax: '/pages/dues/collections/server_processing.php',
             columns: [
-                { data: 0 },
-                { data: 1 },
-                { data: 2 },
-                { data: 3 },
-                { data: 4 },
-                { data: 5 }
+                { data: 0, name: 'makbuz_no' },
+                { data: 1, name: 'odeme_tarihi' },
+                { data: 2, name: 'kisi_daire' },
+                { data: 3, name: 'aciklama_kasa' },
+                { data: 4, name: 'tutar' },
+                { data: 5, name: 'detay' }
+            ],
+            columnDefs: [
+              { targets: 5, orderable: false, searchable: false }
             ],
             order: [[1, 'desc']],
-            pageLength: 25,
-            initComplete: function (settings, json) {
-                var api = this.api();
-                var tableId = settings.sTableId;
-
-                $('#' + tableId + ' thead .search-input-row').remove();
-                $('#' + tableId + ' thead').append('<tr class="search-input-row"></tr>');
-
-                api.columns().every(function () {
-                    let column = this;
-                    let title = column.header().textContent.trim();
-
-                    if (title !== 'Detay') {
-                        let input = document.createElement('input');
-                        input.placeholder = title;
-                        input.classList.add('form-control', 'form-control-sm');
-                        input.setAttribute('autocomplete', 'off');
-
-                        const th = $('<th class="search text-center align-middle">').append(input);
-                        $('#' + tableId + ' .search-input-row').append(th);
-
-                        $(input).on('keyup change', function () {
-                            if (column.search() !== this.value) {
-                                column.search(this.value).draw();
-                            }
-                        });
-                    } else {
-                        $('#' + tableId + ' .search-input-row').append('<th></th>');
-                    }
-                });
-            }
+            pageLength: 25
         });
+
+        // processing göstergesi için DataTables'in kendi elemanı kullanılacak
 
         // 2. Detay Butonuna Tıklama Olayını Dinle
         $('#tahsilatlarTable tbody').on('click', 'button.tahsilat-detay-goster', function() {
@@ -316,3 +297,8 @@ table tr td .p-3.border.rounded.text-center {
 
     }
 </script>
+<style>
+  .card-body { overflow-x: hidden; }
+  #tahsilatlarTable { width: 100%; }
+  .dataTables_processing { position: static !important; margin: .5rem 0; padding: .5rem 1rem; border-radius: 8px; background: #f8f9fa; box-shadow: 0 1px 2px rgba(0,0,0,.06); font-size: 14px; }
+</style>

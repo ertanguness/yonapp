@@ -160,7 +160,10 @@ class TahsilatDetayModel extends Model
         $borclandirma_id = Security::decrypt($borclandirma_id);
         $sql = $this->db->prepare("SELECT 1 
                                    FROM $this->table 
-                                   WHERE borc_detay_id IN (SELECT id FROM borclandirma_detayi WHERE borclandirma_id = ?) 
+                                   WHERE borc_detay_id IN (SELECT id 
+                                                            FROM borclandirma_detayi 
+                                                            WHERE borclandirma_id = ? )
+                                                            and silinme_tarihi IS NULL
                                    LIMIT 1");
         $sql->execute([$borclandirma_id]);
         return $sql->fetchColumn() !== false;
