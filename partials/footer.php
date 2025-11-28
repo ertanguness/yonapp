@@ -241,7 +241,12 @@ use App\Services\Gate;
                 <i class="bi bi-diagram-3"></i>
                 <p>Site Seçimi</p>
             </a>
-            <?php } ?>
+            <?php }else{ ?>
+            <a href="/yonetici-aidat-odeme" class="mobile-quick-actions-item" title="Aidat Ödeme">
+                <i class="bi bi-wallet"></i>
+                <p>Fins.İşl.</p>
+            </a>
+           <?php } ?>
         </div>
 
         <div class="mobile-actions-spacer" aria-hidden="true"></div>
@@ -260,9 +265,14 @@ use App\Services\Gate;
                 <p>Borçlandır</p>
             </a>
             <?php } else { ?>
+    
             <a href="/sakin/finans" class="mobile-quick-actions-item" title="Aidat Ödeme">
                 <i class="bi bi-wallet"></i>
-                <p>Fins.işl.</p>
+                <p>Talepler.</p>
+            </a>
+            <a href="/sakin/daireler" class="mobile-quick-actions-item" title="Borçlandırma">
+                <i class="bi bi-clipboard-plus"></i>
+                <p>Daireler</p>
             </a>
             <?php } ?>
         </div>
