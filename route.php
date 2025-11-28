@@ -1,6 +1,7 @@
 <?php
 
 use App\Router;
+use App\Services\Gate;
 
 // ROUTER BAŞLAT
 $router = new Router();
@@ -269,7 +270,13 @@ $router->get('unauthorize', fn() => require 'pages/authorize.php');
 /* ----------------------------------------------------
 |  ANA SAYFA & GENEL
 ---------------------------------------------------- */
-$router->get('ana-sayfa', fn() => require 'pages/home/home.php');
+$router->get('ana-sayfa', function () {
+    if (Gate::isResident()) {
+        require 'pages/home/site-sakini/home.php';
+    } else {
+        require 'pages/home/home.php';
+    }
+});
 $router->get('index', fn() => require 'index.php');
 
 $router->get('ssp-test', fn() => require 'pages/server_processing.php');

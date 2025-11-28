@@ -1,4 +1,5 @@
 <?php
+
 use App\Helper\Helper;
 use App\Helper\Date;
 use Model\FinansalRaporModel;
@@ -12,7 +13,7 @@ $sessionEmail = trim((string)($_SESSION['user']->email ?? ''));
 $sessionPhone = trim((string)($_SESSION['user']->phone ?? ''));
 $sessionName  = trim((string)($_SESSION['user']->full_name ?? ''));
 $tumKisiler = $Kisiler->SiteTumKisileri($site_id);
-$kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessionEmail, $sessionPhone, $sessionName){
+$kisiAdaylari = array_values(array_filter($tumKisiler, function ($k) use ($sessionEmail, $sessionPhone, $sessionName) {
     $e = trim((string)($k->eposta ?? ''));
     $p = trim((string)($k->telefon ?? ''));
     $n = trim((string)($k->adi_soyadi ?? ''));
@@ -52,7 +53,7 @@ if ($selectedAll && !empty($kisiAdaylari)) {
 
 $sonOdeme = null;
 foreach ($hareketler as $it) {
-    if (strtolower($it->islem_tipi ?? '') === 'ödeme') {
+    if (strtolower($it->islem_tipi ?? '') === 'Ödeme') {
         if (!$sonOdeme || strtotime($it->islem_tarihi) > strtotime($sonOdeme)) {
             $sonOdeme = $it->islem_tarihi;
         }
@@ -70,22 +71,13 @@ foreach ($hareketler as $it) {
             <li class="breadcrumb-item">Finans</li>
         </ul>
     </div>
-    <div class="page-header-right ms-auto">
-        <div class="page-header-right-items d-flex flex-column align-items-stretch gap-2" style="min-width:240px;">
-            <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $activeKisiId; ?>&format=pdf" class="btn btn-light w-100">
-                <i class="bi bi-filetype-pdf me-2"></i>PDF Ekstre İndir
-            </a>
-            <a href="/online-aidat-takip" class="btn btn-primary w-100">
-                <i class="feather-credit-card me-2"></i>Online Ödeme
-            </a>
-        </div>
-    </div>
+   
     <div class="d-md-none d-flex align-items-center">
         <a href="javascript:void(0)" class="page-header-right-open-toggle">
             <i class="feather-align-right fs-20"></i>
         </a>
     </div>
-    </div>
+</div>
 
 <div class="main-content">
     <div class="row g-4">
@@ -117,8 +109,12 @@ foreach ($hareketler as $it) {
                     <h5 class="card-title mb-0">Hızlı Bağlantılar</h5>
                 </div>
                 <div class="card-body d-flex flex-column gap-2">
-                    <a href="/online-aidat-takip" class="btn btn-primary w-100"><i class="feather-credit-card me-2"></i>Online Ödeme</a>
-                    <a href="/borclarim" class="btn btn-light w-100"><i class="bi bi-wallet2 me-2"></i>Borçlarım</a>
+                    <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $activeKisiId; ?>&format=pdf" class="btn btn-light w-100">
+                        <i class="bi bi-filetype-pdf me-2"></i>PDF Ekstre İndir
+                    </a>
+                    <a href="/online-aidat-takip" class="btn btn-primary w-100">
+                        <i class="feather-credit-card me-2"></i>Online Ödeme
+                    </a>
                 </div>
             </div>
         </div>
@@ -134,7 +130,7 @@ foreach ($hareketler as $it) {
             </div>
         </div>
 
-        
+
 
         <div class="col-12">
             <div class="card rounded-3">
@@ -153,13 +149,14 @@ foreach ($hareketler as $it) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
-                                    // Yeniden → Eskiye sırala
-                                    usort($hareketler, function($a,$b){
-                                        return strtotime($b->islem_tarihi) <=> strtotime($a->islem_tarihi);
-                                    });
+                                <?php
+                                // Yeniden → Eskiye sırala
+                                usort($hareketler, function ($a, $b) {
+                                    return strtotime($b->islem_tarihi) <=> strtotime($a->islem_tarihi);
+                                });
                                 ?>
-                                <?php foreach (array_slice($hareketler,0,20) as $h): $tip = mb_strtolower($h->islem_tipi ?? ''); $isPay = in_array($tip, ['ödeme','tahsilat']); ?>
+                                <?php foreach (array_slice($hareketler, 0, 20) as $h): $tip = mb_strtolower($h->islem_tipi ?? '');
+                                    $isPay = in_array($tip, ['ödeme', 'tahsilat']); ?>
                                     <tr class="<?php echo $isPay ? 'table-success' : ''; ?>">
                                         <td><?php echo Date::dmy($h->islem_tarihi); ?></td>
                                         <td><?php echo htmlspecialchars($h->islem_tipi ?? ''); ?></td>
@@ -184,13 +181,15 @@ foreach ($hareketler as $it) {
 <?php
 // Aylık grafik verilerini gerçek hareketlerden üret
 $months = [];
-for ($i=11; $i>=0; $i--) {
+for ($i = 11; $i >= 0; $i--) {
     $key = date('Y-m', strtotime("-{$i} months"));
     $months[] = $key;
 }
-$labels = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+$labels = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
 $labelsOrdered = [];
-foreach ($months as $key) { $labelsOrdered[] = $labels[(int)date('n', strtotime($key))-1]; }
+foreach ($months as $key) {
+    $labelsOrdered[] = $labels[(int)date('n', strtotime($key)) - 1];
+}
 
 $acc = array_fill_keys($months, 0.0);
 $pay = array_fill_keys($months, 0.0);
@@ -208,32 +207,52 @@ $accVals = array_values($acc);
 $payVals = array_values($pay);
 ?>
 <script>
-document.addEventListener('DOMContentLoaded', function(){
-    if (!window.ApexCharts) {
-        var s = document.createElement('script');
-        s.src = '/assets/vendors/js/apexcharts.min.js';
-        s.onload = initChart;
-        document.body.appendChild(s);
-    } else {
-        initChart();
-    }
-    function initChart(){
-    if (!window.ApexCharts) return;
-    var months = <?php echo json_encode($labelsOrdered, JSON_UNESCAPED_UNICODE); ?>;
-    var accruals = <?php echo json_encode(array_map('floatval',$accVals)); ?>;
-    var payments = <?php echo json_encode(array_map('floatval',$payVals)); ?>;
-    new ApexCharts(document.querySelector('#chartMonthlyCompare'), {
-        chart: { type: 'line', height: 300, toolbar: { show: false } },
-        series: [
-            { name: 'Borç', data: accruals },
-            { name: 'Ödeme', data: payments }
-        ],
-        xaxis: { categories: months },
-        colors: ['#dc3545', '#28a745'],
-        stroke: { width: 3 },
-        markers: { size: 0 },
-        grid: { strokeDashArray: 4 }
-    }).render();
-    }
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.ApexCharts) {
+            var s = document.createElement('script');
+            s.src = '/assets/vendors/js/apexcharts.min.js';
+            s.onload = initChart;
+            document.body.appendChild(s);
+        } else {
+            initChart();
+        }
+
+        function initChart() {
+            if (!window.ApexCharts) return;
+            var months = <?php echo json_encode($labelsOrdered, JSON_UNESCAPED_UNICODE); ?>;
+            var accruals = <?php echo json_encode(array_map('floatval', $accVals)); ?>;
+            var payments = <?php echo json_encode(array_map('floatval', $payVals)); ?>;
+            new ApexCharts(document.querySelector('#chartMonthlyCompare'), {
+                chart: {
+                    type: 'line',
+                    height: 300,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                series: [{
+                        name: 'Borç',
+                        data: accruals
+                    },
+                    {
+                        name: 'Ödeme',
+                        data: payments
+                    }
+                ],
+                xaxis: {
+                    categories: months
+                },
+                colors: ['#dc3545', '#28a745'],
+                stroke: {
+                    width: 3
+                },
+                markers: {
+                    size: 0
+                },
+                grid: {
+                    strokeDashArray: 4
+                }
+            }).render();
+        }
+    });
 </script>

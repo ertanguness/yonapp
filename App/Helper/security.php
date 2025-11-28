@@ -176,6 +176,8 @@ public static function ensureSiteSelected($redirectUri = '/site-ekle')
         }
     }
 
+ 
+
 /** Eğer giriş yapan kullanıcının rolü site sakini ise başka sayfalara girmesini engelle
  */
 public static function ensureNotResident()

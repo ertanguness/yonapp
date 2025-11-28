@@ -31,11 +31,9 @@ class UserRolesModel extends Model
         $sql = $this->db->prepare("SELECT * 
                                    FROM $this->table 
                                    WHERE owner_id = :owner_id 
-                                   and guncellenebilir = :guncellenebilir
                                    ORDER BY id DESC");
         $sql->execute([
-            'owner_id' => $ownerID,
-            'guncellenebilir' => 1
+            'owner_id' => $ownerID
         ]);
 
         return $sql->fetchAll(PDO::FETCH_OBJ) ?? [];

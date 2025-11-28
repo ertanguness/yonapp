@@ -76,7 +76,6 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                     </div>
                     <div class="d-none d-md-flex align-items-center gap-2">
                         <a href="/sakin/profil" class="btn btn-light">Profil</a>
-                        <a href="/ayarlar" class="btn btn-light">Ayarlar</a>
                     </div>
                 </div>
             </div>
@@ -149,7 +148,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                     </a>
                     <a href="/sakin/finans" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5 text-decoration-none">
                         <i class="bi bi-wallet2"></i>
-                        <span class="fs-12 text-muted d-block">Borç / Ödeme</span>
+                        <span class="fs-12 text-muted d-block">Finansal İşlemler</span>
                     </a>
                     <a href="/sakin/duyurular" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5 text-decoration-none">
                         <i class="feather-speaker"></i>
@@ -172,37 +171,6 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
             </div>
         </div>
 
-        <div class="col-12 mt-0">
-            <div class="card rounded-3">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <h5 class="card-title mb-0">Son Hareketler</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="list-unstyled mb-0">
-                        <?php foreach ($sonHareketler as $h): $col = (($h->islem_turu ?? '') === 'tahsilat' ? 'success' : 'danger'); ?>
-                            <li class="py-2 border-bottom">
-                                <div class="d-flex gap-3 justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="avatar-text avatar-md bg-soft-<?php echo $col; ?> text-<?php echo $col; ?> border-soft-<?php echo $col; ?> rounded">
-                                            <i class="feather-<?php echo $col === 'success' ? 'check' : 'minus'; ?>"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold text-dark"><?php echo htmlspecialchars($h->borc_adi ?? ''); ?></div>
-                                            <div class="fs-12 text-muted"><?php echo Date::dmy($h->islem_tarihi); ?></div>
-                                        </div>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="fw-semibold text-<?php echo $col; ?>">
-                                            <?php echo Helper::formattedMoneyWithoutCurrency($h->tutar); ?> ₺
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
 
         <div class="col-xxl-8 col-12 mt-0">
             <div class="card rounded-3">
@@ -231,6 +199,39 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                         <div class="d-flex align-items-center justify-content-between"><span>Pilates Topu</span><span class="badge bg-soft-primary text-primary">%25</span></div>
                     </div>
                     <a href="/sakin/anketler" class="btn btn-primary mt-3 w-100">Oy Ver</a>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="col-12 mt-0">
+            <div class="card rounded-3">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0">Son Hareketler</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <?php foreach ($sonHareketler as $h): $col = (($h->islem_turu ?? '') === 'tahsilat' ? 'success' : 'danger'); ?>
+                            <li class="py-2 border-bottom">
+                                <div class="d-flex gap-3 justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar-text avatar-md bg-soft-<?php echo $col; ?> text-<?php echo $col; ?> border-soft-<?php echo $col; ?> rounded">
+                                            <i class="feather-<?php echo $col === 'success' ? 'check' : 'minus'; ?>"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark"><?php echo htmlspecialchars($h->borc_adi ?? ''); ?></div>
+                                            <div class="fs-12 text-muted"><?php echo Date::dmy($h->islem_tarihi); ?></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-semibold text-<?php echo $col; ?>">
+                                            <?php echo Helper::formattedMoneyWithoutCurrency($h->tutar); ?> ₺
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
             </div>
         </div>

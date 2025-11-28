@@ -105,20 +105,7 @@ try {
                         ?>
                     </div>
                 </div>
-                <div class="d-flex align-items-center ms-2 text-nowrap">
-                    <a href="/yonetici-aidat-odeme"
-                        class="d-flex align-items-center gap-2 py-07 px-2 rounded-1 cursor-pointer border border-dashed border-gray-5 text-decoration-none">
-                        <i class="bi bi-wallet"></i>
-                        <span class="fs-12 text-muted">Yönetici Aidat Ödeme</span>
-                    </a>
-                </div>
-                <div class="d-flex align-items-center ms-2">
-                    <a href="/borclandirma-yap"
-                        class="d-flex align-items-center gap-2 py-07 px-2 rounded-1 cursor-pointer border border-dashed border-gray-5 text-decoration-none">
-                        <i class="bi bi-safe"></i>
-                        <span class="fs-12 text-muted">Borçlandırma</span>
-                    </a>
-                </div>
+               
             </div>
         </div>
         <!--! [Start] Header Right !-->

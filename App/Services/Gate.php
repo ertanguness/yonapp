@@ -147,4 +147,18 @@ public static function can(string $permissionName): void
     }
 }
 
+   /** Site sakini mi değil mi ?
+     * 
+     * @return boolean
+     */
+    public static function isResident()
+    {
+        if($_SESSION["user"]->roles == 3){
+            return true;
+        }
+        return false;
+    }
+
+
+
 }
