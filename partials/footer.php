@@ -1,4 +1,11 @@
+<?php 
+use App\Services\Gate;
+?>
+
+
 <!-- [ Mobile Bottom Navigation ] start -->
+
+
 <style>
     /* Mobile - Bottom Navigation */
     .mobile-quick-actions {
@@ -25,14 +32,16 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 12px;
+        white-space: nowrap;
+        padding: 14px;
         text-decoration: none;
         color: #555;
-        font-size: 12px;
+        font-size: 14px;
         flex: 1;
         transition: all 0.3s ease;
         border: none;
         background: none;
+        border-radius: 8px;
         cursor: pointer;
         position: relative;
     }
@@ -43,13 +52,13 @@
     }
 
     .mobile-quick-actions-item i {
-        font-size: 24px;
+        font-size: 28px;
         margin-bottom: 4px;
     }
 
     .mobile-quick-actions-item p {
         margin: 0;
-        font-size: 11px;
+        font-size: 12px;
         text-align: center;
         line-height: 1.2;
     }
@@ -119,11 +128,14 @@
 <!-- Mobile Hızlı İşlemler Bottom Navigation -->
 <div class="mobile-quick-actions">
     <div class="mobile-quick-actions-wrapper">
+        
+        
         <!-- Ana Sayfa -->
         <a href="/ana-sayfa" class="mobile-quick-actions-item" title="Ana Sayfa">
             <i class="bi bi-house-fill"></i>
             <p>Ana Sayfa</p>
         </a>
+        <?php if(!Gate::isResident()){ ?>
 
         <!-- Site Seçimi -->
         <a href="company-list.php" class="mobile-quick-actions-item" title="Site Seçimi">
@@ -148,6 +160,14 @@
             <i class="bi bi-three-dots-vertical"></i>
             <p>Diğer</p>
         </button>
+    <?php } else { ?>
+         <!-- Aidat Ödeme -->
+        <a href="/sakin/finans" class="mobile-quick-actions-item" title="Aidat Ödeme">
+            <i class="bi bi-wallet"></i>
+            <p>Fins.işl.</p>
+        </a>
+   <?php  } ; ?>
+
     </div>
 
     <!-- Dropdown Menu -->
@@ -204,6 +224,7 @@
         <!-- bootstrap icons -->
     </div>
 </div>
+
 
 <script>
     // Mobile Dropdown Menu
