@@ -399,11 +399,3 @@ use App\Services\Gate;
         </span>
     </div>
 </footer>
-<!-- [ Footer ] end -->
-    .mobile-dropdown-backdrop {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.25);
-        z-index: 1000;
-    }

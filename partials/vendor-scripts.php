@@ -314,6 +314,7 @@ if ($page == 'ayarlar') {
 }
 
 if ($page == 'ana-sayfa') {
+    echo '<script src="/assets/vendors/js/vendors.min.js"></script>';
     // //echo '<script src="./dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>';
     // echo '<script src="./dist/libs/jsvectormap/dist/js/jsvectormap.min.js" defer></script>';
     // echo '<script src="./dist/libs/jsvectormap/dist/maps/world.js" defer></script>';
@@ -324,6 +325,7 @@ if ($page == 'ana-sayfa') {
     echo '<script src="assets/vendors/js/circle-progress.min.js"></script>';
     echo '<script src="assets/vendors/js/jquery.time-to.min.js "></script>';
     echo ' <script src="/assets/js/dashboard-init.min.js"></script>';
+    echo '<script>$(function(){var h=$("#mobile-collapse");if(h.length){h.off("click.hfix").on("click.hfix",function(e){e.preventDefault();var isH=$("html").hasClass("nxl-horizontal");var target=isH?$(".topbar"):$(".nxl-navigation");if(!target.length)return;var active=target.hasClass(isH?"mob-navigation-active":"mob-navigation-active");if(active){target.removeClass(isH?"mob-navigation-active":"mob-navigation-active");target.find(".nxl-menu-overlay").remove();$(".hamburger").removeClass("is-active");}else{target.addClass(isH?"mob-navigation-active":"mob-navigation-active");if(!target.find(".nxl-menu-overlay").length){target.append('<div class="nxl-menu-overlay"></div>');}target.find(".nxl-menu-overlay").off("click.hfix").on("click.hfix",function(){target.removeClass(isH?"mob-navigation-active":"mob-navigation-active");$(".hamburger").removeClass("is-active");$(this).remove();});}});}});</script>';
 }
 
 
