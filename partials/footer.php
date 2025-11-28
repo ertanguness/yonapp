@@ -14,18 +14,34 @@ use App\Services\Gate;
         bottom: 0;
         left: 0;
         right: 0;
-        background: white;
-        border-top: 1px solid #e0e0e0;
+        background: #ffffff;
         z-index: 1060;
-        padding: 0;
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        padding: 6px 8px 10px 8px;
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -6px 20px rgba(0,0,0,0.12);
+        border-top: 1px solid #eaeaea;
+        backdrop-filter: saturate(180%) blur(6px);
     }
 
     .mobile-quick-actions-wrapper {
-        display: flex;
-        justify-content: space-around;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr);
+        align-items: center;
+        gap: 8px;
+        padding: 12px 12px 10px 12px;
+        min-height: 64px;
+        position: relative;
+    }
+
+    .mobile-actions-left,
+    .mobile-actions-right {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
         align-items: center;
     }
+
+    .mobile-actions-spacer { width: 56px; height: 1px; }
 
     .mobile-quick-actions-item {
         display: flex;
@@ -33,17 +49,36 @@ use App\Services\Gate;
         align-items: center;
         justify-content: center;
         white-space: nowrap;
-        padding: 14px;
+        padding: 10px 6px;
         text-decoration: none;
         color: #555;
-        font-size: 14px;
-        flex: 1;
+        font-size: 12px;
+        flex: 0 0 auto;
         transition: all 0.3s ease;
         border: none;
         background: none;
-        border-radius: 8px;
         cursor: pointer;
         position: relative;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .mobile-quick-actions-item.active {
+        color: #667eea;
+        background: #f1f4ff;
+        border-radius: 8px;
+    }
+
+    .mobile-quick-actions-item.active::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 26px;
+        height: 3px;
+        background: #667eea;
+        border-radius: 2px;
     }
 
     .mobile-quick-actions-item:hover {
@@ -52,7 +87,7 @@ use App\Services\Gate;
     }
 
     .mobile-quick-actions-item i {
-        font-size: 28px;
+        font-size: 24px;
         margin-bottom: 4px;
     }
 
@@ -66,14 +101,18 @@ use App\Services\Gate;
     /* Dropdown Menu */
     .mobile-dropdown-menu {
         display: none;
-        position: absolute;
-        bottom: 65px;
+        position: fixed;
+        left: 0;
         right: 0;
-        background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.15);
-        min-width: 200px;
+        bottom: 72px;
+        background: #ffffff;
+        border-top: 1px solid #e0e0e0;
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.18);
+        height: 50vh;
+        max-height: 50vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         z-index: 1001;
     }
 
@@ -108,6 +147,68 @@ use App\Services\Gate;
         text-align: center;
     }
 
+    .mobile-fab {
+        position: absolute;
+        top: -28px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #8a5cff, #667eea);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.35);
+        border: none;
+        cursor: pointer;
+        z-index: 1002;
+    }
+
+    .mobile-fab-spacer {
+        flex: 0 0 64px;
+        height: 1px;
+    }
+
+    .mobile-fab i {
+        font-size: 24px;
+        margin: 0;
+    }
+
+    .mobile-gesture-bar {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        border-radius: 4px;
+        background: #d7d7dc;
+        opacity: 0.9;
+    }
+
+    html.app-skin-dark .mobile-quick-actions {
+        background: #1f2231;
+        border-color: #2a2e40;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+
+    html.app-skin-dark .mobile-dropdown-menu {
+        background: #1f2231;
+        border-color: #2a2e40;
+        box-shadow: 0 -10px 20px rgba(0,0,0,0.6);
+    }
+
+    html.app-skin-dark .mobile-quick-actions-item {
+        color: #d0d3de;
+    }
+
+    html.app-skin-dark .mobile-quick-actions-item.active {
+        color: #b7c2ff;
+        background: rgba(102, 126, 234, 0.12);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .mobile-quick-actions {
@@ -130,47 +231,46 @@ use App\Services\Gate;
     <div class="mobile-quick-actions-wrapper">
         
         
-        <!-- Ana Sayfa -->
-        <a href="/ana-sayfa" class="mobile-quick-actions-item" title="Ana Sayfa">
-            <i class="bi bi-house-fill"></i>
-            <p>Ana Sayfa</p>
-        </a>
-        <?php if(!Gate::isResident()){ ?>
+        <div class="mobile-actions-left">
+            <a href="/ana-sayfa" class="mobile-quick-actions-item" title="Ana Sayfa">
+                <i class="bi bi-house-fill"></i>
+                <p>Ana Sayfa</p>
+            </a>
+            <?php if(!Gate::isResident()){ ?>
+            <a href="company-list.php" class="mobile-quick-actions-item" title="Site Seçimi">
+                <i class="bi bi-diagram-3"></i>
+                <p>Site Seçimi</p>
+            </a>
+            <?php } ?>
+        </div>
 
-        <!-- Site Seçimi -->
-        <a href="company-list.php" class="mobile-quick-actions-item" title="Site Seçimi">
-            <i class="bi bi-diagram-3"></i>
-            <p>Site Seçimi</p>
-        </a>
-
-        <!-- Aidat Ödeme -->
-        <a href="/yonetici-aidat-odeme" class="mobile-quick-actions-item" title="Aidat Ödeme">
-            <i class="bi bi-credit-card"></i>
-            <p>Aidat Öde</p>
-        </a>
-
-        <!-- Borçlandırma -->
-        <a href="/borclandirma-yap" class="mobile-quick-actions-item" title="Borçlandırma">
-            <i class="bi bi-clipboard-plus"></i>
-            <p>Borçlandır</p>
-        </a>
-
-        <!-- Diğer (Dropdown) -->
-        <button class="mobile-quick-actions-item" id="mobileMoreBtn" title="Diğer">
-            <i class="bi bi-three-dots-vertical"></i>
-            <p>Diğer</p>
+        <div class="mobile-actions-spacer" aria-hidden="true"></div>
+        <button class="mobile-fab" id="mobileMoreBtn" title="Ekle">
+            <i class="bi bi-plus"></i>
         </button>
-    <?php } else { ?>
-         <!-- Aidat Ödeme -->
-        <a href="/sakin/finans" class="mobile-quick-actions-item" title="Aidat Ödeme">
-            <i class="bi bi-wallet"></i>
-            <p>Fins.işl.</p>
-        </a>
-   <?php  } ; ?>
 
+        <div class="mobile-actions-right">
+            <?php if(!Gate::isResident()){ ?>
+            <a href="/yonetici-aidat-odeme" class="mobile-quick-actions-item" title="Aidat Ödeme">
+                <i class="bi bi-credit-card"></i>
+                <p>Aidat Öde</p>
+            </a>
+            <a href="/borclandirma-yap" class="mobile-quick-actions-item" title="Borçlandırma">
+                <i class="bi bi-clipboard-plus"></i>
+                <p>Borçlandır</p>
+            </a>
+            <?php } else { ?>
+            <a href="/sakin/finans" class="mobile-quick-actions-item" title="Aidat Ödeme">
+                <i class="bi bi-wallet"></i>
+                <p>Fins.işl.</p>
+            </a>
+            <?php } ?>
+        </div>
+
+        <div class="mobile-gesture-bar"></div>
     </div>
 
-    <!-- Dropdown Menu -->
+    <div class="mobile-dropdown-backdrop" id="mobileDropdownBackdrop"></div>
     <div class="mobile-dropdown-menu" id="mobileDropdownMenu">
         <a href="site-ekle">
             <i class="bi bi-plus-circle"></i>
@@ -235,12 +335,17 @@ use App\Services\Gate;
         $('#mobileMoreBtn').click(function(e) {
             e.preventDefault();
             var $dropdown = $('#mobileDropdownMenu');
+            var $backdrop = $('#mobileDropdownBackdrop');
+            var navH = $('.mobile-quick-actions').outerHeight();
+            $dropdown.css('bottom', navH + 'px');
             
             if (dropdownOpen) {
                 $dropdown.removeClass('active');
+                $backdrop.hide();
                 dropdownOpen = false;
             } else {
                 $dropdown.addClass('active');
+                $backdrop.show();
                 dropdownOpen = true;
             }
         });
@@ -249,6 +354,7 @@ use App\Services\Gate;
         $(document).click(function(e) {
             if (!$(e.target).closest('#mobileMoreBtn, #mobileDropdownMenu').length) {
                 $('#mobileDropdownMenu').removeClass('active');
+                $('#mobileDropdownBackdrop').hide();
                 dropdownOpen = false;
             }
         });
@@ -256,7 +362,27 @@ use App\Services\Gate;
         // Dropdown menü item'lerine tıklama
         $('#mobileDropdownMenu a').click(function() {
             $('#mobileDropdownMenu').removeClass('active');
+            $('#mobileDropdownBackdrop').hide();
             dropdownOpen = false;
+        });
+
+        $(window).on('resize', function() {
+            if ($('#mobileDropdownMenu').hasClass('active')) {
+                var navH = $('.mobile-quick-actions').outerHeight();
+                $('#mobileDropdownMenu').css('bottom', navH + 'px');
+            }
+        });
+
+        var currentPath = window.location.pathname.replace(/\/+$/, '');
+        $(".mobile-quick-actions a.mobile-quick-actions-item").each(function() {
+            var href = $(this).attr('href');
+            if (!href || href === '#' || href.indexOf('javascript') === 0) return;
+            var hrefPath = new URL(href, window.location.origin).pathname.replace(/\/+$/, '');
+            if (currentPath === hrefPath || (hrefPath !== '/' && currentPath.indexOf(hrefPath) === 0)) {
+                $(".mobile-quick-actions a.mobile-quick-actions-item").removeClass('active');
+                $(this).addClass('active');
+                return false;
+            }
         });
     });
 </script>
@@ -274,3 +400,10 @@ use App\Services\Gate;
     </div>
 </footer>
 <!-- [ Footer ] end -->
+    .mobile-dropdown-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.25);
+        z-index: 1000;
+    }
