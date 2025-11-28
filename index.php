@@ -72,7 +72,9 @@ if (preg_match('/-pdf$/', $page)) {
 
 <body data-page="<?= $page ?>">
 
-    <?php include './partials/left-sidebar.php'; ?>
+    <?php 
+    //Eğer site sakini ise bunu 
+    include './partials/left-sidebar.php'; ?>
     <?php include './partials/header.php'; ?>
     
     <div id="preloader">

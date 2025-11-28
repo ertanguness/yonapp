@@ -276,4 +276,13 @@ $router->get('ssp-test', fn() => require 'pages/server_processing.php');
 
 // Email ve SMS Bildirimleri
 $router->get('bildirimler', fn() => require 'pages/email-sms/list.php');
+$router->get('sakin/ana-sayfa', fn() => require 'pages/home/site-sakini/home.php');
+$router->get('sakin/finans', fn() => require 'pages/home/site-sakini/finans.php');
+$router->get('sakin/daire', fn() => require 'pages/home/site-sakini/daire.php');
+$router->get('sakin/duyurular', fn() => require 'pages/home/site-sakini/duyurular.php');
+$router->get('sakin/talep', fn() => require 'pages/home/site-sakini/talep.php');
+$router->get('sakin/anketler', fn() => require 'pages/home/site-sakini/anketler.php');
+$router->get('sakin/belgeler', fn() => require 'pages/home/site-sakini/belgeler.php');
+$router->get('sakin/iletisim', fn() => require 'pages/home/site-sakini/iletisim.php');
+$router->get('sakin/profil', fn() => require 'pages/home/site-sakini/profil.php');
 

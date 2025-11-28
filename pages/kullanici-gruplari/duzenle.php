@@ -117,6 +117,16 @@ $role = $UserRolesModel->find($id);
 </div>
 
 <script>
+    if (typeof setupShortcut !== 'function') {
+        window.setupShortcut = function(shortcutKey, callback) {
+            document.addEventListener('keydown', function (event) {
+                if (event.ctrlKey && String(event.key||'').toLowerCase() === String(shortcutKey||'').toLowerCase()) {
+                    event.preventDefault();
+                    try { callback(); } catch(e) {}
+                }
+            });
+        };
+    }
     $(document).ready(function() {
         setupShortcut('s',function(){
             document.getElementById('saveRoleBtn').click();

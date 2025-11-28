@@ -57,7 +57,7 @@ class Gate
         // Bu metodu bir sonraki adımda güncelleyeceğiz.
         $userPermissions = $permissionModel->getPermissionsForUser($user->id);
 
-        return in_array($permissionName, $userPermissions);
+        return in_array($permissionName, $userPermissions) ? true : false;
     }
 
 

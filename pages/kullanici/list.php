@@ -91,7 +91,7 @@ $User = new UserModel();
                                         ?>
                                             <tr>
                                                 <td class="text-center"><?php echo $i; ?></td>
-                                                <td><?php echo $User->roleName($user->roles ?? ''); ?></td>
+                                                <td><?php echo $user->role_name ; ?></td>
                                                 <td><?php echo $user->full_name; ?></td>
                                                 <td><?php echo $user->email; ?></td>
                                                 <td class="text-start"><?php echo $user->phone; ?></td>

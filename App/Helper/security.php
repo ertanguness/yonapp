@@ -183,7 +183,7 @@ public static function ensureNotResident()
         //Kullanıcı tipi site sakini ise atla
         if ($_SESSION['user']->roles == 3) {
             FlashMessageService::add( "error","Yetkisiz Erişim!", "Bu sayfaya erişim yetkiniz bulunmamaktadır.  ");
-            header('Location: /borclarim');
+            header('Location: /sakin/ana-sayfa');
             exit();
         }
     }

@@ -134,11 +134,25 @@ foreach ($kasalar as $k) {
     $sqlDevir->execute();
     $devir = (float)($sqlDevir->fetchColumn() ?: 0);
 
-    $sqlGelenTop = $db->prepare("SELECT SUM(tutar) AS toplam FROM kasa_hareketleri WHERE kasa_id = :kid AND site_id = :sid AND silinme_tarihi IS NULL AND islem_tipi='Gelir' AND islem_tarihi BETWEEN :start AND :end");
+    $sqlGelenTop = $db->prepare("SELECT SUM(kh.tutar) AS toplam 
+                                 FROM kasa_hareketleri kh 
+                                 LEFT JOIN kasa k ON k.id = kh.kasa_id 
+                                 WHERE kh.kasa_id = :kid 
+                                   AND k.site_id = :sid 
+                                   AND kh.silinme_tarihi IS NULL 
+                                   AND (kh.islem_tipi='Gelir' OR kh.islem_tipi='gelir') 
+                                   AND kh.islem_tarihi BETWEEN :start AND :end");
     $sqlGelenTop->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gelenTop = (float)($sqlGelenTop->fetchColumn() ?: 0);
 
-    $sqlGidenTop = $db->prepare("SELECT SUM(ABS(tutar)) AS toplam FROM kasa_hareketleri WHERE kasa_id = :kid AND site_id = :sid AND silinme_tarihi IS NULL AND islem_tipi='Gider' AND islem_tarihi BETWEEN :start AND :end");
+    $sqlGidenTop = $db->prepare("SELECT SUM(ABS(kh.tutar)) AS toplam 
+                                 FROM kasa_hareketleri kh 
+                                 LEFT JOIN kasa k ON k.id = kh.kasa_id 
+                                 WHERE kh.kasa_id = :kid 
+                                   AND k.site_id = :sid 
+                                   AND kh.silinme_tarihi IS NULL 
+                                   AND (kh.islem_tipi='Gider' OR kh.islem_tipi='gider') 
+                                   AND kh.islem_tarihi BETWEEN :start AND :end");
     $sqlGidenTop->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gidenTop = (float)($sqlGidenTop->fetchColumn() ?: 0);
 
@@ -164,7 +178,14 @@ foreach ($kasalar as $k) {
     $sheet->setCellValue('F' . $r, '');
     $r++;
 
-    $sqlGelirKat = $db->prepare("SELECT COALESCE(kategori,'Diğer Gelir') AS kategori, SUM(tutar) AS toplam FROM kasa_hareketleri WHERE kasa_id=:kid AND site_id=:sid AND silinme_tarihi IS NULL AND islem_tipi='Gelir' AND islem_tarihi BETWEEN :start AND :end GROUP BY kategori");
+    $sqlGelirKat = $db->prepare("SELECT COALESCE(kh.kategori,'Diğer Gelir') AS kategori, SUM(kh.tutar) AS toplam 
+                                        FROM kasa_hareketleri kh
+                                        LEFT JOIN kasa k on k.id =kh.kasa_id
+                                        WHERE kasa_id=:kid AND k.site_id=:sid 
+                                        AND kh.silinme_tarihi IS NULL 
+                                        AND (kh.islem_tipi='Gelir' OR kh.islem_tipi = 'gelir') 
+                                        AND kh.islem_tarihi BETWEEN :start AND :end 
+                                        GROUP BY kh.kategori");
     $sqlGelirKat->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gelirAgg = [];
     $normalize = function($s) {
@@ -187,7 +208,15 @@ foreach ($kasalar as $k) {
         $r++;
     }
 
-    $sqlGiderKat = $db->prepare("SELECT COALESCE(kategori,'Ödeme') AS kategori, SUM(ABS(tutar)) AS toplam FROM kasa_hareketleri WHERE kasa_id=:kid AND site_id=:sid AND silinme_tarihi IS NULL AND islem_tipi='Gider' AND islem_tarihi BETWEEN :start AND :end GROUP BY kategori");
+    $sqlGiderKat = $db->prepare("SELECT COALESCE(kh.kategori,'Ödeme') AS kategori, SUM(ABS(kh.tutar)) AS toplam 
+                                 FROM kasa_hareketleri kh 
+                                 LEFT JOIN kasa k ON k.id = kh.kasa_id 
+                                 WHERE kh.kasa_id=:kid 
+                                   AND k.site_id=:sid 
+                                   AND kh.silinme_tarihi IS NULL 
+                                   AND (kh.islem_tipi='Gider' OR kh.islem_tipi='gider') 
+                                   AND kh.islem_tarihi BETWEEN :start AND :end 
+                                 GROUP BY kh.kategori");
     $sqlGiderKat->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $giderAgg = [];
     $normalizeG = function($s) {

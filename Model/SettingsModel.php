@@ -87,10 +87,5 @@ class SettingsModel extends Model
         return $sql->execute([$user_id, $action_name]);
     }
 
-    //Program açıldığında tamamlanmamış görevleri getir veya getirme
-    public function updateShowCompletedMissions($firm_id, $visible)
-    {
-        $sql = $this->db->prepare("UPDATE $this->table SET set_value = ? WHERE firm_id = ? and set_name = ?");
-        return $sql->execute([$visible, $firm_id, "completed_tasks_visible"]);
-    }
+
 }
