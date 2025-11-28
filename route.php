@@ -21,7 +21,7 @@ $router->get('borclandirma-detayi/{id}', fn($id) => require 'pages/dues/debit/de
 $router->get('borclandirma-kisi-ekle/{id}', fn($id) => require 'pages/dues/debit/single-manage.php');
 $router->get('borclandirma-kisi-duzenle/{id}/{detay_id}', fn($id,$detay_id) => require 'pages/dues/debit/single-manage.php');
 
-$router->get('borclarim', fn() => require 'pages/dues/user-payment/list.php');
+$router->get('borclarim', fn() => require 'pages/home/site-sakini/home.php');
 $router->get('borclandirma-excelden-yukle/{id}', fn($id) => require 'pages/dues/debit/upload-from-xls.php');
 
 /* ----------------------------------------------------
