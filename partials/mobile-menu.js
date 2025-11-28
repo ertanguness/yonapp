@@ -18,8 +18,26 @@
 
     });
    
-    /** Mail Gönder Modalini açar */
-    $(document).on('click', '.mail-gonder', function() {
+    function checkCommActive(t){
+        return fetch('/pages/email-sms/api/check_status.php?type='+encodeURIComponent(t))
+            .then(r=>r.json())
+            .then(d=>!!d.active)
+            .catch(()=>false);
+    }
+
+    $(document).on('click', '.mail-gonder', async function() {
+        const ok = await checkCommActive('email');
+        if(!ok){
+            Swal.fire({
+                icon: 'warning',
+                title: 'E-posta pasif',
+                text: 'SMTP bilgilerini doldurup E-mail Aktif anahtarını açın.',
+                showCancelButton: true,
+                confirmButtonText: 'Ayarları Aç',
+                cancelButtonText: 'İptal'
+            }).then(res=>{ if(res.isConfirmed){ window.location.href = '/ayarlar?tab=notifications&sub=email'; } });
+            return;
+        }
         var kisi_id = $(this).data('kisi-id');
 
         $.get("pages/home/modal/mail_gonder_modal.php", {
@@ -154,9 +172,20 @@
 
     });
 
-    /**Sms Gönderme Modalini açar */
-    $(document).on('click', '.sms-gonder', function(e) {
+    $(document).on('click', '.sms-gonder', async function(e) {
         e.preventDefault();
+        const ok = await checkCommActive('sms');
+        if(!ok){
+            Swal.fire({
+                icon: 'warning',
+                title: 'SMS pasif',
+                text: 'SMS sağlayıcı bilgilerini doldurup Sms Aktif anahtarını açın.',
+                showCancelButton: true,
+                confirmButtonText: 'Ayarları Aç',
+                cancelButtonText: 'İptal'
+            }).then(res=>{ if(res.isConfirmed){ window.location.href = '/ayarlar?tab=notifications&sub=sms'; } });
+            return;
+        }
         var kisi_id = $(this).data('kisi-id') || '';
         const url = '/pages/email-sms/sms_gonder_modal.php';
 

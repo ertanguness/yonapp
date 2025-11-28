@@ -27,10 +27,33 @@ if (!empty($kisi_id)) {
 } else {
     $kisiBilgileri = $Kisiler->KisiBilgileri($acilKisi->kisi_id ?? null);
 }
-$blocks = $Block->SiteBloklari(site_id: $site_id);
-$daireKisileri= $Kisiler->DaireKisileri($kisiBilgileri->daire_id ?? null);
-$daireler = $Daireler->BlokDaireleri($kisiBilgileri->blok_id ?? 0);
 
+// Sunucu tarafı güvenlik: Modal her durumda üretilebilsin
+if (!$acilKisi || !is_object($acilKisi)) {
+    $acilKisi = (object)['adi_soyadi'=>'','telefon'=>'','yakinlik'=>null,'kisi_id'=>null];
+}
+if (!$kisiBilgileri || !is_object($kisiBilgileri)) {
+    $kisiBilgileri = (object)['blok_id'=>'','daire_id'=>'','id'=>'','adi_soyadi'=>''];
+}
+$blocks = $Block->SiteBloklari(site_id: $site_id) ?: [];
+$daireKisileri= $Kisiler->DaireKisileri($kisiBilgileri->daire_id ?? null) ?: [];
+$daireler = $Daireler->BlokDaireleri($kisiBilgileri->blok_id ?? 0) ?: [];
+
+
+// Görsel alanlarda göstermek için seçilmiş blok, daire ve kişi adlarını hazırla
+$blokAdi = '';
+if (isset($kisiBilgileri->blok_id)) {
+    foreach ($blocks as $b) {
+        if ($b->id == $kisiBilgileri->blok_id) { $blokAdi = $b->blok_adi; break; }
+    }
+}
+$daireNo = '';
+if (isset($kisiBilgileri->daire_id)) {
+    foreach ($daireler as $d) {
+        if ($d->id == $kisiBilgileri->daire_id) { $daireNo = $d->daire_no; break; }
+    }
+}
+$kisiAdi = $kisiBilgileri->adi_soyadi ?? '';
 
 
 ?>
@@ -44,55 +67,44 @@ $daireler = $Daireler->BlokDaireleri($kisiBilgileri->blok_id ?? 0);
             <div class="modal-body">
                 <form id="acilDurumKisileriEkleForm">
                 <input type="hidden" name="acil_kisi_id" id="acil_kisi_id" value="<?php echo $_GET['id'] ?? 0; ?>">
-                    <!-- Blok Seçimi -->
-                    <div class="mb-3">
-                        <label for="blokAdi" class="form-label fw-semibold">Blok Seçimi</label>
-                        <div class="input-group flex-nowrap w-100">
-                            <span class="input-group-text"><i class="fas fa-building"></i></span>
-                            <select class="form-select select2 w-100 blokAdi" name="blok_id">
-                                <option value="">Blok Seçiniz</option>
-                                <?php foreach ($blocks as $block): ?>
-                                    <option value="<?= htmlspecialchars($block->id) ?>"
-                                        <?= (isset($kisiBilgileri->blok_id) && $kisiBilgileri->blok_id == $block->id) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($block->blok_adi) ?>
+                    <!-- Seçilmiş Bilgiler (Değiştirilemez) -->
+                    <input type="hidden" name="blok_id" value="<?= htmlspecialchars($kisiBilgileri->blok_id ?? '') ?>">
+                    <input type="hidden" name="daire_id" value="<?= htmlspecialchars($kisiBilgileri->daire_id ?? '') ?>">
+                    <input type="hidden" name="kisi_id" value="<?= htmlspecialchars($kisiBilgileri->id ?? '') ?>">
+                    <!-- Blok/Daire/Kişi bilgileri gizlendi -->
+                    <div style="display:none">
+                        <!-- Gizli Blok Select -->
+                        <select class="form-select select2 w-100 blokAdi" disabled>
+                            <option value="">Blok Seçiniz</option>
+                            <?php foreach ($blocks as $block): ?>
+                                <option value="<?= htmlspecialchars($block->id) ?>"
+                                    <?= (isset($kisiBilgileri->blok_id) && $kisiBilgileri->blok_id == $block->id) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($block->blok_adi) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <!-- Gizli Daire Select -->
+                        <select class="form-select select2 w-100 daireNo" disabled>
+                            <option value="">Daire Seçiniz</option>
+                            <?php if (!empty($daireler)) : ?>
+                                <?php foreach ($daireler as $daire): ?>
+                                    <option value="<?= $daire->id ?>" <?= ($kisiBilgileri->daire_id == $daire->id) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($daire->daire_no) ?>
                                     </option>
                                 <?php endforeach; ?>
-                            </select>                
-                        </div>
-                    </div>
-                    <!-- Daire No -->
-                    <div class="mb-3">
-                        <label for="daireNo" class="form-label fw-semibold">Daire No</label>
-                        <div class="input-group flex-nowrap w-100">
-                            <span class="input-group-text"><i class="fas fa-door-closed"></i></span>
-                            <select class="form-select select2 w-100 daireNo" name="daire_id">
-                                <option value="">Daire Seçiniz</option>
-                                <?php if (!empty($daireler)) : ?>
-                                    <?php foreach ($daireler as $daire): ?>
-                                        <option value="<?= $daire->id ?>" <?= ($kisiBilgileri->daire_id == $daire->id) ? 'selected' : '' ?>>
-                                            <?= $daire->daire_no ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-                    </div>
-                  <!-- Kişi Seç -->
-                  <div class="mb-3">
-                        <label for="kisiSec" class="form-label fw-semibold">Kişi Seç</label>
-                        <div class="input-group flex-nowrap w-100">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <select id="kisi_id" class="form-select select2 w-100 kisiSec" name="kisi_id">
-                                <option value="">Kişi Seçiniz</option>
-                                <?php if (!empty($daireKisileri)) : ?>
-                                    <?php foreach ($daireKisileri as $kisi): ?>
-                                        <option value="<?= $kisi->id ?>" <?= (isset($kisiBilgileri->id) && $kisiBilgileri->id == $kisi->id) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($kisi->adi_soyadi) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
+                            <?php endif; ?>
+                        </select>
+                        <!-- Gizli Kişi Select -->
+                        <select class="form-select select2 w-100 kisiSec" disabled>
+                            <option value="">Kişi Seçiniz</option>
+                            <?php if (!empty($daireKisileri)) : ?>
+                                <?php foreach ($daireKisileri as $kisi): ?>
+                                    <option value="<?= $kisi->id ?>" <?= (isset($kisiBilgileri->id) && $kisiBilgileri->id == $kisi->id) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($kisi->adi_soyadi) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="acilDurumKisi" class="form-label fw-semibold">Acil Durumda Ulaşılacak Kişi Adı:</label>

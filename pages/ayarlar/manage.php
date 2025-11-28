@@ -3,9 +3,9 @@
 use App\Helper\Security;
 use Model\BloklarModel;
 use Model\SitelerModel;
-use Model\AyarlarModel;
+use Model\SettingsModel;
 
-$Ayarlar = new AyarlarModel();
+$Settings = new SettingsModel();
 $Sites = new SitelerModel();
 $Bloklar = new BloklarModel();
 
@@ -14,7 +14,7 @@ $site_id = $_SESSION["site_id"] ?? null;
 
 $SiteBilgileri = $Sites->SiteBilgileri($site_id);
 $BlokSayisi = $Bloklar->BlokSayisi($site_id);
-$AyarlarBilgileri = $Ayarlar->Ayarlar();
+$AyarlarBilgileri = $Settings->Ayarlar();
 
 ?>
 <div class="page-header">
