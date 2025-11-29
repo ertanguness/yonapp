@@ -93,38 +93,40 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
 <script>
     var selectedSmsIds = [];
     var selectedSmsPhones = [];
-    function onDataTablesReady(cb){
-        var tries = 0;
-        (function wait(){
-            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
-            if (tries++ > 20) {
-                console.error('DataTables veya initDataTable yüklenemedi');
-                (function(){
-                    var url = '/pages/email-sms/api/toplu_sms_server_side.php?draw=1&start=0&length=50';
-                    fetch(url).then(function(r){ return r.json(); }).then(function(data){
-                        var rows = (data && data.data) ? data.data : [];
-                        var tbody = document.querySelector('#smsResidentsTable tbody');
-                        if (!tbody) return;
-                        tbody.innerHTML = '';
-                        rows.forEach(function(r){
-                            var tr = document.createElement('tr');
-                            tr.innerHTML = '<td>'+(r.sec||'')+'</td>'+
-                                           '<td>'+(r.daire_kodu||'')+'</td>'+
-                                           '<td>'+(r.adi_soyadi||'')+'</td>'+
-                                           '<td>'+(r.uyelik_tipi||'')+'</td>'+
-                                           '<td>'+(r.durum||'')+'</td>'+
-                                           '<td>'+(r.cikis_tarihi||'')+'</td>'+
-                                           '<td>'+(r.telefon||'')+'</td>';
-                            tbody.appendChild(tr);
-                        });
-                    }).catch(function(e){ console.error(e); });
-                })();
-                return;
-            }
-            setTimeout(wait, 100);
-        })();
+    if (typeof window.onDataTablesReady !== 'function') {
+        window.onDataTablesReady = function(cb){
+            var tries = 0;
+            (function wait(){
+                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+                if (tries++ > 20) {
+                    console.error('DataTables veya initDataTable yüklenemedi');
+                    (function(){
+                        var url = '/pages/email-sms/api/toplu_sms_server_side.php?draw=1&start=0&length=50';
+                        fetch(url).then(function(r){ return r.json(); }).then(function(data){
+                            var rows = (data && data.data) ? data.data : [];
+                            var tbody = document.querySelector('#smsResidentsTable tbody');
+                            if (!tbody) return;
+                            tbody.innerHTML = '';
+                            rows.forEach(function(r){
+                                var tr = document.createElement('tr');
+                                tr.innerHTML = '<td>'+(r.sec||'')+'</td>'+
+                                               '<td>'+(r.daire_kodu||'')+'</td>'+
+                                               '<td>'+(r.adi_soyadi||'')+'</td>'+
+                                               '<td>'+(r.uyelik_tipi||'')+'</td>'+
+                                               '<td>'+(r.durum||'')+'</td>'+
+                                               '<td>'+(r.cikis_tarihi||'')+'</td>'+
+                                               '<td>'+(r.telefon||'')+'</td>';
+                                tbody.appendChild(tr);
+                            });
+                        }).catch(function(e){ console.error(e); });
+                    })();
+                    return;
+                }
+                setTimeout(wait, 100);
+            })();
+        };
     }
-    onDataTablesReady(function(){
+    window.onDataTablesReady(function(){
         var smsDt = initDataTable('#smsResidentsTable',{
             processing: true,
             serverSide: true,

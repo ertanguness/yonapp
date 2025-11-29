@@ -29,8 +29,18 @@
     </div>
 </div>
 <script>
-    (function(){
-        function start(){
+      if (typeof window.onDataTablesReady !== 'function') {
+        window.onDataTablesReady = function(cb){
+            var tries = 0;
+            (function wait(){
+                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+                if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
+                setTimeout(wait, 100);
+            })();
+        };
+    }
+
+    window.onDataTablesReady(function(){
             var dt = initDataTable('#leavesTable',{
                 processing:true,serverSide:true,retrieve:true,
                 ajax:{url:'/pages/personel/api/leaves_server_side.php',type:'GET'},
@@ -60,7 +70,5 @@
                   .done(function(html){ $('#leaveModal .leave-modal').html(html); $('#leaveModal').modal('show'); })
                   .fail(function(){ $('#leaveModal .leave-modal').html('<div class="p-3">İçerik yüklenemedi</div>'); $('#leaveModal').modal('show'); });
             });
-        }
-        if (window.jQuery) start(); else document.addEventListener('DOMContentLoaded',start);
     })();
 </script>

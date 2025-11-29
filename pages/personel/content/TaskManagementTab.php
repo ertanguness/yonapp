@@ -28,8 +28,20 @@
     </div>
     </div>
 <script>
-    (function(){
-        function start(){
+
+     if (typeof window.onDataTablesReady !== 'function') {
+        window.onDataTablesReady = function(cb){
+            var tries = 0;
+            (function wait(){
+                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+                if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
+                setTimeout(wait, 100);
+            })();
+        };
+    }
+
+    window.onDataTablesReady(function(){
+   
             var dt = initDataTable('#tasksTable',{
                 processing:true,serverSide:true,retrieve:true,
                 ajax:{url:'/pages/personel/api/tasks_server_side.php',type:'GET'},
@@ -58,7 +70,5 @@
                   .done(function(html){ $('#taskModal .task-modal').html(html); $('#taskModal').modal('show'); })
                   .fail(function(){ $('#taskModal .task-modal').html('<div class="p-3">İçerik yüklenemedi</div>'); $('#taskModal').modal('show'); });
             });
-        }
-        if (window.jQuery) start(); else document.addEventListener('DOMContentLoaded',start);
     })();
 </script>

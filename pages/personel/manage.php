@@ -32,7 +32,7 @@
 
 <div class="main-content">
     <?php
-   /* $title = $pageTitle;
+    /* $title = $pageTitle;
     if ($pageTitle === 'Yeni Personel Ekle') {
         $text = "Yeni Personel Ekleme sayfasındasınız. Bu sayfada yeni bir personel ekleyebilirsiniz.";
     } else {
@@ -81,7 +81,7 @@
                                                         data-bs-toggle="tab" data-bs-target="#leaveTrackingTab"
                                                         role="tab">İzin Takip Yönetimi</a>
                                                 </li>
-                                              
+
                                                 <li class="nav-item flex-fill border-top" role="presentation">
                                                     <a href="javascript:void(0);" class="nav-link"
                                                         data-bs-toggle="tab" data-bs-target="#paymentsTab"
@@ -112,7 +112,7 @@
                                                 ?>
                                             </div>
 
-                                     
+
                                             <!-- Ödemeler -->
                                             <div class="tab-pane fade" id="paymentsTab" role="tabpanel">
                                                 <?php
@@ -129,3 +129,21 @@
         </div>
     </div>
 </div>
+<script>
+    if (typeof window.onDataTablesReady !== 'function') {
+        window.onDataTablesReady = function(cb) {
+            var tries = 0;
+            (function wait() {
+                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') {
+                    cb();
+                    return;
+                }
+                if (tries++ > 100) {
+                    console.error('DataTables veya initDataTable yüklenemedi');
+                    return;
+                }
+                setTimeout(wait, 100);
+            })();
+        };
+    }
+</script>

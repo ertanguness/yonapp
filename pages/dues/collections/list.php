@@ -86,15 +86,17 @@ table tr td .p-3.border.rounded.text-center {
 
 <script>
     let url = "pages/dues/collections/api.php";
-    function onDataTablesReady(cb){
-        var tries = 0;
-        (function wait(){
-            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
-            if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
-            setTimeout(wait, 100);
-        })();
+    if (typeof window.onDataTablesReady !== 'function') {
+        window.onDataTablesReady = function(cb){
+            var tries = 0;
+            (function wait(){
+                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+                if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
+                setTimeout(wait, 100);
+            })();
+        };
     }
-    onDataTablesReady(function() {
+    window.onDataTablesReady(function() {
         table = initDataTable('#tahsilatlarTable',{
             processing: true,
             serverSide: true,

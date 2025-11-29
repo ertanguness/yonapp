@@ -288,16 +288,18 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 
 <script type="module" src="/pages/dues/payment/js/borc-ekle.js?v=<?php echo filemtime("pages/dues/payment/js/borc-ekle.js"); ?>"></script>
 <script>
-    function onDataTablesReady(cb){
-        var tries = 0;
-        (function wait(){
-            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
-            if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
-            setTimeout(wait, 100);
-        })();
+    if (typeof window.onDataTablesReady !== 'function') {
+        window.onDataTablesReady = function(cb){
+            var tries = 0;
+            (function wait(){
+                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+                if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
+                setTimeout(wait, 100);
+            })();
+        };
     }
 
-    onDataTablesReady(function(){
+    window.onDataTablesReady(function(){
      
         table = initDataTable('#tahsilatTable',{
             processing: true,
