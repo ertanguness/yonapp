@@ -32,10 +32,9 @@ $daire   = $Daireler->DaireAdi($kisi->daire_id ?? null);
 $encKisiId = Security::encrypt($kisiId);
 
 // Davet linki (kayıt sayfasına e-posta ön-dolu)
-// Davet linkini register-member.php'ye yönlendir, kisi (enc) ve email parametreleri ile
+// Davet linkini register-member.php'ye yönlendir, sadece kisi_id ile
 $inviteLinkBase = yonapp_base_url() . '/register-member.php';
 $query = [];
-if ($email) { $query['email'] = $email; }
 if ($encKisiId) { $query['kisi'] = $encKisiId; }
 $inviteLink = $inviteLinkBase . (!empty($query) ? ('?' . http_build_query($query)) : '');
 
@@ -97,7 +96,7 @@ try {
                         <div class="input-group input-group-sm mb-2">
                             <input type="text" class="form-control form-control-sm" id="inviteLinkInput" readonly value="<?= htmlspecialchars($inviteLink) ?>" style="font-size:0.75rem;">
                         </div>
-                        <button class="btn btn-warning btn-sm w-100 mt-auto" id="copyInviteBtn" data-link="<?= htmlspecialchars($inviteLink) ?>" title="Linki Kopyala">
+                        <button type="button" class="btn btn-warning btn-sm w-100 mt-auto" id="copyInviteBtn" data-link="<?= htmlspecialchars($inviteLink) ?>" title="Linki Kopyala">
                             <i class="bi bi-clipboard"></i> Kopyala
                         </button>
                     </div>
@@ -122,7 +121,7 @@ try {
                             <br>
                             <strong><?= htmlspecialchars($email ?: 'E-posta yok') ?></strong>
                         </div>
-                        <button class="btn btn-primary btn-sm w-100 mt-auto" id="sendInviteEmail" <?= $email ? '' : 'disabled' ?> data-email="<?= htmlspecialchars($email) ?>">
+                        <button type="button" class="btn btn-primary btn-sm w-100 mt-auto" id="sendInviteEmail" <?= $email ? '' : 'disabled' ?> data-email="<?= htmlspecialchars($email) ?>">
                             <i class="bi bi-send"></i> Gönder
                         </button>
                     </div>
@@ -147,7 +146,7 @@ try {
                             <br>
                             <strong><?= htmlspecialchars($telefon ?: 'Telefon yok') ?></strong>
                         </div>
-                        <button class="btn btn-success btn-sm w-100 mt-auto" id="sendInviteWhatsapp" <?= $telefon ? '' : 'disabled' ?> data-phone="<?= htmlspecialchars($telefon) ?>">
+                        <button type="button" class="btn btn-success btn-sm w-100 mt-auto" id="sendInviteWhatsapp" <?= $telefon ? '' : 'disabled' ?> data-phone="<?= htmlspecialchars($telefon) ?>">
                             <i class="fa-brands fa-whatsapp"></i> Gönder
                         </button>
                     </div>
@@ -172,7 +171,7 @@ try {
                             <br>
                             <strong><?= htmlspecialchars($telefon ?: 'Telefon yok') ?></strong>
                         </div>
-                        <button class="btn btn-info btn-sm w-100 mt-auto" id="sendInviteSms" <?= $telefon ? '' : 'disabled' ?> data-phone="<?= htmlspecialchars($telefon) ?>">
+                        <button type="button" class="btn btn-info btn-sm w-100 mt-auto" id="sendInviteSms" <?= $telefon ? '' : 'disabled' ?> data-phone="<?= htmlspecialchars($telefon) ?>">
                             <i class="bi bi-send"></i> Gönder
                         </button>
                     </div>
@@ -253,43 +252,58 @@ document.addEventListener('DOMContentLoaded', function() {
     // Güvenli kopyalama yardımcı fonksiyonu (HTTPS/HTTP fallback)
     async function copyToClipboard(text) {
         try {
-            if (navigator.clipboard && window.isSecureContext) {
+            if (navigator.clipboard) {
                 await navigator.clipboard.writeText(text);
-            } else {
-                const ta = document.createElement('textarea');
-                ta.value = text;
-                ta.style.position = 'fixed';
-                ta.style.opacity = '0';
-                ta.style.left = '-9999px';
-                document.body.appendChild(ta);
-                ta.focus();
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
+                return true;
             }
-            return true;
-        } catch (e) { return false; }
+        } catch (e) {}
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
     }
 
     // Kopyala
     const copyBtn = document.getElementById('copyInviteBtn');
     if (copyBtn) {
-        copyBtn.addEventListener('click', async function() {
-            const link = this.getAttribute('data-link');
-            const ok = await copyToClipboard(link);
+        copyBtn.addEventListener('click', async function(e) {
+            e.preventDefault(); e.stopPropagation();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        try {
+            const res = await fetch('/pages/management/peoples/invite_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generate_short_link', kisi_id: encKisiId })
+            });
+            const data = await res.json();
+            const toCopy = (data && data.short_link) ? data.short_link : inviteLink;
+            const ok = await copyToClipboard(toCopy);
             toast(ok ? 'Davet linki kopyalandı' : 'Kopyalama başarısız', ok);
+        } catch (err) {
+            toast('Kısa link üretilemedi', false);
+        }
+            return false;
         });
     }
 
     // E-posta ile gönder
-    document.getElementById('sendInviteEmail').addEventListener('click', async function() {
+    document.getElementById('sendInviteEmail').addEventListener('click', async function(e) {
+        e.preventDefault(); e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
         if (!email) return;
         this.disabled = true;
         try {
             const res = await fetch('/pages/management/peoples/invite_api.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'send_invite_email', kisi_id: encKisiId, email: email, link: inviteLink })
+                body: JSON.stringify({ action: 'send_invite_email', kisi_id: encKisiId, email: email })
             });
             const data = await res.json();
             notifyInviteResult(data);
@@ -299,14 +313,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // SMS ile gönder
-    document.getElementById('sendInviteSms').addEventListener('click', async function() {
+    document.getElementById('sendInviteSms').addEventListener('click', async function(e) {
+        e.preventDefault(); e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
         if (!phone) return;
         this.disabled = true;
         try {
             const res = await fetch('/pages/management/peoples/invite_api.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'send_invite_sms', kisi_id: encKisiId, phone: phone, link: inviteLink })
+                body: JSON.stringify({ action: 'send_invite_sms', kisi_id: encKisiId, phone: phone })
             });
             const data = await res.json();
             notifyInviteResult(data);
@@ -316,15 +332,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // WhatsApp ile gönder (yeni sekmede aç)
-    document.getElementById('sendInviteWhatsapp').addEventListener('click', function() {
+    document.getElementById('sendInviteWhatsapp').addEventListener('click', async function(e) {
+        e.preventDefault(); e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
         if (!phone) return;
-        let waPhone = (phone || '').replace(/\D+/g, '');
-        if (waPhone.startsWith('0')) { waPhone = '90' + waPhone.substring(1); }
-        else if (waPhone.length === 10) { waPhone = '90' + waPhone; }
-        const message = encodeURIComponent('Merhaba, YonApp sistemine giriş için davet linkiniz: ' + inviteLink);
-        const waUrl = 'https://wa.me/' + waPhone + '?text=' + message;
-        window.open(waUrl, '_blank');
-        notifyInviteResult({ status: 'success', message: 'WhatsApp yönlendirildi.' });
+        try {
+            const res = await fetch('/pages/management/peoples/invite_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generate_short_link', kisi_id: encKisiId, phone: phone })
+            });
+            const data = await res.json();
+            let waPhone = (phone || '').replace(/\D+/g, '');
+            if (waPhone.startsWith('0')) { waPhone = '90' + waPhone.substring(1); }
+            else if (waPhone.length === 10) { waPhone = '90' + waPhone; }
+            const linkText = (data && data.short_link) ? data.short_link : inviteLink;
+            const message = encodeURIComponent('Merhaba, YonApp sistemine giriş için davet linkiniz: ' + linkText);
+            const waUrl = 'https://wa.me/' + waPhone + '?text=' + message;
+            window.open(waUrl, '_blank');
+            notifyInviteResult({ status: 'success', message: 'WhatsApp yönlendirildi.' });
+        } catch (e) {
+            notifyInviteResult({ status: 'error', message: 'WhatsApp daveti hazırlanamadı.' });
+        }
+        return false;
     });
 
     function notifyInviteResult(data) {
