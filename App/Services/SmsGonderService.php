@@ -17,12 +17,18 @@ class SmsGonderService
         $ch = null;
         $logger = \getLogger();
         try {
+            $testMode = !empty($_ENV['SMS_TEST_MODE']);
             // Validasyon
             if (empty($alicilar)) {
                 throw new Exception("Alıcı listesi boş olamaz.");
             }
             if (empty(trim($mesaj))) {
                 throw new Exception("Mesaj metni boş olamaz.");
+            }
+
+            if ($testMode) {
+                $logger->info('SMS TEST MODE: Gönderim simüle edildi: '.json_encode(['count'=>count($alicilar),'msgheader'=>$gondericiBaslik]));
+                return true;
             }
 
             // API bilgilerini al (öncelik: env > ayarlar > varsayılan)

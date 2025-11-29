@@ -515,7 +515,7 @@ $script = ob_get_clean();
                 </a>
                 <?php endif; ?>
 
-                <?php if(Gate::allows("kisi_ekle_guncelle_sil")): ?>
+                <?php if(Gate::allows("site_sakini_ekle_guncelle_sil")): ?>
 
                 <a href="/site-sakini-ekle"
                     class="flex-fill py-3 px-4 me-4 rounded-1 cursor-pointer border border-dashed border-gray-5">

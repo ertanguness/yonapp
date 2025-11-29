@@ -1,5 +1,13 @@
 // DOMContentLoaded'ı kaldır ve fonksiyonları global yap
 function initSmsModal() {
+  if (!document.getElementById('toastify-custom-style')) {
+    const st = document.createElement('style');
+    st.id = 'toastify-custom-style';
+    st.textContent = 
+      '.toastify{border-radius:6px!important;background:#000!important;color:#fff!important;text-align:center!important}' +
+      '.toastify{left:50%!important;right:auto!important;transform:translateX(-50%)!important}';
+    document.head.appendChild(st);
+  }
   // --- ELEMENTLERİ SEÇME ---
   const senderIdSelect = document.getElementById("sms_baslik");
   const recipientsInput = document.getElementById("recipients-input"); // ID düzeltildi
@@ -246,7 +254,9 @@ Object.defineProperty(messageTextarea, 'value', {
     const formData = {
       senderId: senderIdSelect.value,
       message: messageTextarea.value,
-      recipients: recipients
+      recipients: recipients,
+      csrf_token: (window.csrfToken || ''),
+      recipient_ids: (window.selectedRecipientIds || [])
     };
 
     if (recipients.length === 0) {

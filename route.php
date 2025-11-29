@@ -182,9 +182,9 @@ $router->get('guvenlik-personel-duzenle/{id}', fn($id) => require 'pages/ziyaret
 /* ----------------------------------------------------
 |  PERSONEL
 ---------------------------------------------------- */
-$router->get('personel-listesi', fn() => require 'pages/persons/list.php');
-$router->get('personel-ekle', fn() => require 'pages/persons/manage.php');
-$router->get('personel-duzenle/{id}', fn($id) => require 'pages/persons/manage.php');
+$router->get('personel-listesi', fn() => require 'pages/personel/list.php');
+$router->get('personel-ekle', fn() => require 'pages/personel/manage.php');
+$router->get('personel-duzenle/{id}', fn($id) => require 'pages/personel/manage.php');
 
 /* ----------------------------------------------------
 |  KULLANICI VE YETKİLER
@@ -278,6 +278,9 @@ $router->get('ssp-test', fn() => require 'pages/server_processing.php');
 
 // Email ve SMS Bildirimleri
 $router->get('bildirimler', fn() => require 'pages/email-sms/list.php');
+$router->get('toplu-sms', fn() => require 'pages/email-sms/toplu_sms_gonder.php');
+
+
 $router->get('sakin/ana-sayfa', fn() => require 'pages/site-sakini/home.php');
 $router->get('sakin/finans', fn() => require 'pages/site-sakini/finans.php');
 $router->get('sakin/daire', fn() => require 'pages/site-sakini/daire.php');

@@ -81,11 +81,7 @@
                                                         data-bs-toggle="tab" data-bs-target="#leaveTrackingTab"
                                                         role="tab">İzin Takip Yönetimi</a>
                                                 </li>
-                                                <li class="nav-item flex-fill border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link"
-                                                        data-bs-toggle="tab" data-bs-target="#salaryTrackingTab"
-                                                        role="tab">Maaş Bilgileri</a>
-                                                </li>
+                                              
                                                 <li class="nav-item flex-fill border-top" role="presentation">
                                                     <a href="javascript:void(0);" class="nav-link"
                                                         data-bs-toggle="tab" data-bs-target="#paymentsTab"
@@ -98,35 +94,29 @@
                                             <!-- Personel Bilgileri -->
                                             <div class="tab-pane fade show active" id="personsInfoTab" role="tabpanel">
                                                 <?php
-                                                require_once 'pages/persons/content/PersonsInfoTab.php';
+                                                require_once 'pages/personel/content/PersonsInfoTab.php';
                                                 ?>
                                             </div>
 
                                             <!-- Görev Yönetimi -->
                                             <div class="tab-pane fade" id="taskManagementTab" role="tabpanel">
                                                 <?php
-                                                require_once 'pages/persons/content/TaskManagementTab.php';
+                                                require_once 'pages/personel/content/TaskManagementTab.php';
                                                 ?>
                                             </div>
 
                                             <!-- İzin Takip Yönetimi -->
                                             <div class="tab-pane fade" id="leaveTrackingTab" role="tabpanel">
                                                 <?php
-                                                require_once 'pages/persons/content/LeaveTrackingTab.php';
+                                                require_once 'pages/personel/content/LeaveTrackingTab.php';
                                                 ?>
                                             </div>
 
-                                            <!-- Maaş ve Ödeme Takibi -->
-                                            <div class="tab-pane fade" id="salaryTrackingTab" role="tabpanel">
-                                                <?php
-                                                require_once 'pages/persons/content/SalaryTrackingTab.php';
-                                                ?>
-                                            </div>
-
+                                     
                                             <!-- Ödemeler -->
                                             <div class="tab-pane fade" id="paymentsTab" role="tabpanel">
                                                 <?php
-                                                require_once 'pages/persons/content/PaymentsTab.php';
+                                                require_once 'pages/personel/content/PaymentsTab.php';
                                                 ?>
                                             </div>
                                         </div>

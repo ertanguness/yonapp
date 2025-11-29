@@ -95,7 +95,8 @@ $(document).ready(function () {
     "mizanTable",
     "gelirGiderTable",
     "tahsilatTable",
-    "notificationsList"
+    "notificationsList",
+    "smsResidentsTable"
   ];
   const $others = $(".datatables, .datatable").not(
     "#" + exitstsTables.join(", #")
