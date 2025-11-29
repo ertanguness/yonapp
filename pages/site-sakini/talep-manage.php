@@ -34,7 +34,7 @@ $talep = $Model->find($id);
             <div class="card rounded-3">
                 <div class="card-header d-flex align-items-center gap-2">
                     <h5 class="card-title mb-0">Şikayet / Öneri Oluştur</h5>
-                    <a href="/sakin/sikayet-oneri-listem" class="btn btn-light ms-auto">Taleplerim</a>
+                    <a href="/sakin/taleplerim" class="btn btn-light ms-auto">Taleplerim</a>
                 </div>
                 <div class="card-body">
                     <form class="row g-3" id="formSikayetOneri">
@@ -98,7 +98,7 @@ $talep = $Model->find($id);
                                 })
                                 .then(() => {
                                     if (data.status === 'success') {
-                                        window.location.href = '/sakin/sikayet-oneri-listem';
+                                        window.location.href = '/sakin/taleplerim';
                                     }
                                 });
                         });
@@ -151,7 +151,7 @@ $talep = $Model->find($id);
                         </li>
                     </ul>
                     <div class="mt-3">
-                        <a href="/sakin/sikayet-oneri-listem" class="btn btn-light">Tüm Taleplerim</a>
+                        <a href="/sakin/taleplerim" class="btn btn-light">Tüm Taleplerim</a>
                     </div>
                 </div>
             </div>

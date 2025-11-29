@@ -55,7 +55,7 @@ if (
     $page == "isletme-projesi" || $page == "isletme-projesi-ekle" || $page == "isletme-projesi-duzenle" ||
     $page == "bildirimler" ||
     $page == "acil-durum-kisileri" || $page == "sikayet-oneri-listesi" || $page == "duyuru-listesi" ||
-    $page == "sakin/sikayet-oneri-listem" || $page == "talep-duzenle" ||
+    $page == "sakin/taleplerim" || $page == "talep-duzenle" ||
     $page == "anket-listesi" || $page == "duyuru-listesi" ||
     $page == "arac-yonetimi" ||
     $page == "kullanici-ekle" || 

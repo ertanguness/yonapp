@@ -289,6 +289,6 @@ $router->get('sakin/iletisim', fn() => require 'pages/site-sakini/iletisim.php')
 $router->get('sakin/profil', fn() => require 'pages/site-sakini/profil.php');
 
 // Kullanıcı (Sakin) tarafı
-$router->get('sakin/sikayet-oneri-listem', fn() => require 'pages/site-sakini/sikayet-oneri-list.php');
+$router->get('sakin/taleplerim', fn() => require 'pages/site-sakini/talepler.php');
 $router->get('sakin/talep-ekle', fn() => require 'pages/site-sakini/talep-manage.php');
 $router->get('sakin/talep-duzenle/{id}', fn($id) => require 'pages/site-sakini/talep-manage.php');
