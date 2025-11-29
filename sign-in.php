@@ -83,9 +83,9 @@ include './partials/head.php';
     <main class="auth-cover-wrapper">
         <div class="auth-cover-content-inner">
             <div style=" position: absolute; top: 20px; left: 20px;">
-                <div style="font-weight: 700; font-size: 300%; text-align: center;">
+                <!-- <div style="font-weight: 700; font-size: 300%; text-align: center;">
                     Apartman Yönetiminde<br>Yeni Dönem!
-                </div>
+                </div> -->
             </div>
             <!-- Sol Tarafı Temsil Eden Ana Konteyner -->
             <div class="auth-hero-side">

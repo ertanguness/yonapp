@@ -7,6 +7,7 @@ $site_id = isset($_SESSION['site_id']) ? $_SESSION['site_id'] : 0;
 
 
 use App\Helper\Site;
+use App\Services\Gate;
 
 
 
@@ -41,7 +42,7 @@ try {
     if (isset($_SESSION['user']->id)) {
         $uid = (int)$_SESSION['user']->id;
         $baseFs = rtrim($_SERVER['DOCUMENT_ROOT'], '\\/') . "/uploads/avatars/user_{$uid}";
-        foreach (["jpg","jpeg","png","webp"] as $ext) {
+        foreach (["jpg", "jpeg", "png", "webp"] as $ext) {
             $candidate = $baseFs . "." . $ext;
             if (file_exists($candidate)) {
                 $avatarPath = "/uploads/avatars/user_{$uid}.{$ext}";
@@ -80,39 +81,53 @@ try {
             </div>
             <!--! [End] nxl-navigation-toggle !-->
         </div>
-<style>
-    .py-07{
-        padding-top: 0.75rem !important;
-        padding-bottom: 0.75rem !important;
-    }
-    .py-08{
-        padding-top: 0.8rem !important;
-        padding-bottom: 0.8rem !important;
-    }
-</style>
+        <style>
+            .py-07 {
+                padding-top: 0.75rem !important;
+                padding-bottom: 0.75rem !important;
+            }
+
+            .py-08 {
+                padding-top: 0.8rem !important;
+                padding-bottom: 0.8rem !important;
+            }
+        </style>
 
         <!--! [End] Header Left !-->
         <div class="header d-flex me-auto ps-3">
             <div class="d-flex align-items-center">
                 <div class="col-6 d-flex me-auto">
-                    <div class="input-group flex-nowrap w-100 m-0 p-0 " style="min-width: 200px;">
-                        <div class="input-group-text"><i class="feather-grid"></i></div>
-                        <?php
-                        // Sayfa adını kontrol et
-                        if (basename($_SERVER['PHP_SELF']) != 'company-list.php') {
-                            echo Site::SitelerimSelect("mySite", $site_id);
+
+                    <?php if (Gate::isResident()) {
+                        $currentSite = (new Site())->getCurrentSite();
+                        if ($currentSite) {
+                            echo '<span class="text-nowrap" style="color: #333;">' . htmlspecialchars($currentSite->site_adi ?? 'Site Adı Yok', ENT_QUOTES, 'UTF-8') . '</span>';
                         }
-                        ?>
-                    </div>
+                    } else { ?>
+                        <div class="input-group flex-nowrap w-100 m-0 p-0 " style="min-width: 200px;">
+                            <div class="input-group-text"><i class="feather-grid"></i></div>
+                            <?php
+
+                            if (basename($_SERVER['PHP_SELF']) != 'company-list.php') {
+                                echo Site::SitelerimSelect("mySite", $site_id);
+                            }
+
+                            ?>
+                        </div>
+
+                    <?php        }           ?>
+
+
+
                 </div>
-               
+
             </div>
         </div>
         <!--! [Start] Header Right !-->
         <div class="header-right ms-auto">
             <div class="d-flex align-items-center">
 
-               
+
 
                 <div class="nxl-h-item d-none d-sm-flex">
                     <div class="full-screen-switcher">
@@ -181,28 +196,28 @@ try {
         </div>
         <h2 class="lock-screen-title">Profil Korumalı</h2>
         <p class="lock-screen-subtitle">Bu alanı görüntülemek için şifrenizi girin</p>
-        
+
         <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" class="lock-screen-avatar" alt="avatar">
         <div class="lock-screen-user-info">
             <div class="lock-screen-user-name"><?= htmlspecialchars($_SESSION['user']->full_name ?? '', ENT_QUOTES, 'UTF-8') ?></div>
         </div>
-        
+
         <form id="globalLockForm" class="lock-screen-form">
             <div class="lock-screen-input-group">
                 <label>Şifreniz</label>
                 <input type="password" id="globalLockPassword" placeholder="Şifrenizi girin" autocomplete="current-password" autofocus>
             </div>
-            
+
             <div id="globalLockAttemptsContainer" class="lock-screen-attempts">
                 <i class="fas fa-exclamation-triangle me-1"></i>
                 Kalan deneme: <span id="globalLockAttempts">3</span>
             </div>
-            
+
             <div id="globalLockInfoContainer" class="lock-screen-info" style="display: none;">
                 <i class="fas fa-info-circle me-2"></i>
                 <strong>Şifreyi hatırlamıyorsanız:</strong> 3 kez yanlış girişte otomatik olarak çıkış yapılacaksınız.
             </div>
-            
+
             <button type="button" id="globalUnlockBtn" class="lock-screen-btn">
                 <i class="fas fa-unlock me-2"></i>Kilidi Aç
             </button>

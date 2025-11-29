@@ -244,6 +244,18 @@ class KisilerModel extends Model
     //----------------------------------------------------------------------------------------------------\\
 
 
+    /** Kişi id'sinden site id'sini getirir
+     * @param int $kisi_id Kişi ID'si.
+     * @return int|null Site ID'si veya bulunamazsa null döner.
+     */
+    public function getSiteIdByKisiId($kisi_id)
+    {
+        $sql = $this->db->prepare("SELECT site_id FROM $this->table WHERE id = ?");
+        $sql->execute([$kisi_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? (int)$result->site_id : null;
+    }
+
     /**
      * Siteye ait toplam kişi sayısını döndürür.
      * @param int $site_id Sitenin ID'si.

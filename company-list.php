@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/configs/bootstrap.php';
 
-use App\Helper\Security;
+use App\Services\Gate;
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -34,17 +34,30 @@ $email = $user->email;
 
 $username = $user->full_name;
 
-use App\Services\FlashMessageService;
+use Model\KisilerModel;
 use Model\SitelerModel;
+use App\Helper\Security;
+use App\Services\FlashMessageService;
 
 // use Model\MyFirmModel;
+$Site = new SitelerModel();
+$Kisi = new KisilerModel();
+
 
 // $myFirmObj = new MyFirmModel();
 // $myFirms = $myFirmObj->getMyFirmByUserId(); // Firma kontrolü
 
 
+/** Kullanıcı site sakini ise kullanıcının sitesini sessiona ata */
+if (Gate::isResident()) {
+    $_SESSION['site_id'] = $Kisi->getSiteIdByKisiId($user_id);
+
+    $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'ana-sayfa';
+    header("Location: $redirectUri");
+    exit();
+}
+
 //Kullanıcının sitelerin getir
-$Site = new SitelerModel();
 $mySites = $Site->Sitelerim(); // Kullanıcının sitelerini getir
 
 // Aktif ve pasif site sayılarını hesapla
@@ -58,6 +71,7 @@ foreach ($mySites as $site) {
     }
 }
 $totalSitesCount = count($mySites);
+
 
 if (count($mySites) == 1) {
     if (count($mySites) === 1) {

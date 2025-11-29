@@ -80,7 +80,7 @@ foreach ($hareketler as $it) {
 </div>
 
 <div class="main-content">
-    <div class="row g-4">
+    <div class="row g-4 mb-5">
         <div class="col-12 col-lg-4">
             <div class="card rounded-3">
                 <div class="card-body">
