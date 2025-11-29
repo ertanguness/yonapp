@@ -41,12 +41,14 @@ document.addEventListener('DOMContentLoaded', function(){
     var btnLight = document.getElementById('btnLightTheme');
     var btnDark = document.getElementById('btnDarkTheme');
     if (btnLight) btnLight.addEventListener('click', function(){
-        localStorage.setItem('app-skin', '');
+        localStorage.setItem('app-skin', 'app-skin-light');
         document.documentElement.classList.remove('app-skin-dark');
+        document.documentElement.classList.add('app-skin-light');
     });
     if (btnDark) btnDark.addEventListener('click', function(){
         localStorage.setItem('app-skin', 'app-skin-dark');
         document.documentElement.classList.add('app-skin-dark');
+        document.documentElement.classList.remove('app-skin-light');
     });
 });
 </script>
