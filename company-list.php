@@ -615,6 +615,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
                 flex: 1;
             }
 
+
             .page-header-container {
                 padding: 20px 15px;
             }
@@ -651,6 +652,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
             .page-title {
                 font-size: 1.4rem;
             }
+
+            .stats-section,.info-section{
+                display: none;
+            }
         }
     </style>
 
@@ -679,7 +684,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
         </div>
 
         <!-- Page Header -->
-        <div class="row">
+        <div class="row stats-section ">
             <div class="col-xxl-4 col-md-6">
                 <div class="card card-body">
                     <div class="d-flex justify-content-between align-items-center">

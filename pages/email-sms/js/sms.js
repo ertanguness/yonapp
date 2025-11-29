@@ -1,7 +1,7 @@
 // DOMContentLoaded'ı kaldır ve fonksiyonları global yap
 function initSmsModal() {
   // --- ELEMENTLERİ SEÇME ---
-  const senderIdSelect = document.getElementById("senderId");
+  const senderIdSelect = document.getElementById("sms_baslik");
   const recipientsInput = document.getElementById("recipients-input"); // ID düzeltildi
   const recipientsContainer = document.getElementById("recipients-container");
   const recipientsList = document.getElementById("recipients-list"); // Tag'lar buraya
@@ -564,19 +564,13 @@ Object.defineProperty(messageTextarea, 'value', {
     }
   };
 
-  // Kişi telefon numarasını data attribute'den al
-  const smsCard = document.querySelector('.sms-sender-card');
-  const kisiTelefon = $(smsCard).attr('data-kisi-telefon');
-
-  if (kisiTelefon && kisiTelefon.trim() !== '') {
-    const telefonNo = kisiTelefon.trim();
-    if (isValidPhoneNumber(telefonNo)) {
-      const existingTags = recipientsList.querySelectorAll('.tag');
-      const existingNumbers = Array.from(existingTags).map(tag => tag.textContent.slice(0, -1));
-      
-      if (!existingNumbers.includes(telefonNo)) {
-        createTag(telefonNo);
-      }
+  const kisiTelefon = (window.kisiTelefonNumarasi || '').trim();
+  console.log('kisiTelefon:', kisiTelefon);
+  if (kisiTelefon) {
+    const normalized = normalizePhoneNumber(kisiTelefon);
+    const existingNumbers = getExistingNormalizedNumbers();
+    if (normalized && !existingNumbers.includes(normalized)) {
+      createTag(kisiTelefon);
     }
   }
 

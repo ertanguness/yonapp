@@ -420,6 +420,9 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                     if (typeof window.initSmsModal === 'function') {
                         //$('#message').text('Merhaba, olarak size hatırlatmak isteriz ki, toplam borcunuz dir. Lütfen en kısa sürede ödeme yapınız.\n\nTeşekkürler.\nSite Yönetimi');
                         window.initSmsModal();
+                        window.kisiTelefonNumarasi = '<?php echo htmlspecialchars($telefonNumarasi ?? '', ENT_QUOTES); ?>';
+                        
+
                     }
                 }, 100);
             });

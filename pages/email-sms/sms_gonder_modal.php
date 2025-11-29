@@ -1,17 +1,18 @@
 <?php
 require_once dirname(__DIR__, levels: 2) . '/configs/bootstrap.php';
 
-use Model\KisilerModel;
-use Model\TahsilatModel;
-use Model\FinansalRaporModel;
-use Model\SitelerModel;
-use App\Helper\SettingsHelper;
-
-
-
+use App\Helper\Helper;
 use App\Services\Gate;
-
+use Model\KisilerModel;
+use Model\SitelerModel;
 use App\Helper\Security;
+
+
+
+use Model\TahsilatModel;
+
+use Model\FinansalRaporModel;
+use App\Helper\SettingsHelper;
 
 //Gate::authorizeOrDie('sms_gonderme','Sms Gönderme Yetkiniz Bulunmamaktadır.', false);
 
@@ -35,7 +36,7 @@ $kisi = $KisiModel->find($kisi_id);
 $site = $SiteModel->find($_SESSION['site_id']);
 // Telefon numarasını temizle ve hazırla
 
-
+// Helper::dd($kisi);
 
 if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
     include_once  "on-hazirlik/{$includeFile}";
@@ -309,4 +310,6 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
 
 <script>
 console.log('✓ SMS gönder modal script başladı');
+  // Kişi telefon numarasını JavaScript'e aktar
+    window.kisiTelefonNumarasi = '<?php echo htmlspecialchars($telefonNumarasi ?? '', ENT_QUOTES); ?>';
 </script>
