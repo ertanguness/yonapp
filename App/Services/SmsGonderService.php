@@ -29,23 +29,27 @@ class SmsGonderService
             $Settings = new SettingsModel();
             $allSettings = $Settings->getAllSettingsAsKeyValue();
             $logger->info(json_encode([
-                "site_id" => $_SESSION['site_id'],
+                "site_id" => $_SESSION['site_id'] ?? null,
                 "settings" => $allSettings
             ]));
 
-            $username =  $allSettings['sms_api_kullanici'] ?? '';
-            $password =  $allSettings['sms_api_sifre'] ?? '';
-            $msgheader = $gondericiBaslik ?? $allSettings['sms_baslik'] ?? 'YONAPP';
+            $username = $_ENV['SMS_API_KULLANICI'] ?? $_ENV['NETGSM_USERNAME'] ?? ($allSettings['sms_api_kullanici'] ?? '');
+            $password = $_ENV['SMS_API_SIFRE'] ?? $_ENV['NETGSM_PASSWORD'] ?? ($allSettings['sms_api_sifre'] ?? '');
+            $msgheader = $gondericiBaslik ?? ($_ENV['SMS_SENDER_ID'] ?? ($allSettings['sms_baslik'] ?? 'YONAPP'));
+
+            if (empty($username) || empty($password)) {
+                try {
+                    $pdo = \getDbConnection();
+                    $stmt = $pdo->prepare('SELECT set_value FROM settings WHERE set_name = ? ORDER BY id DESC LIMIT 1');
+                    if (empty($username)) { $stmt->execute(['sms_api_kullanici']); $username = $stmt->fetchColumn() ?: $username; }
+                    if (empty($password)) { $stmt->execute(['sms_api_sifre']); $password = $stmt->fetchColumn() ?: $password; }
+                    if (empty($msgheader) || $msgheader === 'YONAPP') { $stmt->execute(['sms_baslik']); $mh = $stmt->fetchColumn(); if ($mh) { $msgheader = $mh; } }
+                } catch (\Throwable $e) { /* yoksay */ }
+            }
          
             if (empty($username) || empty($password)) {
-                $response = json_encode([
-                    'status' => 'error',
-                    'message' => 'SMS API kimlik bilgileri eksik.'
-                ]);
-                echo ($response);
-                exit;
-                //throw new Exception("SMS API kimlik bilgileri eksik.");
-
+                $logger->error('SMS API kimlik bilgileri eksik.');
+                return false;
             }
 
             // Mesaj dizisini oluştur

@@ -56,12 +56,18 @@ if (!empty($email)) {
         </div>
         <h2 class="fs-20 fw-bolder mb-4">Davetli Üyelik Kaydı</h2>
         <?php include_once  'partials/_flash_messages.php'; ?>
-        <ul class="nav nav-tabs" id="registerTabs" role="tablist">
+        <ul class="nav nav-pills register-tabs" id="registerTabs" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="email-tab" data-bs-toggle="tab" data-bs-target="#emailPane" type="button" role="tab" aria-controls="emailPane" aria-selected="true">Email</button>
+            <button class="nav-link active d-flex align-items-center justify-content-center gap-2" id="email-tab" data-bs-toggle="tab" data-bs-target="#emailPane" type="button" role="tab" aria-controls="emailPane" aria-selected="true">
+              <i class="bi bi-envelope"></i>
+              <span>Email</span>
+            </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="phone-tab" data-bs-toggle="tab" data-bs-target="#phonePane" type="button" role="tab" aria-controls="phonePane" aria-selected="false">Cep telefonu</button>
+            <button class="nav-link d-flex align-items-center justify-content-center gap-2" id="phone-tab" data-bs-toggle="tab" data-bs-target="#phonePane" type="button" role="tab" aria-controls="phonePane" aria-selected="false">
+              <i class="bi bi-phone"></i>
+              <span>Cep telefonu</span>
+            </button>
           </li>
         </ul>
         <div class="tab-content mt-3" id="registerTabsContent">
@@ -100,30 +106,27 @@ if (!empty($email)) {
               <input type="hidden" name="action" value="register_member_phone">
               <input type="hidden" name="kisi" value="<?= htmlspecialchars($kisiEnc) ?>">
               <div class="mb-3">
-                <input type="text" class="form-control" name="full_name" readonly id="full_name_phone" placeholder="Adınız Soyadınız" value="<?= htmlspecialchars($fullName) ?>" required>
+                <input type="text" class="form-control" name="full_name" id="full_name_phone" placeholder="Adınız Soyadınız" value="<?= htmlspecialchars($fullName) ?>" required>
               </div>
-              <div class="row g-2 mb-3">
-                <div class="col-4">
-                  <select class="form-select" name="country_code" id="country_code" required>
-                    <option value="+90" selected>+90 (TR)</option>
-                    <option value="+1">+1 (US)</option>
-                    <option value="+44">+44 (UK)</option>
-                    <option value="+49">+49 (DE)</option>
-                  </select>
-                </div>
-                <div class="col-8">
-                  <input type="tel" class="form-control" name="phone" id="phone" placeholder="5XX XXX XX XX" required>
-                </div>
-              </div>
-              <div class="mb-3">
-                <input type="text" class="form-control" name="user_name" id="user_name" placeholder="Kullanıcı adı" required>
-              </div>
-              <div class="mb-3">
-                <div class="input-group field">
-                  <input type="password" class="form-control password" id="password_phone" name="password" placeholder="Şifre" required>
-                  <div class="input-group-text border-start bg-gray-2 c-pointer show-pass" data-bs-toggle="tooltip" title="Şifre Göster"><i></i></div>
-                </div>
-              </div>
+          <div class="row g-2 mb-3">
+            <div class="col-4">
+              <select class="form-select" name="country_code" id="country_code" required>
+                <option value="+90" selected>+90 (TR)</option>
+                <option value="+1">+1 (US)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+49">+49 (DE)</option>
+              </select>
+            </div>
+            <div class="col-8">
+              <input type="tel" class="form-control" name="phone" id="phone" placeholder="5XX XXX XX XX" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="input-group field">
+              <input type="password" class="form-control password" id="password_phone" name="password" placeholder="Şifre" required>
+              <div class="input-group-text border-start bg-gray-2 c-pointer show-pass" data-bs-toggle="tooltip" title="Şifre Göster"><i></i></div>
+            </div>
+          </div>
               <div class="mb-3">
                 <input type="password" class="form-control" name="password2" id="password2_phone" placeholder="Şifre (Tekrar)" required>
               </div>
@@ -165,6 +168,14 @@ if (!empty($email)) {
     });
   });
 </script>
+<style>
+.register-tabs{display:flex;gap:.5rem;flex-wrap:nowrap;width:100%}
+.register-tabs .nav-item{flex:0 0 50%;display:flex}
+.register-tabs .nav-link{width:100%;border-radius:6px;padding:.9rem 1rem;background:#f8f9fa;color:#343a40;border:1px solid #e9ecef;transition:background .2s,transform .1s}
+.register-tabs .nav-link:hover{background:#eef2f6}
+.register-tabs .nav-link.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
+@media (max-width:576px){.register-tabs .nav-link{font-size:.95rem;padding:.7rem .8rem}}
+</style>
 <?php include './partials/script.php' ?>
 <script>
   (function(){

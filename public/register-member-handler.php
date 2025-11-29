@@ -66,6 +66,9 @@ if ($action === 'register_member' || $action === 'register_member_email') {
 try {
     $db = Db::getInstance();
     $pdo = $db->connect();
+    selfEnsurePhoneVerifyTable($pdo);
+    selfEnsurePhoneVerifyExtraColumns($pdo);
+    selfEnsureRegistrationMethodTable($pdo);
     $pdo->beginTransaction();
 
     if ($action === 'register_member' || $action === 'register_member_email') {
@@ -89,20 +92,17 @@ try {
         $activate_link = "$baseUrl/register-activate.php?email=" . ($email) . "&token=" . $data['activate_token'];
         MailGonderService::gonder([$email], $fullName, $activate_link);
 
-        selfEnsureRegistrationMethodTable($pdo);
         selfUpsertRegistrationMethod($pdo, Security::decrypt($insertId), 'email');
 
         $pdo->commit();
         FlashMessageService::add('success', 'Kayıt Başarılı', 'Aktivasyon e-postası gönderildi. Lütfen e-postadaki bağlantı ile hesabınızı doğrulayın.', 'onay2.png');
         header('Location: /register-activate.php?email=' . urlencode($email));
         exit;
-    } else { // phone
+    } else { // phone: kullanıcıyı OTP doğrulanınca oluştur
         $countryCode = trim($_POST['country_code'] ?? '');
         $phoneRaw    = trim($_POST['phone'] ?? '');
-        $userName    = trim($_POST['user_name'] ?? '');
-
-        if ($countryCode === '' || $phoneRaw === '' || $userName === '') {
-            FlashMessageService::add('error', 'Hata!', 'Ülke kodu, telefon ve kullanıcı adı zorunludur.');
+        if ($countryCode === '' || $phoneRaw === '') {
+            FlashMessageService::add('error', 'Hata!', 'Ülke kodu ve telefon zorunludur.');
             header('Location: /register-member.php');
             exit;
         }
@@ -111,6 +111,7 @@ try {
         $normalizedCode  = preg_replace('/\D+/', '', $countryCode);
         $fullPhone       = '+' . $normalizedCode . $normalizedPhone;
 
+        // Telefon zaten kullanıcıda mevcutsa uyarı
         $existingByPhone = $User->findWhere(['phone' => $fullPhone]);
         if (!empty($existingByPhone)) {
             FlashMessageService::add('error', 'Hata!', 'Bu telefon numarası ile daha önce kayıt olunmuş.');
@@ -118,35 +119,27 @@ try {
             exit;
         }
 
+        // Ön-kayıt: kullanıcıyı oluşturma, doğrulama sonrası users içine eklenecek
         $pseudoEmail = 'phone_' . ($normalizedCode . $normalizedPhone) . '@yonapp.local';
-
-        $data = [
-            'id' => 0,
-            'full_name' => Security::escape($fullName),
-            'email' => $pseudoEmail,
-            'phone' => $fullPhone,
-            'status' => 0,
-            'roles' => 3,
-            'is_main_user' => 0,
-            'password' => password_hash($pass, PASSWORD_DEFAULT)
-        ];
-
-        $insertId = $User->saveWithAttr($data);
-        $userId   = Security::decrypt($insertId);
-
-        selfEnsurePhoneVerifyTable($pdo);
         $code = (string)random_int(100000, 999999);
         $expiresAt = date('Y-m-d H:i:s', time() + 10 * 60);
-        selfInsertPhoneVerify($pdo, $userId, $normalizedCode, $fullPhone, $code, $expiresAt, $userName);
 
-        SmsGonderService::gonder([$fullPhone], 'YONAPP doğrulama kodunuz: ' . $code);
+        // tablo kolonları önceden güvene alındı
 
-        selfEnsureRegistrationMethodTable($pdo);
-        selfUpsertRegistrationMethod($pdo, $userId, 'phone');
+        $stmt = $pdo->prepare('INSERT INTO user_phone_verifications (user_id, country_code, phone, code, expires_at, full_name, password_hash, pseudo_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([0, $normalizedCode, $fullPhone, $code, $expiresAt, Security::escape($fullName), password_hash($pass, PASSWORD_DEFAULT), $pseudoEmail]);
+
+        $verifyId = $pdo->lastInsertId();
+
+        $sent = SmsGonderService::gonder([$fullPhone], 'YONAPP doğrulama kodunuz: ' . $code);
 
         $pdo->commit();
-        FlashMessageService::add('success', 'Kayıt Başarılı', 'SMS doğrulama kodu gönderildi. Lütfen kodu girerek hesabınızı doğrulayın.', 'onay2.png');
-        header('Location: /register-member-phone-verify.php?uid=' . urlencode($insertId));
+        if ($sent) {
+            FlashMessageService::add('success', 'Kayıt Başarılı', 'SMS doğrulama kodu gönderildi. Lütfen kodu girerek hesabınızı doğrulayın.', 'onay2.png');
+        } else {
+            FlashMessageService::add('warning', 'SMS Gönderilemedi', 'Doğrulama kodu şu anda gönderilemedi. Lütfen birkaç dakika sonra “Kodu tekrar gönder” ile deneyin.', 'uyari2.png');
+        }
+        header('Location: /register-member-phone-verify.php?vid=' . urlencode(Security::encrypt($verifyId)));
         exit;
     }
 } catch (\Throwable $e) {
@@ -165,15 +158,15 @@ function selfEnsurePhoneVerifyTable(\PDO $pdo): void {
         code VARCHAR(10) NOT NULL,
         expires_at DATETIME NOT NULL,
         verified_at DATETIME NULL,
-        user_name VARCHAR(100) NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         INDEX(user_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci");
 }
 
-function selfInsertPhoneVerify(\PDO $pdo, int $userId, string $countryCode, string $phone, string $code, string $expiresAt, string $userName): void {
-    $stmt = $pdo->prepare('INSERT INTO user_phone_verifications (user_id, country_code, phone, code, expires_at, user_name) VALUES (?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$userId, $countryCode, $phone, $code, $expiresAt, $userName]);
+function selfEnsurePhoneVerifyExtraColumns(\PDO $pdo): void {
+    try { $pdo->exec("ALTER TABLE user_phone_verifications ADD COLUMN full_name VARCHAR(255) NULL"); } catch (\Throwable $e) {}
+    try { $pdo->exec("ALTER TABLE user_phone_verifications ADD COLUMN password_hash VARCHAR(255) NULL"); } catch (\Throwable $e) {}
+    try { $pdo->exec("ALTER TABLE user_phone_verifications ADD COLUMN pseudo_email VARCHAR(255) NULL"); } catch (\Throwable $e) {}
 }
 
 function selfEnsureRegistrationMethodTable(\PDO $pdo): void {

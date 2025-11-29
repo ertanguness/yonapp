@@ -147,9 +147,9 @@ include './partials/head.php';
                         action="sign-in.php<?php echo isset($_GET['returnUrl']) ? '?returnUrl=' . htmlspecialchars($_GET['returnUrl']) : ''; ?>"
                         class="w-100 mt-4 pt-2">
                         <div class="mb-3">
-                            <input type="email" class="form-control" id="email" name="email"
+                            <input type="text" class="form-control" id="email" name="email"
                                 value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>"
-                                placeholder="E-posta Giriniz" required>
+                                placeholder="E-posta veya telefon giriniz" required>
                         </div>
                         <div class="mb-3">
                             <input type="password" class="form-control pe-5" id="password" name="password"

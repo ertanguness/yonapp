@@ -42,20 +42,38 @@ class AuthController
         $validationError = false;
 
         if (empty($email) || empty($password)) {
-            FlashMessageService::add('error', 'Giriş Başarısız!', 'E-posta ve şifre alanları zorunludur.', 'ikaz2.png');
+            FlashMessageService::add('error', 'Giriş Başarısız!', 'E-posta veya telefon ve şifre zorunludur.', 'ikaz2.png');
             $validationError = true;
         } else {
-            $user = $this->userModel->getUserByEmail($email);
+            $user = null;
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $user = $this->userModel->getUserByEmail($email);
+            } else {
+                $identifier = preg_replace('/\s+/', '', $email);
+                $digits = preg_replace('/\D+/', '', $identifier);
+                if (!empty($digits)) {
+                    if ($identifier[0] !== '+') {
+                        if (strlen($digits) >= 10 && strlen($digits) <= 11) {
+                            $candidate = '+90' . $digits;
+                        } else {
+                            $candidate = '+' . $digits;
+                        }
+                    } else {
+                        $candidate = $identifier;
+                    }
+                    $user = $this->userModel->getUserByPhone($candidate);
+                }
+            }
 
             if (!$user) {
-                FlashMessageService::add('error', 'Giriş Başarısız!', 'Bu e-posta adresine kayıtlı bir kullanıcı bulunamadı.', 'ikaz2.png');
+                FlashMessageService::add('error', 'Giriş Başarısız!', 'Kullanıcı bulunamadı.', 'ikaz2.png');
                 $validationError = true;
             } elseif ($user->status == 0) {
                 FlashMessageService::add('warning', 'Hesap Beklemede', 'Hesabınız henüz yönetici tarafından aktifleştirilmedi.', 'bilgi.png');
                 $validationError = true;
             } elseif (!password_verify($password, $user->password)) {
                 FlashMessageService::add('error', 'Giriş Başarısız!', 'Hatalı şifre girdiniz.', 'ikaz2.png');
-                $this->logger->error("Başarısız giriş denemesi.", ['email' => $email, 'ip' => $_SERVER['REMOTE_ADDR']]);
+                $this->logger->error("Başarısız giriş denemesi.", ['identifier' => $email, 'ip' => $_SERVER['REMOTE_ADDR']]);
                 $validationError = true;
             } else {
                 // Demo kontrolü (Bu metot hata durumunda zaten yönlendirme yapıyor)

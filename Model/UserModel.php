@@ -24,6 +24,13 @@ class UserModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ) ?? null;
     }
 
+    public function getUserByPhone($phone)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE phone = ?");
+        $sql->execute([$phone]);
+        return $sql->fetch(PDO::FETCH_OBJ) ?? null;
+    }
+
     //Kullanıcı adı vey emailden kullanıcı kontrolü yapılır,true veya false döner
     public function checkUser($username)
     {
