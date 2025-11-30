@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
 use Model\PersonelOdemelerModel;
+use App\Helper\Security;
 $req = $_GET;
 $rows = [];
 $personId = isset($req['person_id']) ? (int)$req['person_id'] : 0;
@@ -8,12 +9,16 @@ if ($personId > 0) {
     $m = new PersonelOdemelerModel();
     $items = $m->listByPerson($personId);
     foreach ($items as $it) {
+        $encId = Security::encrypt((int)$it->id);
         $rows[] = [
             'amount' => htmlspecialchars($it->amount ?? ''),
             'date' => htmlspecialchars($it->date ?? ''),
             'description' => htmlspecialchars($it->description ?? ''),
             'status' => htmlspecialchars($it->status ?? ''),
-            'actions' => '<a href="javascript:void(0)" class="btn btn-sm btn-light payment-edit" data-id="'.(int)$it->id.'">Düzenle</a>'
+            'actions' => '<div class="hstack gap-2">'
+                .'<a href="javascript:void(0);" class="avatar-text avatar-md payment-edit" data-id="'.$encId.'" title="Düzenle"><i class="feather-edit"></i></a>'
+                .'<a href="javascript:void(0);" class="avatar-text avatar-md payment-delete" data-id="'.$encId.'" data-name="'.htmlspecialchars($it->description ?? '').'" title="Sil"><i class="feather-trash-2"></i></a>'
+                .'</div>'
         ];
     }
 }

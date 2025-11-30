@@ -2,16 +2,52 @@
 
 require_once dirname(__FILE__, 3) . '/configs/bootstrap.php';
 
-use Model\PersonelOdemeModel;
-use Model\PersonelModel;
-use App\Helper\Security;
+use Database\Db;
+use App\Helper\Date;
 use App\Helper\Helper;
+use App\Helper\Security;
+use Model\PersonelModel;
+use Model\PersonelOdemeModel;
 
 $PersonelOdeme = new PersonelOdemeModel();
 $Personel = new PersonelModel();
+$db = Db::getInstance();
+
+$action = $_POST['action'] ?? '';
+
+if($action == "savePerson"){
+    $id = Security::decrypt($_POST['personelId'] ?? 0);
+
+    try {
+        $data = [
+            'id' => $id,
+            'adi_soyadi' => $_POST['adi_soyadi'] ?? '',
+            'eposta' => $_POST['eposta'] ?? '',
+            'telefon' => $_POST['telefon'] ?? '',
+            'personel_tipi' => $_POST['personel_tipi'] ?? '',
+            'ise_baslama_tarihi' => Date::Ymd($_POST['ise_baslama_tarihi'] ?? ''),
+            'isten_ayrilma_tarihi' => Date::Ymd($_POST['isten_ayrilma_tarihi'] ?? ''),
+        ];
+        $lastInsertId = $Personel->saveWithAttr($data);
+
+        $status = "success";
+        $message = $id == 0 ? "Personel başarıyla kaydedildi" : "Personel başarıyla güncellendi";
+    } catch (Exception $ex) {
+        $status = "error";
+        $message = $ex->getMessage();
+    }
+
+
+    echo json_encode([
+        'status' => $status,
+        'message' => $message,
+        'id' => $lastInsertId ?? 0
+    ]);
+    exit();
+}  
 
 // Ödeme Kaydet (Yeni veya Güncelle)
-if ($_POST['action'] == 'save_personel_odeme') {
+if ($action == 'save_personel_odeme') {
     $odeme_id = $_POST['odeme_id'] ?? '';
     $personel_id = Security::decrypt($_POST['personel_id'] ?? '');
     $odeme_tarihi = $_POST['odeme_tarihi'] ?? date('Y-m-d');
@@ -67,7 +103,7 @@ if ($_POST['action'] == 'save_personel_odeme') {
 }
 
 // Ödeme Sil
-if ($_POST['action'] == 'delete_personel_odeme') {
+if ($action == 'delete_personel_odeme') {
     $odeme_id = Security::decrypt($_POST['odeme_id'] ?? '');
 
     if (!$odeme_id) {
@@ -95,7 +131,7 @@ if ($_POST['action'] == 'delete_personel_odeme') {
 }
 
 // Personel Sil
-if ($_POST['action'] == 'delete_personel') {
+if ($action == 'delete_personel') {
     $personel_id = $_POST['personel_id'] ?? '';
 
     if (!$personel_id) {
