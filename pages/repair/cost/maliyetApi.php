@@ -28,15 +28,25 @@ if (isset($_POST["action"]) && $_POST["action"] === "maliyet_kaydetme") {
             exit;
         }
     }
+    $tm = $_POST["toplamMaliyet"] ?? 0;
+    $od = $_POST["odenenTutar"] ?? 0;
+    $kl = $_POST["kalanBorc"] ?? 0;
+    foreach ([&$tm, &$od, &$kl] as &$val) {
+        $val = preg_replace('/[^0-9.,-]/', '', (string)$val);
+        if (strpos($val, ',') !== false) { $val = str_replace('.', '', $val); $val = str_replace(',', '.', $val); }
+        $val = $val !== '' ? (float)$val : 0;
+    }
+    unset($val);
+
     $data = [
         "id" => $id,
         "bakim_turu" => $_POST["bakimTuru"] ?? '',
         "talep_no" => $talepNo ?? '',
         "makbuz_turu" => $_POST["makbuzTuru"] ?? '',
-        "toplam_maliyet" => $_POST["toplamMaliyet"] ?? 0,
+        "toplam_maliyet" => $tm,
         "makbuz_no" => $_POST["makbuzNo"] ?? '',
-        "odenen_tutar" => $_POST["odenenTutar"] ?? 0,
-        "kalan_borc" => $_POST["kalanBorc"] ?? 0,
+        "odenen_tutar" => $od,
+        "kalan_borc" => $kl,
         "odeme_durumu" => $_POST["odemeDurumu"] ?? '',
         "odeme_tarihi" => $odemeTarihi,
         "aciklama" => $_POST["aciklama"] ?? '',

@@ -97,5 +97,43 @@ $(document).on("click", ".sil-periyodikBakim", function () {
              }
           });
       }
+  });
+});
+
+$(document).on("click", "#bakimDurumuTamamlaBtn", function () {
+  const btn = $(this);
+  const id = btn.data("id");
+  const current = parseInt(btn.data("current") || 0);
+  const nextDurum = current === 1 ? 0 : 1;
+  const formData = new FormData();
+  formData.append("action", "bakim_durumu_guncelle");
+  formData.append("id", id);
+  formData.append("durum", nextDurum);
+  btn.prop("disabled", true);
+  fetch(periyodikBakimurl, {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status === "success") {
+        const t = $("#bakimDurumuText");
+        if (nextDurum === 1) {
+          t.removeClass("text-danger").addClass("text-success").text("Tamamlandı");
+        } else {
+          t.removeClass("text-success").addClass("text-danger").text("Tamamlanmadı");
+        }
+        btn.text("Bakım Durumu Değiştir");
+        btn.data("current", nextDurum);
+        btn.prop("disabled", false);
+        swal.fire({ title: "Başarılı", text: data.message, icon: "success", confirmButtonText: "Tamam" });
+      } else {
+        btn.prop("disabled", false);
+        swal.fire({ title: "Hata", text: data.message || "İşlem başarısız", icon: "error", confirmButtonText: "Tamam" });
+      }
+    })
+    .catch(() => {
+      btn.prop("disabled", false);
+      swal.fire({ title: "Hata", text: "Sunucuya ulaşılamadı", icon: "error", confirmButtonText: "Tamam" });
     });
 });

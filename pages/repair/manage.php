@@ -65,7 +65,7 @@ $bakim=$Bakimlar->BakimBilgileri($id);
                 <div class="col-12">
                     <div class="card">
                         <form  id="bakimForm" method="POST">
-                            <input type="hidden" id="bakim_id" name="bakim_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
+                            <input type="hidden" id="bakim_id" name="bakim_id" value="<?php echo ($id > 0) ? Security::encrypt($id) : '0'; ?>">
                             <div class="card-body repair-info">
                                 <div class="row mb-4 align-items-center">
                                     <div class="col-lg-2">
@@ -77,6 +77,7 @@ $bakim=$Bakimlar->BakimBilgileri($id);
                                             <input type="text" class="form-control fw-bold" id="talepno" name="talepno" value="<?php echo ($id == 0 || empty($id)) ? $talepNo : ($bakim->talep_no ?? $talepNo); ?>" readonly>
                                         </div>
                                     </div>
+                                    
                                 </div>
                                 <!-- talep bilgileri -->
                                 <div class="row mb-4 align-items-center">
@@ -177,3 +178,38 @@ $bakim=$Bakimlar->BakimBilgileri($id);
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const toggleBtn = document.getElementById('bakimDurumuToggle');
+    if(toggleBtn){
+        toggleBtn.addEventListener('click', async function(){
+            const id = this.getAttribute('data-id');
+            if(!id){ return; }
+            try{
+                const resp = await fetch('/api/update_bakim_durumu.php',{
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                const data = await resp.json();
+                if(data.success){
+                    const label = document.getElementById('bakimDurumuEtiket');
+                    if(data.value == 1){
+                        label.textContent = 'Tamamlandı';
+                        label.classList.remove('text-secondary');
+                        label.classList.add('text-success');
+                    }else{
+                        label.textContent = 'Tamamlanmadı';
+                        label.classList.remove('text-success');
+                        label.classList.add('text-secondary');
+                    }
+                }else{
+                    alert('Güncelleme başarısız: ' + (data.message || 'Bilinmeyen hata'));
+                }
+            }catch(e){
+                alert('İstek başarısız: ' + e.message);
+            }
+        });
+    }
+});
+</script>

@@ -56,29 +56,29 @@
 
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-3"><label for="smtpServer" class="fw-semibold">SMTP Sunucusu:</label></div>
-                        <div class="col-lg-6"><input type="text" class="form-control" id="smtpServer" name="smtpServer" placeholder="smtp.yourdomain.com" value="<?php echo $AyarlarKV['smtp_server'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="text" class="form-control" id="smtpServer" name="smtpServer" placeholder="smtp.yourdomain.com" value="<?php echo $AyarlarBilgileri->smtp_server ?? ''; ?>"></div>
                     </div>
 
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-3"><label for="smtpPort" class="fw-semibold">Port Numarası:</label></div>
-                        <div class="col-lg-6"><input type="number" class="form-control" id="smtpPort" name="smtpPort" placeholder="465 / 587" value="<?php echo $AyarlarKV['smtp_port'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="number" class="form-control" id="smtpPort" name="smtpPort" placeholder="465 / 587" value="<?php echo $AyarlarBilgileri->smtp_port ?? ''; ?>"></div>
                     </div>
 
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-3"><label for="smtpUser" class="fw-semibold">E-posta Adresi:</label></div>
-                        <div class="col-lg-6"><input type="email" class="form-control" id="smtpUser" name="smtpUser" placeholder="ornek@domain.com" value="<?php echo $AyarlarKV['smtp_user'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="email" class="form-control" id="smtpUser" name="smtpUser" placeholder="ornek@domain.com" value="<?php echo $AyarlarBilgileri->smtp_user ?? ''; ?>"></div>
                     </div>
 
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="smtpPassword" class="fw-semibold">Şifre:</label></div>
-                        <div class="col-lg-6"><input type="password" class="form-control" id="smtpPassword" name="smtpPassword" placeholder="E-posta şifresi" value="<?php echo $AyarlarKV['smtp_password'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="password" class="form-control" id="smtpPassword" name="smtpPassword" placeholder="E-posta şifresi" value="<?php echo $AyarlarBilgileri->smtp_password ?? ''; ?>"></div>
                     </div>
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="emailAktif" class="fw-semibold">E-mail Aktif</label></div>
                         <div class="col-lg-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" style="transform: scale(1.5);" type="checkbox" id="emailDurum" name="emailDurum" value="0"
-                                    <?php echo (isset($AyarlarKV['smtp_durum']) && (int)$AyarlarKV['smtp_durum'] == 1) ? 'checked' : ''; ?>
+                                    <?php echo (isset($AyarlarBilgileri->smtp_durum) && $AyarlarBilgileri->smtp_durum == 1) ? 'checked' : ''; ?>
                                     onclick="this.value=this.checked?1:0;">
                                 <label class="form-check-label" for="emailDurum">Aktif</label>
                             </div>
@@ -92,24 +92,24 @@
 
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-3"><label for="smsProvider" class="fw-semibold">Servis Sağlayıcı:</label></div>
-                        <div class="col-lg-6"><input type="text" class="form-control" id="smsProvider" name="smsProvider" placeholder="NetGSM, IletiMerkezi, vb." value="<?php echo $AyarlarKV['sms_provider'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="text" class="form-control" id="smsProvider" name="smsProvider" placeholder="NetGSM, IletiMerkezi, vb." value="<?php echo $AyarlarBilgileri->sms_provider ?? ''; ?>"></div>
                     </div>
 
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-3"><label for="smsUsername" class="fw-semibold">Kullanıcı Adı:</label></div>
-                        <div class="col-lg-6"><input type="text" class="form-control" id="smsUsername" name="smsUsername" placeholder="API kullanıcı adı" value="<?php echo $AyarlarKV['sms_username'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="text" class="form-control" id="smsUsername" name="smsUsername" placeholder="API kullanıcı adı" value="<?php echo $AyarlarBilgileri->sms_username ?? ''; ?>"></div>
                     </div>
 
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="smsPassword" class="fw-semibold">Şifre:</label></div>
-                        <div class="col-lg-6"><input type="password" class="form-control" id="smsPassword" name="smsPassword" placeholder="API şifresi" value="<?php echo $AyarlarKV['sms_password'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="password" class="form-control" id="smsPassword" name="smsPassword" placeholder="API şifresi" value="<?php echo $AyarlarBilgileri->sms_password ?? ''; ?>"></div>
                     </div>
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="smsAktif" class="fw-semibold">Sms Aktif</label></div>
                         <div class="col-lg-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" style="transform: scale(1.5);" type="checkbox" id="smsDurum" name="smsDurum" value="0"
-                                    <?php echo (isset($AyarlarKV['sms_durum']) && (int)$AyarlarKV['sms_durum'] == 1) ? 'checked' : ''; ?>
+                                    <?php echo (isset($AyarlarBilgileri->sms_durum) && $AyarlarBilgileri->sms_durum == 1) ? 'checked' : ''; ?>
                                     onclick="this.value=this.checked?1:0;">
                                 <label class="form-check-label" for="siteAktif">Aktif</label>
                             </div>
@@ -123,24 +123,24 @@
 
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-3"><label for="whatsappApiUrl" class="fw-semibold">API URL:</label></div>
-                        <div class="col-lg-6"><input type="text" class="form-control" id="whatsappApiUrl" name="whatsappApiUrl" placeholder="https://api.whatsapp.com/send" value="<?php echo $AyarlarKV['whatsapp_api_url'] ?? ''; ?>" ></div>
+                        <div class="col-lg-6"><input type="text" class="form-control" id="whatsappApiUrl" name="whatsappApiUrl" placeholder="https://api.whatsapp.com/send" value="<?php echo $AyarlarBilgileri->whatsapp_api_url ?? ''; ?>" ></div>
                     </div>
 
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-3"><label for="whatsappToken" class="fw-semibold">API Token:</label></div>
-                        <div class="col-lg-6"><input type="text" class="form-control" id="whatsappToken" name="whatsappToken" placeholder="API erişim anahtarı" value="<?php echo $AyarlarKV['whatsapp_token'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="text" class="form-control" id="whatsappToken" name="whatsappToken" placeholder="API erişim anahtarı" value="<?php echo $AyarlarBilgileri->whatsapp_token ?? ''; ?>"></div>
                     </div>
 
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="whatsappSender" class="fw-semibold">Gönderen Numarası:</label></div>
-                        <div class="col-lg-6"><input type="text" class="form-control" id="whatsappSender" name="whatsappSender" placeholder="+905xxxxxxxxx" value="<?php echo $AyarlarKV['whatsapp_sender'] ?? ''; ?>"></div>
+                        <div class="col-lg-6"><input type="text" class="form-control" id="whatsappSender" name="whatsappSender" placeholder="+905xxxxxxxxx" value="<?php echo $AyarlarBilgileri->whatsapp_sender ?? ''; ?>"></div>
                     </div>
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="whatsappAktif" class="fw-semibold">WhatsApp Aktif</label></div>
                         <div class="col-lg-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" style="transform: scale(1.5);" type="checkbox" id="whatsappDurum" name="whatsappDurum" value="0"
-                                    <?php echo (isset($AyarlarKV['whatsapp_durum']) && (int)$AyarlarKV['whatsapp_durum'] == 1) ? 'checked' : ''; ?>
+                                    <?php echo (isset($AyarlarBilgileri->whatsapp_durum) && $AyarlarBilgileri->whatsapp_durum == 1) ? 'checked' : ''; ?>
                                     onclick="this.value=this.checked?1:0;">
                                 <label class="form-check-label" for="whatsappAktif">Aktif</label>
                             </div>
@@ -174,7 +174,7 @@
     }
 
     .nav .icon-tab.active {
-        background-color: #0d6efd;
+        background-color: #4CAF50;
         color: #fff;
     }
 
