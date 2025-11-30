@@ -65,7 +65,7 @@ $personelList = $Personel->getPersonel();
                                             <th>Sıra</th>
                                             <th>Adı Soyadı</th>
                                             <th>TC Kimlik No</th>
-                                            <th>Pozisyon</th>
+                                            <th>Personel Tipi</th>
                                             <th>Telefon</th>
                                             <th>E-Posta</th>
                                             <th>Durumu</th>
@@ -85,7 +85,7 @@ $personelList = $Personel->getPersonel();
                                                         <?= htmlspecialchars($personel->tc_kimlik_no ?? '-') ?>
                                                     </td>
                                                     <td>
-                                                        <?= htmlspecialchars($personel->gorev_yeri ?? '-') ?>
+                                                        <?= htmlspecialchars($personel->personel_tipi ?? '-') ?>
                                                     </td>
                                                     <td>
                                                         <?= htmlspecialchars($personel->telefon ?? '-') ?>
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('action', 'delete_personel');
             formData.append('personel_id', personelId);
             
-            const response = await fetch('/pages/persons/api.php', {
+            const response = await fetch('/pages/personel/api.php', {
                 method: 'POST',
                 body: formData
             });

@@ -16,7 +16,7 @@ if ($kisi && !empty($kisi->telefon)) {
     $kisi_bakiye = $FinansalRaporModel->KisiFinansalDurum($kisi_id);
     $bakiyeRaw   = (float)($kisi_bakiye->bakiye ?? 0);
     $bakiyeAbs   = abs($bakiyeRaw);
-    $bakiyeTxt   = Helper::formattedMoney($bakiyeAbs) ;
+    $bakiyeTxt   = Helper::formattedMoney($bakiyeAbs);
     $bakiyeState = $bakiyeRaw < 0 ? 'borç' : ($bakiyeRaw > 0 ? 'alacak' : '0');
 
     // Varsayılan ek metin (normal mesajda kullanılacak)
@@ -28,13 +28,13 @@ if ($kisi && !empty($kisi->telefon)) {
         $metin_ek = "Güncel bakiyeniz bulunmamaktadır.";
     }
 
-    if ($makbuz_bildirim ) {
+    if ($makbuz_bildirim) {
 
 
         $tahsilat_id = Security::decrypt($_GET['id'] ?? 0);
 
         $makbuz = $TahsilatModel->find($tahsilat_id);
-       // echo "<!-- Makbuz verisi: "; var_dump($makbuz); echo " -->";
+        // echo "<!-- Makbuz verisi: "; var_dump($makbuz); echo " -->";
 
         // Makbuz modunda gösterilecek alanlar (varsa)
         // Bu değerleri çağıran yerden GET/POST ile gönderebilirsiniz:
@@ -62,7 +62,6 @@ Güncel durum: {$bakiyeTxt} " . ($bakiyeState === 'borç' ? "borcunuz bulunmakta
 
 {$site->site_adi} YÖNETİMİ";
     }
-
 } else {
     // Kişi/telefon yoksa yine de bir şablon hazırla
     $mesaj_metni = "Sayın Müşterimiz,
@@ -81,3 +80,6 @@ if (substr($telefonNumarasi, 0, 1) === '0') {
 if (strlen($telefonNumarasi) < 10 || strlen($telefonNumarasi) > 15) {
     $telefonNumarasi = '';
 }
+?>
+
+

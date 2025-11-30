@@ -23,7 +23,7 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
         </ul>
     </div>
     <div class="page-header-right ms-auto">
-        <a href="/sakin/sikayet-oneri-ekle" class="btn btn-primary">
+        <a href="/sakin/talep-ekle" class="btn btn-primary">
             <i class="feather-plus me-2"></i> Yeni Talep Ekle
         </a>
     </div>
@@ -75,7 +75,7 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
                                                         <a href="javascript:void(0);" class="avatar-text avatar-md duyuru-goruntule" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="/sakin/sikayet-oneri-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md sikayet-oneri-duzenle" title="Düzenle">
+                                                        <a href="/sakin/talep-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md talep-duzenle" title="Düzenle">
                                                             <i class="feather-edit"></i>
                                                         </a>
                                                         <a href="javascript:void(0);" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md sikayet-oneri-sil">

@@ -303,16 +303,16 @@ $router->get('vardiya-duzenle/{id}', function ($id) {
 
 //personel listesi
 $router->get('personel-listesi', function () {
-    require 'pages/persons/list.php';
+    require 'pages/personel/list.php';
 });
 //personel ekle
 $router->get('personel-ekle', function () {
-    require 'pages/persons/manage.php';
+    require 'pages/personel/manage.php';
 });
 
 //personel duzenle
 $router->get('personel-duzenle/{id}', function ($id) {
-    require 'pages/persons/manage.php';
+    require 'pages/personel/manage.php';
 });
 
 

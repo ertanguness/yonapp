@@ -24,6 +24,13 @@ class UserModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ) ?? null;
     }
 
+    public function getUserByPhone($phone)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE phone = ?");
+        $sql->execute([$phone]);
+        return $sql->fetch(PDO::FETCH_OBJ) ?? null;
+    }
+
     //Kullanıcı adı vey emailden kullanıcı kontrolü yapılır,true veya false döner
     public function checkUser($username)
     {
@@ -50,10 +57,10 @@ class UserModel extends Model
         $sql = "SELECT u.*,r.role_name FROM $this->table u
                 LEFT JOIN user_roles r ON u.roles = r.id
                 WHERE u.owner_id = :owner_id
-                --AND r.guncellenebilir = :guncellenebilir
+                AND r.guncellenebilir = :guncellenebilir
                 AND u.is_main_user = :main_user";
 
-       // $params['guncellenebilir'] = 1;
+        $params['guncellenebilir'] = 1;
 
         if ($type !== null) {
             $sql .= " AND u.roles = :roles";

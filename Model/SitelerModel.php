@@ -3,8 +3,9 @@
 namespace Model;
 
 //Model klasoru altında bulunan BaseModel sınıfını dahil ediyoruz
-use Model\Model;
 use PDO;
+use Model\Model;
+use App\Services\Gate;
 
 class SitelerModel extends Model
 {
@@ -20,6 +21,8 @@ class SitelerModel extends Model
      */
     public function Sitelerim()
     {
+
+      
         $user_id = $_SESSION['user']->id; // Kullanıcının ID'sini alıyoruz
         /** Kullanıcı alt kullanıcı ise kontrol yapma */
         $isSubUser = $_SESSION['user']->owner_id > 0 ? true : false;
@@ -32,6 +35,7 @@ class SitelerModel extends Model
     }
 
 
+  
 
     public function SiteBilgileri($id)
     {

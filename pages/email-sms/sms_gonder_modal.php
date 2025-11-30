@@ -1,17 +1,18 @@
 <?php
 require_once dirname(__DIR__, levels: 2) . '/configs/bootstrap.php';
 
-use Model\KisilerModel;
-use Model\TahsilatModel;
-use Model\FinansalRaporModel;
-use Model\SitelerModel;
-use App\Helper\SettingsHelper;
-
-
-
+use App\Helper\Helper;
 use App\Services\Gate;
-
+use Model\KisilerModel;
+use Model\SitelerModel;
 use App\Helper\Security;
+
+
+
+use Model\TahsilatModel;
+
+use Model\FinansalRaporModel;
+use App\Helper\SettingsHelper;
 
 //Gate::authorizeOrDie('sms_gonderme','Sms Gönderme Yetkiniz Bulunmamaktadır.', false);
 
@@ -27,7 +28,7 @@ $SettingsHelper = new SettingsHelper();
 $id = Security::decrypt($_GET['id'] ?? 0);
 $kisi_id = Security::decrypt($_GET['kisi_id'] ?? 0);
 
-$includeFile = $_GET['includeFile'];
+$includeFile = $_GET['includeFile'] ?? null;
 
 
 
@@ -35,7 +36,7 @@ $kisi = $KisiModel->find($kisi_id);
 $site = $SiteModel->find($_SESSION['site_id']);
 // Telefon numarasını temizle ve hazırla
 
-
+// Helper::dd($kisi);
 
 if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
     include_once  "on-hazirlik/{$includeFile}";
@@ -133,6 +134,9 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
         cursor: text;
         min-height: 45px;
         padding: 8px 12px;
+        max-height: 160px;
+        overflow-y: auto;
+        padding-right: 12px;
     }
 
     .tag-input-container input {
@@ -177,6 +181,13 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
         display: none;
         -webkit-appearance: none;
     }
+    .card-footer{
+        position: sticky;
+        bottom: 0 !important;
+        background-color: #f8f9fa;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
 
     @keyframes slideDownFadeIn {
         from {
@@ -191,13 +202,14 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
     }
 </style>
 
-<div class="sms-sender-card shadow-lg" data-kisi-telefon="<?php echo htmlspecialchars($telefonNumarasi ?? 0, ENT_QUOTES); ?>">
+<div class="sms-sender-card shadow-lg" data-kisi-telefon="<?php echo htmlspecialchars($telefonNumarasi ?? 0, ENT_QUOTES); ?>" style="max-height:80vh; overflow:auto;">
     <!-- KART BAŞLIĞI -->
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="mb-0 d-flex align-items-center">
             <i class="fas fa-paper-plane me-2"></i>
             Yeni SMS Gönder
         </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
     <!-- KART GÖVDESİ -->
@@ -230,12 +242,17 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
                     <div class="mb-2">
                         <label for="message" class="form-label fw-bold d-flex justify-content-between">
                             <span>Mesaj</span>
-                            <a href="#" class="text-decoration-none small">
-                                <i class="fas fa-paste me-1"></i> Şablon Kullan
-                            </a>
+                            <div class="d-flex align-items-center gap-2">
+                                
+                                <div class="btn-group btn-group-sm" role="group" aria-label="Değişkenler">
+                                    <button type="button" class="btn btn-outline-secondary js-insert-var" data-var="{ADISOYADI}">{ADISOYADI}</button>
+                                    <button type="button" class="btn btn-outline-secondary js-insert-var" data-var="{BORÇBAKİYESİ}">{BORÇBAKİYESİ}</button>
+                                    <button type="button" class="btn btn-outline-secondary js-insert-var" data-var="{SİTEADI}">{SİTEADI}</button>
+                                </div>
+                            </div>
                         </label>
                         <div class="form-floating">
-                            <textarea class="form-control" id="message" style="height: 350px;"><?php echo htmlspecialchars($mesaj_metni ?? '', ENT_QUOTES); ?></textarea>
+                            <textarea class="form-control" id="message" style="height: 250px;"><?php echo htmlspecialchars($mesaj_metni ?? '', ENT_QUOTES); ?></textarea>
                             <label for="message">Mesajınızı yazın...</label>
                         </div>
                         <!-- Karakter Sayacı -->
@@ -308,5 +325,28 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
 </div>
 
 <script>
-console.log('✓ SMS gönder modal script başladı');
+  // Kişi telefon numarasını JavaScript'e aktar
+    window.kisiTelefonNumarasi = '<?php echo htmlspecialchars($telefonNumarasi ?? '', ENT_QUOTES); ?>';
+    window.csrfToken = '<?php echo Security::csrf(); ?>';
+    document.addEventListener('click', function(e){
+        var btn = e.target.closest('.js-insert-var');
+        if (!btn) return;
+        var ta = document.getElementById('message');
+        var v = btn.getAttribute('data-var') || '';
+        if (!ta) return;
+        var start = ta.selectionStart || ta.value.length;
+        var end = ta.selectionEnd || ta.value.length;
+        ta.value = ta.value.slice(0,start) + v + ta.value.slice(end);
+        ta.dispatchEvent(new Event('input'));
+    });
+    document.getElementById('includeNameSwitch')?.addEventListener('change', function(){
+        var ta = document.getElementById('message');
+        var prefix = '{ADISOYADI} ';
+        if (!ta) return;
+        var val = ta.value;
+        var has = val.startsWith(prefix);
+        if (this.checked && !has) { ta.value = prefix + val; }
+        else if (!this.checked && has) { ta.value = val.slice(prefix.length); }
+        ta.dispatchEvent(new Event('input'));
+    });
 </script>

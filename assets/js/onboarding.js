@@ -1,11 +1,11 @@
 const fetchStatus = async () => {
   try {
-    const r = await fetch('api/onboarding.php?action=status', { credentials: 'same-origin' });
+    const r = await fetch('/api/onboarding.php?action=status', { credentials: 'same-origin' });
     return await r.json();
   } catch (e) { return null; }
 };
 
-const postForm = (payload) => fetch('api/onboarding.php', {
+const postForm = (payload) => fetch('/api/onboarding.php', {
   method: 'POST',
   credentials: 'same-origin',
   headers: { 'Accept': 'application/json' },

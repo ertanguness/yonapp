@@ -4,7 +4,12 @@ require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 use App\Services\SmsGonderService;
 use Model\SmsModel;
-use Database\Db;
+use App\Helper\Security;
+use App\Services\Gate;
+use Model\KisilerModel;
+use Model\FinansalRaporModel;
+use App\Helper\Site;
+use App\Helper\Helper;
 
 
 
@@ -19,12 +24,33 @@ $apiResponse = [
 $postData = json_decode(file_get_contents('php://input'), true);
 
 // Gelen verileri değişkenlere ata ve doğrula
-$messageText = $postData['message'] ?? ''; // Varsayılan mesaj
+$messageText = $postData['message'] ?? '';
 $recipients = $postData['recipients'] ?? [''];
-$msgheader = $postData['senderID'] ?? 'USKUPEVLSIT'; // Varsayılan başlık
+// senderID/senderId her iki anahtar desteklenir
+$msgheader = $postData['senderID'] ?? ($postData['senderId'] ?? 'USKUPEVLSIT');
+$testMode = !empty($_ENV['SMS_TEST_MODE']);
+// CSRF doğrulama (test modunda bypass edilir)
+$csrfToken = $postData['csrf_token'] ?? '';
+if (!$testMode) {
+    if (!$csrfToken || !hash_equals((string)$csrfToken, (string)Security::csrf())) {
+        http_response_code(403);
+        $apiResponse['message'] = 'Geçersiz CSRF token';
+        echo json_encode($apiResponse, JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    // Yetki kontrolü (test modunda bypass)
+    if (!Gate::allows('email_sms_gonder')) {
+        http_response_code(403);
+        $apiResponse['message'] = 'Bu işlem için yetkiniz yok.';
+        echo json_encode($apiResponse, JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
 
-$db = Db::getInstance();
+$pdo = \getDbConnection();
 $SmsModel = new SmsModel();
+$KisiModel = new KisilerModel();
+$FinModel = new FinansalRaporModel();
 
 if (empty($messageText) || !is_string($messageText)) {
     throw new Exception("Geçerli bir mesaj metni gönderilmedi.");
@@ -33,32 +59,70 @@ if (empty($recipients) || !is_array($recipients)) {
     throw new Exception("Alıcı listesi boş veya geçersiz formatta.");
 }
 
+// Oran sınırı: dakikada en fazla 60 SMS (test modunda gevşet)
+$limitPerMinute = 60;
+$siteId = $_SESSION['site_id'] ?? 0;
+$recentCount = 0;
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE type='sms' AND site_id = :sid AND created_at >= (NOW() - INTERVAL 1 MINUTE)");
+    $stmt->execute([':sid' => $siteId]);
+    $recentCount = (int)$stmt->fetchColumn();
+} catch (Exception $e) { /* yoksay */ }
+if (!$testMode && (($recentCount + count($recipients)) > $limitPerMinute)) {
+    http_response_code(429);
+    $apiResponse['message'] = 'SMS gönderim limiti aşıldı. Lütfen daha sonra tekrar deneyin.';
+    echo json_encode($apiResponse, JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
-if (SmsGonderService::gonder(
-    alicilar: $recipients,
-    mesaj: $messageText,
-    gondericiBaslik: $msgheader,
-)) {
+
+// Dinamik değişkenler: {ADISOYADI}, {BORÇBAKİYESİ}, {SİTEADI}
+$siteHelper = new Site();
+$siteRow = $siteHelper->getCurrentSite();
+$siteName = $siteRow->site_adi ?? '';
+
+$recipientIds = $postData['recipient_ids'] ?? $postData['ids'] ?? [];
+// Telefon -> kisi id eşlemesi yoksa boş bırak
+$idMap = [];
+if (is_array($recipientIds) && count($recipientIds) === count($recipients)) {
+    foreach ($recipients as $idx => $tel) { $idMap[$tel] = (int)($recipientIds[$idx] ?? 0); }
+}
+
+$success = 0; $fail = 0; $errors = [];
+foreach ($recipients as $telRaw) {
+    $telDigits = preg_replace('/\D/','', (string)$telRaw);
+    $kisiId = $idMap[$telRaw] ?? 0;
+    $adiSoyadi = '';
+    $borcBakiye = '';
+    if ($kisiId) {
+        $kisi = $KisiModel->find($kisiId);
+        $adiSoyadi = $kisi->adi_soyadi ?? '';
+        try {
+            $ozet = $FinModel->getKisiGuncelBorcOzet($kisiId);
+            $borcBakiye = Helper::formattedMoney((float)($ozet->guncel_borc ?? 0));
+        } catch (\Throwable $e) { $borcBakiye = ''; }
+    }
+    $msg = str_replace(['{ADISOYADI}','{BORÇBAKİYESİ}','{SİTEADI}'], [($adiSoyadi ?: ''), ($borcBakiye ?: ''), ($siteName ?: '')], $messageText);
+    $sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
+    if ($sent) { $success++; } else { $fail++; $errors[] = $telRaw; }
+}
+
+if ($success > 0) {
     $apiResponse['status'] = 'success';
-    $apiResponse['message'] = count($recipients) . ' alıcıya başarıyla SMS gönderildi.';
+    $apiResponse['message'] = $success . ' alıcıya başarıyla SMS gönderildi.' . ($fail ? (' / Başarısız: ' . $fail) : '');
     try {
-        $db->beginTransaction();
-        
         $data = [
             'type' => 'sms',
             'site_id' => $_SESSION['site_id'],
             'recipients' => json_encode($recipients, JSON_UNESCAPED_UNICODE),
             'subject' => null,
-            'message' => $messageText,
-            'status' => 'success',
+            'message' => $msg,
+            'status' => $fail ? 'partial' : 'success',
         ];
         $SmsModel->saveWithAttr($data);
-        $db->commit();
     } catch (Exception $e) {
-        $db->rollBack();
-        $apiResponse['message'] = 'SMS gönderilemedi. Hata: ' . $e->getMessage();
+        $apiResponse['message'] = 'SMS gönderildi ancak log yazılırken hata oluştu: ' . $e->getMessage();
     }
-       
 } else {
     $apiResponse['message'] = 'SMS gönderilemedi.';
 }

@@ -154,7 +154,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                         <i class="feather-speaker"></i>
                         <span class="fs-12 text-muted d-block">Duyurular</span>
                     </a>
-                    <a href="/sakin/talep" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5 text-decoration-none">
+                    <a href="/sakin/taleplerim" class="flex-fill py-3 px-4 rounded-1 cursor-pointer border border-dashed border-gray-5 text-decoration-none">
                         <i class="feather-edit"></i>
                         <span class="fs-12 text-muted d-block">Şikayet / Talep</span>
                     </a>

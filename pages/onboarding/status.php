@@ -31,7 +31,7 @@ $status = $controller->status((int)$user->id, $siteId);
                         <?php if ($t['is_completed']): ?>
                             <span class="badge bg-success">Tamamlandı</span>
                         <?php else: ?>
-                            <form method="post" action="api/onboarding.php" class="d-inline">
+                            <form method="post" action="/api/onboarding.php" class="d-inline">
                                 <input type="hidden" name="action" value="complete" />
                                 <input type="hidden" name="task_key" value="<?= htmlspecialchars($t['key']) ?>" />
                                 <button class="btn btn-sm btn-primary" type="submit">Tamamla</button>

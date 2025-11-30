@@ -8,7 +8,7 @@ use PDO;
 
 class GuvenlikPersonelModel extends Model
 {
-    protected $table = "guvenlik_personel"; // Vardiya tanımları tablosu
+    protected $table = "personel"; // Vardiya tanımları tablosu
 
     public function __construct()
     {

@@ -32,7 +32,7 @@ $(function () {
           })
           .then(() => {
             if (data.status === "success") {
-              window.location.href = "/sakin/sikayet-oneri-listem";
+              window.location.href = "/sakin/taleplerim";
             }
           });
       });

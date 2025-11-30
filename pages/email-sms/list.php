@@ -108,18 +108,20 @@
 
 
 <script>
-    function onDataTablesReady(cb){
-        var tries = 0;
-        (function wait(){
-            if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
-            if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
-            setTimeout(wait, 100);
-        })();
+    if (typeof window.onDataTablesReady !== 'function') {
+        window.onDataTablesReady = function(cb){
+            var tries = 0;
+            (function wait(){
+                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
+                if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
+                setTimeout(wait, 100);
+            })();
+        };
     }
 
     // Arama inputları için app.js fonksiyonunu bekle
 
-    onDataTablesReady(function(){
+    window.onDataTablesReady(function(){
         function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
         function toText(html){ var d=document.createElement('div'); d.innerHTML=String(html||''); return (d.textContent||d.innerText||''); }
         initDataTable('#notificationsList',{
