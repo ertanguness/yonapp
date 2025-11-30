@@ -54,6 +54,44 @@ if ($_POST["action"] == "periyodikBakim_kaydetme") {
     echo json_encode($res);
 }
 
+if ($_POST["action"] == "bakim_durumu_guncelle") {
+    $id = Security::decrypt($_POST["id"] ?? null);
+    $durum = intval($_POST["durum"] ?? 0);
+    if (!$id) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Geçersiz kayıt"
+        ]);
+        exit;
+    }
+    try {
+        $result = $PeriyodikBakimlar->updateWhere('id', $id, [
+            'bakim_durumu' => $durum,
+            'guncelleme_tarihi' => date('Y-m-d H:i:s')
+        ]);
+        if ($result === true) {
+            echo json_encode([
+                "status" => "success",
+                "message" => "Bakım durumu güncellendi"
+            ]);
+        } elseif ($result instanceof \Exception) {
+            echo json_encode([
+                "status" => "error",
+                "message" => $result->getMessage()
+            ]);
+        } else {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Güncelleme başarısız"
+            ]);
+        }
+    } catch (\Throwable $e) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Hata: " . $e->getMessage()
+        ]);
+    }
+}
 if ($_POST["action"] == "sil-periyodikBakim") {
     
         $logger = \getLogger();

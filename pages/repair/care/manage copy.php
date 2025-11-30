@@ -78,18 +78,6 @@ $Blok = $Bloklar->SiteBloklari($_SESSION['site_id']);
                                             <input type="text" class="form-control fw-bold" id="talepNo" name="talepNo" placeholder="Veritabanından çekilip tanımlanacak" value="<?php echo ($id == 0 || empty($id)) ? $talepNo : ($bakim->talep_no ?? $talepNo); ?>" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2">
-                                        <label class="fw-semibold">Bakım Durumu:</label>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <?php $bakim_durumu = isset($bakim->bakim_durumu) ? (int)$bakim->bakim_durumu : 0; ?>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span id="bakimDurumuText" class="<?php echo $bakim_durumu === 1 ? 'text-success' : 'text-danger'; ?>">
-                                                <?php echo $bakim_durumu === 1 ? 'Tamamlandı' : 'Tamamlanmadı'; ?>
-                                            </span>
-                                            <button type="button" class="btn btn-primary btn-sm" id="bakimDurumuTamamlaBtn" data-id="<?php echo Security::encrypt($id ?? 0); ?>" data-current="<?php echo $bakim_durumu; ?>" <?php echo empty($id) ? 'disabled' : ''; ?>>Bakım Durumu Değiştir</button>
-                                        </div>
-                                    </div>
                                 </div>
                                 <!-- Bakım Planlama Bilgileri -->
                                 <div class="row mb-4 align-items-center">
@@ -323,8 +311,6 @@ $Blok = $Bloklar->SiteBloklari($_SESSION['site_id']);
 
         planlananBakimDurumu.addEventListener("change", togglePlanlananBakimReadonly);
         togglePlanlananBakimReadonly();
-
-        // periyodikBakim.js içinde event handler bulunduğundan burada tıklama bağlamıyoruz
     });
 </script>
 

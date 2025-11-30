@@ -189,11 +189,20 @@ class Model extends SSPModel
 
     protected function insert()
     {
-        $columns = implode(', ', array_keys($this->attributes));
-        $values = ':' . implode(', :', array_keys($this->attributes));
+        $attrs = $this->attributes;
+        $pk = $this->primaryKey;
+        if (array_key_exists($pk, $attrs)) {
+            $v = $attrs[$pk];
+            if ($v === null || $v === '' || $v === 0 || $v === '0') {
+                unset($attrs[$pk]);
+            }
+        }
+
+        $columns = implode(', ', array_keys($attrs));
+        $values = ':' . implode(', :', array_keys($attrs));
         $sql = $this->db->prepare("INSERT INTO $this->table ($columns) VALUES ($values)");
 
-        foreach ($this->attributes as $key => $value) {
+        foreach ($attrs as $key => $value) {
             $sql->bindValue(":$key", $value);
         }
 

@@ -6,6 +6,20 @@ $(document).on("click", "#maliyet_kaydet", function () {
 
   formData.append("action", "maliyet_kaydetme");
   formData.append("id", $("#maliyet_id").val());
+  (function(){
+    function sanitize(v){
+      v = v == null ? "" : String(v).trim();
+      if (v.indexOf(',') >= 0){ v = v.replace(/\./g,''); v = v.replace(',', '.'); }
+      v = v.replace(/[^0-9.-]/g,'');
+      return v === '' ? '0' : v;
+    }
+    var t = $("#toplamMaliyet").val();
+    var o = $("#odenenTutar").val();
+    var k = $("#kalanBorc").val();
+    formData.set('toplamMaliyet', sanitize(t));
+    formData.set('odenenTutar', sanitize(o));
+    formData.set('kalanBorc', sanitize(k));
+  })();
   
 
   var validator = $("#maliyetForm").validate({
@@ -31,6 +45,27 @@ $(document).on("click", "#maliyet_kaydet", function () {
     }
   });
   if (!validator.form()) {
+    return;
+  }
+
+  function toNum(v){
+    v = String(v || '').trim();
+    v = v.replace(/\s|₺/g,'');
+    v = v.replace(/\./g,'');
+    v = v.replace(',', '.');
+    v = v.replace(/[^0-9.-]/g,'');
+    return parseFloat(v || '0') || 0;
+  }
+  const tmNum = toNum($("#toplamMaliyet").val());
+  const odNum = toNum($("#odenenTutar").val());
+  if (odNum > tmNum) {
+    swal.fire({
+      title: "Uyarı",
+      text: "Ödenen tutar toplam maliyetten fazla olamaz.",
+      icon: "warning",
+      confirmButtonText: "Tamam",
+    });
+    $("#odenenTutar").focus();
     return;
   }
 

@@ -56,7 +56,7 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                 <div class="col-12">
                     <div class="card">
                         <form id="maliyetForm" method="post">
-                            <input type="hidden" id="maliyet_id" name="maliyet_id" value="<?php echo Security::encrypt($id ?? 0)  ?>">
+                            <input type="hidden" id="maliyet_id" name="maliyet_id" value="<?php echo ($id > 0) ? Security::encrypt($id) : '0'; ?>">
                             <div class="card-body cost-info">
 
                                 <!-- Bakım Türü ve Fatura No -->
@@ -121,8 +121,9 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="fas fa-money-bill-wave"></i></div>
-                                            <input type="text" class="form-control" id="toplamMaliyet" name="toplamMaliyet" placeholder="Maliyeti Giriniz" onkeyup="hesaplaKalanBorç()" value="<?php echo $Maliyet->toplam_maliyet ?? ''; ?>">
+                                            <input type="text" class="form-control" id="toplamMaliyet" name="toplamMaliyet" placeholder="Maliyeti Giriniz" onkeyup="hesaplaKalanBorç()" value="<?php echo isset($Maliyet->toplam_maliyet) ? rtrim(rtrim(number_format((float)$Maliyet->toplam_maliyet, 2, '.', ''), '0'), '.') : ''; ?>">
                                         </div>
+                                        <small class="form-text text-muted">Ondalık giriş için virgül kullanın. Örnek: 1.234,56</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <label for="odenenTutar" class="fw-semibold">Ödenen Tutar (₺):</label>
@@ -130,8 +131,9 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="fas fa-credit-card"></i></div>
-                                            <input type="text" class="form-control" id="odenenTutar" name="odenenTutar" placeholder="Ödenen Tutarı Giriniz" onkeyup="hesaplaKalanBorç()" value="<?php echo $Maliyet->odenen_tutar ?? ''; ?>">
+                                            <input type="text" class="form-control" id="odenenTutar" name="odenenTutar" placeholder="Ödenen Tutarı Giriniz" onkeyup="hesaplaKalanBorç()" value="<?php echo isset($Maliyet->odenen_tutar) ? rtrim(rtrim(number_format((float)$Maliyet->odenen_tutar, 2, '.', ''), '0'), '.') : ''; ?>">
                                         </div>
+                                        <small class="form-text text-muted">Ondalık giriş için virgül kullanın. Örnek: 250,75</small>
                                     </div>
                                 </div>
                                 <div class="row mb-4 align-items-center">
@@ -141,7 +143,7 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                                     <div class="col-lg-4">
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="fas fa-exclamation-circle"></i></div>
-                                            <input type="text" class="form-control fw-bold" id="kalanBorc" name="kalanBorc" readonly value="<?php echo $Maliyet->kalan_borc ?? ''; ?>">
+                                            <input type="text" class="form-control fw-bold" id="kalanBorc" name="kalanBorc" readonly value="<?php echo isset($Maliyet->kalan_borc) ? rtrim(rtrim(number_format((float)$Maliyet->kalan_borc, 2, '.', ''), '0'), '.') : ''; ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -195,7 +197,8 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                                             <div class="input-group-text"><i class="fas fa-file-upload"></i></div>
                                             <input type="file" name="makbuzEkle[]" id="makbuzEkle" multiple>
                                             </div>
-                                        <small class="text-muted">Desteklenen formatlar: PDF, JPG, JPEG, PNG</small>
+                                        <small class="text-muted d-block">Desteklenen formatlar: PDF, JPG, JPEG, PNG</small>
+                                        <small class="text-info">Birden fazla dosya seçmek için Ctrl tuşuna basarak seçim yapabilirsiniz.</small>
                                     </div>
                                 </div>
                             </div>
@@ -235,7 +238,9 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
                             var selected = item.id == seciliTalepNo ? "selected" : "";
                             options += `<option value="${item.id}" ${selected}>${item.talep_no}</option>`;
                         });
-                        talepNoSelect.html(options).trigger("change");
+                        talepNoSelect.html(options);
+                        var val = seciliTalepNo ? String(seciliTalepNo) : '';
+                        talepNoSelect.val(val).trigger("change");
                     } else {
                         talepNoSelect.html('<option value="">Talep bulunamadı</option>');
                     }
@@ -255,8 +260,13 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
         // Sayfa ilk yüklendiğinde (düzenleme modundaysa)
         var mevcutBakimTuru = $("#bakimTuru").val();
         var seciliTalepNo = "<?php echo $Maliyet->talep_no ?? ''; ?>";
-        if (mevcutBakimTuru) {
+        var isEdit = <?php echo ($id > 0) ? 'true' : 'false'; ?>;
+        if (isEdit && mevcutBakimTuru) {
             talepleriGetir(mevcutBakimTuru, seciliTalepNo);
+        } else {
+            $("#bakimTuru").val('').trigger('change');
+            talepNoSelect.html('<option value="">Kayıtlı Talep No Seçiniz</option>');
+            $("#talepNo").val('').trigger('change');
         }
     });
 </script>
@@ -264,11 +274,13 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
 <!-- Para birimi formatlı giriş -->
 <script>
     $(document).ready(function() {
-        $("#toplamMaliyet, #odenenTutar").inputmask("currency", {
+        $("#toplamMaliyet, #odenenTutar").inputmask("decimal", {
             prefix: "₺ ",
             groupSeparator: ".",
             radixPoint: ",",
             digits: 2,
+            digitsOptional: true,
+            placeholder: '',
             autoGroup: true,
             rightAlign: false,
             removeMaskOnSubmit: true,
@@ -276,11 +288,13 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
         });
 
         // kalanBorc için de aynı maskeyi uygula (readonly olsa da görüntü için)
-        $("#kalanBorc").inputmask("currency", {
+        $("#kalanBorc").inputmask("decimal", {
             prefix: "₺ ",
             groupSeparator: ".",
             radixPoint: ",",
             digits: 2,
+            digitsOptional: true,
+            placeholder: '',
             autoGroup: true,
             rightAlign: false,
             allowMinus: false
@@ -288,10 +302,17 @@ $Maliyet = $BakimMaliyetleri->MaliyetBilgileri($id);
     });
 
     function hesaplaKalanBorç() {
-        var toplam = parseFloat($("#toplamMaliyet").inputmask('unmaskedvalue')) || 0;
-        var odenen = parseFloat($("#odenenTutar").inputmask('unmaskedvalue')) || 0;
-        var kalan = toplam - odenen;
-
-        $("#kalanBorc").inputmask('setvalue', kalan.toFixed(0));
+        function toNum(v){
+            v = String(v || '').trim();
+            v = v.replace(/\s|₺/g,'');
+            v = v.replace(/\./g,'');
+            v = v.replace(',', '.');
+            v = v.replace(/[^0-9.-]/g,'');
+            return parseFloat(v || '0') || 0;
+        }
+        var toplam = toNum($("#toplamMaliyet").val());
+        var odenen = toNum($("#odenenTutar").val());
+        var kalan = Number((toplam - odenen).toFixed(2));
+        $("#kalanBorc").inputmask('setvalue', kalan);
     }
 </script>

@@ -30,7 +30,8 @@ class SettingsModel extends Model
         
         $sql = $this->db->prepare("SELECT set_name, set_value 
                                             FROM $this->table 
-                                            WHERE site_id = ?");
+                                            WHERE site_id = ?
+                                            ORDER BY id DESC");
         $sql->execute([$siteId]);
         return $sql->fetchAll(PDO::FETCH_KEY_PAIR);
     }
@@ -118,25 +119,52 @@ class SettingsModel extends Model
             return 0;
         }
 
-        $sql = "INSERT INTO {$this->table} (site_id, user_id, set_name, set_value, aciklama)
-                VALUES (:site_id, :user_id, :set_name, :set_value, :aciklama)
-                ON DUPLICATE KEY UPDATE 
-                    set_value = VALUES(set_value),
-                    aciklama = VALUES(aciklama),
-                    user_id = VALUES(user_id)";
-
-        $stmt = $this->db->prepare($sql);
         $affected = 0;
+        $userIdInt = $userId ?? 0;
+
+        $selectSql = $this->db->prepare(
+            "SELECT id FROM {$this->table} WHERE site_id = :site_id AND set_name = :set_name ORDER BY id DESC LIMIT 1"
+        );
+        $updateByIdSql = $this->db->prepare(
+            "UPDATE {$this->table}
+             SET set_value = :set_value,
+                 aciklama  = :aciklama,
+                 user_id   = :user_id
+             WHERE id = :id"
+        );
+        $insertSql = $this->db->prepare(
+            "INSERT INTO {$this->table} (site_id, user_id, set_name, set_value, aciklama)
+             VALUES (:site_id, :user_id, :set_name, :set_value, :aciklama)"
+        );
 
         foreach ($pairs as $name => $data) {
-            $stmt->execute([
+            $value = $data['value'] ?? null;
+            $desc  = $data['aciklama'] ?? null;
+
+            $selectSql->execute([
                 ':site_id' => $siteId,
-                ':user_id' => $userId,
                 ':set_name' => $name,
-                ':set_value' => $data['value'] ?? null,
-                ':aciklama' => $data['aciklama'] ?? null,
             ]);
-            $affected += $stmt->rowCount();
+            $existingId = $selectSql->fetchColumn();
+
+            if ($existingId) {
+                $updateByIdSql->execute([
+                    ':set_value' => $value,
+                    ':aciklama'  => $desc,
+                    ':user_id'   => $userIdInt,
+                    ':id'        => (int)$existingId,
+                ]);
+                $affected += $updateByIdSql->rowCount();
+            } else {
+                $insertSql->execute([
+                    ':site_id'   => $siteId,
+                    ':user_id'   => $userIdInt,
+                    ':set_name'  => $name,
+                    ':set_value' => $value,
+                    ':aciklama'  => $desc,
+                ]);
+                $affected += $insertSql->rowCount();
+            }
         }
 
         return $affected;

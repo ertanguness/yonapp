@@ -94,7 +94,7 @@ class Security
 
 public static function encrypt($data)
 {
-    if (empty($data)) {
+    if ($data === null || $data === '') {
         return '';
     }
 

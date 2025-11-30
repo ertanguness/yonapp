@@ -14,7 +14,7 @@ $site_id = $_SESSION["site_id"] ?? null;
 
 $SiteBilgileri = $Sites->SiteBilgileri($site_id);
 $BlokSayisi = $Bloklar->BlokSayisi($site_id);
-$AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
+$AyarlarBilgileri = $Settings->Ayarlar();
 
 ?>
 <div class="page-header">
@@ -44,6 +44,7 @@ $AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
                 <div class="col-12">
                     <div class="card">
                         <form method="Post" id='ayarlarForm' name="ayarlarForm">
+                        <input type="hidden" name="ayarlar_id" id="ayarlar_id" value="<?php echo Security::encrypt($id ?? 0) ?? 0; ?>">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body">
                                     <div class="row mb-4 align-items-center">

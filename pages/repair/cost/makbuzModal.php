@@ -52,12 +52,21 @@ function getFileIconAndLabel($ext) {
             $idAttr = 'makbuz-' . md5($makbuz['dosya_yolu']);
             $iconData = getFileIconAndLabel($dosyaExt);
         ?>
-        <a href="javascript:void(0);" class="list-group-item list-group-item-action d-flex align-items-center"
-           onclick="previewMakbuz('<?= $url ?>', '<?= $dosyaExt ?>', '<?= $idAttr ?>')">
-           <i class="feather-<?= $iconData['icon'] ?> me-2"></i>
-           <span class="flex-grow-1"><?= date('d.m.Y H:i', strtotime($makbuz['kayit_tarihi'])) ?> tarihinde yüklenen makbuz</span>
-           <span class="badge bg-secondary ms-2" style="font-size: 0.8rem;"><?= $iconData['label'] ?></span>
-        </a>
+        <div class="list-group-item d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center flex-grow-1">
+                <i class="feather-<?= $iconData['icon'] ?> me-2"></i>
+                <span class="flex-grow-1"><?= date('d.m.Y H:i', strtotime($makbuz['kayit_tarihi'])) ?> tarihinde yüklenen makbuz</span>
+                <span class="badge bg-secondary ms-2" style="font-size: 0.8rem;"><?= $iconData['label'] ?></span>
+            </div>
+            <div class="btn-group btn-group-sm ms-2" role="group">
+                <button type="button" class="btn btn-outline-primary" onclick="previewMakbuz('<?= $url ?>', '<?= $dosyaExt ?>', '<?= $idAttr ?>')">
+                    <i class="feather-eye me-1"></i>Göster
+                </button>
+                <a href="<?= $url ?>" class="btn btn-outline-secondary" download>
+                    <i class="feather-download me-1"></i>İndir
+                </a>
+            </div>
+        </div>
         <?php endforeach; ?>
     </div>
 

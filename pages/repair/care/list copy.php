@@ -104,25 +104,33 @@ $BakimListesi = $PeriyodikBakimlar->PeriyodikBakimlar();
                                            
                                             <td>
                                                 <?php
-                                                $durum = isset($item->bakim_durumu) ? (int)$item->bakim_durumu : 0;
-                                                if ($durum === 1) {
-                                                    echo '<span class="text-success"><i class="feather-check-circle"></i> Tamamlandı</span>';
-                                                } else {
-                                                    $today = new DateTime();
-                                                    $planDate = !empty($item->planlanan_bakim_tarihi) ? new DateTime($item->planlanan_bakim_tarihi) : null;
-                                                    if ($planDate) {
-                                                        $diff = $today->diff($planDate);
-                                                        $days = (int)$diff->format('%r%a');
-                                                        if ($days > 0) {
-                                                            echo '<span class="text-info"><i class="feather-clock"></i> ' . $days . ' gün kaldı</span>';
-                                                        } elseif ($days === 0) {
-                                                            echo '<span class="text-warning"><i class="feather-alert-circle"></i> Bakım günü!</span>';
-                                                        } else {
-                                                            echo '<span class="text-danger"><i class="feather-x-circle"></i> Bakım geçmiş (' . abs($days) . ' gün önce)</span>';
-                                                        }
+                                                $today = new DateTime();
+                                                $planDate = !empty($item->planlanan_bakim_tarihi) ? new DateTime($item->planlanan_bakim_tarihi) : null;
+
+                                                if ($planDate) {
+                                                    $diff = $today->diff($planDate);
+                                                    $days = (int)$diff->format('%r%a');
+
+                                                    if ($days > 0) {
+                                                        // Bakım günü yaklaşmamış
+                                                        echo '<span class="text-info">
+                                                                <i class="feather-clock"></i> ' . $days . ' gün kaldı
+                                                            </span>';
+                                                    } elseif ($days === 0) {
+                                                        // Bugün bakım günü
+                                                        echo '<span class="text-warning">
+                                                                <i class="feather-alert-circle"></i> Bakım günü!
+                                                            </span>';
                                                     } else {
-                                                        echo '<span class="text-secondary"><i class="feather-help-circle"></i> Tarih yok</span>';
+                                                        // Bakım günü geçmiş
+                                                        echo '<span class="text-danger">
+                                                                <i class="feather-x-circle"></i> Bakım geçmiş (' . abs($days) . ' gün önce)
+                                                            </span>';
                                                     }
+                                                } else {
+                                                    echo '<span class="text-secondary">
+                                                            <i class="feather-help-circle"></i> Tarih yok
+                                                        </span>';
                                                 }
                                                 ?>
                                             </td>

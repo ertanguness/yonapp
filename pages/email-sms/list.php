@@ -1,3 +1,10 @@
+<?php
+use Model\SettingsModel;
+$__Settings = new SettingsModel();
+$__kv = $__Settings->getAllSettingsAsKeyValue() ?? [];
+$__smtpActive = (int)($__kv['smtp_durum'] ?? 0) === 1;
+$__smsActive  = (int)($__kv['sms_durum'] ?? 0) === 1;
+?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -18,11 +25,11 @@
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
               
-                <a href="javascript:void(0)" class="btn btn-primary mail-gonder">
+                <a href="javascript:void(0)" class="btn <?php echo $__smtpActive ? 'btn-primary' : 'btn-outline-secondary'; ?> mail-gonder" <?php if(!$__smtpActive){ echo 'title="E-posta pasif: Ayarlardan etkinleştirin"'; } ?>>
                     <i class="feather-mail me-2"></i>
                     <span>Yeni Email</span>
                 </a>
-                <a href="#" class="btn btn-simple btn-secondary sms-gonder">
+                <a href="#" class="btn btn-simple <?php echo $__smsActive ? 'btn-secondary' : 'btn-outline-secondary'; ?> sms-gonder" <?php if(!$__smsActive){ echo 'title="SMS pasif: Ayarlardan etkinleştirin"'; } ?>>
                     <i class="feather-smartphone me-2"></i>
                     <span>Yeni Sms</span>
                 </a>
@@ -232,4 +239,49 @@
         $('#notifDetailBody').html(html);
         $('#notificationDetail').modal('show');
     });
+</script>
+
+<script>
+// Fallback uyarı penceresi: mobile-menu.js yüklenmediyse aktiflik kontrolü ve yönlendirme
+(function(){
+    if (typeof window.checkCommActive === 'function') return;
+    function checkCommActiveLocal(t){
+        return fetch('/pages/email-sms/api/check_status.php?type='+encodeURIComponent(t))
+            .then(function(r){ return r.json(); })
+            .then(function(d){ return !!(d && d.active); })
+            .catch(function(){ return false; });
+    }
+    $(document).on('click', '.mail-gonder', async function(e){
+        e.preventDefault();
+        var ok = await checkCommActiveLocal('email');
+        if(!ok){
+            Swal.fire({
+                icon: 'warning',
+                title: 'E-posta pasif',
+                text: 'SMTP bilgilerini doldurup E-mail Aktif anahtarını açın.',
+                showCancelButton: true,
+                confirmButtonText: 'Ayarları Aç',
+                cancelButtonText: 'İptal'
+            }).then(function(res){ if(res.isConfirmed){ window.location.href = '/ayarlar?tab=notifications&sub=email'; } });
+            return;
+        }
+        // mobile-menu.js yoksa burada modal açma akışını ekleyebilirsiniz
+    });
+    $(document).on('click', '.sms-gonder', async function(e){
+        e.preventDefault();
+        var ok = await checkCommActiveLocal('sms');
+        if(!ok){
+            Swal.fire({
+                icon: 'warning',
+                title: 'SMS pasif',
+                text: 'SMS sağlayıcı bilgilerini doldurup Sms Aktif anahtarını açın.',
+                showCancelButton: true,
+                confirmButtonText: 'Ayarları Aç',
+                cancelButtonText: 'İptal'
+            }).then(function(res){ if(res.isConfirmed){ window.location.href = '/ayarlar?tab=notifications&sub=sms'; } });
+            return;
+        }
+        // mobile-menu.js yoksa burada SMS modal açma akışını ekleyebilirsiniz
+    });
+})();
 </script>
