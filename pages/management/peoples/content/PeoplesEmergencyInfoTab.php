@@ -71,13 +71,68 @@ document.addEventListener('click', function(e) {
     e.preventDefault();
     Pace.restart();
     const encId = editBtn.getAttribute('data-id');
-    fetch('pages/management/peoples/content/AcilDurumModal.php?id=' + encodeURIComponent(encId))
+    const baseUrl = '/pages/management/peoples/content/AcilDurumModal.php';
+    const firstUrl = baseUrl + '?id=' + encodeURIComponent(encId);
+    fetch(firstUrl)
         .then(r => r.text())
         .then(html => {
-            document.getElementById('modalContainer').innerHTML = html;
-            const acilModal = new bootstrap.Modal(document.getElementById('acilDurumEkleModal'));
-            acilModal.show();
-            $(".select2").select2({ dropdownParent: $('#acilDurumEkleModal') });
+            try {
+                let container = document.getElementById('modalContainer');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'modalContainer';
+                    document.body.appendChild(container);
+                }
+                // Eski modalı kaldır (varsa)
+                const oldModal = document.getElementById('acilDurumEkleModal');
+                if (oldModal && oldModal.parentElement) {
+                    oldModal.parentElement.removeChild(oldModal);
+                }
+                // Debug: gelen içerik
+                console.log('[AcilDurumModal] İlk fetch length:', html.length);
+                // Gelen HTML modal id'sini içeriyor mu kontrol et; yoksa fallback dene
+                if (!/id=["']acilDurumEkleModal["']/i.test(html)) {
+                    console.warn('Beklenen modal id bulunamadı. İlk deneme başarısız. Snippet:', html.substring(0,180));
+                    // Fallback ikinci deneme (id parametresiz)
+                    return fetch(baseUrl)
+                        .then(r2 => r2.text())
+                        .then(html2 => {
+                            console.log('[AcilDurumModal] Fallback fetch length:', html2.length);
+                            if (!/id=["']acilDurumEkleModal["']/i.test(html2)) {
+                                console.error('Fallback da modal içermiyor. Minimal modal inject edilecek.');
+                                const minimal = `\n<div class="modal fade" id="acilDurumEkleModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Acil Durum Bilgisi</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div class="alert alert-danger">İçerik yüklenemedi. Lütfen sayfayı yenileyin.</div></div></div></div></div>`;
+                                container.insertAdjacentHTML('beforeend', minimal);
+                                const modalEl = document.getElementById('acilDurumEkleModal');
+                                const acilModal = new bootstrap.Modal(modalEl);
+                                acilModal.show();
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire('Hata', 'Modal içeriği alınamadı. Lütfen sayfayı yenileyin.', 'error');
+                                }
+                                return;
+                            }
+                            container.insertAdjacentHTML('beforeend', html2);
+                            const modalEl2 = document.getElementById('acilDurumEkleModal');
+                            const acilModal2 = new bootstrap.Modal(modalEl2);
+                            acilModal2.show();
+                            if ($(modalEl2).find('.select2').length) {
+                                $(modalEl2).find('.select2').select2({ dropdownParent: $('#acilDurumEkleModal') });
+                            }
+                        });
+                }
+                // Yeni HTML'i ekle
+                container.insertAdjacentHTML('beforeend', html);
+                const modalEl = document.getElementById('acilDurumEkleModal');
+                if (!modalEl) throw new Error('Modal element bulunamadı');
+                const acilModal = new bootstrap.Modal(modalEl);
+                acilModal.show();
+                // Select2 init (varsa)
+                if ($(modalEl).find('.select2').length) {
+                    $(modalEl).find('.select2').select2({ dropdownParent: $('#acilDurumEkleModal') });
+                }
+            } catch(innerErr) {
+                console.error('Modal işlem hatası:', innerErr);
+                Swal && Swal.fire ? Swal.fire('Hata', 'Modal açılırken bir hata oluştu.', 'error') : console.error('SweetAlert2 yok');
+            }
         })
         .catch(err => console.error('Modal yüklenirken hata oluştu:', err));
 });

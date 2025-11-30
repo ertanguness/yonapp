@@ -83,26 +83,71 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'], 'arac', $kisiId)
 <script>
     document.addEventListener('click', function(e) {
         const editBtn = e.target.closest('.edit-car');
+        if (!editBtn) return;
+        e.preventDefault();
+        Pace.restart();
+        const encId = editBtn.getAttribute('data-id');
 
-        if (editBtn) {
-            e.preventDefault();
-            Pace.restart();
-
-            const encId = editBtn.getAttribute('data-id');
-
-            fetch('pages/management/peoples/content/AracModal.php?id=' + encodeURIComponent(encId))
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('modalContainer').innerHTML = html;
-
-                    const aracModal = new bootstrap.Modal(document.getElementById('aracEkleModal'));
+        // Mutlak yol kullan (404 sorununu düzeltmek için başa / eklendi)
+        const baseUrl = '/pages/management/peoples/content/AracModal.php';
+        const firstUrl = baseUrl + '?id=' + encodeURIComponent(encId);
+        fetch(firstUrl)
+            .then(r => r.text())
+            .then(html => {
+                try {
+                    let container = document.getElementById('modalContainer');
+                    if (!container) {
+                        container = document.createElement('div');
+                        container.id = 'modalContainer';
+                        document.body.appendChild(container);
+                    }
+                    const oldModal = document.getElementById('aracEkleModal');
+                    if (oldModal && oldModal.parentElement) {
+                        oldModal.parentElement.removeChild(oldModal);
+                    }
+                    console.log('[AracModal] İlk fetch length:', html.length);
+                    if (!/id=["']aracEkleModal["']/i.test(html)) {
+                        console.warn('Arac modal id bulunamadı. Fallback denenecek. Snippet:', html.substring(0,180));
+                        return fetch(baseUrl)
+                            .then(r2 => r2.text())
+                            .then(html2 => {
+                                console.log('[AracModal] Fallback fetch length:', html2.length);
+                                if (!/id=["']aracEkleModal["']/i.test(html2)) {
+                                    console.error('Arac fallback da başarısız. Minimal modal inject ediliyor.');
+                                    const minimal = `\n<div class="modal fade" id="aracEkleModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Araç Bilgisi</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div class="alert alert-danger">İçerik yüklenemedi. Lütfen sayfayı yenileyin.</div></div></div></div></div>`;
+                                    container.insertAdjacentHTML('beforeend', minimal);
+                                    const modalEl = document.getElementById('aracEkleModal');
+                                    const aracModal = new bootstrap.Modal(modalEl);
+                                    aracModal.show();
+                                    if (typeof Swal !== 'undefined') {
+                                        Swal.fire('Hata', 'Araç modal içeriği alınamadı. Yenileyin.', 'error');
+                                    }
+                                    return;
+                                }
+                                container.insertAdjacentHTML('beforeend', html2);
+                                const modalEl2 = document.getElementById('aracEkleModal');
+                                const aracModal2 = new bootstrap.Modal(modalEl2);
+                                aracModal2.show();
+                                if ($(modalEl2).find('.select2').length) {
+                                    $(modalEl2).find('.select2').select2({ dropdownParent: $('#aracEkleModal') });
+                                }
+                            });
+                    }
+                    container.insertAdjacentHTML('beforeend', html);
+                    const modalEl = document.getElementById('aracEkleModal');
+                    if (!modalEl) throw new Error('Araç modal elementi yok');
+                    const aracModal = new bootstrap.Modal(modalEl);
                     aracModal.show();
-
-                    $(".select2").select2({
-                        dropdownParent: $('#aracEkleModal'),
-                    });
-                })
-                .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
-        }
+                    if ($(modalEl).find('.select2').length) {
+                        $(modalEl).find('.select2').select2({ dropdownParent: $('#aracEkleModal') });
+                    }
+                } catch(err) {
+                    console.error('Araç modal hata:', err);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Hata', 'Araç modal açılırken bir hata oluştu.', 'error');
+                    }
+                }
+            })
+            .catch(error => console.error('Modal yüklenirken hata oluştu:', error));
     });
 </script>

@@ -87,5 +87,59 @@ class SettingsModel extends Model
         return $sql->execute([$user_id, $action_name]);
     }
 
+    //Program açıldığında tamamlanmamış görevleri getir veya getirme
+    public function updateShowCompletedMissions($firm_id, $visible)
+    {
+        $sql = $this->db->prepare("UPDATE $this->table SET set_value = ? WHERE site_id = ? and set_name = ?");
+        return $sql->execute([$visible, $firm_id, "completed_tasks_visible"]);
+    }
+
+    /**
+     * Aktif site için son ayar satırını döndürür (kolon bazlı model)
+     */
+    public function Ayarlar()
+    {
+        $site_id = $_SESSION['site_id'] ?? 0;
+        $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE site_id = :site_id ORDER BY id DESC LIMIT 1");
+        $query->execute(['site_id' => $site_id]);
+        return $query->fetch(PDO::FETCH_OBJ);
+    }
+
+    /**
+     * Site ve kullanıcı bağlamında bir dizi ayarı upsert eder
+     * @param int $siteId
+     * @param int|null $userId
+     * @param array $pairs [ set_name => [ 'value' => ..., 'aciklama' => ... ] ]
+     * @return int
+     */
+    public function upsertPairs(int $siteId, ?int $userId, array $pairs): int
+    {
+        if ($siteId === 0 || empty($pairs)) {
+            return 0;
+        }
+
+        $sql = "INSERT INTO {$this->table} (site_id, user_id, set_name, set_value, aciklama)
+                VALUES (:site_id, :user_id, :set_name, :set_value, :aciklama)
+                ON DUPLICATE KEY UPDATE 
+                    set_value = VALUES(set_value),
+                    aciklama = VALUES(aciklama),
+                    user_id = VALUES(user_id)";
+
+        $stmt = $this->db->prepare($sql);
+        $affected = 0;
+
+        foreach ($pairs as $name => $data) {
+            $stmt->execute([
+                ':site_id' => $siteId,
+                ':user_id' => $userId,
+                ':set_name' => $name,
+                ':set_value' => $data['value'] ?? null,
+                ':aciklama' => $data['aciklama'] ?? null,
+            ]);
+            $affected += $stmt->rowCount();
+        }
+
+        return $affected;
+    }
 
 }

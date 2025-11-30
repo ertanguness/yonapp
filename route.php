@@ -243,7 +243,7 @@ $router->get('rapor/{tarih}', function ($tarih) {
 /* ----------------------------------------------------
 |  AYARLAR
 ---------------------------------------------------- */
-$router->get('ayarlar', fn() => require 'pages/settings/manage.php');
+$router->get('ayarlar', fn() => require 'pages/ayarlar/manage.php');
 
 /* ----------------------------------------------------
 |  ONBOARDING / İLK KURULUM DURUMU

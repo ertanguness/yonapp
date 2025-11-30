@@ -109,5 +109,43 @@ $(document).on("click", ".sil-icra", function () {
             }
           });
       }
-    });
+  });
+});
+
+$(document).ready(function(){
+  var params = new URLSearchParams(window.location.search);
+  var tab = (params.get('tab')||'').toLowerCase();
+  var sub = (params.get('sub')||'').toLowerCase();
+  if(tab === 'notifications'){
+    var $outerLink = $('a[data-bs-target="#notificationSettingsTab"]');
+    if($outerLink.length){
+      try{ bootstrap.Tab.getOrCreateInstance($outerLink[0]).show(); }catch(e){}
+      $('#settingsTab .nav-link').removeClass('active');
+      $outerLink.addClass('active');
+      $('#generalSettingsTab').removeClass('show active');
+      $('#notificationSettingsTab').addClass('show active');
+    }
+
+    var showInner = function(){
+      if(sub === 'email'){
+        var $btn = $('#v-pills-email-tab');
+        if($btn.length){ try{ bootstrap.Tab.getOrCreateInstance($btn[0]).show(); }catch(e){} }
+        $('#v-pills-sms').removeClass('show active');
+        $('#v-pills-email').addClass('show active');
+        $('#v-pills-sms-tab').removeClass('active');
+        $('#v-pills-email-tab').addClass('active');
+      } else if(sub === 'sms'){
+        var $btn2 = $('#v-pills-sms-tab');
+        if($btn2.length){ try{ bootstrap.Tab.getOrCreateInstance($btn2[0]).show(); }catch(e){} }
+        $('#v-pills-email').removeClass('show active');
+        $('#v-pills-sms').addClass('show active');
+        $('#v-pills-email-tab').removeClass('active');
+        $('#v-pills-sms-tab').addClass('active');
+      }
+    };
+    setTimeout(showInner, 150);
+  } else if(tab === 'general'){
+    var gen = document.querySelector('a[data-bs-target="#generalSettingsTab"]');
+    if(gen){ bootstrap.Tab.getOrCreateInstance(gen).show(); }
+  }
 });
