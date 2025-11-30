@@ -70,7 +70,15 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                                                 <th>Telefon</th>
                                             </tr>
                                         </thead>
-                                        <tbody></tbody>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="7" class="text-center">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>

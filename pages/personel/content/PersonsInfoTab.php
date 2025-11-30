@@ -6,7 +6,8 @@
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-user"></i></div>
-                <input type="text" class="form-control" id="personnelName" placeholder="Ad Soyad Giriniz">
+                <input type="text" class="form-control" id="personnelName" placeholder="Ad Soyad Giriniz"
+                    value="<?php echo $personel->adi_soyadi ?? '' ?>">
             </div>
         </div>
         <div class="col-lg-2">
@@ -15,7 +16,8 @@
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-phone"></i></div>
-                <input type="text" class="form-control" id="personnelPhone" placeholder="Telefon Giriniz">
+                <input type="text" class="form-control" id="personnelPhone" placeholder="Telefon Giriniz"
+                    value="<?php echo $personel->telefon ?? '' ?>">
             </div>
         </div>
     </div>
@@ -26,7 +28,8 @@
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-envelope"></i></div>
-                <input type="email" class="form-control" id="personnelEmail" placeholder="E-Posta Giriniz">
+                <input type="email" class="form-control" id="personnelEmail" placeholder="E-Posta Giriniz"
+                    value="<?php echo $personel->email ?? '' ?>">
             </div>
         </div>
         <div class="col-lg-2">
@@ -35,8 +38,10 @@
         <div class="col-lg-4">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-briefcase"></i></div>
-                <input type="text" class="form-control" id="personnelPosition" placeholder="Pozisyon Giriniz">
-            </div>
+                <input type="text" class="form-control" id="personnelPosition" placeholder="Pozisyon Giriniz"           
+                    value="<?php echo $personel->personel_tipi ?? '' ?>">
+                    
+            </div>  
         </div>
     </div>
 </div>

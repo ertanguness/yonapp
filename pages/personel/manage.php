@@ -1,3 +1,19 @@
+
+<?php 
+use App\Helper\Helper;
+use App\Helper\Security;
+use Model\PersonelModel;
+
+$PersonelModel = new PersonelModel();
+
+/* id=> route'tan geliyor,
+ * encrypt true olduğunda find fonksiyonu çözer
+ */
+$personel = $PersonelModel->find($id,true);
+$person_id = Security::decrypt($id);
+
+?>
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -17,10 +33,10 @@
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <button type="button" class="btn btn-outline-secondary route-link me-2" data-page="persons/list">
+                <a href="/personel-listesi" type="button" class="btn btn-outline-secondary me-2" >
                     <i class="feather-arrow-left me-2"></i>
                     Listeye Dön
-                </button>
+                </a>
                 <button type="button" class="btn btn-primary" id="savepersons">
                     <i class="feather-save me-2"></i>
                     Kaydet
@@ -39,6 +55,7 @@
         $text = "Personel Güncelleme sayfasındasınız. Bu sayfada personel bilgilerini güncelleyebilirsiniz.";
     }
     require_once 'pages/components/alert.php'; */
+   
     ?>
 
     <div class="row">
@@ -54,7 +71,7 @@
                                         <div class='row d-none'>
                                             <div class='col-md-4'>
                                                 <input type='text' name='id' class='form-control'
-                                                    value="<?php echo $incexp->id ?? 0 ?>">
+                                                    value="<?php echo $id ?? 0 ?>">
                                             </div>
                                             <div class='col-md-4'>
                                                 <input type='text' name='action' value='savepersons' class='form-control'>
@@ -94,6 +111,7 @@
                                             <!-- Personel Bilgileri -->
                                             <div class="tab-pane fade show active" id="personsInfoTab" role="tabpanel">
                                                 <?php
+                                                
                                                 require_once 'pages/personel/content/PersonsInfoTab.php';
                                                 ?>
                                             </div>
@@ -130,20 +148,6 @@
     </div>
 </div>
 <script>
-    if (typeof window.onDataTablesReady !== 'function') {
-        window.onDataTablesReady = function(cb) {
-            var tries = 0;
-            (function wait() {
-                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') {
-                    cb();
-                    return;
-                }
-                if (tries++ > 100) {
-                    console.error('DataTables veya initDataTable yüklenemedi');
-                    return;
-                }
-                setTimeout(wait, 100);
-            })();
-        };
-    }
+
+ window.personId = <?php echo isset($person_id) ? (int)$person_id : 0; ?>;
 </script>

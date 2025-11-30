@@ -6,7 +6,7 @@
         </div>
     </div>
     <div class="table-responsive w-100">
-        <table class="table table-hover datatables w-100" id="leavesTable">
+        <table class="table table-hover dttables w-100" id="leavesTable">
             <thead>
                 <tr>
                     <th style="width:40px">Sıra</th>
@@ -29,21 +29,10 @@
     </div>
 </div>
 <script>
-      if (typeof window.onDataTablesReady !== 'function') {
-        window.onDataTablesReady = function(cb){
-            var tries = 0;
-            (function wait(){
-                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') { cb(); return; }
-                if (tries++ > 100) { console.error('DataTables veya initDataTable yüklenemedi'); return; }
-                setTimeout(wait, 100);
-            })();
-        };
-    }
-
-    window.onDataTablesReady(function(){
-            var dt = initDataTable('#leavesTable',{
+   $(document).ready(function(){
+           var dt = initDataTable("#leavesTable",{
                 processing:true,serverSide:true,retrieve:true,
-                ajax:{url:'/pages/personel/api/leaves_server_side.php',type:'GET'},
+                ajax:{url:'/pages/personel/api/leaves_server_side.php',type:'GET',data:function(d){ d.person_id = window.personId || 0; }},
                 columns:[
                     {data:null,orderable:false,render:function(d,t,r,m){return m.row+1+m.settings._iDisplayStart;}},
                     {data:'type'},
@@ -55,6 +44,7 @@
                     {data:'actions',orderable:false}
                 ],
                 order:[[1,'asc']]
+            });
             });
             document.querySelector('a[data-bs-target="#leaveTrackingTab"]').addEventListener('shown.bs.tab', function(){
                 try { $('#leavesTable').DataTable().columns.adjust().responsive.recalc(); } catch(e){}
@@ -70,5 +60,4 @@
                   .done(function(html){ $('#leaveModal .leave-modal').html(html); $('#leaveModal').modal('show'); })
                   .fail(function(){ $('#leaveModal .leave-modal').html('<div class="p-3">İçerik yüklenemedi</div>'); $('#leaveModal').modal('show'); });
             });
-    })();
 </script>

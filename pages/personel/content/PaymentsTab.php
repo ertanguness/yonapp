@@ -6,7 +6,7 @@
         </div>
     </div>
     <div class="table-responsive w-100">
-        <table class="table table-hover datatables w-100" id="paymentsTable">
+        <table class="table table-hover dttables w-100" id="paymentsTable">
             <thead>
                 <tr>
                     <th style="width:40px">Sıra</th>
@@ -27,31 +27,15 @@
     </div>
 </div>
 <script>
-    if (typeof window.onDataTablesReady !== 'function') {
-        window.onDataTablesReady = function(cb) {
-            var tries = 0;
-            (function wait() {
-                if (window.jQuery && jQuery.fn && jQuery.fn.DataTable && typeof window.initDataTable === 'function') {
-                    cb();
-                    return;
-                }
-                if (tries++ > 100) {
-                    console.error('DataTables veya initDataTable yüklenemedi');
-                    return;
-                }
-                setTimeout(wait, 100);
-            })();
-        };
-    }
-    
-    window.onDataTablesReady(function() {
-        var dt = initDataTable('#paymentsTable', {
+    $(document).ready(function(){
+       var dt = initDataTable("#paymentsTable",{
             processing: true,
             serverSide: true,
             retrieve: true,
             ajax: {
                 url: '/pages/personel/api/payments_server_side.php',
-                type: 'GET'
+                type: 'GET',
+                data: function(d){ d.person_id = window.personId || 0; }
             },
             columns: [{
                     data: null,
@@ -81,6 +65,7 @@
                 [1, 'asc']
             ]
         });
+    });
         document.querySelector('a[data-bs-target="#paymentsTab"]').addEventListener('shown.bs.tab', function() {
             try {
                 $('#paymentsTable').DataTable().columns.adjust().responsive.recalc();
@@ -91,14 +76,15 @@
                 .done(function(html) {
                     $('#paymentModal .payment-modal').html(html);
                     $('#paymentModal').modal('show');
+                     $(".flatpickr").flatpickr({
+                        dateFormat: "d.m.Y",
+                    });
                 })
                 .fail(function() {
                     $('#paymentModal .payment-modal').html('<div class="p-3">İçerik yüklenemedi</div>');
                     $('#paymentModal').modal('show');
 
-                    $(".flatpickr").flatpickr({
-                        dateFormat: "d.m.Y",
-                    });
+                   
                 });
         });
         $(document).on('click', '.payment-edit', function() {
@@ -116,5 +102,4 @@
                 });
         });
 
-    })();
 </script>
