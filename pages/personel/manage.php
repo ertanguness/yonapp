@@ -98,7 +98,7 @@ $person_id = Security::decrypt($id) ?? 0;
 
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body persons-info">
-                                    <div class="row mb-4 align-items-center">
+                                    <div class="row align-items-center">
 
 
                                         <div class="tab-content">
