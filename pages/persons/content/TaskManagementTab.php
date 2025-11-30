@@ -2,7 +2,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h6 class="mb-0">Görev Listesi</h6>
     <div class="d-flex gap-2">
-        <button type="button" class="btn btn-outline-primary btn-sm" id="newTaskBtn">Yeni Görev</button>
+        <button type="button" class="btn btn-outline-primary btn-sm" data-id="0" id="newTaskBtn">Yeni Görev</button>
     </div>
 </div>
 <div class="table-responsive w-100">
@@ -48,9 +48,25 @@
                     }
                 },
                 {data: 'title'},
-                {data: 'description'},
-                {data: 'start_date'},
-                {data: 'end_date'},
+                {
+                    data: 'description'
+                },
+                {
+                    data: 'start_date',
+                    render: function(data, type, row) {
+                        if (!data) return '';
+                        var date = new Date(data);
+                        return date.toLocaleDateString('tr-TR');
+                    }
+                },
+                {
+                    data: 'end_date',
+                    render: function(data, type, row) {
+                        if (!data) return '';
+                        var date = new Date(data);
+                        return date.toLocaleDateString('tr-TR');
+                    }
+                },
                 {data: 'status'},
                 {data: 'actions', orderable: false}
             ],
@@ -64,22 +80,22 @@
             $('#tasksTable').DataTable().columns.adjust().responsive.recalc();
         } catch (e) {}
     });
-    $(document).on('click', '#newTaskBtn', function() {
-        $.get('/pages/personel/modal/task_modal.php')
-            .done(function(html) {
-                $('#taskModal .task-modal').html(html);
-                $('#taskModal').modal('show');
-                $(".flatpickr-input").flatpickr({
-                    dateFormat: "Y-m-d",
-                    locale: "tr"
-                });
-            })
-            .fail(function() {
-                $('#taskModal .task-modal').html('<div class="p-3">İçerik yüklenemedi</div>');
-                $('#taskModal').modal('show');
-            });
-    });
-    $(document).on('click', '.task-edit', function() {
+    // $(document).on('click', '#newTaskBtn , .task-edit', function() {
+    //     $.get('/pages/personel/modal/task_modal.php')
+    //         .done(function(html) {
+    //             $('#taskModal .task-modal').html(html);
+    //             $('#taskModal').modal('show');
+    //             $(".flatpickr").flatpickr({
+    //                 dateFormat: "Y-m-d",
+    //                 locale: "tr"
+    //             });
+    //         })
+    //         .fail(function() {
+    //             $('#taskModal .task-modal').html('<div class="p-3">İçerik yüklenemedi</div>');
+    //             $('#taskModal').modal('show');
+    //         });
+    // });
+    $(document).on('click', '#newTaskBtn , .task-edit', function() {
         var id = $(this).data('id');
         $.get('/pages/personel/modal/task_modal.php', {
                 id: id
@@ -87,8 +103,8 @@
             .done(function(html) {
                 $('#taskModal .task-modal').html(html);
                 $('#taskModal').modal('show');
-                $(".flatpickr-input").flatpickr({
-                    dateFormat: "Y-m-d",
+                $(".flatpickr").flatpickr({
+                    dateFormat: "d.m.Y",
                     locale: "tr"
                 });
             })
