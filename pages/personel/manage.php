@@ -81,7 +81,7 @@ $person_id = Security::decrypt($id) ?? 0;
 
                 <div class="hstack gap-3">
                     <div class="avatar-image">
-                        <img src="assets/images/avatar/1.png" alt="" class="img-fluid">
+                        <img src="/assets/images/avatar/1.png" alt="" class="img-fluid">
                     </div>
                     <div>
                         <a href="javascript:void(0);"><?php echo $personel->adi_soyadi ?? '' ?></a>

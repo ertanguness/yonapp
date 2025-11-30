@@ -15,9 +15,9 @@ if ($personId > 0) {
         $encId = Security::encrypt((int)$it->id);
         $rows[] = [
             'title' => htmlspecialchars($it->title ?? ''),
-            'description' => htmlspecialchars(Date::dmY($it->description ?? '')),
-            'start_date' => htmlspecialchars(Date::dmY($it->start_date ?? '')),
-            'end_date' => htmlspecialchars(Date::dmY($it->end_date ?? '')),
+            'description' => htmlspecialchars($it->description ?? ''),
+            'start_date' => '<div style="text-align:center;">' . htmlspecialchars(Date::dmY($it->start_date ?? null)) . '</div>',
+            'end_date' => '<div style="text-align:center;">' . htmlspecialchars(Date::dmY($it->end_date ?? null)) . '</div>',
             'status' => htmlspecialchars($it->status ?? ''),
             'actions' => '<div class="hstack gap-2">'
                 . '<a href="javascript:void(0);" class="avatar-text avatar-md task-edit" data-id="' . $encId . '" title="Düzenle"><i class="feather-edit"></i></a>'

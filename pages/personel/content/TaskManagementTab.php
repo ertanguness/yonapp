@@ -48,25 +48,9 @@
                     }
                 },
                 {data: 'title'},
-                {
-                    data: 'description'
-                },
-                {
-                    data: 'start_date',
-                    render: function(data, type, row) {
-                        if (!data) return '';
-                        var date = new Date(data);
-                        return date.toLocaleDateString('tr-TR');
-                    }
-                },
-                {
-                    data: 'end_date',
-                    render: function(data, type, row) {
-                        if (!data) return '';
-                        var date = new Date(data);
-                        return date.toLocaleDateString('tr-TR');
-                    }
-                },
+                {data: 'description'},
+                {data: 'start_date'},
+                {data: 'end_date'},
                 {data: 'status'},
                 {data: 'actions', orderable: false}
             ],
