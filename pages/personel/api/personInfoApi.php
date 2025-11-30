@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__, 3) . '/configs/bootstrap.php';
+require_once dirname(__FILE__, 4) . '/configs/bootstrap.php';
 
 use Database\Db;
 use App\Helper\Date;
@@ -8,31 +8,37 @@ use App\Helper\Helper;
 use App\Helper\Security;
 use Model\PersonelModel;
 use Model\PersonelOdemeModel;
+use Model\PersonelGorevlerModel;
+
 
 $PersonelOdeme = new PersonelOdemeModel();
 $Personel = new PersonelModel();
+$PersonelGorevModel = new PersonelGorevlerModel();
 $db = Db::getInstance();
 
 $action = $_POST['action'] ?? '';
+$post = $_POST;
 
-if($action == "savePerson"){
-    $id = Security::decrypt($_POST['personelId'] ?? 0);
+if ($action == "savePerson") {
+    $id = Security::decrypt($post['personelId'] ?? 0);
 
     try {
+        $db->beginTransaction();
         $data = [
             'id' => $id,
-            'adi_soyadi' => $_POST['adi_soyadi'] ?? '',
-            'eposta' => $_POST['eposta'] ?? '',
-            'telefon' => $_POST['telefon'] ?? '',
-            'personel_tipi' => $_POST['personel_tipi'] ?? '',
-            'ise_baslama_tarihi' => Date::Ymd($_POST['ise_baslama_tarihi'] ?? ''),
-            'isten_ayrilma_tarihi' => Date::Ymd($_POST['isten_ayrilma_tarihi'] ?? ''),
+            'adi_soyadi' => $post['adi_soyadi'] ?? '',
+            'eposta' => $post['eposta'] ?? '',
+            'telefon' => $post['telefon'] ?? '',
+            'personel_tipi' => $post['personel_tipi'] ?? '',
+            'ise_baslama_tarihi' => Date::Ymd($post['ise_baslama_tarihi'] ?? ''),
+            'isten_ayrilma_tarihi' => Date::Ymd($post['isten_ayrilma_tarihi'] ?? ''),
         ];
         $lastInsertId = $Personel->saveWithAttr($data);
-
+        $db->commit();
         $status = "success";
         $message = $id == 0 ? "Personel başarıyla kaydedildi" : "Personel başarıyla güncellendi";
     } catch (Exception $ex) {
+        $db->rollBack();
         $status = "error";
         $message = $ex->getMessage();
     }
@@ -44,7 +50,10 @@ if($action == "savePerson"){
         'id' => $lastInsertId ?? 0
     ]);
     exit();
-}  
+}
+
+
+
 
 // Ödeme Kaydet (Yeni veya Güncelle)
 if ($action == 'save_personel_odeme') {
@@ -116,7 +125,7 @@ if ($action == 'delete_personel_odeme') {
 
     try {
         $result = $PersonelOdeme->deleteOdeme($odeme_id);
-        
+
         echo json_encode([
             'status' => 'success',
             'message' => 'Ödeme başarıyla silindi'
@@ -144,7 +153,7 @@ if ($action == 'delete_personel') {
 
     try {
         $result = $Personel->deletePersonel($personel_id);
-        
+
         echo json_encode([
             'status' => 'success',
             'message' => 'Personel başarıyla silindi'
