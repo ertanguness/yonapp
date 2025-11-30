@@ -24,11 +24,8 @@ if ($siteId) {
             $dt = \DateTime::createFromFormat('Y-m-d', $rawCikis) ?: \DateTime::createFromFormat('d.m.Y', $rawCikis);
             $cikisTs = $dt ? $dt->getTimestamp() : strtotime($rawCikis);
         }
-        // Kural: Çıkış tarihi DOLU ve BUGÜNDEN BÜYÜK ise Pasif; boş ise Aktif; diğer durumda Aktif
-        if ($cikisTs !== null && $cikisTs > $today) {
+        if ($cikisTs !== null && $cikisTs <= $today) {
             $durumText = 'Pasif';
-        } else if ($cikisTs === null) {
-            $durumText = 'Aktif';
         } else {
             $durumText = 'Aktif';
         }

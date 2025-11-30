@@ -39,13 +39,19 @@ $uyelik_tipi = $kisi->uyelik_tipi ?? '';
         <div class="col-lg-2">
             <label for="phoneNumber" class="fw-semibold">Telefon Numarası:</label>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <div class="input-group">
                 <div class="input-group-text"><i class="fas fa-phone"></i></div>
                 <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Telefon Numarası Giriniz" value="<?php echo $kisi->telefon ?? ''; ?>">
             </div>
-
         </div>
+
+        <div class="col-lg-1">
+            <div class="custom-control custom-checkbox ms-1 me-auto" data-toggle="tooltip" data-placement="top" title="Kişiye sms göndermek için izin.Kapalı olduğu takdirde sms gönderilmez.">
+                <input type="checkbox" class="custom-control-input" id="smsPermission" name="smsPermission" <?= (isset($kisi->sms_izni) && $kisi->sms_izni == 1) ? 'checked' : '' ?>>
+                <label class="custom-control-label" for="smsPermission"> Sms İzni</label>
+                </div>
+            </div>
 
     </div>
 
