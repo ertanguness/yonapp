@@ -77,3 +77,4 @@ use App\Helper\Date;
         </div>
     </div>
 </form>
+<script src="/pages/personel/js/personInfo.js?<?= filemtime("pages/personel/js/personInfo.js") ?>"></script>

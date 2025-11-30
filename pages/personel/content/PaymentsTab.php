@@ -8,12 +8,12 @@
     <table class="table table-hover dttables w-100" id="paymentsTable">
         <thead>
             <tr>
-                <th style="width:40px">Sıra</th>
+                <th style="width:7%">Sıra</th>
                 <th>Tutar</th>
                 <th>Tarih</th>
                 <th>Açıklama</th>
                 <th>Durum</th>
-                <th>İşlem</th>
+                <th style="width:10%">İşlem</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -25,73 +25,4 @@
         <div class="modal-content payment-modal"></div>
     </div>
 </div>
-<script>
-    $(document).ready(function() {
-        console.log("Person ID:", window.personId);
-        var dt = initDataTable("#paymentsTable", {
-            processing: true,
-            serverSide: true,
-            retrieve: true,
-            ajax: {
-                url: '/pages/personel/api/payments_server_side.php',
-                type: 'GET',
-                data: function(d) {
-                    d.person_id = window.personId || 0;
-                }
-            },
-            columns: [{
-                    data: null,
-                    orderable: false,
-                    render: function(d, t, r, m) {
-                        return m.row + 1 + m.settings._iDisplayStart;
-                    }
-                },
-                {data: 'amount'},
-                {data: 'date'},
-                {data: 'description'},
-                {data: 'status'},
-                {data: 'actions', orderable: false}
-            ]
-        });
-    });
-    document.querySelector('a[data-bs-target="#paymentsTab"]').addEventListener('shown.bs.tab', function() {
-        try {
-            $('#paymentsTable').DataTable().columns.adjust().responsive.recalc();
-        } catch (e) {}
-    });
-    $(document).on('click', '#newPaymentBtn', function() {
-        $.get('/pages/personel/modal/payment_modal.php')
-            .done(function(html) {
-                $('#paymentModal .payment-modal').html(html);
-                $('#paymentModal').modal('show');
-                $(".flatpickr-input").flatpickr({
-                    dateFormat: "Y-m-d",
-                    locale: "tr"
-                });
-            })
-            .fail(function() {
-                $('#paymentModal .payment-modal').html('<div class="p-3">İçerik yüklenemedi</div>');
-                $('#paymentModal').modal('show');
-
-
-            });
-    });
-    $(document).on('click', '.payment-edit', function() {
-        var id = $(this).data('id');
-        $.get('/pages/personel/modal/payment_modal.php', {
-                id: id
-            })
-            .done(function(html) {
-                $('#paymentModal .payment-modal').html(html);
-                $('#paymentModal').modal('show');
-                $(".flatpickr-input").flatpickr({
-                    dateFormat: "Y-m-d",
-                    locale: "tr"
-                });
-            })
-            .fail(function() {
-                $('#paymentModal .payment-modal').html('<div class="p-3">İçerik yüklenemedi</div>');
-                $('#paymentModal').modal('show');
-            });
-    });
-</script>
+<script src="/pages/personel/js/payment.js?<?= filemtime("pages/personel/js/payment.js") ?>"></script>

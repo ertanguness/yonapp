@@ -54,14 +54,14 @@ class SettingsModel extends Model
 
     public function getSettings($set_name)
     {
-        $siteId = isset($_SESSION['firm_id']) ? (int) $_SESSION['firm_id'] : 0;
+        $siteId = isset($_SESSION['site_id']) ? (int) $_SESSION['site_id'] : 0;
         if ($siteId === 0) {
             return null;
         }
 
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE site_id = ? AND set_name = ?");
+        $sql = $this->db->prepare("SELECT set_value FROM $this->table WHERE site_id = ? AND set_name = ?");
         $sql->execute([$siteId, $set_name]);
-        return $sql->fetch(PDO::FETCH_OBJ) ?? null;
+        return $sql->fetch(PDO::FETCH_OBJ)->set_value ?? null;
     }
 
     public function getSettingIdByUserAndAction($user_id, $action_name)
