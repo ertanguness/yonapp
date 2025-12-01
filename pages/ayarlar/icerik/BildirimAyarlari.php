@@ -76,11 +76,11 @@
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="emailAktif" class="fw-semibold">E-mail Aktif</label></div>
                         <div class="col-lg-6">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" style="transform: scale(1.5);" type="checkbox" id="emailDurum" name="emailDurum" value="0"
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="emailDurum" name="emailDurum" value="0"
                                     <?php echo (isset($AyarlarKV['smtp_durum']) && (int)$AyarlarKV['smtp_durum'] == 1) ? 'checked' : ''; ?>
                                     onclick="this.value=this.checked?1:0;">
-                                <label class="form-check-label" for="emailDurum">Aktif</label>
+                                <label class="custom-control-label" for="emailDurum">Aktif</label>
                             </div>
                         </div>
                     </div>
@@ -107,11 +107,11 @@
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="smsAktif" class="fw-semibold">Sms Aktif</label></div>
                         <div class="col-lg-6">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" style="transform: scale(1.5);" type="checkbox" id="smsDurum" name="smsDurum" value="0"
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="smsDurum" name="smsDurum" value="0"
                                     <?php echo (isset($AyarlarKV['sms_durum']) && (int)$AyarlarKV['sms_durum'] == 1) ? 'checked' : ''; ?>
                                     onclick="this.value=this.checked?1:0;">
-                                <label class="form-check-label" for="siteAktif">Aktif</label>
+                                <label class="custom-control-label" for="smsDurum">Aktif</label>
                             </div>
                         </div>
                     </div>
@@ -138,11 +138,11 @@
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="whatsappAktif" class="fw-semibold">WhatsApp Aktif</label></div>
                         <div class="col-lg-6">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" style="transform: scale(1.5);" type="checkbox" id="whatsappDurum" name="whatsappDurum" value="0"
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="whatsappDurum" name="whatsappDurum" value="0"
                                     <?php echo (isset($AyarlarKV['whatsapp_durum']) && (int)$AyarlarKV['whatsapp_durum'] == 1) ? 'checked' : ''; ?>
                                     onclick="this.value=this.checked?1:0;">
-                                <label class="form-check-label" for="whatsappAktif">Aktif</label>
+                                <label class="custom-control-label" for="whatsappDurum">Aktif</label>
                             </div>
                         </div>
                     </div>

@@ -56,10 +56,13 @@ $AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
                                                 <li class="nav-item flex-fill border-top" role="presentation">
                                                     <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab" data-bs-target="#notificationSettingsTab" role="tab">Bildirim Ayarları</a>
                                                 </li>
+                                                <li class="nav-item flex-fill border-top" role="presentation">
+                                                    <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab" data-bs-target="#communicationsSettingsTab" role="tab">İletişim Ayarları</a>
+                                                </li>
                                                
                                             </ul>
                                         </div>
-                                        <div class="tab-content">
+                                            <div class="tab-content">
                                             <!-- Genel Ayarlar Tab -->
                                             <div class="tab-pane fade show active" id="generalSettingsTab" role="tabpanel">
                                                 <?php
@@ -68,11 +71,17 @@ $AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
                                             </div>
 
                                             <!-- Bildirim Ayarları Tab -->
-                                            <div class="tab-pane fade" id="notificationSettingsTab" role="tabpanel">
+                                                <div class="tab-pane fade" id="notificationSettingsTab" role="tabpanel">
+                                                    <?php
+                                                    require_once 'pages/ayarlar/icerik/BildirimAyarlari.php';
+                                                    ?>
+                                                </div>                                           
+                                            
+                                            <div class="tab-pane fade" id="communicationsSettingsTab" role="tabpanel">
                                                 <?php
-                                                require_once 'pages/ayarlar/icerik/BildirimAyarlari.php';
+                                                require_once 'pages/ayarlar/icerik/IletisimAyarlari.php';
                                                 ?>
-                                            </div>                                           
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

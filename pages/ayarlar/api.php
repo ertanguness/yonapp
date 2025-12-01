@@ -10,7 +10,7 @@ $Settings = new SettingsModel();
 $site_id = $_SESSION["site_id"] ?? 0;
 $user_id = (isset($_SESSION['user']) && isset($_SESSION['user']->id)) ? (int)$_SESSION['user']->id : 0;
 
-if ($_POST["action"] == "ayarlar_kaydet") {
+if (($_POST["action"] ?? '') === "ayarlar_kaydet") {
     try {
         $kv = $Settings->getAllSettingsAsKeyValue() ?? [];
         $smtpDurum = array_key_exists('emailDurum', $_POST) ? (trim($_POST['emailDurum']) === '1' ? '1' : '0') : (string)($kv['smtp_durum'] ?? '0');
@@ -52,6 +52,55 @@ if ($_POST["action"] == "ayarlar_kaydet") {
             'message' => 'Ayarlar kaydedilirken hata oluştu',
         ]);
     }
+}
+
+if (($_GET["action"] ?? '') === 'iletisim_list') {
+    $items = [];
+    $rows = $Settings->getAllRowsBySite((int)$site_id);
+    $map = [];
+    foreach ($rows as $r) {
+        $name = $r['set_name'] ?? '';
+        if (!preg_match('/^(.*)_(email|sms|whatsapp)$/', $name, $m)) { continue; }
+        $key = $m[1];
+        $ch = $m[2];
+        if (!isset($map[$key])) { $map[$key] = ['key'=>$key,'label'=>str_replace('_',' ',$key),'email'=>'0','sms'=>'0','whatsapp'=>'0']; }
+        $map[$key][$ch] = ($r['set_value'] ?? '0');
+    }
+    foreach ($map as $it) { $items[] = $it; }
+    echo json_encode(['status'=>'success','items'=>$items]);
+    exit;
+}
+
+if (($_POST["action"] ?? '') === 'iletisim_upsert') {
+    $key = strtolower(trim($_POST['key'] ?? ''));
+    $label = trim($_POST['label'] ?? str_replace('_',' ',$key));
+    if ($key === '') { echo json_encode(['status'=>'error']); exit; }
+    $pairs = [
+        $key.'_email'    => ['value' => '0', 'aciklama' => $label.' email'],
+        $key.'_sms'      => ['value' => '0', 'aciklama' => $label.' sms'],
+        $key.'_whatsapp' => ['value' => '0', 'aciklama' => $label.' whatsapp'],
+    ];
+    $Settings->upsertPairs((int)$site_id, $user_id, $pairs);
+    echo json_encode(['status'=>'success']);
+    exit;
+}
+
+if (($_POST["action"] ?? '') === 'iletisim_toggle') {
+    $key = strtolower(trim($_POST['key'] ?? ''));
+    $ch = strtolower(trim($_POST['channel'] ?? ''));
+    $val = trim($_POST['value'] ?? '0') === '1' ? '1' : '0';
+    if ($key === '' || !in_array($ch, ['email','sms','whatsapp'], true)) { echo json_encode(['status'=>'error']); exit; }
+    $Settings->upsertPairs((int)$site_id, $user_id, [ $key.'_'.$ch => ['value' => $val, 'aciklama' => $key.' '.$ch] ]);
+    echo json_encode(['status'=>'success']);
+    exit;
+}
+
+if (($_POST["action"] ?? '') === 'iletisim_delete') {
+    $key = strtolower(trim($_POST['key'] ?? ''));
+    if ($key === '') { echo json_encode(['status'=>'error']); exit; }
+    $ok = $Settings->deleteBySetNamePrefix((int)$site_id, $key.'_');
+    echo json_encode(['status' => $ok ? 'success' : 'error']);
+    exit;
 }
 
 if ($_POST["action"] == "sil-ayarlar") {

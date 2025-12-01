@@ -1,5 +1,6 @@
 <?php
 require_once dirname(__DIR__, levels: 2) . '/configs/bootstrap.php';
+header('Content-Type: application/json; charset=utf-8');
 
 use Model\SettingsModel;
 use App\Helper\Security;
@@ -7,47 +8,50 @@ use App\Helper\Security;
 $Settings = new SettingsModel();
 
 $site_id = $_SESSION["site_id"] ?? 0;
-$user_id = $_SESSION['user']->id ?? null;
-$mevcut = $Settings->Ayarlar();
-$ayar_id = $mevcut->id ?? null;
+$user_id = (isset($_SESSION['user']) && isset($_SESSION['user']->id)) ? (int)$_SESSION['user']->id : 0;
 
 if ($_POST["action"] == "ayarlar_kaydet") {
-    $data = [
-        "id"                => $ayar_id,
-        "site_id"           => (int)$site_id,
-        "yetkili_adi_soyadi"=> trim($_POST["yetkiliAdiSoyadi"] ?? ''),
-        "eposta"            => trim($_POST["eposta"] ?? ''),
-        "telefon"           => trim($_POST["telefon"] ?? ''),
-        "acil_iletisim"     => trim($_POST["acilIletisim"] ?? ''),
+    try {
+        $kv = $Settings->getAllSettingsAsKeyValue() ?? [];
+        $smtpDurum = array_key_exists('emailDurum', $_POST) ? (trim($_POST['emailDurum']) === '1' ? '1' : '0') : (string)($kv['smtp_durum'] ?? '0');
+        $smsDurum  = array_key_exists('smsDurum', $_POST) ? (trim($_POST['smsDurum']) === '1' ? '1' : '0') : (string)($kv['sms_durum'] ?? '0');
+        $waDurum   = array_key_exists('whatsappDurum', $_POST) ? (trim($_POST['whatsappDurum']) === '1' ? '1' : '0') : (string)($kv['whatsapp_durum'] ?? '0');
 
-        "smtp_server"       => trim($_POST["smtpServer"] ?? ''),
-        "smtp_port"         => trim($_POST["smtpPort"] ?? ''),
-        "smtp_user"         => trim($_POST["smtpUser"] ?? ''),
-        "smtp_password"     => trim($_POST["smtpPassword"] ?? ''),
-        "smtp_durum"        => trim($_POST["emailDurum"] ?? '0'),
+        $pairs = [
+            'yetkili_adi_soyadi' => ['value' => trim($_POST['yetkiliAdiSoyadi'] ?? ''), 'aciklama' => 'Genel: Yetkili adı soyadı'],
+            'eposta'             => ['value' => trim($_POST['eposta'] ?? ''), 'aciklama' => 'Genel: E-posta adresi'],
+            'telefon'            => ['value' => trim($_POST['telefon'] ?? ''), 'aciklama' => 'Genel: Telefon'],
+            'acil_iletisim'      => ['value' => trim($_POST['acilIletisim'] ?? ''), 'aciklama' => 'Genel: Acil iletişim'],
 
-        "sms_provider"      => trim($_POST["smsProvider"] ?? ''),
-        "sms_username"      => trim($_POST["smsUsername"] ?? ''),
-        "sms_password"      => trim($_POST["smsPassword"] ?? ''),
-        "sms_durum"         => trim($_POST["smsDurum"] ?? '0'),
+            'smtp_server'        => ['value' => trim($_POST['smtpServer'] ?? ''), 'aciklama' => 'E-posta: SMTP sunucusu'],
+            'smtp_port'          => ['value' => trim($_POST['smtpPort'] ?? ''), 'aciklama' => 'E-posta: SMTP port'],
+            'smtp_user'          => ['value' => trim($_POST['smtpUser'] ?? ''), 'aciklama' => 'E-posta: kullanıcı'],
+            'smtp_password'      => ['value' => trim($_POST['smtpPassword'] ?? ''), 'aciklama' => 'E-posta: şifre'],
+            'smtp_durum'         => ['value' => $smtpDurum, 'aciklama' => 'E-posta: aktif mi'],
 
-        "whatsapp_api_url"  => trim($_POST["whatsappApiUrl"] ?? ''),
-        "whatsapp_token"    => trim($_POST["whatsappToken"] ?? ''),
-        "whatsapp_sender"   => trim($_POST["whatsappSender"] ?? ''),
-        "whatsapp_durum"    => trim($_POST["whatsappDurum"] ?? '0'),
-        "kayit_tarihi"      => date('Y-m-d H:i:s'),
-    ];
+            'sms_provider'       => ['value' => trim($_POST['smsProvider'] ?? ''), 'aciklama' => 'SMS: servis sağlayıcı'],
+            'sms_username'       => ['value' => trim($_POST['smsUsername'] ?? ''), 'aciklama' => 'SMS: kullanıcı adı'],
+            'sms_password'       => ['value' => trim($_POST['smsPassword'] ?? ''), 'aciklama' => 'SMS: şifre'],
+            'sms_durum'          => ['value' => $smsDurum, 'aciklama' => 'SMS: aktif mi'],
 
-    if (!empty($ayar_id)) {
-        $data["guncelleme_tarihi"] = date('Y-m-d H:i:s');
+            'whatsapp_api_url'   => ['value' => trim($_POST['whatsappApiUrl'] ?? ''), 'aciklama' => 'WhatsApp: API URL'],
+            'whatsapp_token'     => ['value' => trim($_POST['whatsappToken'] ?? ''), 'aciklama' => 'WhatsApp: token'],
+            'whatsapp_sender'    => ['value' => trim($_POST['whatsappSender'] ?? ''), 'aciklama' => 'WhatsApp: gönderen'],
+            'whatsapp_durum'     => ['value' => $waDurum, 'aciklama' => 'WhatsApp: aktif mi'],
+        ];
+
+        $Settings->upsertPairs((int)$site_id, $user_id, $pairs);
+
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Site Ayarları başarıyla kaydedildi.'
+        ]);
+    } catch (\Throwable $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Ayarlar kaydedilirken hata oluştu',
+        ]);
     }
-
-    $Settings->saveWithAttr($data);
-
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Site Ayarları başarıyla kaydedildi.'
-    ]);
 }
 
 if ($_POST["action"] == "sil-ayarlar") {

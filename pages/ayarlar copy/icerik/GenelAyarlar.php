@@ -66,7 +66,7 @@
                     <i class="fas fa-user"></i>
                 </div>
                 <input type="text" class="form-control" id="yetkiliAdiSoyadi" name="yetkiliAdiSoyadi"
-                    placeholder="Yetkili adı soyadı yazınız" value="<?php echo $AyarlarBilgileri->yetkili_adi_soyadi ?? ''; ?>">
+                    placeholder="Yetkili adı soyadı yazınız" value="<?php echo $AyarlarKV['yetkili_adi_soyadi'] ?? ''; ?>">
             </div>
         </div>
         <div class="col-lg-2">
@@ -78,7 +78,7 @@
                     <i class="fas fa-envelope"></i>
                 </div>
                 <input type="email" class="form-control" id="eposta" name="eposta" placeholder="E-posta adresi yazınız"
-                    value="<?php echo $AyarlarBilgileri->eposta ?? ''; ?>">
+                    value="<?php echo $AyarlarKV['eposta'] ?? ''; ?>">
             </div>
         </div>
 
@@ -95,7 +95,7 @@
                     <i class="fas fa-phone"></i>
                 </div>
                 <input type="tel" class="form-control" id="telefon" name="telefon"
-                    placeholder="Telefon numarası yazınız" value="<?php echo $AyarlarBilgileri->telefon ?? ''; ?>">
+                    placeholder="Telefon numarası yazınız" value="<?php echo $AyarlarKV['telefon'] ?? ''; ?>">
             </div>
         </div>
         <div class="col-lg-2">
@@ -107,7 +107,7 @@
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
                 <input type="tel" class="form-control" id="acilIletisim" name="acilIletisim"
-                    placeholder="Acil iletişim numarası" value="<?php echo $AyarlarBilgileri->acil_iletisim ?? ''; ?>">
+                    placeholder="Acil iletişim numarası" value="<?php echo $AyarlarKV['acil_iletisim'] ?? ''; ?>">
             </div>
         </div>
     </div>
