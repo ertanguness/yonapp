@@ -36,6 +36,19 @@ class SettingsModel extends Model
         return $sql->fetchAll(PDO::FETCH_KEY_PAIR);
     }
 
+    public function getAllRowsBySite(int $siteId): array
+    {
+        $stmt = $this->db->prepare("SELECT id, set_name, set_value FROM {$this->table} WHERE site_id = ? ORDER BY id DESC");
+        $stmt->execute([$siteId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    public function deleteBySetNamePrefix(int $siteId, string $prefix): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE site_id = ? AND set_name LIKE ?");
+        return $stmt->execute([$siteId, $prefix.'%']);
+    }
+
     /** Sitenin Mesaj Gonderen Başlıklarını döndürür */
     public function getMessageSenders()
     {

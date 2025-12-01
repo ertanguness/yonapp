@@ -50,6 +50,10 @@ $(document).on("click", "#ayarlar_kaydet", function () {
     return;
   }
 
+  formData.set("emailDurum", $("#emailDurum").is(":checked") ? "1" : "0");
+  formData.set("smsDurum", $("#smsDurum").is(":checked") ? "1" : "0");
+  formData.set("whatsappDurum", $("#whatsappDurum").is(":checked") ? "1" : "0");
+
   fetch(ayarlarUrl, {
     method: "POST",
     body: formData,

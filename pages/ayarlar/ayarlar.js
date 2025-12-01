@@ -151,5 +151,8 @@ $(document).ready(function(){
   } else if(tab === 'general'){
     var gen = document.querySelector('a[data-bs-target="#generalSettingsTab"]');
     if(gen){ bootstrap.Tab.getOrCreateInstance(gen).show(); }
+  } else if(tab === 'communications'){
+    var comm = document.querySelector('a[data-bs-target="#communicationsSettingsTab"]');
+    if(comm){ bootstrap.Tab.getOrCreateInstance(comm).show(); }
   }
 });
