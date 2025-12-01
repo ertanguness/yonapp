@@ -37,9 +37,7 @@ public static function dmY($date = null, $format = 'd.m.Y')
    // 'Y-m-d' çıktısı
     public static function Ymd(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
-        if ($input === null || $input === '') {
-            return '';
-        }
+      
         return self::parseToFormat($input, 'Y-m-d', $tz);
     }
 

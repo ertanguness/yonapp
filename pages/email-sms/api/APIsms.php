@@ -47,6 +47,7 @@ if (!$testMode) {
     }
 }
 
+$logger = getLogger();
 $pdo = \getDbConnection();
 $SmsModel = new SmsModel();
 $KisiModel = new KisilerModel();
@@ -84,6 +85,7 @@ $siteName = $siteRow->site_adi ?? '';
 $recipientIds = $postData['recipient_ids'] ?? $postData['ids'] ?? [];
 
 $success = 0; $fail = 0; $errors = [];
+$insertRows = [];
 foreach ($recipients as $idx => $telRaw) {
     $telDigits = preg_replace('/\D/','', (string)$telRaw);
     $kisiId = 0;
@@ -132,23 +134,38 @@ foreach ($recipients as $idx => $telRaw) {
         ($daireKodu ?: ''),
         ($daireKodu ?: '')
     ], $messageText);
-    $sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
+    /** Gerçek kullanımda açıkacak */
+    //$sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
+    
+    /** Test için örnek kullan */
+    $sent = true;
+    
+
+    
     if ($sent) { $success++; } else { $fail++; $errors[] = $telRaw; }
+    $insertRows[] = [
+        'type' => 'sms',
+        'site_id' => $siteId,
+        'recipients' => json_encode([$telDigits ?: $telRaw], JSON_UNESCAPED_UNICODE),
+        'subject' => null,
+        'message' => $msg,
+        'status' => $sent ? 'success' : 'fail',
+    ];
+
+    $logger->info('SMS gönderim durumu', [
+        'to' => $telDigits ?: $telRaw,
+        'message' => $msg,
+        'status' => $sent ? 'success' : 'fail',
+    ]);
 }
 
 if ($success > 0) {
     $apiResponse['status'] = 'success';
     $apiResponse['message'] = $success . ' alıcıya başarıyla SMS gönderildi.' . ($fail ? (' / Başarısız: ' . $fail) : '');
     try {
-        $data = [
-            'type' => 'sms',
-            'site_id' => $_SESSION['site_id'],
-            'recipients' => json_encode($recipients, JSON_UNESCAPED_UNICODE),
-            'subject' => null,
-            'message' => $msg,
-            'status' => $fail ? 'partial' : 'success',
-        ];
-        $SmsModel->saveWithAttr($data);
+        if (!empty($insertRows)) {
+            $SmsModel->bulkInsert($insertRows);
+        }
     } catch (Exception $e) {
         $apiResponse['message'] = 'SMS gönderildi ancak log yazılırken hata oluştu: ' . $e->getMessage();
     }
