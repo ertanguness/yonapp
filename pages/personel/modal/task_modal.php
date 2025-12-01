@@ -12,7 +12,6 @@ $GorevModel = new PersonelGorevlerModel();
 $id = $_GET['id'] ?? 0;
 $gorev = $GorevModel->find($id, true);
 
-// Helper::dd($gorev);
 
 ?>
 
