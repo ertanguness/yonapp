@@ -37,9 +37,7 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                                 <small class="text-muted">Kiracı/Ev Sahibi ve Aktif/Pasif filtrelenebilir; çoklu seçim yapın.</small>
                             </div>
                             <div class="d-flex gap-2">
-                                <label class="btn btn-outline-primary btn-sm mb-0" for="smsExcelInput">Excelden Yükle</label>
-                                <input type="file" id="smsExcelInput" accept=".xlsx,.xls,.csv" style="display:none">
-                                <button class="btn btn-primary btn-sm" id="smsOpenModal"><i class="fas fa-paper-plane me-2"></i>Seçililere Mesaj</button>
+                                <button class="btn btn-primary" id="smsOpenModal"><i class="fas fa-paper-plane me-2"></i>Seçililere Mesaj</button>
                             </div>
                         </div>
                         <div class="card-body p-0">
@@ -316,31 +314,31 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
             });
         });
 
-        $('#smsExcelInput').on('change', function(e){
-            var f = e.target.files && e.target.files[0];
-            if (!f) return;
-            if (!window.XLSX) { Swal.fire({ title:'Hata', text:'Excel okuyucu yüklü değil', icon:'error' }); return; }
-            var reader = new FileReader();
-            reader.onload = function(evt){
-                var wb = XLSX.read(evt.target.result, { type: 'binary' });
-                var ws = wb.Sheets[wb.SheetNames[0]];
-                var rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                var added = 0;
-                rows.forEach(function(r){
-                    (r||[]).forEach(function(cell){
-                        var ph = normalizePhone(cell);
-                        var isRepeat = /^([0-9])\1{9,14}$/.test(ph);
-                        var isValid = (window.isValidPhoneNumber ? window.isValidPhoneNumber(ph) : (!isRepeat && /^\d{10,15}$/.test(ph)));
-                        if (isValid) {
-                            if (!selectedSmsPhones.includes(ph)) { selectedSmsPhones.push(ph); added++; }
-                        }
-                    });
-                });
-                reapplySelection();
-                Swal.fire({ title:'Yüklendi', text: added+' numara eklendi', icon:'success' });
-            };
-            reader.readAsBinaryString(f);
-            e.target.value = '';
-        });
+        // $('#smsExcelInput').on('change', function(e){
+        //     var f = e.target.files && e.target.files[0];
+        //     if (!f) return;
+        //     if (!window.XLSX) { Swal.fire({ title:'Hata', text:'Excel okuyucu yüklü değil', icon:'error' }); return; }
+        //     var reader = new FileReader();
+        //     reader.onload = function(evt){
+        //         var wb = XLSX.read(evt.target.result, { type: 'binary' });
+        //         var ws = wb.Sheets[wb.SheetNames[0]];
+        //         var rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        //         var added = 0;
+        //         rows.forEach(function(r){
+        //             (r||[]).forEach(function(cell){
+        //                 var ph = normalizePhone(cell);
+        //                 var isRepeat = /^([0-9])\1{9,14}$/.test(ph);
+        //                 var isValid = (window.isValidPhoneNumber ? window.isValidPhoneNumber(ph) : (!isRepeat && /^\d{10,15}$/.test(ph)));
+        //                 if (isValid) {
+        //                     if (!selectedSmsPhones.includes(ph)) { selectedSmsPhones.push(ph); added++; }
+        //                 }
+        //             });
+        //         });
+        //         reapplySelection();
+        //         Swal.fire({ title:'Yüklendi', text: added+' numara eklendi', icon:'success' });
+        //     };
+        //     reader.readAsBinaryString(f);
+        //     e.target.value = '';
+        // });
     });
 </script>

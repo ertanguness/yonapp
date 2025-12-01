@@ -312,6 +312,10 @@ Object.defineProperty(messageTextarea, 'value', {
       return;
     }
 
+    /**Butonu disabled yap ve bekleme göster */
+    smsGonderBtn.disabled = true;
+    smsGonderBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Bekleyen...';
+
     // AJAX isteği
     fetch("/pages/email-sms/api/APIsms.php", { // Path düzeltildi
       method: "POST",
@@ -338,6 +342,8 @@ Object.defineProperty(messageTextarea, 'value', {
           updatePreview();
           updateCharCounter();
           updateRecipientsCount();
+
+      
         });
        
       }else{
@@ -347,12 +353,19 @@ Object.defineProperty(messageTextarea, 'value', {
           icon: "error",
           confirmButtonText: "Tamam"
         })
-    
+
       }
+        
+          /**Butonu eski haline getir */
+          smsGonderBtn.disabled = false;
+          smsGonderBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gönder';
     })
     .catch((error) => {
       console.error('SMS gönderme hatası:', error);
 
+          /**Butonu eski haline getir */
+          smsGonderBtn.disabled = false;
+          smsGonderBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gönder';
         Swal.fire({
           title: "Hata!",
           text: "SMS gönderilirken bir sorun oluştu.",

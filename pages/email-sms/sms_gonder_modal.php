@@ -140,10 +140,11 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
         cursor: text;
         min-height: 48px;
         padding: 10px 12px;
+        padding: 10px 12px;
         max-height: 140px;
         overflow-y: auto;
         padding-right: 12px;
-        border-radius: 12px;
+        border-radius: 6px;
     }
 
     .tag-input-container input {
@@ -186,7 +187,7 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
     }
 
     #message.form-control{
-        border-radius: 14px;
+        border-radius: 6px;
         border: 1px solid #eef2f7;
         box-shadow: 0 8px 20px rgba(16,24,40,.04);
     }
