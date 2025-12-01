@@ -300,11 +300,13 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                         (selectedSmsPhones || []).forEach(function(o){ window.addPhoneToSMS(o); });
                     }
                     window.selectedRecipientIds = selectedSmsIds.slice();
+                    window.selectedRecipientMeta = (selectedSmsPhones || []).slice();
                 });
                 setTimeout(function(){
                     if (typeof window.initSmsModal === 'function') {
                         window.initSmsModal();
                         window.selectedRecipientIds = selectedSmsIds.slice();
+                        window.selectedRecipientMeta = (selectedSmsPhones || []).slice();
                         if (typeof window.addPhoneToSMS === 'function') {
                             (selectedSmsPhones || []).forEach(function(o){ window.addPhoneToSMS(o); });
                         }

@@ -579,6 +579,19 @@ Object.defineProperty(messageTextarea, 'value', {
     var kisiId = (typeof input === 'object' && input !== null) ? (input.id || input.kisiId || 0) : 0;
     var daire = (typeof input === 'object' && input !== null) ? (input.daire || input.daire_kodu || '') : '';
 
+    if (!daire && kisiId) {
+      var meta = (window.selectedRecipientMeta || []).find(function(m){ return (m && (m.id === kisiId || m.kisiId === kisiId)); });
+      if (meta && meta.daire) daire = meta.daire;
+      if (!daire) {
+        var cb = document.querySelector('#smsResidentsTable .sms-sec[data-id="'+kisiId+'"]');
+        if (cb) {
+          var row = cb.closest('tr');
+          var cell = row && row.querySelector('td:nth-child(2)');
+          if (cell) daire = cell.textContent.trim();
+        }
+      }
+    }
+
     var normalizedPhone = normalizePhoneNumber(phoneRaw);
     if (!normalizedPhone || !isValidPhoneNumber(normalizedPhone)) {
       if (!(typeof input === 'object' && input !== null)) {

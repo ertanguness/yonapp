@@ -60,7 +60,7 @@ if (empty($recipients) || !is_array($recipients)) {
 }
 
 // Oran sınırı: dakikada en fazla 60 SMS (test modunda gevşet)
-$limitPerMinute = 60;
+$limitPerMinute = 300;
 $siteId = $_SESSION['site_id'] ?? 0;
 $recentCount = 0;
 try {
