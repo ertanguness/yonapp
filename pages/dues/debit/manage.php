@@ -118,7 +118,7 @@ switch ($hedef_tipi) {
 <div class="bg-white py-3 border-bottom rounded-0 p-md-0 mb-0 ">
     <div class="d-flex align-items-center justify-content-between">
         <div class="nav-tabs-wrapper page-content-left-sidebar-wrapper">
-           
+
             <ul class="nav nav-tabs nav-tabs-custom-style" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tanimliBorclarTab">Tanımlı Borç Tipleri </button>
@@ -129,7 +129,7 @@ switch ($hedef_tipi) {
 
             </ul>
         </div>
-       
+
     </div>
 </div>
 <div class="main-content mb-20">
@@ -175,7 +175,7 @@ switch ($hedef_tipi) {
                                     <?php foreach ($tanimli_borclandirmalar as $borclandirma):
                                         $enc_id = Security::encrypt($borclandirma->id);
                                         $enc_borc_tipi_id = Security::encrypt($borclandirma->due_id);
-                                        
+
 
                                     ?>
                                         <tr>
@@ -617,9 +617,15 @@ switch ($hedef_tipi) {
         var daireTipleri = $(cells[6]).text().trim();
 
         function toChips(text) {
-            var items = (text || '').split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s.length; });
+            var items = (text || '').split(',').map(function(s) {
+                return s.trim();
+            }).filter(function(s) {
+                return s.length;
+            });
             if (!items.length) return '-';
-            return items.map(function(i){ return '<span class="badge bg-soft-primary text-primary border-soft-primary">'+ i +'</span>'; }).join(' ');
+            return items.map(function(i) {
+                return '<span class="badge bg-soft-primary text-primary border-soft-primary">' + i + '</span>';
+            }).join(' ');
         }
         $('#detay_due_name').text(dueName);
         $('#detay_tutar_oran').text(kimeTutarOran);
@@ -632,6 +638,12 @@ switch ($hedef_tipi) {
     });
 
     $('#modal_borclandir_kaydet').on('click', function() {
+        let $this = $(this);
+        $this.prop('disabled', true);
+        /** Butonun yazısı Borçlandırma işlemi başlatıldı */
+        $this.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Borçlandırılıyor...');
+
+
         // Form verilerini al
         var form = $('#borclandirForm');
         var formData = new FormData(form[0]);
@@ -640,9 +652,10 @@ switch ($hedef_tipi) {
         formData.append('baslangic_tarihi', $('#modal_baslangic_tarihi').val());
         formData.append('bitis_tarihi', $('#modal_bitis_tarihi').val());
 
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
-        }
+        // for (let pair of formData.entries()) {
+        //     console.log(pair[0] + ': ' + pair[1]);
+        // }
+
 
         fetch('pages/dues/debit/api.php', {
                 method: 'POST',
@@ -650,6 +663,11 @@ switch ($hedef_tipi) {
             }).then(response => response.json())
             .then(data => {
                 console.log(data);
+                // Butonu tekrar etkinleştir
+                $this.prop('disabled', false);
+                // Butonun orijinal yazısını geri yükle
+                $this.html('Kaydet');
+
                 let title = data.status === 'success' ? 'Başarılı!' : 'Hata!';
                 swal.fire({
                     title: title,
@@ -660,41 +678,57 @@ switch ($hedef_tipi) {
 
 
             })
+            .catch(error => {
+                console.error('Hata:', error);
+                // Butonu tekrar etkinleştir
+                $this.prop('disabled', false);
+                // Butonun orijinal yazısını geri yükle
+                $this.html('Kaydet');
+                swal.fire({
+                    title: 'Hata!',
+                    text: 'İşlem sırasında bir hata oluştu.',
+                    icon: 'error',
+                });
+            });
 
 
+
+        // Butonu tekrar etkinleştir
+        $this.prop('disabled', false);
+        // Butonun orijinal yazısını geri yükle
+        $this.html('Kaydet');
 
     });
-$(document).ready(function() {
-    // Flatpickr örneğini al
-    var baslangicTarihiFlatpickr = flatpickr('#modal_baslangic_tarihi', {
-        dateFormat: "d.m.Y",
-        locale: "tr", // locale for this instance only
-        dateFormat: "d.m.Y",
-        onChange: function(selectedDates, dateStr, instance) {
-            if (!dateStr) return;
-            
-            var tarihParcalari = dateStr.split('.');
-            var gun = tarihParcalari[0];
-            var ay = tarihParcalari[1];
-            var yil = tarihParcalari[2];
+    $(document).ready(function() {
+        // Flatpickr örneğini al
+        var baslangicTarihiFlatpickr = flatpickr('#modal_baslangic_tarihi', {
+            dateFormat: "d.m.Y",
+            locale: "tr", // locale for this instance only
+            dateFormat: "d.m.Y",
+            onChange: function(selectedDates, dateStr, instance) {
+                if (!dateStr) return;
 
-            // Ayın son gününü hesapla
-            var sonGun = new Date(yil, ay, 0).getDate();
+                var tarihParcalari = dateStr.split('.');
+                var gun = tarihParcalari[0];
+                var ay = tarihParcalari[1];
+                var yil = tarihParcalari[2];
 
-            // Bitiş tarihini ayın son günü olarak ayarla
-            var bitisTarihi = sonGun + '.' + ay + '.' + yil;
-            console.log('Yeni Bitiş Tarihi:', bitisTarihi);
-            $('#modal_bitis_tarihi').val(bitisTarihi);
+                // Ayın son gününü hesapla
+                var sonGun = new Date(yil, ay, 0).getDate();
 
-            // Açıklama kısmını da güncelle
-            var monthNames = [
-                "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-                "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
-            ];
-            var monthName = monthNames[parseInt(ay) - 1];
-            $('#modal_aciklama').val(monthName + ' ' + yil + ' ' + 'AİDAT');
-        }
+                // Bitiş tarihini ayın son günü olarak ayarla
+                var bitisTarihi = sonGun + '.' + ay + '.' + yil;
+                console.log('Yeni Bitiş Tarihi:', bitisTarihi);
+                $('#modal_bitis_tarihi').val(bitisTarihi);
+
+                // Açıklama kısmını da güncelle
+                var monthNames = [
+                    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+                    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+                ];
+                var monthName = monthNames[parseInt(ay) - 1];
+                $('#modal_aciklama').val(monthName + ' ' + yil + ' ' + 'AİDAT');
+            }
+        });
     });
-});
-
 </script>

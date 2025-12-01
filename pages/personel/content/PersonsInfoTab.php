@@ -60,7 +60,7 @@ use App\Helper\Date;
                 <div class="input-group">
                     <div class="input-group-text"><i class="fas fa-calendar"></i></div>
                     <input type="text" class="form-control flatpickr" name="ise_baslama_tarihi" id="ise_baslama_tarihi"
-                        value="<?php echo Date::dmY($personel->ise_baslama_tarihi) ?? '' ?>">
+                        value="<?php echo Date::dmY($personel->ise_baslama_tarihi ?? Date::today()) ?? '' ?>">
                 </div>
             </div>
 
@@ -71,7 +71,7 @@ use App\Helper\Date;
                 <div class="input-group">
                     <div class="input-group-text"><i class="fas fa-calendar"></i></div>
                     <input type="text" class="form-control flatpickr" name="isten_ayrilma_tarihi" id="isten_ayrilma_tarihi"
-                        value="<?php echo Date::dmY($personel->isten_ayrilma_tarihi) ?? '' ?>">
+                        value="<?php echo Date::dmY($personel->isten_ayrilma_tarihi ?? '') ?? '' ?>">
                 </div>
             </div>
         </div>

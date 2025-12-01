@@ -82,27 +82,56 @@ $siteRow = $siteHelper->getCurrentSite();
 $siteName = $siteRow->site_adi ?? '';
 
 $recipientIds = $postData['recipient_ids'] ?? $postData['ids'] ?? [];
-// Telefon -> kisi id eşlemesi yoksa boş bırak
-$idMap = [];
-if (is_array($recipientIds) && count($recipientIds) === count($recipients)) {
-    foreach ($recipients as $idx => $tel) { $idMap[$tel] = (int)($recipientIds[$idx] ?? 0); }
-}
 
 $success = 0; $fail = 0; $errors = [];
-foreach ($recipients as $telRaw) {
+foreach ($recipients as $idx => $telRaw) {
     $telDigits = preg_replace('/\D/','', (string)$telRaw);
-    $kisiId = $idMap[$telRaw] ?? 0;
+    $kisiId = 0;
+    if (is_array($recipientIds) && isset($recipientIds[$idx])) {
+        $kisiId = (int)$recipientIds[$idx];
+    }
     $adiSoyadi = '';
     $borcBakiye = '';
+    $daireKodu = '';
     if ($kisiId) {
-        $kisi = $KisiModel->find($kisiId);
+        $kisi = $KisiModel->getKisiByDaireId($kisiId);
         $adiSoyadi = $kisi->adi_soyadi ?? '';
+        $daireKodu = $kisi->daire_kodu ?? '';
         try {
             $ozet = $FinModel->getKisiGuncelBorcOzet($kisiId);
-            $borcBakiye = Helper::formattedMoney((float)($ozet->guncel_borc ?? 0));
+            $borcBakiye = Helper::formattedMoneyWithoutCurrency((float)($ozet->guncel_borc ?? 0));
         } catch (\Throwable $e) { $borcBakiye = ''; }
+    } else if ($telDigits) {
+        try {
+            $matches = $KisiModel->findWhere(['telefon' => $telDigits]);
+            if (!empty($matches)) {
+                $k = $matches[0];
+                $adiSoyadi = $k->adi_soyadi ?? $adiSoyadi;
+                $kisiIdGuess = (int)($k->id ?? 0);
+                if ($kisiIdGuess) {
+                    $kfull = $KisiModel->getKisiByDaireId($kisiIdGuess);
+                    $daireKodu = $kfull->daire_kodu ?? $daireKodu;
+                    try {
+                        $ozet = $FinModel->getKisiGuncelBorcOzet($kisiIdGuess);
+                        $borcBakiye = Helper::formattedMoneyWithoutCurrency((float)($ozet->guncel_borc ?? 0));
+                    } catch (\Throwable $e) { /* yoksay */ }
+                }
+            }
+        } catch (\Throwable $e) { /* yoksay */ }
     }
-    $msg = str_replace(['{ADISOYADI}','{BORÇBAKİYESİ}','{SİTEADI}'], [($adiSoyadi ?: ''), ($borcBakiye ?: ''), ($siteName ?: '')], $messageText);
+    $msg = str_replace([
+        '{ADISOYADI}',
+        '{BORÇBAKİYESİ}',
+        '{SİTEADI}',
+        '{DAİREKODU}',
+        '{DAIREKODU}'
+    ], [
+        ($adiSoyadi ?: ''),
+        ($borcBakiye ?: ''),
+        ($siteName ?: ''),
+        ($daireKodu ?: ''),
+        ($daireKodu ?: '')
+    ], $messageText);
     $sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
     if ($sent) { $success++; } else { $fail++; $errors[] = $telRaw; }
 }

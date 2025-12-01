@@ -23,6 +23,9 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
 </div>
 
 <div class="main-content">
+    <style>
+        .sms-izni-yok td { text-decoration: line-through; color: #6c757d; }
+    </style>
     <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
@@ -117,7 +120,8 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                             tbody.innerHTML = '';
                             rows.forEach(function(r){
                                 var tr = document.createElement('tr');
-                                tr.innerHTML = '<td>'+(r.sec||'')+'</td>'+
+                                tr.className = (r.DT_RowClass || '');
+                                tr.innerHTML = '<td>'+ (r.sec||'') +'</td>'+
                                                '<td>'+(r.daire_kodu||'')+'</td>'+
                                                '<td>'+(r.adi_soyadi||'')+'</td>'+
                                                '<td>'+(r.uyelik_tipi||'')+'</td>'+
@@ -191,7 +195,7 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
         function reapplySelection(){
             document.querySelectorAll('#smsResidentsTable .sms-sec').forEach(function(cb){
                 var id = parseInt(cb.getAttribute('data-id'));
-                // Sadece ID bazlı geri işaretleme: aynı telefonlu farklı satırlar işaretlenmesin
+                if (cb.disabled) { cb.checked = false; return; }
                 cb.checked = selectedSmsIds.includes(id);
             });
         }
@@ -203,7 +207,7 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
         $('#smsResidentsTable tbody').on('click', 'tr', function(e){
             if ($(e.target).closest('.item-checkbox').length) return;
             var cb = $(this).find('.sms-sec').get(0);
-            if (!cb) return;
+            if (!cb || cb.disabled) return;
             cb.checked = !cb.checked;
             $(cb).trigger('change');
         });
@@ -222,12 +226,13 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
         $(document).on('change', '#smsResidentsTable .sms-sec', function(){
             var id = $(this).data('id');
             var phone = normalizePhone(($(this).data('phone') || '').toString());
+            var daire = $(this).closest('tr').find('td:nth-child(2)').text().trim();
             if ($(this).is(':checked')) {
                 if (!selectedSmsIds.includes(id)) selectedSmsIds.push(id);
-                if (phone && !selectedSmsPhones.includes(phone)) selectedSmsPhones.push(phone);
+                if (phone) selectedSmsPhones.push({ phone: phone, id: id, daire: daire });
             } else {
                 selectedSmsIds = selectedSmsIds.filter(function(x){ return x !== id; });
-                selectedSmsPhones = selectedSmsPhones.filter(function(x){ return x !== phone; });
+                selectedSmsPhones = selectedSmsPhones.filter(function(o){ return !(o.id === id && o.phone === phone); });
             }
         });
 
@@ -257,9 +262,9 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                         var id = parseInt(it.id);
                         var phone = (it.phone||'').toString();
                         if (!Number.isNaN(id) && !selectedSmsIds.includes(id)) selectedSmsIds.push(id);
-                        if (phone && !selectedSmsPhones.includes(phone)) selectedSmsPhones.push(phone);
+                        if (phone) selectedSmsPhones.push({ phone: phone, id: id });
                     });
-                    $('#smsResidentsTable tbody .sms-sec').prop('checked', true);
+                    $('#smsResidentsTable tbody .sms-sec:not(:disabled)').prop('checked', true);
                     updateHeaderSelectState();
                 });
             } else {
@@ -276,11 +281,12 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
             document.querySelectorAll('#smsResidentsTable .sms-sec:checked').forEach(function(cb){
                 var id = parseInt(cb.getAttribute('data-id'));
                 var phone = normalizePhone((cb.getAttribute('data-phone')||'').toString());
+                var daire = $(cb).closest('tr').find('td:nth-child(2)').text().trim();
                 if (!Number.isNaN(id)) pageIds.push(id);
-                if (phone) pagePhones.push(phone);
+                if (phone) pagePhones.push({ phone: phone, id: id, daire: daire });
             });
             pageIds.forEach(function(id){ if (!selectedSmsIds.includes(id)) selectedSmsIds.push(id); });
-            pagePhones.forEach(function(ph){ if (!selectedSmsPhones.includes(ph)) selectedSmsPhones.push(ph); });
+            pagePhones.forEach(function(obj){ selectedSmsPhones.push(obj); });
             if (selectedSmsPhones.length === 0) {
                 Swal.fire({ title: 'Uyarı', text: 'Lütfen en az bir alıcı seçin.', icon: 'warning' });
                 return;
@@ -291,7 +297,7 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                 $('#SendMessage').one('shown.bs.modal', function(){
                     if (typeof window.initSmsModal === 'function') { window.initSmsModal(); }
                     if (typeof window.addPhoneToSMS === 'function') {
-                        (selectedSmsPhones || []).forEach(function(p){ window.addPhoneToSMS(p); });
+                        (selectedSmsPhones || []).forEach(function(o){ window.addPhoneToSMS(o); });
                     }
                     window.selectedRecipientIds = selectedSmsIds.slice();
                 });
@@ -300,7 +306,7 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                         window.initSmsModal();
                         window.selectedRecipientIds = selectedSmsIds.slice();
                         if (typeof window.addPhoneToSMS === 'function') {
-                            (selectedSmsPhones || []).forEach(function(p){ window.addPhoneToSMS(p); });
+                            (selectedSmsPhones || []).forEach(function(o){ window.addPhoneToSMS(o); });
                         }
                     }
                 },100);

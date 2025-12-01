@@ -27,6 +27,10 @@ public static function dmY($date = null, $format = 'd.m.Y')
 }
    public static function dmYHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
     {
+        if ($input === null || $input === '' || $input === '0') {
+            return '';
+        }
+   
         return self::parseToFormat($input, 'd.m.Y H:i:s', $tz);
     }
 
@@ -44,7 +48,19 @@ public static function dmY($date = null, $format = 'd.m.Y')
         return self::parseToFormat($input, 'Y-m-d H:i:s', $tz);
     }
 
+    /** Today=>Bugünün tarihi */
+    public static function today($format = 'd.m.Y')
+    {
+        return date($format);
+    }
+
     public static function now($format = 'Y-m-d H:i:s')
+    {
+        return date($format);
+    }
+
+
+    public static function nowTr($format = 'Y-m-d H:i:s')
     {
         return date($format);
     }

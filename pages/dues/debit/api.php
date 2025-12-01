@@ -90,7 +90,7 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
 
         $data = [];
         foreach ($tanimliBorclar as $borc) {
-            $borclandirma_tipi = $borc->borclandirma_tipi;
+            $borclandirma_tipi      = $borc->borclandirma_tipi;
             $tutar                  = $borc->tutar;
 
             $logger->info("Borçlandırma tipi: " . $borclandirma_tipi . ", Tutar: " . $tutar);

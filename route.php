@@ -30,6 +30,9 @@ $router->get('borclandirma-excelden-yukle/{id}', fn($id) => require 'pages/dues/
 $router->get('yonetici-aidat-odeme', fn() => require 'pages/dues/payment/list.php');
 $router->get('tahsilatlar', fn() => require 'pages/dues/collections/list.php');
 $router->get('tahsilat-detayi/{id}', fn($id) => require 'pages/dues/collections/detail.php');
+$router->get('tahsilat-detay-export/{id}', fn($id) => require 'pages/dues/collections/export/tahsilat_detay.php');
+
+
 
 $router->get('onay-bekleyen-tahsilatlar', fn() => require 'pages/dues/payment/tahsilat-onay.php');
 $router->get('eslesmeyen-odemeler', fn() => require 'pages/dues/payment/tahsilat-eslesmeyen.php');
