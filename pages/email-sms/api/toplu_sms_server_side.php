@@ -24,22 +24,23 @@ if ($siteId) {
             $dt = \DateTime::createFromFormat('Y-m-d', $rawCikis) ?: \DateTime::createFromFormat('d.m.Y', $rawCikis);
             $cikisTs = $dt ? $dt->getTimestamp() : strtotime($rawCikis);
         }
-        // Kural: Çıkış tarihi DOLU ve BUGÜNDEN BÜYÜK ise Pasif; boş ise Aktif; diğer durumda Aktif
-        if ($cikisTs !== null && $cikisTs > $today) {
+        if ($cikisTs !== null && $cikisTs <= $today) {
             $durumText = 'Pasif';
-        } else if ($cikisTs === null) {
-            $durumText = 'Aktif';
         } else {
             $durumText = 'Aktif';
         }
         $durumHtml = '<a href="javascript:void(0)" class="badge text-'.($durumText==='Pasif'?'danger':'success').' border border-dashed border-gray-500">'.$durumText.'</a>';
         $telefonHam = (string)($kisi->telefon ?? '');
         $telefonTemiz = preg_replace('/\D/', '', $telefonHam);
+        $smsIzni = (int)($kisi->sms_izni ?? 0);
+        $isSmsAllowed = ($smsIzni === 1);
 
         $cbId = 'checkBox_'.(int)$kisi->id;
+        $cbDisabled = $isSmsAllowed ? '' : ' disabled';
+        $cbPhone = $isSmsAllowed ? htmlspecialchars($telefonTemiz) : '';
         $secHtml = '<div class="item-checkbox ms-1">'
             .'<div class="custom-control custom-checkbox">'
-            .'<input type="checkbox" class="custom-control-input checkbox sms-sec" id="'.$cbId.'" data-id="'.(int)$kisi->id.'" data-phone="'.htmlspecialchars($telefonTemiz).'">'
+            .'<input type="checkbox" class="custom-control-input checkbox sms-sec" id="'.$cbId.'" data-id="'.(int)$kisi->id.'" data-phone="'.$cbPhone.'"'.$cbDisabled.'>'
             .'<label class="custom-control-label" for="'.$cbId.'"></label>'
             .'</div>'
             .'</div>';
@@ -50,13 +51,15 @@ if ($siteId) {
             'uyelik_tipi' => $uyelikHtml,
             'durum' => $durumHtml,
             'cikis_tarihi' => htmlspecialchars($cikisTarihi),
-            'telefon' => htmlspecialchars($telefonHam),
-            'telefon_clean' => $telefonTemiz,
+            'telefon' => $isSmsAllowed ? htmlspecialchars($telefonHam) : 'Sms İzni Yok',
+            'telefon_clean' => $isSmsAllowed ? $telefonTemiz : '',
             '_adi_soyadi' => $adiSoyadi,
             '_uyelik_tipi' => $uyelikTipi,
             '_durum' => $durumText,
             '_cikis' => $cikisTarihi,
             '_id' => (int)$kisi->id,
+            '_sms_izni' => $smsIzni,
+            'DT_RowClass' => $isSmsAllowed ? '' : 'sms-izni-yok',
         ];
     }
 }
@@ -111,9 +114,12 @@ if (!empty($request['columns']) && is_array($request['columns'])) {
 $recordsFiltered = count($rows);
 
 if (!empty($_GET['fetch']) && $_GET['fetch'] === 'all_ids') {
+    $allowedRows = array_values(array_filter($rows, function($r){
+        return (($r['_sms_izni'] ?? 0) === 1) && !empty($r['telefon_clean']);
+    }));
     $items = array_map(function($r){
         return [ 'id' => (int)($r['_id'] ?? 0), 'phone' => (string)($r['telefon_clean'] ?? '') ];
-    }, $rows);
+    }, $allowedRows);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['items' => $items, 'recordsFiltered' => $recordsFiltered]);
     exit;

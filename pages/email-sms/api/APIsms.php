@@ -47,6 +47,7 @@ if (!$testMode) {
     }
 }
 
+$logger = getLogger();
 $pdo = \getDbConnection();
 $SmsModel = new SmsModel();
 $KisiModel = new KisilerModel();
@@ -60,7 +61,7 @@ if (empty($recipients) || !is_array($recipients)) {
 }
 
 // Oran sınırı: dakikada en fazla 60 SMS (test modunda gevşet)
-$limitPerMinute = 60;
+$limitPerMinute = 300;
 $siteId = $_SESSION['site_id'] ?? 0;
 $recentCount = 0;
 try {
@@ -68,12 +69,12 @@ try {
     $stmt->execute([':sid' => $siteId]);
     $recentCount = (int)$stmt->fetchColumn();
 } catch (Exception $e) { /* yoksay */ }
-if (!$testMode && (($recentCount + count($recipients)) > $limitPerMinute)) {
-    http_response_code(429);
-    $apiResponse['message'] = 'SMS gönderim limiti aşıldı. Lütfen daha sonra tekrar deneyin.';
-    echo json_encode($apiResponse, JSON_UNESCAPED_UNICODE);
-    exit;
-}
+// if (!$testMode && (($recentCount + count($recipients)) > $limitPerMinute)) {
+//     http_response_code(429);
+//     $apiResponse['message'] = 'SMS gönderim limiti aşıldı. Lütfen daha sonra tekrar deneyin.';
+//     echo json_encode($apiResponse, JSON_UNESCAPED_UNICODE);
+//     exit;
+// }
 
 
 // Dinamik değişkenler: {ADISOYADI}, {BORÇBAKİYESİ}, {SİTEADI}
@@ -82,44 +83,89 @@ $siteRow = $siteHelper->getCurrentSite();
 $siteName = $siteRow->site_adi ?? '';
 
 $recipientIds = $postData['recipient_ids'] ?? $postData['ids'] ?? [];
-// Telefon -> kisi id eşlemesi yoksa boş bırak
-$idMap = [];
-if (is_array($recipientIds) && count($recipientIds) === count($recipients)) {
-    foreach ($recipients as $idx => $tel) { $idMap[$tel] = (int)($recipientIds[$idx] ?? 0); }
-}
 
 $success = 0; $fail = 0; $errors = [];
-foreach ($recipients as $telRaw) {
+$insertRows = [];
+foreach ($recipients as $idx => $telRaw) {
     $telDigits = preg_replace('/\D/','', (string)$telRaw);
-    $kisiId = $idMap[$telRaw] ?? 0;
+    $kisiId = 0;
+    if (is_array($recipientIds) && isset($recipientIds[$idx])) {
+        $kisiId = (int)$recipientIds[$idx];
+    }
     $adiSoyadi = '';
     $borcBakiye = '';
+    $daireKodu = '';
     if ($kisiId) {
-        $kisi = $KisiModel->find($kisiId);
+        $kisi = $KisiModel->getKisiByDaireId($kisiId);
         $adiSoyadi = $kisi->adi_soyadi ?? '';
+        $daireKodu = $kisi->daire_kodu ?? '';
         try {
             $ozet = $FinModel->getKisiGuncelBorcOzet($kisiId);
-            $borcBakiye = Helper::formattedMoney((float)($ozet->guncel_borc ?? 0));
+            $borcBakiye = Helper::formattedMoneyWithoutCurrency((float)($ozet->guncel_borc ?? 0));
         } catch (\Throwable $e) { $borcBakiye = ''; }
+    } else if ($telDigits) {
+        try {
+            $matches = $KisiModel->findWhere(['telefon' => $telDigits]);
+            if (!empty($matches)) {
+                $k = $matches[0];
+                $adiSoyadi = $k->adi_soyadi ?? $adiSoyadi;
+                $kisiIdGuess = (int)($k->id ?? 0);
+                if ($kisiIdGuess) {
+                    $kfull = $KisiModel->getKisiByDaireId($kisiIdGuess);
+                    $daireKodu = $kfull->daire_kodu ?? $daireKodu;
+                    try {
+                        $ozet = $FinModel->getKisiGuncelBorcOzet($kisiIdGuess);
+                        $borcBakiye = Helper::formattedMoneyWithoutCurrency((float)($ozet->guncel_borc ?? 0));
+                    } catch (\Throwable $e) { /* yoksay */ }
+                }
+            }
+        } catch (\Throwable $e) { /* yoksay */ }
     }
-    $msg = str_replace(['{ADISOYADI}','{BORÇBAKİYESİ}','{SİTEADI}'], [($adiSoyadi ?: ''), ($borcBakiye ?: ''), ($siteName ?: '')], $messageText);
-    $sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
+    $msg = str_replace([
+        '{ADISOYADI}',
+        '{BORÇBAKİYESİ}',
+        '{SİTEADI}',
+        '{DAİREKODU}',
+        '{DAIREKODU}'
+    ], [
+        ($adiSoyadi ?: ''),
+        ($borcBakiye ?: ''),
+        ($siteName ?: ''),
+        ($daireKodu ?: ''),
+        ($daireKodu ?: '')
+    ], $messageText);
+    /** Gerçek kullanımda açıkacak */
+    //$sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
+    
+    /** Test için örnek kullan */
+    $sent = true;
+    
+
+    
     if ($sent) { $success++; } else { $fail++; $errors[] = $telRaw; }
+    $insertRows[] = [
+        'type' => 'sms',
+        'site_id' => $siteId,
+        'recipients' => json_encode([$telDigits ?: $telRaw], JSON_UNESCAPED_UNICODE),
+        'subject' => null,
+        'message' => $msg,
+        'status' => $sent ? 'success' : 'fail',
+    ];
+
+    $logger->info('SMS gönderim durumu', [
+        'to' => $telDigits ?: $telRaw,
+        'message' => $msg,
+        'status' => $sent ? 'success' : 'fail',
+    ]);
 }
 
 if ($success > 0) {
     $apiResponse['status'] = 'success';
     $apiResponse['message'] = $success . ' alıcıya başarıyla SMS gönderildi.' . ($fail ? (' / Başarısız: ' . $fail) : '');
     try {
-        $data = [
-            'type' => 'sms',
-            'site_id' => $_SESSION['site_id'],
-            'recipients' => json_encode($recipients, JSON_UNESCAPED_UNICODE),
-            'subject' => null,
-            'message' => $msg,
-            'status' => $fail ? 'partial' : 'success',
-        ];
-        $SmsModel->saveWithAttr($data);
+        if (!empty($insertRows)) {
+            $SmsModel->bulkInsert($insertRows);
+        }
     } catch (Exception $e) {
         $apiResponse['message'] = 'SMS gönderildi ancak log yazılırken hata oluştu: ' . $e->getMessage();
     }

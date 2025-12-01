@@ -214,6 +214,44 @@ class Model extends SSPModel
         return Security::encrypt($this->attributes[$this->primaryKey]);
     }
 
+    public function bulkInsert(array $rows)
+    {
+        if (empty($rows)) {
+            return false;
+        }
+        $pk = $this->primaryKey;
+        $first = $rows[0];
+        if (array_key_exists($pk, $first)) {
+            foreach ($rows as $i => $r) {
+                $v = $r[$pk];
+                if ($v === null || $v === '' || $v === 0 || $v === '0') {
+                    unset($rows[$i][$pk]);
+                }
+            }
+            $first = $rows[0];
+        }
+        $columns = array_keys($first);
+        $valuesChunks = [];
+        $bindings = [];
+        foreach ($rows as $i => $r) {
+            $placeholders = [];
+            foreach ($columns as $col) {
+                $ph = ":{$col}_{$i}";
+                $placeholders[] = $ph;
+                $bindings[$ph] = $r[$col] ?? null;
+            }
+            $valuesChunks[] = '(' . implode(', ', $placeholders) . ')';
+        }
+        $sql = $this->db->prepare(
+            "INSERT INTO {$this->table} (" . implode(', ', $columns) . ") VALUES " . implode(', ', $valuesChunks)
+        );
+        foreach ($bindings as $ph => $val) {
+            $sql->bindValue($ph, $val);
+        }
+        $sql->execute();
+        return true;
+    }
+
     protected function update()
     {
         $setClause = '';

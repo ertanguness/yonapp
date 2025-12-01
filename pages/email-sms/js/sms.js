@@ -178,10 +178,13 @@ Object.defineProperty(messageTextarea, 'value', {
     }
   }
 
-  function createTag(text) {
-    const displayValue = text.trim();
+  function createTag(input) {
+    const isObj = typeof input === 'object' && input !== null;
+    const displayValue = (isObj ? String(input.phone || '') : String(input || '')).trim();
     const normalizedValue = normalizePhoneNumber(displayValue);
     const digitsOnly = displayValue.replace(/\D/g, '');
+    const kisiId = isObj ? (parseInt(input.id || input.kisiId || '0', 10) || 0) : 0;
+    const daire = isObj ? String(input.daire || input.daire_kodu || '') : '';
 
     if (!normalizedValue) {
       return;
@@ -189,10 +192,22 @@ Object.defineProperty(messageTextarea, 'value', {
 
     const tag = document.createElement("span");
     tag.className = "tag";
-    tag.textContent = displayValue;
     tag.dataset.phoneDisplay = displayValue;
     tag.dataset.phoneNormalized = normalizedValue;
     tag.dataset.phoneDigits = digitsOnly;
+    if (kisiId) tag.dataset.kisiId = String(kisiId);
+    if (daire) tag.dataset.daire = daire;
+
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = displayValue;
+    tag.appendChild(label);
+    if (daire) {
+      const meta = document.createElement('span');
+      meta.className = 'meta';
+      meta.textContent = ' • ' + daire;
+      tag.appendChild(meta);
+    }
 
     const closeBtn = document.createElement("span");
     closeBtn.className = "close-tag";
@@ -209,8 +224,9 @@ Object.defineProperty(messageTextarea, 'value', {
   window.createTag = createTag;
 
   function isValidPhoneNumber(number) {
+    const digits = (number || '').toString().replace(/\D/g, '');
     const phoneRegex = /^\d{10,15}$/;
-    return phoneRegex.test(number);
+    return phoneRegex.test(digits);
   }
 
   function normalizePhoneNumber(number) {
@@ -239,7 +255,7 @@ Object.defineProperty(messageTextarea, 'value', {
 
   function getExistingNormalizedNumbers() {
     return Array.from(recipientsList.querySelectorAll('.tag'))
-      .map(tag => tag.dataset.phoneNormalized)
+      .map(tag => (tag.dataset.phoneNormalized || '') + ':' + (tag.dataset.kisiId || ''))
       .filter(Boolean);
   }
 
@@ -250,13 +266,15 @@ Object.defineProperty(messageTextarea, 'value', {
     const recipients = Array.from(tags)
       .map((tag) => tag.dataset.phoneDigits || tag.dataset.phoneDisplay || '')
       .filter(Boolean);
+    const recipientIds = Array.from(tags)
+      .map((tag) => parseInt(tag.dataset.kisiId || '0', 10) || 0);
 
     const formData = {
       senderId: senderIdSelect.value,
       message: messageTextarea.value,
       recipients: recipients,
       csrf_token: (window.csrfToken || ''),
-      recipient_ids: (window.selectedRecipientIds || [])
+      recipient_ids: recipientIds
     };
 
     if (recipients.length === 0) {
@@ -502,11 +520,14 @@ Object.defineProperty(messageTextarea, 'value', {
         return;
       }
 
-      const phones = Array.from(selectedCheckboxes)
-        .map(cb => cb.getAttribute('data-phone'))
-        .filter(Boolean);
+      const rows = Array.from(selectedCheckboxes).map(cb => {
+        const phone = cb.getAttribute('data-phone') || '';
+        const id = parseInt(cb.getAttribute('data-id') || '0', 10) || 0;
+        const daire = cb.getAttribute('data-daire') || cb.getAttribute('data-da') || cb.getAttribute('data-apartment') || '';
+        return { phone, id, daire };
+      }).filter(x => x.phone);
 
-      if (phones.length === 0) {
+      if (rows.length === 0) {
         if (typeof Toastify !== 'undefined') {
           Toastify({ text: 'Seçilen kişiler için telefon bulunamadı.' }).showToast();
         } else {
@@ -527,7 +548,7 @@ Object.defineProperty(messageTextarea, 'value', {
         return;
       }
 
-      phones.forEach(addPhone);
+      rows.forEach(addPhone);
 
       getAllCheckboxes().forEach(cb => (cb.checked = false));
       if (selectAll) {
@@ -553,24 +574,37 @@ Object.defineProperty(messageTextarea, 'value', {
   window.setupModalSearch = setupModalSearch;
 
   // Kişileri SMS listesine eklemek için global fonksiyon
-  window.addPhoneToSMS = function(phoneNumber) {
-    if (!isValidPhoneNumber(phoneNumber)) {
-      console.error('Geçersiz telefon numarası:', phoneNumber);
-      if (typeof Toastify !== 'undefined') {
-        Toastify({ text: "Geçersiz numara: " + phoneNumber }).showToast();
+  window.addPhoneToSMS = function(input) {
+    var phoneRaw = (typeof input === 'object' && input !== null) ? (input.phone || '') : (input == null ? '' : String(input));
+    var kisiId = (typeof input === 'object' && input !== null) ? (input.id || input.kisiId || 0) : 0;
+    var daire = (typeof input === 'object' && input !== null) ? (input.daire || input.daire_kodu || '') : '';
+
+    if (!daire && kisiId) {
+      var meta = (window.selectedRecipientMeta || []).find(function(m){ return (m && (m.id === kisiId || m.kisiId === kisiId)); });
+      if (meta && meta.daire) daire = meta.daire;
+      if (!daire) {
+        var cb = document.querySelector('#smsResidentsTable .sms-sec[data-id="'+kisiId+'"]');
+        if (cb) {
+          var row = cb.closest('tr');
+          var cell = row && row.querySelector('td:nth-child(2)');
+          if (cell) daire = cell.textContent.trim();
+        }
+      }
+    }
+
+    var normalizedPhone = normalizePhoneNumber(phoneRaw);
+    if (!normalizedPhone || !isValidPhoneNumber(normalizedPhone)) {
+      if (!(typeof input === 'object' && input !== null)) {
+        if (typeof Toastify !== 'undefined') { Toastify({ text: "Geçersiz numara" }).showToast(); }
+        else { console.warn('Geçersiz numara'); }
       }
       return;
     }
 
-    const normalizedPhone = normalizePhoneNumber(phoneNumber);
-    if (!normalizedPhone) {
-      return;
-    }
-
-    const existingNumbers = getExistingNormalizedNumbers();
-
-    if (!existingNumbers.includes(normalizedPhone)) {
-      createTag(phoneNumber);
+    const existingKeys = getExistingNormalizedNumbers();
+    var key = normalizedPhone + ':' + (kisiId || '');
+    if (!existingKeys.includes(key)) {
+      createTag({ phone: normalizedPhone, id: kisiId, daire: daire });
     }
   };
 

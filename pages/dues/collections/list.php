@@ -28,7 +28,7 @@ Gate::authorizeOrDie('tahsilat_listele');
             <h5 class="m-b-10">Tahsilat</h5>
         </div>
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item">Tahsilat Listesi</li>
         </ul>
     </div>

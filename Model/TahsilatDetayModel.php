@@ -129,20 +129,40 @@ class TahsilatDetayModel extends Model
     public function getTahsilatlarByBorclandirmaId(int $borclandirma_id): array
     {
         $sql = $this->db->prepare("SELECT 
-                                                td.* ,
+                                                bd.id ,
                                                 bd.borc_adi,
-                                                bd.aciklama as borc_aciklama,
+                                                bd.aciklama AS borc_aciklama,
                                                 k.adi_soyadi,
                                                 ks.kasa_adi,
-                                                d.daire_kodu
-                                            FROM tahsilat_detay td
-                                            LEFT JOIN tahsilatlar t ON t.id = td.tahsilat_id
-                                            LEFT JOIN borclandirma_detayi bd ON bd.id = td.borc_detay_id
-                                            LEFT JOIN kisiler k ON k.id = t.kisi_id
-                                            LEFT JOIN daireler d ON d.id = k.daire_id
-                                            LEFT JOIN kasa ks ON ks.id = t.kasa_id
-                                            WHERE borc_detay_id IN (SELECT id FROM borclandirma_detayi WHERE borclandirma_id = ?)
-                                            and td.silinme_tarihi IS NULL
+                                                d.daire_kodu,
+
+                                                -- Tahsilat tutarı varsa getir, yoksa 0 yap
+                                                COALESCE(td.odenen_tutar, 0) AS odeme_tutari,
+
+                                                -- Tahsilat tutarı varsa tarihi getir, yoksa 0 yap
+                                                COALESCE(td.islem_tarihi, 0) AS odeme_tarihi,
+
+                                                -- Tahsilat ID (varsa)
+                                                t.id AS tahsilat_id
+
+                                            FROM borclandirma_detayi bd
+                                            LEFT JOIN tahsilat_detay td 
+                                                ON td.borc_detay_id = bd.id
+                                                AND td.silinme_tarihi IS NULL
+
+                                            LEFT JOIN tahsilatlar t 
+                                                ON t.id = td.tahsilat_id
+
+                                            LEFT JOIN kisiler k 
+                                                ON k.id = bd.kisi_id
+
+                                            LEFT JOIN daireler d 
+                                                ON d.id = k.daire_id
+
+                                            LEFT JOIN kasa ks 
+                                                ON ks.id = t.kasa_id
+
+                                            WHERE bd.borclandirma_id = ?
                                          ");
 
         $sql->execute([$borclandirma_id]);

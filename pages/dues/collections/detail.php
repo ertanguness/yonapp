@@ -15,6 +15,7 @@ $TahsilatDetayModel = new TahsilatDetayModel();
 //id route sayfasından geliyor
 
 $id = Security::decrypt($id ?? 0) ?? 0;
+$enc_borclandirma_id = Security::encrypt($id);
 
 
 $tahsilat_detay = $TahsilatDetayModel->getTahsilatlarByBorclandirmaId($id);
@@ -44,11 +45,26 @@ $odeme_yuzdesi = number_format($odeme_yuzdesi, 2, ',', '.'); // Yüzdeyi formatl
             <li class="breadcrumb-item">Borç Listesi</li>
         </ul>
     </div>
-    <div class="page-header-right ms-auto">
+    <div class="page-header-right d-flex ms-auto">
         <a href="/tahsilatlar" class="btn btn-outline-secondary me-2">
             <i class="feather-arrow-left me-2"></i>
             Listeye Dön
         </a>
+        <div class="dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="Verileri Dışa Aktar">
+            <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 10" data-bs-auto-close="outside">
+                <i class="feather-download"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end">
+                <a href="/tahsilat-detay-export/<?php echo $enc_borclandirma_id; ?>&format=excel" class="dropdown-item">
+                    <i class="bi bi-filetype-exe me-3"></i>
+                    <span>Excel</span>
+                </a>
+                <a href="/tahsilat-detay-export/<?php echo $enc_borclandirma_id; ?>&format=csv" class="dropdown-item">
+                    <i class="bi bi-filetype-csv me-3"></i>
+                    <span>CSV</span>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -142,13 +158,13 @@ $odeme_yuzdesi = number_format($odeme_yuzdesi, 2, ',', '.'); // Yüzdeyi formatl
 
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
-                                                    <?php echo Helper::formattedMoney($detay->odenen_tutar); ?>
+                                                    <?php echo Helper::formattedMoney($detay->odeme_tutari ?? 0); ?>
                                                 </div>
                                             </td>
 
                                             <td>
                                                 <div class="text-truncate" style="max-width: 200px;">
-                                                    <?php echo Date::dmY($detay->kayit_tarihi); ?>
+                                                    <?php echo Date::dmYHIS($detay->odeme_tarihi); ?>
                                                 </div>
                                             </td>
 

@@ -201,6 +201,11 @@ table thead tr:first-child th {
   vertical-align: middle;
 }
 
+html.app-skin-dark table thead tr:first-child th{
+    background-color: #121a2d !important;
+}
+
+
 #gelirGiderTable_wrapper .dataTables_filter {
   display: none !important;
 }

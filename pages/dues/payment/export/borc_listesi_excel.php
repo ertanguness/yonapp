@@ -38,6 +38,7 @@ foreach ($records as $borc) {
     $rows[] = [
         'daire_kodu' => (string)($borc->daire_kodu ?? ''),
         'adi_soyadi' => (string)($borc->adi_soyadi ?? ''),
+        'telefon' => (string)($borc->telefon ?? ''),
         'uyelik_tipi' => (string)($borc->uyelik_tipi ?? ''),
         'durum' => (string)($borc->durum ?? ''),
         'daire_tipi' => (string)($borc->daire_tipi ?? ''),
@@ -117,13 +118,17 @@ if (!empty($request['order'][0]['column'])) {
     } else {
         $keyMap = [
             2 => function ($r) { return $r['adi_soyadi']; },
-            3 => function ($r) { return $r['giris_tarihi']; },
-            4 => function ($r) { return $r['cikis_tarihi']; },
-            5 => function ($r) { return $r['_kalan_anapara']; },
-            6 => function ($r) { return $r['_gecikme_zammi']; },
-            7 => function ($r) { return $r['_toplam_kalan']; },
-            8 => function ($r) { return $r['_kredi_tutari']; },
-            9 => function ($r) { return $r['_net_borc']; },
+            3 => function ($r) { return $r['telefon']; },
+            4 => function ($r) { return $r['uyelik_tipi']; },
+            5 => function ($r) { return $r['durum']; },
+            6 => function ($r) { return $r['daire_tipi']; },
+            7 => function ($r) { return $r['giris_tarihi']; },
+            8 => function ($r) { return $r['cikis_tarihi']; },
+            9 => function ($r) { return $r['_kalan_anapara']; },
+            10 => function ($r) { return $r['_gecikme_zammi']; },
+            11 => function ($r) { return $r['_toplam_kalan']; },
+            12 => function ($r) { return $r['_kredi_tutari']; },    
+            13 => function ($r) { return $r['_net_borc']; },
         ];
         if (isset($keyMap[$col])) {
             $getter = $keyMap[$col];
@@ -145,7 +150,7 @@ $sheet->setTitle('Borç Listesi');
 
 // Üst başlıklar
 $tableHeaders = [
-    'Sıra', 'Daire Kodu', 'Ad Soyad', 'Üyelik Tipi', 'Durum', 'Daire Tipi',
+    'Sıra', 'Daire Kodu', 'Ad Soyad', 'Telefon', 'Üyelik Tipi', 'Durum', 'Daire Tipi',
     'Giriş Tarihi', 'Çıkış Tarihi', 'Borç Tutarı', 'Gecikme Zammı', 'Toplam Borç', 'Kredi Tutarı', 'Net Borç'
 ];
 $colIndex = 1;
@@ -191,6 +196,7 @@ foreach ($rows as $r) {
     $sheet->setCellValue(Coordinate::stringFromColumnIndex($c++) . $rowIndex, $seq++);
     $sheet->setCellValue(Coordinate::stringFromColumnIndex($c++) . $rowIndex, $r['daire_kodu']);
     $sheet->setCellValue(Coordinate::stringFromColumnIndex($c++) . $rowIndex, $r['adi_soyadi']);
+    $sheet->setCellValue(Coordinate::stringFromColumnIndex($c++) . $rowIndex, $r['telefon']);
     $sheet->setCellValue(Coordinate::stringFromColumnIndex($c++) . $rowIndex, $r['uyelik_tipi']);
     $sheet->setCellValue(Coordinate::stringFromColumnIndex($c++) . $rowIndex, $r['durum']);
     $sheet->setCellValue(Coordinate::stringFromColumnIndex($c++) . $rowIndex, $r['daire_tipi']);
@@ -209,7 +215,7 @@ $lastCol = $lastHeaderColumn;
 $lastRow = $rowIndex - 1;
 
 // Kolon genişlikleri
-$widths = [6, 12, 24, 12, 10, 10, 12, 12, 12, 12, 12, 12, 12];
+$widths = [6, 12, 24,12, 12, 10, 10, 12, 12, 12, 12, 12, 12, 12];
 for ($i = 1; $i <= $lastColIdx; $i++) {
     $letter = Coordinate::stringFromColumnIndex($i);
     $sheet->getColumnDimension($letter)->setWidth($widths[$i - 1]);
