@@ -54,7 +54,7 @@ $personelList = $Personel->getPersonel();
     ?>
     <style>
        .main-content, .table-responsive {
-            overflow: visible !important;
+            overflow-x: visible !important;
         }
         .dropdown-menu {
   position: absolute !important;
@@ -223,7 +223,7 @@ $personelList = $Personel->getPersonel();
                     formData.append('action', 'delete_personel');
                     formData.append('personel_id', personelId);
 
-                    const response = await fetch('/pages/personel/api.php', {
+                    const response = await fetch('/pages/personel/api/personInfoApi.php', {
                         method: 'POST',
                         body: formData
                     });
@@ -238,6 +238,7 @@ $personelList = $Personel->getPersonel();
                             timer: 1500,
                             timerProgressBar: true
                         }).then(() => {
+                            /** tablo verilerini ajax ile yeniden yükle */
                             location.reload();
                         });
                     } else {
