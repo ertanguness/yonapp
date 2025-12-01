@@ -68,12 +68,12 @@ try {
     $stmt->execute([':sid' => $siteId]);
     $recentCount = (int)$stmt->fetchColumn();
 } catch (Exception $e) { /* yoksay */ }
-if (!$testMode && (($recentCount + count($recipients)) > $limitPerMinute)) {
-    http_response_code(429);
-    $apiResponse['message'] = 'SMS gönderim limiti aşıldı. Lütfen daha sonra tekrar deneyin.';
-    echo json_encode($apiResponse, JSON_UNESCAPED_UNICODE);
-    exit;
-}
+// if (!$testMode && (($recentCount + count($recipients)) > $limitPerMinute)) {
+//     http_response_code(429);
+//     $apiResponse['message'] = 'SMS gönderim limiti aşıldı. Lütfen daha sonra tekrar deneyin.';
+//     echo json_encode($apiResponse, JSON_UNESCAPED_UNICODE);
+//     exit;
+// }
 
 
 // Dinamik değişkenler: {ADISOYADI}, {BORÇBAKİYESİ}, {SİTEADI}
