@@ -140,7 +140,7 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
         cursor: text;
         min-height: 48px;
         padding: 10px 12px;
-        max-height: 160px;
+        max-height: 140px;
         overflow-y: auto;
         padding-right: 12px;
         border-radius: 12px;
@@ -224,6 +224,20 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
 
     .char-pill{border-radius:999px;padding:.25rem .6rem;font-weight:500}
 
+    .message-input-wrap{display:flex;align-items:flex-start;gap:12px}
+    .template-actions{width:220px}
+    .template-actions .btn{width:100%;display:flex;align-items:center;gap:.4rem;justify-content:flex-start}
+    .template-actions .btn i{font-size:14px}
+    .template-actions.compact{width:52px}
+    .template-actions.compact .btn{justify-content:center}
+    .template-actions.compact .btn .label{display:none}
+    @media (max-width: 992px){
+        .message-input-wrap{flex-direction:column}
+        .template-actions{width:100%;display:flex;gap:.5rem;justify-content:flex-start}
+        .template-actions.compact{width:100%}
+        .template-actions .btn{width:auto}
+    }
+
     @keyframes slideDownFadeIn {
         from {
             opacity: 0;
@@ -274,7 +288,7 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
 
 </style>
 
-<div class="sms-sender-card shadow-lg" data-kisi-telefon="<?php echo htmlspecialchars($telefonNumarasi ?? 0, ENT_QUOTES); ?>" style="max-height:80vh; overflow:auto;">
+<div class="sms-sender-card shadow-lg" data-kisi-telefon="<?php echo htmlspecialchars($telefonNumarasi ?? 0, ENT_QUOTES); ?>" style="max-height:85vh; overflow:auto;">
     <!-- KART BAŞLIĞI -->
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center w-100">
@@ -311,37 +325,47 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
                             <div class="tag-list" id="recipients-list"></div>
                             <input type="text" id="recipients-input" placeholder="Numara yazıp Enter'a basın...">
                         </div>
+                        <div class="d-flex justify-content-between align-items-center">
+
                         <div class="form-text">Birden fazla numara ekleyebilirsiniz. (Numara yazıp Enter'a basın...)</div>
+                        <div class="form-text"><strong>Toplam Numara:</strong> <span id="recipients-total">0</span></div>
                     </div>
+                </div>
 
                     <!-- Mesaj Alanı -->
                     <div class="mb-2">
-                        <label for="message" class="form-label fw-bold d-flex justify-content-between align-items-center">
+                        <label for="message" class="form-label fw-bold d-flex align-items-center">
                             <span>Mesaj</span>
-                            <div class="d-flex align-items-center justify-content-between w-100 ms-3">
-                                <div class="variables-toolbar d-flex flex-wrap gap-2">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm js-insert-var" data-var="{ADISOYADI}">{ADISOYADI}</button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm js-insert-var" data-var="{DAİREKODU}">{DAİREKODU}</button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm js-insert-var" data-var="{BORÇBAKİYESİ}">{BORÇBAKİYESİ} TL</button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm js-insert-var" data-var="{SİTEADI}">{SİTEADI}</button>
-                                </div>
-                                <div class="template-actions d-flex align-items-center gap-2">
-                                    <button type="button" class="btn btn-outline-primary btn-sm" id="selectTemplateBtn">
-                                        <i class="fas fa-list-ul me-1"></i> Şablonlardan Seç
-                                    </button>
-                                    <button type="button" class="btn btn-outline-success btn-sm" id="saveTemplateBtn">
-                                        <i class="fas fa-save me-1"></i> Şablon olarak Kaydet
-                                    </button>
-                                </div>
+                            <div class="variables-toolbar d-flex flex-wrap gap-2 ms-3">
+                                <button type="button" class="btn btn-outline-secondary btn-sm js-insert-var" data-var="{ADISOYADI}">{ADISOYADI}</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm js-insert-var" data-var="{DAİREKODU}">{DAİREKODU}</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm js-insert-var" data-var="{BORÇBAKİYESİ}">{BORÇBAKİYESİ} TL</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm js-insert-var" data-var="{SİTEADI}">{SİTEADI}</button>
+                            </div>
+                              <div class="ms-auto d-flex gap-2">
+                                
+                                  <button type="button" class="btn btn-outline-primary btn-sm" id="selectTemplateBtn" data-bs-toggle="tooltip" title="Şablonlardan Seç" aria-label="Şablonlardan Seç">
+                                    <i class="fas fa-list-ul"></i>
+                                    <span class="label"></span>
+                                </button>
+                                <button type="button" class="btn btn-outline-success btn-sm float-end" id="saveTemplateBtn" data-bs-toggle="tooltip" title="Şablon olarak Kaydet" aria-label="Şablon olarak Kaydet">
+                                    <i class="fas fa-save"></i>
+                                    <span class="label"></span>
+                                </button>
                             </div>
                         </label>
-                        <div class="form-floating">
-                            <textarea class="form-control" id="message" style="height: 250px;"><?php echo htmlspecialchars($mesaj_metni ?? '', ENT_QUOTES); ?></textarea>
-                            <label for="message">Mesajınızı yazın...</label>
-                        </div>
-                        <!-- Karakter Sayacı -->
-                        <div class="d-flex justify-content-end text-muted small" id="char-counter">
-                            <span class="char-pill badge bg-light text-dark">0 / 160 (1 SMS)</span>
+                        <div class="message-input-wrap">
+                            <div class="flex-grow-1">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="message" style="height: 200px;border:1px solid #ced4da;"><?php echo htmlspecialchars($mesaj_metni ?? '', ENT_QUOTES); ?></textarea>
+                                    <label for="message">Mesajınızı yazın...</label>
+                                </div>
+                                <!-- Karakter Sayacı -->
+                                <div class="d-flex justify-content-end text-muted small mt-2" id="char-counter">
+                                    <span class="char-pill badge bg-light text-dark">0 / 160 (1 SMS)</span>
+                                </div>
+                            </div>
+                          
                         </div>
                     </div>
                 </form>
@@ -500,6 +524,14 @@ if ($includeFile && file_exists("on-hazirlik/{$includeFile}")) {
         }
     })();
 
+    (function(){
+        var actions = document.querySelector('.template-actions');
+        if (!actions || actions.dataset.bound) return;
+        actions.dataset.bound = '1';
+        actions.classList.add('compact');
+        var ttEls = actions.querySelectorAll('[data-bs-toggle="tooltip"]');
+        ttEls.forEach(function(el){ new bootstrap.Tooltip(el); });
+    })();
     (function(){
         var selectBtn = document.getElementById('selectTemplateBtn');
         var saveBtn = document.getElementById('saveTemplateBtn');

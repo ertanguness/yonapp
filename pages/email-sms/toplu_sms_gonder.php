@@ -261,8 +261,9 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                     items.forEach(function(it){
                         var id = parseInt(it.id);
                         var phone = (it.phone||'').toString();
+                        var daire = (it.daire || it.daire_kodu || it.apartment || it.da || '').toString();
                         if (!Number.isNaN(id) && !selectedSmsIds.includes(id)) selectedSmsIds.push(id);
-                        if (phone) selectedSmsPhones.push({ phone: phone, id: id });
+                        if (phone) selectedSmsPhones.push({ phone: phone, id: id, daire: daire });
                     });
                     $('#smsResidentsTable tbody .sms-sec:not(:disabled)').prop('checked', true);
                     updateHeaderSelectState();
@@ -328,7 +329,9 @@ use App_Helper_Date as DateAlias; // no-op to avoid unused warnings
                 rows.forEach(function(r){
                     (r||[]).forEach(function(cell){
                         var ph = normalizePhone(cell);
-                        if (ph && ph.length>=10) {
+                        var isRepeat = /^([0-9])\1{9,14}$/.test(ph);
+                        var isValid = (window.isValidPhoneNumber ? window.isValidPhoneNumber(ph) : (!isRepeat && /^\d{10,15}$/.test(ph)));
+                        if (isValid) {
                             if (!selectedSmsPhones.includes(ph)) { selectedSmsPhones.push(ph); added++; }
                         }
                     });

@@ -139,6 +139,13 @@ Object.defineProperty(messageTextarea, 'value', {
     charCounter.textContent = `${length} / ${charLimit} (${smsCount} SMS)`;
   }
 
+  function updateRecipientsCount() {
+    const el = document.getElementById('recipients-total');
+    if (!el) return;
+    const count = recipientsList ? recipientsList.querySelectorAll('.tag').length : 0;
+    el.textContent = String(count);
+  }
+
   function handleRecipientInput(e) {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
@@ -214,10 +221,12 @@ Object.defineProperty(messageTextarea, 'value', {
     closeBtn.innerHTML = "×";
     closeBtn.onclick = function () {
       recipientsList.removeChild(tag);
+      updateRecipientsCount();
     };
 
     tag.appendChild(closeBtn);
     recipientsList.appendChild(tag); // recipients-list içine ekle
+    updateRecipientsCount();
   }
 
   // Global scope'da createTag'i erişilebilir yap
@@ -225,8 +234,9 @@ Object.defineProperty(messageTextarea, 'value', {
 
   function isValidPhoneNumber(number) {
     const digits = (number || '').toString().replace(/\D/g, '');
-    const phoneRegex = /^\d{10,15}$/;
-    return phoneRegex.test(digits);
+    if (!/^\d{10,15}$/.test(digits)) return false;
+    if (/^(\d)\1{9,14}$/.test(digits)) return false;
+    return true;
   }
 
   function normalizePhoneNumber(number) {
@@ -252,6 +262,9 @@ Object.defineProperty(messageTextarea, 'value', {
 
     return digits;
   }
+
+  window.isValidPhoneNumber = isValidPhoneNumber;
+  window.normalizePhoneNumber = normalizePhoneNumber;
 
   function getExistingNormalizedNumbers() {
     return Array.from(recipientsList.querySelectorAll('.tag'))
@@ -320,11 +333,12 @@ Object.defineProperty(messageTextarea, 'value', {
           }).then(() => {
             // Formu temizle
             const tags = recipientsList.querySelectorAll(".tag");
-            tags.forEach((tag) => tag.remove());
-            messageTextarea.value = "";
-            updatePreview();
-            updateCharCounter();
-          });
+          tags.forEach((tag) => tag.remove());
+          messageTextarea.value = "";
+          updatePreview();
+          updateCharCounter();
+          updateRecipientsCount();
+        });
        
       }else{
         swal.fire({
@@ -351,6 +365,7 @@ Object.defineProperty(messageTextarea, 'value', {
   // İlk durumu başlat
   updatePreview();
   updateCharCounter();
+  updateRecipientsCount();
 
   function setupModalSearch() {
     const offcanvas = document.getElementById('kisilerdenSecOffcanvas');
@@ -613,7 +628,7 @@ Object.defineProperty(messageTextarea, 'value', {
   if (kisiTelefon) {
     const normalized = normalizePhoneNumber(kisiTelefon);
     const existingNumbers = getExistingNormalizedNumbers();
-    if (normalized && !existingNumbers.includes(normalized)) {
+    if (normalized && isValidPhoneNumber(normalized) && !existingNumbers.includes(normalized)) {
       createTag(kisiTelefon);
     }
   }

@@ -32,12 +32,16 @@ if ($siteId) {
         $durumHtml = '<a href="javascript:void(0)" class="badge text-'.($durumText==='Pasif'?'danger':'success').' border border-dashed border-gray-500">'.$durumText.'</a>';
         $telefonHam = (string)($kisi->telefon ?? '');
         $telefonTemiz = preg_replace('/\D/', '', $telefonHam);
+        $len = strlen($telefonTemiz);
+        $isDigitsLenOk = ($len >= 10 && $len <= 15);
+        $isRepeating = ($telefonTemiz !== '') ? (preg_match('/^([0-9])\1{9,14}$/', $telefonTemiz) === 1) : false;
+        $isCleanValid = $isDigitsLenOk && !$isRepeating;
         $smsIzni = (int)($kisi->sms_izni ?? 0);
         $isSmsAllowed = ($smsIzni === 1);
 
         $cbId = 'checkBox_'.(int)$kisi->id;
         $cbDisabled = $isSmsAllowed ? '' : ' disabled';
-        $cbPhone = $isSmsAllowed ? htmlspecialchars($telefonTemiz) : '';
+        $cbPhone = ($isSmsAllowed && $isCleanValid) ? htmlspecialchars($telefonTemiz) : '';
         $secHtml = '<div class="item-checkbox ms-1">'
             .'<div class="custom-control custom-checkbox">'
             .'<input type="checkbox" class="custom-control-input checkbox sms-sec" id="'.$cbId.'" data-id="'.(int)$kisi->id.'" data-phone="'.$cbPhone.'"'.$cbDisabled.'>'
@@ -52,7 +56,7 @@ if ($siteId) {
             'durum' => $durumHtml,
             'cikis_tarihi' => htmlspecialchars($cikisTarihi),
             'telefon' => $isSmsAllowed ? htmlspecialchars($telefonHam) : 'Sms İzni Yok',
-            'telefon_clean' => $isSmsAllowed ? $telefonTemiz : '',
+            'telefon_clean' => ($isSmsAllowed && $isCleanValid) ? $telefonTemiz : '',
             '_adi_soyadi' => $adiSoyadi,
             '_uyelik_tipi' => $uyelikTipi,
             '_durum' => $durumText,
@@ -118,7 +122,11 @@ if (!empty($_GET['fetch']) && $_GET['fetch'] === 'all_ids') {
         return (($r['_sms_izni'] ?? 0) === 1) && !empty($r['telefon_clean']);
     }));
     $items = array_map(function($r){
-        return [ 'id' => (int)($r['_id'] ?? 0), 'phone' => (string)($r['telefon_clean'] ?? '') ];
+        return [
+            'id' => (int)($r['_id'] ?? 0),
+            'phone' => (string)($r['telefon_clean'] ?? ''),
+            'daire_kodu' => (string)($r['daire_kodu'] ?? ''),
+        ];
     }, $allowedRows);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['items' => $items, 'recordsFiltered' => $recordsFiltered]);
