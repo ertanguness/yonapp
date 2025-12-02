@@ -704,7 +704,7 @@ if ($_POST["action"] == "borclandir") {
 
                 /** Eğer id 0'dan farklı ise */
                 if($id != 0){
-                    $data["id"] = $BorcDetay->getDetayId($id, $person->id) ?? 0;
+                    $data["id"] = $BorcDetay->getDetayId($id ?? 0, $person->id) ?? 0;
                 }
                 //$logger->info("Borc Detay id: " . json_encode($BorcDetay->getDetayId($id,$persons->id)));
 
