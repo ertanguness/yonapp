@@ -224,7 +224,21 @@ class BorclandirmaDetayModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ);
     }
 
-    // Model/BorcDetayModel.php
+
+
+    /** Borçlandırma detay ID'sini getirir.
+     * @param int $borclandirma_id
+     * @param int $kisi_id
+     * @return object|null
+     */    public function getDetayId(int $borclandirma_id, int $kisi_id)
+    {
+        $sql = $this->db->prepare("SELECT id FROM $this->table WHERE borclandirma_id = :borclandirma_id AND kisi_id = :kisi_id");
+        $sql->execute([
+            ':borclandirma_id' => $borclandirma_id,
+            ':kisi_id' => $kisi_id
+        ]);
+        return $sql->fetchColumn() ?: null;
+    }
 
     /**
      * Verilen ID dizisine ait borçların toplam tutarını döndürür.

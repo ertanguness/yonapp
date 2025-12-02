@@ -30,6 +30,8 @@ $enc_borc_id = $id ?? 0;
 $id     = Security::decrypt($id ?? 0) ?? 0;
 $borc   = $Borc->find($id) ?? null;
 
+$borclandirma_sekli = $borc->borclandirma_sekli ?? 'tanimli';
+
 $DebitHelper = new Debit();
 
 //içinde olduğumuz ayın ilk gününü alıyoruz
@@ -82,6 +84,7 @@ switch ($hedef_tipi) {
         if (! empty($seciliKisiler)) {
             $seciliKisiIdleri = [(string) $seciliKisiler];
         }
+        //Helper::dd($seciliKisiIdleri);
 
     default:
         $hedef_kisi = [];
@@ -121,10 +124,10 @@ switch ($hedef_tipi) {
 
             <ul class="nav nav-tabs nav-tabs-custom-style" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tanimliBorclarTab">Tanımlı Borç Tipleri </button>
+                    <button class="nav-link <?= $borclandirma_sekli == 'tanimli' ? 'active' : ''; ?>" data-bs-toggle="tab" data-bs-target="#tanimliBorclarTab">Tanımlı Borç Tipleri </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#manuelBorclarTab">Manuel Borçlandırma</button>
+                    <button class="nav-link <?= $borclandirma_sekli == 'manuel' ? 'active' : ''; ?>" data-bs-toggle="tab" data-bs-target="#manuelBorclarTab">Manuel Borçlandırma</button>
                 </li>
 
             </ul>
@@ -149,7 +152,7 @@ switch ($hedef_tipi) {
     <div class="row">
 
         <div class="tab-content">
-            <div class="tab-pane fade active show" id="tanimliBorclarTab">
+            <div class="tab-pane fade <?= $borclandirma_sekli == 'tanimli' ? 'active show' : ''; ?>" id="tanimliBorclarTab">
                 <div class="container-xl"></div>
                 <div class="card">
                     <div class="card-header">
@@ -210,7 +213,7 @@ switch ($hedef_tipi) {
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="manuelBorclarTab">
+            <div class="tab-pane fade <?= $borclandirma_sekli == 'manuel' ? 'active show' : ''; ?>" id="manuelBorclarTab">
 
                 <div class="card">
                     <div class="card-header">

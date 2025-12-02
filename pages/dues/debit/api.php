@@ -185,7 +185,7 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
                     $tamAyData = [
                         "borclandirma_id"           => Security::decrypt($lastInsertId),
                         "kisi_id"                   => $borcluKisi->id,
-                         "borc_adi"                 => $due->due_name,
+                        "borc_adi"                 => $due->due_name,
                         "daire_id"                  => $daire_id,
                         "tutar"                     => $tutar,
                         "ceza_orani"                => $borc->ceza_orani,
@@ -352,14 +352,14 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
 
 /**BORÇLANDIRMA YAP */
 if ($_POST["action"] == "borclandir") {
-    $id = Security::decrypt($_POST["borc_id"]);
+    $id = Security::decrypt($_POST["borc_id"]) ?? 0;
     $user_id = $_SESSION["user"]->id;
     $gun_bazli = isset($_POST["day_based"]) ? true : false; // Gün bazlı mı kontrolü
 
     $logger = \getLogger();
 
     try {
-
+        $db->beginTransaction();
 
         //borclandirma_tipini yeni kayıtsa post ile al, güncelleme ise veritabanından al
         if ($id != 0) {
@@ -375,7 +375,7 @@ if ($_POST["action"] == "borclandir") {
             $borclandirma_turu = $_POST["hedef_tipi"];
         }
 
-        $db->beginTransaction();
+
 
 
         $data = [
@@ -387,6 +387,7 @@ if ($_POST["action"] == "borclandir") {
             "ceza_orani" => $_POST["ceza_orani"],
             "aciklama" => $_POST["aciklama"],
             "hedef_tipi" => $borclandirma_turu,
+            "borclandirma_sekli" => 'manuel',
         ];
 
         if ($id == 0) {
@@ -681,23 +682,42 @@ if ($_POST["action"] == "borclandir") {
         } elseif ($borclandirma_turu == "person") {
             //Kişilere borçlandırma yapılıyor
             $person_ids = $_POST["hedef_kisi"];
-
-            $sifresiKisiIds = array_map([App\Helper\Security::class, 'decrypt'], $person_ids);
-            $persons = $Kisiler->getKisilerByIds($sifresiKisiIds);
-
-            //$logger->info("Borçlandırma yapılıyor: " . json_encode($data));
-
             $batchRecords = []; // Batch için kayıt toplama
-            foreach ($persons as $person) {
+
+            /** Eğer birden fazla kişi gelmişse */
+            if (is_array($person_ids) && count($person_ids) > 1) {
+                $logger->info("Kişi Borçlandırma yapılıyor: " . json_encode($person_ids));
+
+                $sifresiKisiIds = array_map([App\Helper\Security::class, 'decrypt'], $person_ids);
+                $persons = $Kisiler->getKisilerByIds($sifresiKisiIds);
+
+                foreach ($persons as $person) {
+                    $data["id"] = $BorcDetay->getDetayId($id, $person->id) ?? 0;
+                    $data["kisi_id"] = $person->id;
+                    $data["daire_id"] = $person->daire_id;
+                    $batchRecords[] = $data;
+                }
+            } else {
+                //Tek kişi gelmişse 
+                $person = $Kisiler->find(Security::decrypt($person_ids[0]));
+                $logger->info("Bulunan kişi: " . json_encode($person));
+
+                /** Eğer id 0'dan farklı ise */
+                if($id != 0){
+                    $data["id"] = $BorcDetay->getDetayId($id, $person->id) ?? 0;
+                }
+                //$logger->info("Borc Detay id: " . json_encode($BorcDetay->getDetayId($id,$persons->id)));
+
                 $data["kisi_id"] = $person->id;
                 $data["daire_id"] = $person->daire_id;
                 $batchRecords[] = $data;
             }
+        
 
-            $logger->info("Borçlandırma yapılıyor, batch kayıt sayısı: " . count($batchRecords));
             // Batch insert
             if (!empty($batchRecords)) {
-                $BorcDetay->batchInsert($batchRecords);
+                /** Tüm veritabanı işlemlerini tek seferde yapar. Insert veya Update */
+                $BorcDetay->batchUpsert($batchRecords);
             }
         } else if ($borclandirma_turu == 'dairetipi') {
             //Daire tipine göre borçlandırma yapılıyor
