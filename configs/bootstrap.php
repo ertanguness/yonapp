@@ -48,7 +48,7 @@ function getDbConnection(): PDO
 function getLogger(): LoggerInterface
 {
     // --- DEĞİŞİKLİK 1: Loglama tipini 'database' olarak ayarlıyoruz ---
-    $loggerType = 'file'; 
+    $loggerType = 'Database'; // 'file' veya 'database' olabilir.
 
     // Singleton Pattern: Logger'ı her seferinde yeniden oluşturmak yerine,
     // bir kere oluşturup tekrar tekrar aynı nesneyi kullanmak için.
