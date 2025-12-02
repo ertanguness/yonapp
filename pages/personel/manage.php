@@ -1,8 +1,13 @@
 <?php
 
+use App\Services\Gate;
 use App\Helper\Helper;
 use App\Helper\Security;
 use Model\PersonelModel;
+
+
+/**Yetkisiz Erişimi Engelle */
+Gate::authorizeOrDie('personel_yonetimi');
 
 $PersonelModel = new PersonelModel();
 

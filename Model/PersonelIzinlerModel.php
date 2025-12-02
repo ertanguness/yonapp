@@ -7,4 +7,11 @@ class PersonelIzinlerModel extends Model
     {
         return $this->findWhere(['person_id' => $personId], 'id DESC');
     }
+
+    /** Personelin izin kaydı var mı kontrol et */
+    public function hasIzin(int $personId): bool
+    {
+        $result = $this->findWhere(['person_id' => $personId]);
+        return !empty($result);
+    }
 }

@@ -1,8 +1,22 @@
+<?php
+
+use App\Services\Gate;
+
+?>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h6 class="mb-0">Ödeme Listesi</h6>
+    
     <div class="d-flex gap-2">
-        <button type="button" class="btn btn-outline-primary btn-sm" id="newPaymentBtn">Yeni Ödeme</button>
+        <!-- Ödeme ekleme yetkisi kontrolü -->
+        <?php if (Gate::allows("odeme_ekle_guncelle_sil")): ?>
+            <button  type="button" class="btn btn-outline-primary btn-sm" id="newPaymentBtn">Yeni Ödeme</button>
+        <?php else: ?>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="newPaymentBtn" disabled>Yeni Ödeme</button>
+        <?php endif; ?>
+
     </div>
+
 </div>
 <div class="table-responsive w-100">
     <table class="table table-hover dttables w-100" id="paymentsTable">

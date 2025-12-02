@@ -4,6 +4,13 @@ use Model\BloklarModel;
 use App\Helper\Security;
 use Model\SitelerModel;
 use Model\SitesModel;
+use App\Services\Gate;
+
+
+
+/** Yetkisiz Erişim Kontrolü */
+
+Gate::authorizeOrDie('blok_ekle_guncelle_sils');
 
 $Site = new SitelerModel();
 

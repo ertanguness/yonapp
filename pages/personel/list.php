@@ -143,7 +143,7 @@ $personelList = $Personel->getPersonel();
                                                                 </li>
                                                                 <li class="dropdown-divider"></li>
                                                                 <li>
-                                                                    <a class="dropdown-item bg-danger text-white delete-personel" href="javascript:void(0)" data-personel-id="<?= htmlspecialchars($personel->id) ?>" data-personel-name="<?= htmlspecialchars($personel->adi_soyadi ?? 'Personel') ?>">
+                                                                    <a class="dropdown-item bg-danger text-white delete-personel" href="javascript:void(0)" data-personel-id="<?= htmlspecialchars($enc_id) ?>" data-personel-name="<?= htmlspecialchars($personel->adi_soyadi ?? 'Personel') ?>">
                                                                         <i class="feather feather-trash-2 me-3"></i>
                                                                         <span>Sil</span>
                                                                     </a>

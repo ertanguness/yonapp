@@ -7,12 +7,14 @@ use App\Helper\Date;
 use App\Helper\Helper;
 use App\Helper\Security;
 use Model\PersonelModel;
-use Model\PersonelOdemeModel;
+use Model\PersonelIzinlerModel;
+use Model\PersonelOdemelerModel;
 use Model\PersonelGorevlerModel;
 
 
-$PersonelOdeme = new PersonelOdemeModel();
 $Personel = new PersonelModel();
+$PersonelIzinler = new PersonelIzinlerModel();
+$PersonelOdeme = new PersonelOdemelerModel();
 $PersonelGorevModel = new PersonelGorevlerModel();
 $db = Db::getInstance();
 
@@ -52,101 +54,46 @@ if ($action == "savePerson") {
     exit();
 }
 
-
-
-
-// Ödeme Kaydet (Yeni veya Güncelle)
-if ($action == 'save_personel_odeme') {
-    $odeme_id = $_POST['odeme_id'] ?? '';
-    $personel_id = Security::decrypt($_POST['personel_id'] ?? '');
-    $odeme_tarihi = $_POST['odeme_tarihi'] ?? date('Y-m-d');
-    $tutar = (float)Helper::formattedMoneyToNumber($_POST['tutar'] ?? 0);
-    $odeme_turu = $_POST['odeme_turu'] ?? '';
-    $aciklama = $_POST['aciklama'] ?? '';
-    $yonetici_notu = $_POST['yonetici_notu'] ?? '';
-    $kayit_yapan_id = $_SESSION['user']->id ?? null;
-
-    // Validasyon
-    if (!$personel_id || $tutar <= 0 || !$odeme_turu) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Zorunlu alanları eksiksiz doldurunuz (Personel, Tutar, Ödeme Türü)'
-        ]);
-        exit;
-    }
-
-    $data = [
-        'personel_id' => $personel_id,
-        'odeme_tarihi' => $odeme_tarihi,
-        'tutar' => $tutar,
-        'odeme_turu' => $odeme_turu,
-        'aciklama' => $aciklama,
-        'yonetici_notu' => $yonetici_notu,
-        'kayit_yapan_id' => $kayit_yapan_id
-    ];
-
-    try {
-        if ($odeme_id) {
-            // Güncelle
-            $data['id'] = Security::decrypt($odeme_id);
-            $result = $PersonelOdeme->updateOdeme($data['id'], $data);
-            $message = 'Ödeme başarıyla güncellendi';
-        } else {
-            // Kaydet
-            $result = $PersonelOdeme->saveOdeme($data);
-            $message = 'Ödeme başarıyla kaydedildi';
-        }
-
-        echo json_encode([
-            'status' => 'success',
-            'message' => $message,
-            'id' => $result
-        ]);
-    } catch (Exception $e) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Hata: ' . $e->getMessage()
-        ]);
-    }
-    exit;
-}
-
-// Ödeme Sil
-if ($action == 'delete_personel_odeme') {
-    $odeme_id = Security::decrypt($_POST['odeme_id'] ?? '');
-
-    if (!$odeme_id) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Ödeme ID gerekli'
-        ]);
-        exit;
-    }
-
-    try {
-        $result = $PersonelOdeme->deleteOdeme($odeme_id);
-
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Ödeme başarıyla silindi'
-        ]);
-    } catch (Exception $e) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Hata: ' . $e->getMessage()
-        ]);
-    }
-    exit;
-}
-
-// Personel Sil
+/** Personel Sil */
 if ($action == 'delete_personel') {
-    $personel_id = $_POST['personel_id'] ?? '';
+    $personel_id = Security::decrypt($_POST['personel_id'] ?? '');
 
     if (!$personel_id) {
         echo json_encode([
             'status' => 'error',
             'message' => 'Personel ID gerekli'
+        ]);
+        exit;
+    }
+
+    /** Personele ait görev varsa silinmesini engelle */
+    $gorevler = $PersonelGorevModel->hasGorev($personel_id);
+    if ($gorevler) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Bu personele ait görevler mevcut, silme işlemi gerçekleştirilemez.'
+        ]);
+        exit;
+    }
+
+
+    /** Personelin izin kaydı varsa silinmesini engelle */
+    $izinler = $PersonelIzinler->hasIzin($personel_id);
+    if ($izinler) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Bu personele ait izinler mevcut, silme işlemi gerçekleştirilemez.'
+        ]);
+        exit;
+    }
+
+
+    /** Personele ait ödeme varsa silnmesini engelle */
+    $odeme = $PersonelOdeme->hasOdeme($personel_id);
+    if (!empty($odeme)) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Bu personele ait ödemeler mevcut, silme işlemi gerçekleştirilemez.'
         ]);
         exit;
     }
