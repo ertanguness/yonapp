@@ -16,7 +16,7 @@ require_once PROJECT_ROOT . '/vendor/autoload.php';
 
 use App\InterFaces\LoggerInterface;
 use App\Services\FileLogger;
-use App\Services\DatabaseLogger;
+use App\Services\DataBaseLogger;
 use Database\Db;
 
 
