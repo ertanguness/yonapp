@@ -77,8 +77,9 @@ try {
             'id' => 0,
             'full_name' => Security::escape($fullName),
             'email' => $email,
-            'status' => 0,
+            'status' => 2,
             'roles' => 3,
+            'kisi_id' => (int)Security::decrypt($kisiEnc),
             'is_main_user' => 0,
             'password' => password_hash($pass, PASSWORD_DEFAULT),
             'activate_token' => Security::encrypt(time() + 3600)
