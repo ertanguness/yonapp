@@ -17,21 +17,38 @@ class GuvenlikPersonelModel extends Model
 
     public function PersonelBilgileri($id)
     {
-        $query = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
+        $sql = "SELECT 
+                    id, site_id, adi_soyadi, tc_kimlik_no, dogum_tarihi, cinsiyet, telefon,
+                    personel_tipi, eposta, adres, gorev_yeri, durum,
+                    ise_baslama_tarihi AS baslangic_tarihi,
+                    isten_ayrilma_tarihi AS bitis_tarihi,
+                    acil_kisi, yakinlik, acil_telefon,
+                    silinme_tarihi, kayit_tarihi, guncelleme_tarihi
+                FROM {$this->table}
+                WHERE id = ?
+                  AND silinme_tarihi IS NULL
+                  AND LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(personel_tipi,' ',''),'ü','u'),'ö','o'),'ğ','g'),'ş','s'),'ç','c'),'ı','i')) = 'guvenlik'";
+        $query = $this->db->prepare($sql);
         $query->execute([$id]);
-        return $query->fetch(PDO::FETCH_OBJ); // nesne döner
+        return $query->fetch(PDO::FETCH_OBJ);
     }
 
     public function Personeller()
     {
         $site_id = $_SESSION["site_id"] ?? 0;
 
-        $sql = "SELECT id, adi_soyadi, tc_kimlik_no, telefon, gorev_yeri, 
-                   durum, baslama_tarihi, bitis_tarihi, 
-                   acil_kisi, acil_telefon
-            FROM {$this->table}
-            WHERE site_id = ?
-            ORDER BY adi_soyadi ASC";
+        $sql = "SELECT 
+                    id, site_id, adi_soyadi, tc_kimlik_no, dogum_tarihi, cinsiyet, telefon,
+                    personel_tipi, eposta, adres, gorev_yeri, durum,
+                    ise_baslama_tarihi AS baslama_tarihi,
+                    isten_ayrilma_tarihi AS bitis_tarihi,
+                    acil_kisi, yakinlik, acil_telefon,
+                    silinme_tarihi, kayit_tarihi, guncelleme_tarihi
+                FROM {$this->table}
+                WHERE site_id = ?
+                  AND silinme_tarihi IS NULL
+                  AND LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(personel_tipi,' ',''),'ü','u'),'ö','o'),'ğ','g'),'ş','s'),'ç','c'),'ı','i')) = 'guvenlik'
+                ORDER BY adi_soyadi ASC";
 
         $query = $this->db->prepare($sql);
         $query->execute([$site_id]);

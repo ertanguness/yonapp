@@ -77,17 +77,17 @@ $GorevYerleri = $GörevYeriModel->GorevYerleri();
                             <th style="width:10%">Vardiya</th>
                             <th style="width:10%">Başlama Tarihi</th>
                             <th style="width:10%">Bitiş Tarihi</th>
-                            <th style="width:10%">Durum</th>
                             <th style="width:8%">İşlem</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
+                        $sira = 0;
                         foreach ($GuvenlikVardiyalar as $item):
                             $enc_id = Security::encrypt($item->id);
                         ?>
                             <tr class="text-center <?= ($item->durum == 0 ? 'exit-hidden' : ''); ?>">
-                                <td><?= htmlspecialchars($item->id); ?></td>
+                                <td><?= htmlspecialchars(++$sira); ?></td>
                                 <td><?= htmlspecialchars($item->personel_adi ?? '-'); ?></td>
                                 <td><?= htmlspecialchars($item->personel_telefon ?? '-'); ?></td>
                                 <td>
@@ -126,27 +126,14 @@ $GorevYerleri = $GörevYeriModel->GorevYerleri();
                                 <td>
                                     <?= !empty($item->bitis_tarihi) ? Date::dmY($item->bitis_tarihi, 'd.m.Y') : '-'; ?>
                                 </td>
-                                <td>
-                                    <?php
-                                    switch ($item->durum) {
-                                        case 1:
-                                            echo '<span class="text-success"><i class="feather-check-circle"></i> Aktif</span>';
-                                            break;
-                                        case 0:
-                                            echo '<span class="text-muted"><i class="feather-x-circle"></i> Pasif</span>';
-                                            break;
-                                        default:
-                                            echo '<span class="text-muted">Bilinmiyor</span>';
-                                    }
-                                    ?>
-                                </td>
+                                
                                 <td>
                                     <div class="hstack gap-2">
                                         <a href="guvenlik-gorev-duzenle/<?= $enc_id; ?>" class="avatar-text avatar-md">
                                             <i class="feather-edit"></i>
                                         </a>
                                         <a href="javascript:void(0);"
-                                            data-name="<?= htmlspecialchars($item->adi_soyadi); ?>"
+                                            data-name="<?= htmlspecialchars($item->personel_adi ?? '-'); ?>"
                                             data-id="<?= $enc_id; ?>"
                                             class="avatar-text avatar-md sil-guvenlik">
                                             <i class="feather-trash-2"></i>

@@ -85,7 +85,7 @@ $(document).on("click", ".sil-guvenlik", function () {
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${ziyaretciAdi} isimli görevkaydı  başarıyla silindi.`,
+                `${guvenlik} isimli görev kaydı başarıyla silindi.`,
                 "success"
               );
              }

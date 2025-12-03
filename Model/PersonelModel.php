@@ -8,7 +8,6 @@ use PDO;
 class PersonelModel extends Model
 {
     protected $table = 'personel';
-
     public function __construct()
     {
         parent::__construct($this->table);

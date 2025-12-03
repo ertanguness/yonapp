@@ -1,5 +1,6 @@
 <?php
-require_once dirname(__DIR__, levels: 2) . '/configs/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/configs/bootstrap.php';
+header('Content-Type: application/json; charset=utf-8');
 
 use App\Helper\Date;
 use App\Helper\Security;
@@ -10,11 +11,14 @@ use Model\IcraOdemeModel;
 
 $Icra = new IcraModel();
 $IcraOdeme = new IcraOdemeModel();
-if ($_POST["action"] == "icra_kaydetme") {
+$action = $_POST["action"] ?? '';
+if ($action === "icra_kaydetme") {
+    try {
 
     $baslangic_tarihi = Date::Ymd($_POST["baslangic_tarihi"] ?? null);
 
     $id = Security::decrypt($_POST["id"]);
+    $id = ($id && (int)$id > 0) ? (int)$id : null;
     $dosya_no = $_POST["dosya_no"] ?? '';
 
     // Aynı dosya_no var mı kontrol et (güncellemede kendi kaydını hariç tutacak)
@@ -61,9 +65,14 @@ if ($_POST["action"] == "icra_kaydetme") {
     ];
     echo json_encode($res);
     exit;
+    } catch (\Throwable $e) {
+        echo json_encode(["status"=>"error","message"=>"Kaydetme sırasında hata oluştu","detail"=>$e->getMessage()]);
+        exit;
+    }
 }
 
-if ($_POST["action"] == "odeme_plan_kaydet") {
+if ($action === "odeme_plan_kaydet") {
+    try {
 
     $id = Security::decrypt($_POST["id"]);
     $icraOdemeBilgileri = $IcraOdeme->IcraOdemeBilgileri($id);
@@ -119,9 +128,14 @@ if ($_POST["action"] == "odeme_plan_kaydet") {
         "id" => $enc_id
     ]);
     exit;
+    } catch (\Throwable $e) {
+        echo json_encode(["status"=>"error","message"=>"Ödeme planı kaydedilemedi","detail"=>$e->getMessage()]);
+        exit;
+    }
 }
 
-if ($_POST["action"] == "durum_guncelle") {
+if ($action === "durum_guncelle") {
+    try {
 
     $id = Security::decrypt($_POST["id"]);
 
@@ -141,8 +155,13 @@ if ($_POST["action"] == "durum_guncelle") {
     ];
     echo json_encode($res);
     exit;
+    } catch (\Throwable $e) {
+        echo json_encode(["status"=>"error","message"=>"Durum güncellenemedi","detail"=>$e->getMessage()]);
+        exit;
+    }
 }
-if ($_POST["action"] == "odeme_durum_guncelle") {
+if ($action === "odeme_durum_guncelle") {
+    try {
     $id = Security::decrypt($_POST["id"]);
     $status = $_POST["status"];
     $bugun = date("Y-m-d");
@@ -171,11 +190,14 @@ if ($_POST["action"] == "odeme_durum_guncelle") {
         "taksit_odenen_tarih" => $taksit_odenen_tarih ?? "-"
     ]);
     exit;
+    } catch (\Throwable $e) {
+        echo json_encode(["status"=>"error","message"=>"Ödeme durumu güncellenemedi","detail"=>$e->getMessage()]);
+        exit;
+    }
 }
 
-
-
-if ($_POST["action"] == "sil-icra") {
+if ($action === "sil-icra") {
+    try {
 
     $logger = \getLogger();
 
@@ -204,4 +226,10 @@ if ($_POST["action"] == "sil-icra") {
     ];
     echo json_encode($res);
     exit;
+    } catch (\Throwable $e) {
+        echo json_encode(["status"=>"error","message"=>"İcra silinemedi","detail"=>$e->getMessage()]);
+        exit;
+    }
 }
+
+echo json_encode(["status" => "error", "message" => "Geçersiz istek"]);

@@ -104,8 +104,6 @@ $blocks = $Block->Blok($daire->blok_id ?? 0);
                                         endforeach;
                                         ?>
                                     </tbody>
-
-
                                 </table>
                             </div>
                         </div>

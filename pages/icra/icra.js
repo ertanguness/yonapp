@@ -44,7 +44,10 @@ $(document).on("click", "#icra_kaydet", function () {
   }
 
   fetch(icraurl, { method: "POST", body: formData })
-    .then((res) => res.json())
+    .then(async (res) => {
+      const text = await res.text();
+      try { return JSON.parse(text); } catch (e) { throw new Error(text); }
+    })
     .then((data) => {
       if (data.status === "success") {
         Swal.fire({
@@ -69,6 +72,15 @@ $(document).on("click", "#icra_kaydet", function () {
           confirmButtonText: "Tamam",
         });
       }
+    })
+    .catch((err) => {
+      Swal.fire({
+        title: "Hata",
+        text: "Sunucudan geçersiz yanıt alındı",
+        icon: "error",
+        confirmButtonText: "Tamam",
+      });
+      console.error("icra api error:", err);
     });
 });
 

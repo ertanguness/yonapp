@@ -17,7 +17,7 @@ $(document).on("click", "#guvenlikPersonel_kaydet", function () {
       "adres": { required: true },
       "gorev_yeri": { required: true },
       "durum": { required: true },
-      "baslama_tarihi": { required: true, date: true },
+      "baslangic_tarihi": { required: true, date: true },
       "acil_kisi": { required: true },
       "yakinlik": { required: true },
       "acil_telefon": { required: true }
@@ -34,7 +34,7 @@ $(document).on("click", "#guvenlikPersonel_kaydet", function () {
       "adres": { required: "Lütfen adres giriniz" },
       "gorev_yeri": { required: "Lütfen görev yeri seçiniz" },
       "durum": { required: "Lütfen durum seçiniz" },
-      "baslama_tarihi": { required: "Lütfen başlama tarihi seçiniz" },
+      "baslangic_tarihi": { required: "Lütfen başlama tarihi seçiniz" },
       "acil_kisi": { required: "Lütfen acil durumda aranacak kişiyi giriniz" },
       "yakinlik": { required: "Lütfen yakınlık derecesi seçiniz" },
       "acil_telefon": { required: "Lütfen acil telefon numarası giriniz" }

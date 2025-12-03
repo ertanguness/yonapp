@@ -10,30 +10,30 @@ use Model\GuvenlikPersonelModel;
 $Personel = new GuvenlikPersonelModel();
 
 if ($_POST["action"] == "guvenlikPersonel_kaydetme") {
-    
-    $baslama_tarihi     = Date::Ymd($_POST["baslama_tarihi"] ?? '');
-    $dogum_tarihi      = Date::Ymd($_POST["dogum_tarihi"] ?? '');
-    $bitis_tarihi      = Date::Ymd($_POST["bitis_tarihi"] ?? '');
+    $dogum_tarihi = Date::Ymd($_POST["dogum_tarihi"] ?? '');
+    $baslangic_tarihi = Date::Ymd($_POST["baslangic_tarihi"] ?? ($_POST["baslama_tarihi"] ?? ''));
+    $bitis_tarihi = Date::Ymd($_POST["bitis_tarihi"] ?? '');
 
     $id = Security::decrypt($_POST["id"]);
     $data = [
-        "id"                => $id,
-        "site_id"           => $_SESSION["site_id"] ?? 0,
-        "adi_soyadi"        => $_POST["adi_soyadi"] ?? '',
-        "tc_kimlik_no"      => $_POST["tc_kimlik_no"] ?? '',
-        "dogum_tarihi"      => $dogum_tarihi,
-        "cinsiyet"          => $_POST["cinsiyet"] ?? '',
-        "telefon"           => $_POST["telefon"] ?? '',
-        "eposta"            => $_POST["eposta"] ?? '',
-        "adres"             => $_POST["adres"] ?? '',
-        "gorev_yeri"        => $_POST["gorev_yeri"] ?? '',
-        "durum"             => $_POST["durum"] ?? '1',
-        "baslama_tarihi"    => $baslama_tarihi,
-        "bitis_tarihi"      => $bitis_tarihi,
-        "acil_kisi"         => $_POST["acil_kisi"] ?? '',
-        "yakinlik"          => $_POST["yakınlik"] ?? '',
-        "acil_telefon"      => $_POST["acil_telefon"] ?? '',
-        "kayit_tarihi"      => date('Y-m-d H:i:s'),
+        "id"                   => $id,
+        "site_id"              => $_SESSION["site_id"] ?? 0,
+        "adi_soyadi"           => $_POST["adi_soyadi"] ?? '',
+        "tc_kimlik_no"         => $_POST["tc_kimlik_no"] ?? '',
+        "dogum_tarihi"         => $dogum_tarihi,
+        "cinsiyet"             => $_POST["cinsiyet"] ?? '',
+        "telefon"              => $_POST["telefon"] ?? '',
+        "personel_tipi"        => 'Güvenlik',
+        "eposta"               => $_POST["eposta"] ?? '',
+        "adres"                => $_POST["adres"] ?? '',
+        "gorev_yeri"           => $_POST["gorev_yeri"] ?? '',
+        "durum"                => $_POST["durum"] ?? '1',
+        "ise_baslama_tarihi"   => $baslangic_tarihi,
+        "isten_ayrilma_tarihi" => $bitis_tarihi,
+        "acil_kisi"            => $_POST["acil_kisi"] ?? '',
+        "yakinlik"             => $_POST["yakinlik"] ?? '',
+        "acil_telefon"         => $_POST["acil_telefon"] ?? '',
+        "kayit_tarihi"         => date('Y-m-d H:i:s'),
     ];
     if (!empty($id)) {
         $data["guncelleme_tarihi"] = date('Y-m-d H:i:s');
