@@ -87,6 +87,20 @@ class UserRolesModel extends Model
 
         return $options;
     }
+
+    /** Bu Adla kaydedilmiş kullanıcı grubu var mı? */
+    public function roleExists(string $roleName): bool
+    {
+        $ownerID = $_SESSION["owner_id"];
+
+        $sql = $this->db->prepare("SELECT COUNT(*) FROM user_roles WHERE owner_id = :owner_id AND role_name = :role_name");
+        $sql->execute([
+            'owner_id' => $ownerID,
+            'role_name' => $roleName
+        ]);
+
+        return $sql->fetchColumn() > 0;
+    }
 }
 
 ?>

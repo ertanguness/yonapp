@@ -122,78 +122,56 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
         margin: 0;
         padding: 0;
     } */
-    .action-vertical .avatar-text{width:28px;height:28px;line-height:28px;border-radius:50%}
-    .action-vertical i{font-size:12px;color:#6c757d;transition:color .2s ease}
+    .action-col{padding:0 6px}
+    .action-vertical{gap:4px}
+    .action-vertical .avatar-text{width:24px;height:24px;line-height:24px;border-radius:50%;padding:0;margin:0}
+    .action-vertical i{font-size:11px;color:#6c757d;transition:color .2s ease}
     .action-vertical a.makbuz-goster:hover i{color:#0d6efd}
     .action-vertical a.mesaj-gonder:hover i{color:#6c757d}
     .action-vertical a.tahsilat-sil:hover i{color:#dc3545}
+    .payment-right{padding-right:16px !important}
+    .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .summary-card{display:flex;align-items:center;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:14px 16px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+    .summary-icon{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:8px;margin-right:12px}
+    .summary-label{font-size:12px;color:#6c757d}
+    .summary-value{font-size:20px;font-weight:700}
 </style>
 
 <div class="modal-body ">
 
 
 
-    <div class="row p-3 border-gray-5 mb-3 mt-0">
-
-        <div class="col-xxl-4 col-md-6">
-            <div class="card stretch stretch-full">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-text avatar-xl rounded bg-soft-danger text-danger border-soft-danger">
-                                <i class="feather-user-minus"></i>
-                            </div>
-                            <a href="javascript:void(0);" class="fw-bold d-block">
-                                <span class="d-block">BORÇ (TL)</span>
-                                <span class="fs-24 fw-bolder d-block text-danger borc-etiket">
-                                    <?php echo Helper::formattedMoney(-$finansalDurum->toplam_borc); ?>
-
-                                </span>
-                            </a>
-                        </div>
-
-                    </div>
+    <div class="summary-grid mb-3">
+        <div class="summary-card">
+            <div class="summary-icon bg-soft-danger text-danger border-soft-danger">
+                <i class="feather-user-minus"></i>
+            </div>
+            <div class="summary-content">
+                <div class="summary-label">BORÇ (TL)</div>
+                <div class="summary-value text-danger">
+                    <?php echo Helper::formattedMoney(-$finansalDurum->toplam_borc); ?>
                 </div>
             </div>
         </div>
-        <div class="col-xxl-4 col-md-6">
-            <div class="card stretch stretch-full">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-text avatar-xl rounded bg-soft-success text-success border-soft-success">
-                                <i class="feather-user-check"></i>
-                            </div>
-                            <a href="javascript:void(0);" class="fw-bold d-block">
-                                <span class="d-block">TAHSİLAT (TL)</span>
-                                <span class="fs-24 fw-bolder d-block text-success tahsilat-etiket">
-                                    <?php echo Helper::formattedMoney($finansalDurum->toplam_tahsilat); ?>
-                                </span>
-                            </a>
-                        </div>
-
-                    </div>
+        <div class="summary-card">
+            <div class="summary-icon bg-soft-success text-success border-soft-success">
+                <i class="feather-user-check"></i>
+            </div>
+            <div class="summary-content">
+                <div class="summary-label">TAHSİLAT (TL)</div>
+                <div class="summary-value text-success">
+                    <?php echo Helper::formattedMoney($finansalDurum->toplam_tahsilat); ?>
                 </div>
             </div>
         </div>
-        <div class="col-xxl-4 col-md-6">
-            <div class="card stretch stretch-full">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-text avatar-xl rounded bg-soft-primary text-primary border-soft-primary">
-                                <i class="feather-users"></i>
-                            </div>
-                            <a href="javascript:void(0);" class="fw-bold d-block">
-                                <span class="d-block">BAKİYE (TL)</span>
-                                <span class="fs-24 fw-bolder d-block bakiye-etiket">
-                                    <?php echo Helper::formattedMoney($finansalDurum->bakiye); ?>
-
-                                </span>
-                            </a>
-                        </div>
-
-                    </div>
+        <div class="summary-card">
+            <div class="summary-icon bg-soft-primary text-primary border-soft-primary">
+                <i class="feather-users"></i>
+            </div>
+            <div class="summary-content">
+                <div class="summary-label">BAKİYE (TL)</div>
+                <div class="summary-value <?php echo $bakiye_color; ?>">
+                    <?php echo Helper::formattedMoney($finansalDurum->bakiye); ?>
                 </div>
             </div>
         </div>
@@ -317,8 +295,8 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                         $enc_id = Security::encrypt($tahsilat['id']);
                                     ?>
                                         <tr class="cursor-pointer">
-                                            <td style="width:4%;">
-                                                <div class="d-flex flex-column align-items-center gap-2 action-vertical">
+                                            <td class="action-col" style="width:4%;">
+                                                <div class="d-flex flex-column align-items-center action-vertical">
                                                     <a href="javascript:void(0);"
                                                        data-id="<?php echo $enc_id ?>"
                                                        data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
@@ -352,7 +330,9 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                 <a href="javascript:void(0);" class="fw-bold">
                                                     Tahsilat Fişi #<?php echo $tahsilat['id']; ?>
                                                 </a>
-                                                <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
+                                                <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc" 
+                                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                                   title="<?php echo htmlspecialchars(!empty($tahsilat['ana_aciklama']) ? $tahsilat['ana_aciklama'] : 'Genel Tahsilat'); ?>">
                                                     <?php echo !empty($tahsilat['ana_aciklama']) ? Helper::short($tahsilat['ana_aciklama'],60) : "Genel Tahsilat"; ?>
                                                 </p>
                                                 
@@ -376,7 +356,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                 <?php endif; ?>
 
                                             </td>
-                                            <td class="text-end" style="width: 35%; vertical-align: top;">
+                                            <td class="text-end payment-right" style="width: 35%; vertical-align: top;">
                                                 <!-- Toplam Tutar ve Tarih -->
                                                 <a href="javascript:void(0);" class="fw-bold d-block">
                                                     <?php echo Helper::formattedMoney($tahsilat['toplam_tutar']); ?>

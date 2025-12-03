@@ -3279,6 +3279,8 @@ CREATE TABLE IF NOT EXISTS `siteler` (
   `yonetici_id` int(11) NOT NULL COMMENT 'Sorumlu yönetici ID',
   `olusturan_kullanici` int(11) NOT NULL COMMENT 'Kaydı oluşturan kullanıcı ID',
   `aktif_mi` tinyint(1) DEFAULT 1 COMMENT '1: Aktif, 0: Pasif',
+  `favori_mi` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1: Favori, 0: Değil',
+  `click_count` int(11) NOT NULL DEFAULT 0 COMMENT 'Seçilme/tıklanma sayısı',
   `silinmis_mi` tinyint(1) DEFAULT 0 COMMENT '1: Silinmiş, 0: Aktif',
   `kurulus_tarihi` date DEFAULT NULL COMMENT 'Sitenin kuruluş tarihi',
   `kayit_tarihi` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'Sisteme kayıt tarihi',
@@ -3287,7 +3289,9 @@ CREATE TABLE IF NOT EXISTS `siteler` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `site_adi` (`site_adi`,`il`,`ilce`),
   KEY `il` (`il`,`ilce`),
-  KEY `aktif_mi` (`aktif_mi`)
+  KEY `aktif_mi` (`aktif_mi`),
+  KEY `favori_mi` (`favori_mi`),
+  KEY `click_count` (`click_count`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci COMMENT='Site bilgilerini tutan ana tablo';
 
 -- yonapp.siteler: ~5 rows (yaklaşık) tablosu için veriler indiriliyor

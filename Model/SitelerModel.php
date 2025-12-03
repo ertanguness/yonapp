@@ -22,14 +22,14 @@ class SitelerModel extends Model
     public function Sitelerim()
     {
 
-      
+        
         $user_id = $_SESSION['user']->id; // Kullanıcının ID'sini alıyoruz
         /** Kullanıcı alt kullanıcı ise kontrol yapma */
         $isSubUser = $_SESSION['user']->owner_id > 0 ? true : false;
         if ($isSubUser) {
             $user_id = $_SESSION['user']->owner_id;
         }
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE user_id = ?");
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE user_id = ? ORDER BY favori_mi DESC, click_count DESC, aktif_mi DESC, site_adi ASC");
         $sql->execute([$user_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
@@ -43,6 +43,30 @@ class SitelerModel extends Model
         $query->execute([$id]);
         $result = $query->fetch(PDO::FETCH_OBJ);
         return $result;
+    }
+
+    public function getFavorites()
+    {
+        $user_id = $_SESSION['user']->id;
+        $isSubUser = $_SESSION['user']->owner_id > 0 ? true : false;
+        if ($isSubUser) {
+            $user_id = $_SESSION['user']->owner_id;
+        }
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE user_id = ? AND favori_mi = 1 ORDER BY click_count DESC, site_adi ASC");
+        $sql->execute([$user_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function incrementClickCount($id)
+    {
+        $stmt = $this->db->prepare("UPDATE $this->table SET click_count = click_count + 1 WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public function setFavorite($id, $isFavorite)
+    {
+        $stmt = $this->db->prepare("UPDATE $this->table SET favori_mi = ? WHERE id = ?");
+        return $stmt->execute([intval($isFavorite) ? 1 : 0, $id]);
     }
 
     public function siteSonID()

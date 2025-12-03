@@ -59,6 +59,7 @@ if (Gate::isResident()) {
 
 //Kullanıcının sitelerin getir
 $mySites = $Site->Sitelerim(); // Kullanıcının sitelerini getir
+$favoriteSites = $Site->getFavorites();
 
 // Aktif ve pasif site sayılarını hesapla
 $activeSitesCount = 0;
@@ -89,6 +90,7 @@ if (count($mySites) == 1) {
 // Seçim sonrası yönlendirme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
     $_SESSION['site_id'] = $_POST['site_id'];
+    $Site->incrementClickCount($_POST['site_id']);
     $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'ana-sayfa';
     header("Location: $redirectUri");
     exit();
@@ -247,8 +249,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
         .search-controls-card {
             background: white;
             border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
@@ -257,16 +259,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
             flex-wrap: wrap;
         }
 
+        .search-group { position: relative; flex: 1; min-width: 300px; }
         .search-controls-card .search-input {
-            flex: 1;
-            min-width: 300px;
-            padding: 12px 16px;
+            width: 100%;
+            padding: 10px 14px 10px 36px;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             font-size: 0.95rem;
             background: white;
             transition: all 0.3s ease;
         }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; }
 
         .search-controls-card .search-input:focus {
             outline: none;
@@ -300,6 +303,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
             color: #555;
             font-size: 0.95rem;
         }
+
+        .quick-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-actions .btn {
+            border-radius: 8px;
+        }
+
+        .view-toggle .btn {
+            border-radius: 8px;
+        }
+
+        .sites-container.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        /* Favorites Section */
+        .favorites-section { background: white; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 16px; }
+        .favorites-header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; }
+        .favorites-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+
+        /* Sites Section */
+        .sites-section { background: white; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 16px; }
+        .sites-header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; }
 
         /* Controls */
         .controls-section {
@@ -370,6 +400,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
             border: 1px solid #eee;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             position: relative;
+        }
+
+        .favorite-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        .favorite-toggle:hover svg {
+            filter: drop-shadow(0 1px 2px rgba(245, 166, 35, 0.4));
         }
 
         .site-card:hover {
@@ -737,93 +781,134 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
             </div>
         </div>
 
-    </div>
-    <!-- Page Content -->
-    <div class="page-content">
+   
         <div class="content-container">
-            <!-- Info Section Accordion -->
-            <div class="info-section">
-                <button class="accordion-header" id="accordionHeader">
-                    <h5>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                        Kullanım Talimatları
-                    </h5>
-                    <div class="accordion-toggle">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-                </button>
-                <div class="accordion-content" id="accordionContent">
-                    <ul>
-                        <li><strong>Bir Site Seçin:</strong> Aşağıdaki kartlardan kayıtlı sitelerinizden birini seçerek sisteme giriş yapabilirsiniz.</li>
-                        <li><strong>Durum Değiştirme:</strong> Her bir kartın sağ alt köşesindeki anahtar ile sitenizin durumunu (Aktif/Pasif) değiştirebilirsiniz.</li>
-                        <li><strong>Pasif Siteleri Görmek:</strong> Varsayılan olarak sadece aktif siteler gösterilir. Pasif siteleri görmek için üstteki seçeneği aktif hale getirin.</li>
-                        <li><strong>Çıkış Yapmak:</strong> Oturum sonlandırmak için sağ üst köşedeki çıkış butonunu kullanın.</li>
-                    </ul>
-                </div>
-            </div>
+            
 
             <!-- Search and Controls Card -->
             <div class="search-controls-card">
-                <input
-                    type="text"
-                    class="search-input"
-                    id="siteSearchInput"
-                    placeholder="Site adı, adres veya başka bilgi ile ara...">
-                <div class="toggle-control">
-                    <input class="form-check-input" type="checkbox" id="showInactiveSwitch">
-                    <label class="form-check-label" for="showInactiveSwitch">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline; margin-right: 5px;">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                        Pasif Siteleri Göster
-                    </label>
+                <div class="search-group">
+                    <span class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
+                    <input
+                        type="text"
+                        class="search-input"
+                        id="siteSearchInput"
+                        placeholder="Site adı, adres veya başka bilgi ile ara...">
+                </div>
+                <div class="quick-actions">
+                    <div class="toggle-control">
+                        <input class="form-check-input" type="checkbox" id="showInactiveSwitch">
+                        <label class="form-check-label" for="showInactiveSwitch">Pasif Siteleri Göster</label>
+                    </div>
+                    <div class="view-toggle btn-group" role="group" aria-label="Görünüm">
+                        <button type="button" class="btn btn-outline-primary" id="gridViewBtn" data-bs-toggle="tooltip" data-bs-title="Grid görünüm">Grid</button>
+                        <button type="button" class="btn btn-outline-primary" id="listViewBtn" data-bs-toggle="tooltip" data-bs-title="Liste görünüm">Liste</button>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="Sırala">
+                        <button type="button" class="btn btn-outline-secondary" id="sortAscBtn" data-bs-toggle="tooltip" data-bs-title="A→Z sırala">A→Z</button>
+                        <button type="button" class="btn btn-outline-secondary" id="sortDescBtn" data-bs-toggle="tooltip" data-bs-title="Z→A sırala">Z→A</button>
+                    </div>
+                    <a href="site-ekle" class="btn btn-primary" id="addSiteBtn" data-bs-toggle="tooltip" data-bs-title="Yeni site ekle">Site Ekle</a>
+                </div>
+            </div>
+
+            <!-- Favorites Section (Cards) -->
+            <div class="favorites-section">
+                <div class="favorites-header">
+                    <h6 class="m-0">Favoriler</h6>
+                    <small class="text-muted">Sık eriştiğiniz siteler</small>
+                </div>
+                <div class="favorites-container">
+                    <?php if (!empty($favoriteSites)): ?>
+                        <?php foreach ($favoriteSites as $site): ?>
+                            <form method="POST" class="firm-select-form">
+                                <input type="hidden" name="site_id" value="<?= $site->id ?>">
+                                <div class="site-card list-item <?= $site->aktif_mi == 0 ? 'inactive' : '' ?>" data-site-id="<?= $site->id ?>">
+                                    <button type="button" class="favorite-toggle" data-site-id="<?= $site->id ?>" aria-label="Favori" data-bs-toggle="tooltip" data-bs-title="Favoriye ekle/çıkar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#f5a623" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="12 2 15 9 22 9 17 14 19 21 12 17 5 21 7 14 2 9 9 9"></polygon>
+                                        </svg>
+                                    </button>
+                                    <div class="site-card-header">
+                                        <?php
+                                        $fullLogo = $site->logo_path ?? '';
+                                        $logoSrc = !empty($fullLogo) ? '/assets/images/logo/' . $fullLogo : '/assets/images/logo/default.png';
+                                        ?>
+                                        <img src="<?= $logoSrc ?>" alt="<?= htmlspecialchars($site->site_adi) ?>" class="site-logo">
+                                        <div class="site-header-info">
+                                            <h3><?= htmlspecialchars($site->site_adi) ?></h3>
+                                            <?php if (!empty($site->tam_adres)): ?>
+                                                <p><?= htmlspecialchars($site->tam_adres) ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="site-card-footer">
+                                        <div class="site-status">
+                                            <span class="status-badge <?= !$site->aktif_mi ? 'inactive' : '' ?>"></span>
+                                            <span class="status-text <?= !$site->aktif_mi ? 'inactive' : '' ?>">
+                                                <?= $site->aktif_mi ? 'Aktif' : 'Pasif' ?>
+                                            </span>
+                                        </div>
+                                        <div class="site-toggle">
+                                            <input class="form-check-input firm-status-switch" type="checkbox" data-site-id="<?= $site->id ?>" id="firmStatusSwitchFav<?= $site->id ?>" <?= $site->aktif_mi ? 'checked' : '' ?>>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-muted">Henüz favori site bulunmuyor.</div>
+                    <?php endif; ?>
                 </div>
             </div>
 
             <!-- Sites Grid -->
             <?php if (!empty($mySites)): ?>
-                <div class="sites-container">
-                    <?php foreach ($mySites as $site): ?>
-                        <form method="POST" class="firm-select-form">
-                            <input type="hidden" name="site_id" value="<?= $site->id ?>">
-                            <div class="site-card list-item <?= $site->aktif_mi == 0 ? 'inactive' : '' ?>" data-site-id="<?= $site->id ?>">
-                                <!-- Site Card Header -->
-                                <div class="site-card-header">
-                                    <?php
-                                    $fullLogo = $site->logo_path ?? '';
-                                    $logoSrc = !empty($fullLogo) ? '/assets/images/logo/' . $fullLogo : '/assets/images/logo/default.png';
-                                    ?>
-                                    <img src="<?= $logoSrc ?>" alt="<?= htmlspecialchars($site->site_adi) ?>" class="site-logo">
-                                    <div class="site-header-info">
-                                        <h3><?= htmlspecialchars($site->site_adi) ?></h3>
-                                        <?php if (!empty($site->tam_adres)): ?>
-                                            <p><?= htmlspecialchars($site->tam_adres) ?></p>
-                                        <?php endif; ?>
+                <div class="sites-section">
+                    <div class="sites-header">
+                        <h6 class="m-0">Siteler</h6>
+                        <small class="text-muted">Kayıtlı siteleriniz</small>
+                    </div>
+                    <div class="sites-container">
+                        <?php foreach ($mySites as $site): if (($site->favori_mi ?? 0) == 1) { continue; } ?>
+                            <form method="POST" class="firm-select-form">
+                                <input type="hidden" name="site_id" value="<?= $site->id ?>">
+                                <div class="site-card list-item <?= $site->aktif_mi == 0 ? 'inactive' : '' ?>" data-site-id="<?= $site->id ?>">
+                                    <button type="button" class="favorite-toggle" data-site-id="<?= $site->id ?>" aria-label="Favori" data-bs-toggle="tooltip" data-bs-title="Favoriye ekle/çıkar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="<?= ($site->favori_mi ?? 0) ? '#f5a623' : 'none' ?>" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="12 2 15 9 22 9 17 14 19 21 12 17 5 21 7 14 2 9 9 9"></polygon>
+                                        </svg>
+                                    </button>
+                                    <div class="site-card-header">
+                                        <?php
+                                        $fullLogo = $site->logo_path ?? '';
+                                        $logoSrc = !empty($fullLogo) ? '/assets/images/logo/' . $fullLogo : '/assets/images/logo/default.png';
+                                        ?>
+                                        <img src="<?= $logoSrc ?>" alt="<?= htmlspecialchars($site->site_adi) ?>" class="site-logo">
+                                        <div class="site-header-info">
+                                            <h3><?= htmlspecialchars($site->site_adi) ?></h3>
+                                            <?php if (!empty($site->tam_adres)): ?>
+                                                <p><?= htmlspecialchars($site->tam_adres) ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="site-card-footer">
+                                        <div class="site-status">
+                                            <span class="status-badge <?= !$site->aktif_mi ? 'inactive' : '' ?>"></span>
+                                            <span class="status-text <?= !$site->aktif_mi ? 'inactive' : '' ?>">
+                                                <?= $site->aktif_mi ? 'Aktif' : 'Pasif' ?>
+                                            </span>
+                                        </div>
+                                        <div class="site-toggle">
+                                            <input class="form-check-input firm-status-switch" type="checkbox" data-site-id="<?= $site->id ?>" id="firmStatusSwitch<?= $site->id ?>" <?= $site->aktif_mi ? 'checked' : '' ?>>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <!-- Site Card Footer -->
-                                <div class="site-card-footer">
-                                    <div class="site-status">
-                                        <span class="status-badge <?= !$site->aktif_mi ? 'inactive' : '' ?>"></span>
-                                        <span class="status-text <?= !$site->aktif_mi ? 'inactive' : '' ?>">
-                                            <?= $site->aktif_mi ? 'Aktif' : 'Pasif' ?>
-                                        </span>
-                                    </div>
-                                    <div class="site-toggle">
-                                        <input class="form-check-input firm-status-switch" type="checkbox" data-site-id="<?= $site->id ?>" id="firmStatusSwitch<?= $site->id ?>" <?= $site->aktif_mi ? 'checked' : '' ?>>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    <?php endforeach; ?>
+                            </form>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             <?php else: ?>
                 <div class="empty-state">
@@ -835,6 +920,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
                     </svg>
                     <h4>Kayıtlı Site Bulunamadı</h4>
                     <p>Lütfen önce bir site ekleyiniz.</p>
+                    <a href="site-ekle" class="btn btn-primary mt-3">Site Ekle</a>
                 </div>
             <?php endif; ?>
 
@@ -848,6 +934,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
     <script src="/assets/js/onboarding.js"></script>
     <script>
         $(document).ready(function() {
+            function refreshFavoritesEmptyState() {
+                var hasCards = $('.favorites-container .site-card').length > 0;
+                if (hasCards) {
+                    $('.favorites-container .text-muted').remove();
+                } else {
+                    if ($('.favorites-container .text-muted').length === 0) {
+                        $('.favorites-container').append('<div class="text-muted">Henüz favori site bulunmuyor.</div>');
+                    }
+                }
+            }
             // Accordion işlevi
             $('#accordionHeader').click(function() {
                 var $header = $(this);
@@ -857,13 +953,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
                 $content.toggleClass('active');
             });
 
-            // Firma kartına tıklayınca form submit
-            $('.list-item').click(function() {
+            // Firma kartına tıklayınca form submit (delegated)
+            $(document).on('click', '.list-item', function() {
                 $(this).closest('form').submit();
             });
 
+            // Favori toggle butonu tıklandığında kartın submit'ini engelle
+            $(document).on('click', '.favorite-toggle', function(event) {
+                event.stopPropagation();
+                var siteID = $(this).data('site-id');
+                var $btn = $(this);
+                var isFav = $btn.find('svg').attr('fill') !== 'none';
+                var $form = $btn.closest('form');
+
+                $.ajax({
+                    url: 'update_favorite_status.php',
+                    type: 'POST',
+                    data: { site_id: siteID, is_favorite: isFav ? 0 : 1 },
+                    success: function() {
+                        if (isFav) {
+                            // Favoriden çıkar: ikonu boşalt ve karta ana listede yer ver
+                            $btn.find('svg').attr('fill', 'none');
+                            if ($('.sites-container').length) {
+                                $('.sites-container').prepend($form);
+                            }
+                            refreshFavoritesEmptyState();
+                        } else {
+                            // Favoriye ekle: ikonu doldur ve kartı favoriler alanına taşı
+                            $btn.find('svg').attr('fill', '#f5a623');
+                            if ($('.favorites-container').length) {
+                                $('.favorites-container').prepend($form);
+                            } else {
+                                // Favoriler alanı yoksa oluştur
+                                var favSection = '<div class="favorites-section">\n' +
+                                    '<div class="favorites-header">\n' +
+                                    '<h6 class="m-0">Favoriler</h6>\n' +
+                                    '<small class="text-muted">Sık eriştiğiniz siteler</small>\n' +
+                                    '</div>\n' +
+                                    '<div class="favorites-container"></div>\n' +
+                                    '</div>';
+                                $('.search-controls-card').after(favSection);
+                                $('.favorites-container').prepend($form);
+                            }
+                            refreshFavoritesEmptyState();
+                        }
+                    },
+                    error: function() {
+                        alert('Favori güncellenirken hata oluştu');
+                    }
+                });
+            });
+
             // Switch tıklandığında kartın click'ine gitmesini engelle
-            $('.firm-status-switch').click(function(event) {
+            $(document).on('click', '.firm-status-switch', function(event) {
                 event.stopPropagation();
             });
 
@@ -904,7 +1046,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
             });
 
             // Firma durumunu değiştiren switch
-            $('.firm-status-switch').change(function() {
+            $(document).on('change', '.firm-status-switch', function() {
                 var siteID = $(this).data('site-id');
                 var isActive = $(this).is(':checked') ? 1 : 0;
                 var $card = $(this).closest('.site-card');
@@ -970,6 +1112,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
                     }
                 });
             }
+
+            if (window.bootstrap && bootstrap.Tooltip) {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function(el) { return new bootstrap.Tooltip(el); });
+            }
+
+            $('#gridViewBtn').on('click', function() {
+                $('.sites-container').removeClass('list-view');
+            });
+
+            $('#listViewBtn').on('click', function() {
+                $('.sites-container').addClass('list-view');
+            });
+
+            function sortSitesAsc() {
+                var items = $('.sites-container form').get();
+                items.sort(function(a, b) {
+                    var an = $(a).find('.site-header-info h3').text().toLowerCase();
+                    var bn = $(b).find('.site-header-info h3').text().toLowerCase();
+                    return an.localeCompare(bn);
+                });
+                $.each(items, function(idx, itm) { $('.sites-container').append(itm); });
+            }
+
+            function sortSitesDesc() {
+                var items = $('.sites-container form').get();
+                items.sort(function(a, b) {
+                    var an = $(a).find('.site-header-info h3').text().toLowerCase();
+                    var bn = $(b).find('.site-header-info h3').text().toLowerCase();
+                    return bn.localeCompare(an);
+                });
+                $.each(items, function(idx, itm) { $('.sites-container').append(itm); });
+            }
+
+            $('#sortAscBtn').on('click', function() { sortSitesAsc(); });
+            $('#sortDescBtn').on('click', function() { sortSitesDesc(); });
+            sortSitesAsc();
         });
     </script>
 </body>

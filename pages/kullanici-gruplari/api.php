@@ -1,7 +1,7 @@
 <?php
 
 
-require_once dirname(__DIR__ ,levels: 2). '/configs/bootstrap.php';
+require_once dirname(__DIR__, levels: 2) . '/configs/bootstrap.php';
 
 
 use Database\Db;
@@ -30,11 +30,11 @@ $db = Db::getInstance();
  */
 if ($_POST['action'] == 'getPermissions') {
 
-    $id = Security::decrypt($_POST['id'] ?? 0 );
+    $id = Security::decrypt($_POST['id'] ?? 0);
 
     // Tüm izinleri gruplanmış olarak al
     $permissionGroups = $Permissions->getGroupedPermissions();
-    
+
     //Kullanıcı izinlerini al
     $userPermissions = $UserPermissions->getUserPermissions($id);
     // Sonucu bir API olarak döndürmek için:
@@ -56,9 +56,9 @@ if ($_POST['action'] == 'getPermissions') {
 
 // Yetkileri Kaydet
 if ($_POST['action'] == 'savePermissions') {
-    
+
     // Gelen verileri al
-    $roleID = Security::decrypt($_POST['id'] );
+    $roleID = Security::decrypt($_POST['id']);
     $submittedPermissions = json_decode($_POST['permissions']) ?? [];
 
     // Gelen izinlerin bir dizi olduğundan emin ol
@@ -72,8 +72,8 @@ if ($_POST['action'] == 'savePermissions') {
         if ($roleID === 0) {
             throw new Exception("Geçersiz veya eksik Yetki grubu ID'si.");
         }
-        
-      
+
+
         // 1. Adım: Düzenlenen kullanıcının bilgilerini ve rolünü al
         $role =  $UserRoles->find($roleID);
         if (!$role) {
@@ -82,7 +82,7 @@ if ($_POST['action'] == 'savePermissions') {
 
         // 2. Adım (Güvenlik): Kullanıcının grubunun/rolünün izin verdiği yetkileri al
         $allowedGroupPermissions = $UserPermissions->getPermissionsForRole($roleID);
-        
+
         // 3. Adım (Filtreleme): Gelen yetkileri, sadece kullanıcının grubunun izin verdikleriyle sınırla.
         // Bu, birinin formdan fazladan yetki göndermesini engeller.
         $validPermissionsToSync = array_intersect($submittedPermissions, $allowedGroupPermissions);
@@ -91,11 +91,10 @@ if ($_POST['action'] == 'savePermissions') {
         $UserPermissions->syncUserPermissions($roleID, $validPermissionsToSync);
 
         //Menu cache'yi temizle
-       $Menus->clearMenuCacheForRole($roleID);
-        
+        $Menus->clearMenuCacheForRole($roleID);
+
         $status = 'success';
         $message = 'Yetki Grubu izinleri başarıyla güncellendi.';
-
     } catch (Exception $e) {
         $status = "error";
         $message = 'Bir hata oluştu: ' . $e->getMessage();
@@ -109,7 +108,7 @@ if ($_POST['action'] == 'savePermissions') {
             'permissions' => $_POST['permissions']
         ]
     ];
-    
+
     header('Content-Type: application/json');
     echo json_encode($res);
 }
@@ -129,27 +128,30 @@ if ($_POST['action'] == 'saveRole') {
         $db->beginTransaction();
 
         /** Eğer aynı isimde bir rol varsa kayıt yapma */
-        if ($UserRoles->roleExists($roleName, $roleID)) {
-           $status = 'error';
-              $message = 'Aynı isimde bir kullanıcı grubu zaten mevcut. Lütfen farklı bir isim deneyin.';
-           throw new Exception($message);
+        if ($UserRoles->roleExists($roleName)) {
+            $status = 'error';
+            $message = 'Aynı isimde bir kullanıcı grubu zaten mevcut. Lütfen farklı bir isim deneyin.';
+            echo json_encode([
+                'status' => $status,
+                'message' => $message
+            ]);
+            exit;
         }
 
-            // Yeni rol ekleniyor
-            $data = [
-                "id" => $roleID,
-                "owner_id" => $_SESSION['user']->id,
-                'role_name' => $roleName,
-                'description' => $description,
-                'main_role' => 0
-            ];
+        // Yeni rol ekleniyor
+        $data = [
+            "id" => $roleID,
+            "owner_id" => $_SESSION['user']->id,
+            'role_name' => $roleName,
+            'description' => $description,
+            'main_role' => 0
+        ];
 
-            $lastInsertId = $UserRoles->saveWithAttr($data);
+        $lastInsertId = $UserRoles->saveWithAttr($data);
 
-            $status = 'success';
-            $message = 'Yeni kullanıcı grubu başarıyla eklendi.';
+        $status = 'success';
+        $message = 'Yeni kullanıcı grubu başarıyla eklendi.';
         $db->commit();
-       
     } catch (Exception $e) {
         $db->rollBack();
         $status = 'error';
