@@ -43,9 +43,12 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
     <div class="ms-auto">
 
         <div class="d-flex align-items-center justify-content-center">
+            <?php $telefonTemiz = preg_replace('/[^0-9]/', '', (string)($kisi->telefon ?? '')); ?>
             <a href="javascript:void(0)" class="d-flex me-1 mesaj-gonder" data-alert-target="SendMessage"
-                data-id="<?php echo $kisi->id; ?>"
-                data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>">
+                data-id="<?php echo (int)$kisi->id; ?>"
+                data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
+                data-phone="<?php echo htmlspecialchars($telefonTemiz, ENT_QUOTES); ?>"
+                data-daire="<?php echo htmlspecialchars((string)($kisi->daire_kodu ?? ''), ENT_QUOTES); ?>">
                 <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" title=""
                     data-bs-original-title="Mesaj Gönder">
                     <i class="feather feather-send"></i>
@@ -310,12 +313,14 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                        data-id="<?php echo $enc_id ?>"
                                                        data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
                                                        data-makbuz-bildirim="true"
+                                                       data-phone="<?php echo htmlspecialchars($telefonTemiz, ENT_QUOTES); ?>"
+                                                       data-daire="<?php echo htmlspecialchars((string)($kisi->daire_kodu ?? ''), ENT_QUOTES); ?>"
                                                        class="action-link mesaj-gonder"
                                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Mesaj Gönder">
-                                                        <div class="avatar-text bg-gray-100">
-                                                            <i class="fa fa-comment fa-sm"></i>
-                                                        </div>
-                                                    </a>
+                                                       <div class="avatar-text bg-gray-100">
+                                                           <i class="fa fa-comment fa-sm"></i>
+                                                       </div>
+                                                   </a>
                                                     <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
                                                        class="action-link tahsilat-sil"
                                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Sil">
