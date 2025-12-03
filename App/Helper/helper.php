@@ -120,7 +120,9 @@ class Helper
         '11' => 'Teyze',
         '12' => 'Hala',
         '13' => 'Kuzen',
-        '14' => 'Diğer'
+        '14' => 'Diğer',
+        '15' => "Kızı",
+        '16' => "Oğlu"
     ];
 
     public const ikametTuru = [

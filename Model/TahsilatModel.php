@@ -84,7 +84,10 @@ public function KisiTahsilatlariWithDetails($kisi_id)
                                             t.aciklama  AS ana_aciklama,
                                             td.odenen_tutar  AS detay_tutar,
                                             td.aciklama  AS detay_aciklama,
-                                            bd.aciklama  AS borc_adi
+                                            bd.aciklama  AS borc_adi,
+                                            (SELECT COALESCE(SUM(kkk.kullanilan_tutar), 0)
+                                             FROM kisi_kredi_kullanimlari kkk
+                                             WHERE kkk.tahsilat_id = t.id AND kkk.silinme_tarihi IS NULL) AS kullanilan_kredi
                                         FROM tahsilatlar t
                                         LEFT JOIN tahsilat_detay td  ON t.id = td.tahsilat_id
                                         LEFT JOIN borclandirma_detayi bd  ON td.borc_detay_id = bd.id
@@ -99,31 +102,17 @@ public function KisiTahsilatlariWithDetails($kisi_id)
                                             k.aciklama AS ana_aciklama,
                                             k.tutar AS detay_tutar,
                                             k.aciklama AS detay_aciklama,
-                                            'Krediye aktarım' AS borc_adi
+                                            'Krediye aktarım' AS borc_adi,
+                                            (SELECT COALESCE(SUM(kkk.kullanilan_tutar), 0)
+                                             FROM kisi_kredi_kullanimlari kkk
+                                             WHERE kkk.tahsilat_id = t2.id AND kkk.silinme_tarihi IS NULL) AS kullanilan_kredi
                                         FROM kisi_kredileri k
                                         LEFT JOIN tahsilatlar t2 ON k.tahsilat_id = t2.id
                                         WHERE k.kisi_id = ? AND k.silinme_tarihi IS NULL
                                         ORDER BY islem_tarihi DESC, tahsilat_id DESC;");
-    // $sql = $this->db->prepare("SELECT 
-    //                                         t.id AS tahsilat_id,
-    //                                         t.tutar AS toplam_tutar,
-    //                                         t.islem_tarihi,
-    //                                         t.aciklama AS ana_aciklama,
-    //                                         td.odenen_tutar AS detay_tutar,
-    //                                         td.aciklama AS detay_aciklama,
-    //                                         bd.aciklama AS borc_adi
-    //                                     FROM 
-    //                                         tahsilatlar t
-    //                                     LEFT JOIN 
-    //                                         tahsilat_detay td ON t.id = td.tahsilat_id
-    //                                     LEFT JOIN
-    //                                         borclandirma_detayi bd ON td.borc_detay_id = bd.id
-    //                                     WHERE 
-    //                                         t.kisi_id = ? AND t.silinme_tarihi IS NULL
-    //                                     ORDER BY 
-    //                                         t.islem_tarihi DESC, t.id DESC
-    // ");
-    $sql->execute([$kisi_id, $kisi_id]);
+
+
+$sql->execute([$kisi_id, $kisi_id]);
     $results = $sql->fetchAll(PDO::FETCH_OBJ);
 
     // Şimdi sonuçları PHP'de tahsilat bazında gruplayalım.
@@ -138,7 +127,8 @@ public function KisiTahsilatlariWithDetails($kisi_id)
                 'toplam_tutar' => $row->toplam_tutar,
                 'islem_tarihi' => $row->islem_tarihi,
                 'ana_aciklama' => $row->ana_aciklama,
-                'detaylar' => [] // Detayları tutacak boş bir dizi
+                'kullanilan_kredi' => isset($row->kullanilan_kredi) ? (float)$row->kullanilan_kredi : 0.0,
+                'detaylar' => []
             ];
         }
 

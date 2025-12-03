@@ -122,6 +122,11 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
         margin: 0;
         padding: 0;
     } */
+    .action-vertical .avatar-text{width:28px;height:28px;line-height:28px;border-radius:50%}
+    .action-vertical i{font-size:12px;color:#6c757d;transition:color .2s ease}
+    .action-vertical a.makbuz-goster:hover i{color:#0d6efd}
+    .action-vertical a.mesaj-gonder:hover i{color:#6c757d}
+    .action-vertical a.tahsilat-sil:hover i{color:#dc3545}
 </style>
 
 <div class="modal-body ">
@@ -303,9 +308,9 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                         </div>
                     </div>
                 </div>
-                <div class="overflow-auto tasks-items-wrapper" style="height: calc(100vh - 460px);">
+                <div class="overflow-auto " style="height: calc(100vh - 460px);">
                     <div class="card-body custom-card-action p-0">
-                        <div class="table-responsive tickets-items-wrapper">
+                        <div class="table-responsive ">
                             <table class="table table-hover mb-0">
                                 <tbody>
                                     <?php foreach ($tahsilatlar as $tahsilat):
@@ -313,10 +318,32 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                     ?>
                                         <tr class="cursor-pointer">
                                             <td style="width:4%;">
-                                                <div class="avatar-text bg-gray-100">
-                                                    <a href="javascript:void(0);">
-                                                        <i class="fa fa-money-bill-wave"></i>
-                                                        <!-- İkonu değiştirebilirsiniz -->
+                                                <div class="d-flex flex-column align-items-center gap-2 action-vertical">
+                                                    <a href="javascript:void(0);"
+                                                       data-id="<?php echo $enc_id ?>"
+                                                       data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
+                                                       class="action-link makbuz-goster"
+                                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Makbuz Yazdır">
+                                                        <div class="avatar-text bg-gray-100">
+                                                            <i class="fa fa-print fa-sm"></i>
+                                                        </div>
+                                                    </a>
+                                                    <a href="javascript:void(0);"
+                                                       data-id="<?php echo $enc_id ?>"
+                                                       data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
+                                                       data-makbuz-bildirim="true"
+                                                       class="action-link mesaj-gonder"
+                                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Mesaj Gönder">
+                                                        <div class="avatar-text bg-gray-100">
+                                                            <i class="fa fa-comment fa-sm"></i>
+                                                        </div>
+                                                    </a>
+                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
+                                                       class="action-link tahsilat-sil"
+                                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Sil">
+                                                        <div class="avatar-text bg-gray-100">
+                                                            <i class="fa fa-trash fa-sm"></i>
+                                                        </div>
                                                     </a>
                                                 </div>
                                             </td>
@@ -328,29 +355,7 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                 <p class="fs-12 text-muted text-truncate-1-line tickets-sort-desc">
                                                     <?php echo !empty($tahsilat['ana_aciklama']) ? Helper::short($tahsilat['ana_aciklama'],60) : "Genel Tahsilat"; ?>
                                                 </p>
-                                                <div class="tickets-list-action d-flex align-items-center gap-3">
-
-                                                    <a href="javascript:void(0);"
-                                                        data-id="<?php echo $enc_id ?>"
-                                                        data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
-                                                        class="text-primary makbuz-goster">
-                                                        <i class="fa fa-print"></i>
-                                                        Makbuz Yazdır
-                                                    </a> |
-                                                    <a href="javascript:void(0);"
-                                                        data-id="<?php echo $enc_id ?>"
-                                                        data-kisi-id="<?php echo Security::encrypt($kisi->id); ?>"
-                                                        data-makbuz-bildirim="true"
-                                                        class="text-secondary mesaj-gonder">
-                                                        <i class="fa fa-comment"></i>
-                                                        Mesaj Gönder
-                                                    </a> |
-                                                    <a href="javascript:void(0);" data-id="<?php echo $enc_id ?>"
-                                                        class="text-danger tahsilat-sil">
-                                                        <i class="fa fa-trash"></i>
-                                                        Sil
-                                                    </a>
-                                                </div>
+                                                
 
                                                 <!-- TAHSİLAT DETAYLARI ALT LİSTESİ -->
                                                 <?php if (!empty($tahsilat['detaylar'])): ?>
@@ -376,6 +381,11 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
                                                 <a href="javascript:void(0);" class="fw-bold d-block">
                                                     <?php echo Helper::formattedMoney($tahsilat['toplam_tutar']); ?>
                                                 </a>
+                                                <?php if (!empty($tahsilat['kullanilan_kredi']) && $tahsilat['kullanilan_kredi'] > 0): ?>
+                                                    <span class="fs-12 text-muted d-block">
+                                                        Kullanılan Kredi: <?php echo Helper::formattedMoney($tahsilat['kullanilan_kredi']); ?>
+                                                    </span>
+                                                <?php endif; ?>
                                                 <span class="fs-12 text-muted text-wrap">
                                                     <?php echo Date::dmYHis($tahsilat['islem_tarihi']); ?>
                                                 </span>
@@ -402,3 +412,8 @@ $tahsilatlar = $Tahsilat->KisiTahsilatlariWithDetails($id);
 
     </div>
 </div>
+<script>
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+        try { new bootstrap.Tooltip(el); } catch (e) {}
+    });
+</script>
