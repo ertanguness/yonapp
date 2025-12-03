@@ -27,11 +27,13 @@ class GuvenlikModel extends Model
     $site_id = $_SESSION["site_id"] ?? 0;
 
     $sql = "SELECT gv.*, 
-                   gp.adi_soyadi AS personel_adi, 
-                   gp.telefon AS personel_telefon
+                   p.adi_soyadi AS personel_adi, 
+                   p.telefon AS personel_telefon
             FROM {$this->table} gv
-            INNER JOIN guvenlik_personel gp ON gv.personel_id = gp.id
-            WHERE gp.site_id = ?
+            INNER JOIN personel p ON gv.personel_id = p.id
+            WHERE p.site_id = ?
+              AND p.silinme_tarihi IS NULL
+              AND LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(p.personel_tipi,' ',''),'ü','u'),'ö','o'),'ğ','g'),'ş','s'),'ç','c'),'ı','i')) = 'guvenlik'
             ORDER BY gv.id DESC";
 
     $query = $this->db->prepare($sql);

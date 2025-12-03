@@ -31,6 +31,7 @@ if (($_POST["action"] ?? '') === "ayarlar_kaydet") {
 
             'sms_provider'       => ['value' => trim($_POST['smsProvider'] ?? ''), 'aciklama' => 'SMS: servis sağlayıcı'],
             'sms_username'       => ['value' => trim($_POST['smsUsername'] ?? ''), 'aciklama' => 'SMS: kullanıcı adı'],
+            'sms_baslik'         => ['value' => trim($_POST['smsBaslik'] ?? ''), 'aciklama' => 'SMS: başlık'],
             'sms_password'       => ['value' => trim($_POST['smsPassword'] ?? ''), 'aciklama' => 'SMS: şifre'],
             'sms_durum'          => ['value' => $smsDurum, 'aciklama' => 'SMS: aktif mi'],
 
@@ -68,6 +69,14 @@ if (($_GET["action"] ?? '') === 'iletisim_list') {
     }
     foreach ($map as $it) { $items[] = $it; }
     echo json_encode(['status'=>'success','items'=>$items]);
+    exit;
+}
+
+if (($_GET["action"] ?? '') === 'sms_headers') {
+    $items = [];
+    $rows = $Settings->getMessageSenders() ?: [];
+    foreach ($rows as $r) { $items[] = $r->set_value ?? ''; }
+    echo json_encode(['status' => 'success', 'items' => array_values(array_filter($items))]);
     exit;
 }
 

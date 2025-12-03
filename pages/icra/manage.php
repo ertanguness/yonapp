@@ -12,8 +12,10 @@ $Icra = new IcraModel();
 
 $kisiler = $kisilerModel->SiteTumKisileri($site_id);
 
-$id = Security::decrypt($id ?? 0) ;
-$icraBilgileri = $Icra->IcraBilgileri($id);
+$rawIdParam = isset($id) ? $id : ($GLOBALS['id'] ?? null);
+$id = $rawIdParam ? Security::decrypt($rawIdParam) : 0;
+$isEdit = ($id > 0);
+$icraBilgileri = $isEdit ? $Icra->IcraBilgileri($id) : null;
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -66,7 +68,7 @@ $icraBilgileri = $Icra->IcraBilgileri($id);
                 <div class="col-12">
                     <div class="card">
                         <form method="POST" id="icraForm" name="icraForm">
-                            <input type="hidden" name="icra_id" id="icra_id" value="<?php echo Security::encrypt($id) ?? 0; ?>">
+                            <input type="hidden" name="icra_id" id="icra_id" value="<?php echo $isEdit ? Security::encrypt($id) : ''; ?>">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
 
@@ -91,6 +93,7 @@ $icraBilgileri = $Icra->IcraBilgileri($id);
                                             <div class="input-group flex-nowrap w-100">
                                                 <div class="input-group-text"><i class="feather-info"></i></div>
                                                 <select class="form-select select2 w-100" name="icra_durumu" id="icra_durumu">
+                                                    <option value="" <?= !$isEdit ? 'selected' : '' ?>>Seçiniz</option>
                                                     <?php foreach (Helper::Durum as $key => $value): ?>
                                                         <option value="<?= $key; ?>"
                                                             <?= (!empty($icraBilgileri->durum) && $icraBilgileri->durum == $key) ? 'selected' : ''; ?>>
@@ -111,7 +114,7 @@ $icraBilgileri = $Icra->IcraBilgileri($id);
                                             <div class="input-group flex-nowrap w-100">
                                                 <div class="input-group-text"><i class="feather-user"></i></div>
                                                 <select class="form-select select2 w-100" name="kisi_id" id="kisi_id">
-                                                    <option value="">Seçiniz</option>
+                                                    <option value="" <?= !$isEdit ? 'selected' : '' ?>>Seçiniz</option>
                                                     <?php foreach ($kisiler as $kisi): ?>
                                                         <option value="<?= htmlspecialchars($kisi->id); ?>"
                                                             <?= (!empty($icraBilgileri->kisi_id) && $icraBilgileri->kisi_id == $kisi->id) ? 'selected' : ''; ?>>
@@ -186,3 +189,12 @@ $icraBilgileri = $Icra->IcraBilgileri($id);
 <!-- Ödeme Planı Modal -->
 
 <script src="/src/kisi-bilgileri.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var kisiSelect = document.getElementById('kisi_id');
+  var tcInput = document.getElementById('tc');
+  if (kisiSelect && kisiSelect.value && tcInput && !tcInput.value) {
+    $('#kisi_id').trigger('change');
+  }
+});
+</script>

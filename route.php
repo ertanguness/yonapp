@@ -178,7 +178,7 @@ $router->get('vardiya-listesi', fn() => require 'pages/ziyaretci/guvenlik/Vardiy
 $router->get('vardiya-ekle', fn() => require 'pages/ziyaretci/guvenlik/Vardiya/manage.php');
 $router->get('vardiya-duzenle/{id}', fn($id) => require 'pages/ziyaretci/guvenlik/Vardiya/manage.php');
 
-$router->get('guvenlik-personel-listesi', fn() => require 'pages/ziyaretci/guvenlik/Personel/list.php');
+$router->get('guvenlik-personeli', fn() => require 'pages/ziyaretci/guvenlik/Personel/list.php');
 $router->get('guvenlik-personel-ekle', fn() => require 'pages/ziyaretci/guvenlik/Personel/manage.php');
 $router->get('guvenlik-personel-duzenle/{id}', fn($id) => require 'pages/ziyaretci/guvenlik/Personel/manage.php');
 
