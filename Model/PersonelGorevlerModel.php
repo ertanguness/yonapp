@@ -19,4 +19,11 @@ class PersonelGorevlerModel extends Model
     {
         return $this->findWhere(['person_id' => $personId], 'id DESC');
     }
+
+    /** Personele ait görev kaydı var mı kontrol et */
+    public function hasGorev(int $personId): bool
+    {
+        $result = $this->findWhere(['person_id' => $personId]);
+        return !empty($result);
+    }
 }

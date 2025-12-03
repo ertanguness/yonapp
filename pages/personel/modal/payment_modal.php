@@ -27,7 +27,9 @@ $payment = $model->find($id, true);
             <label class="form-label">Tarih</label>
             <div class="input-group">
                 <div class="input-group-text"><i class="feather-calendar"></i></div>
-                <input type="text" class="form-control flatpickr-input" id="payment_date" name="payment_date" value="<?php echo Date::dmY($payment->date ?? ''); ?>">
+                <input type="text" class="form-control flatpickr-input" 
+                id="payment_date" name="payment_date" autocomplete="off"
+                value="<?php echo Date::dmY($payment->date ?? ''); ?>">
             </div>
         </div>
         <div class="mb-3">

@@ -68,9 +68,9 @@ public static function Select2Multiple(
         // Değerin seçili değerler dizisinde olup olmadığını kontrol et.
         // Tür duyarlılığı olmaması için == ile karşılaştırma yapılabilir veya türler aynı olmalı.
         $selectedAttr = in_array($value, $selectedValues) ? 'selected' : '';
-        
-        $select .= '<option value="' . htmlspecialchars($value) . '" ' . $selectedAttr . '>' . 
-                        htmlspecialchars($label) . 
+
+        $select .= '<option value="' . htmlspecialchars(Security::encrypt($value)) . '" ' . $selectedAttr . '>' .
+                        htmlspecialchars($label) .
                    '</option>';
     }
 

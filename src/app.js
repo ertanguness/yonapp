@@ -9,7 +9,6 @@ $(document).ready(function () {
       //stateSave: true,
       responsive: true,
       searching: true,
-      stateSave: true,
       info: true,
       paging: true,
       autoWidth: false,

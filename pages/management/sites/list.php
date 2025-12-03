@@ -10,7 +10,13 @@ $Siteler = new SitelerModel();
 
 $Sitem = $Siteler->Sitelerim();
 
+
+/** Yetkisiz Erişim Kontrolü */
+Gate::authorizeOrDie('site_goruntuleme');
+
 $blokSayisi = $Bloklar->SitedekiBloksayisi($_SESSION['site_id'] ?? null);
+
+
 /** ekleme güncelleme ve silme yetisi var mı */
 $egsYetkiVarmi = Gate::allows("site_ekle_guncelle_sil");
 $siteGuncelleyebilir = $egsYetkiVarmi == true ? "update-Siteler" : "yetki-yok";
@@ -89,7 +95,7 @@ $siteSilebilir = $egsYetkiVarmi == true ? "delete-Siteler" : "yetki-yok";
                                             <th>Bağımsız Bölüm Sayısı</th>
                                             <th>Telefon</th>
                                             <th>Adres</th>
-                                            <th>İşlem</th>
+                                            <th style="width: 10%;">İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -107,7 +113,7 @@ $siteSilebilir = $egsYetkiVarmi == true ? "delete-Siteler" : "yetki-yok";
                                                         <?php echo $Siteler->site_adi; ?>
                                                     </a>
                                                 </td>
-                                                <td class="text-start"><?php echo $blokSayisi; ?></td>
+                                                <td class="text-center"><?php echo $blokSayisi; ?></td>
                                                 <td><?php echo $daireSayisi; ?></td>
                                                 <td><?php echo $Siteler->telefon; ?></td>
                                                 <td><?php echo $Siteler->tam_adres; ?></td>

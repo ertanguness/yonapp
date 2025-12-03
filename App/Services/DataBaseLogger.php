@@ -9,7 +9,7 @@ use PDOException;
  * DatabaseLogger, LoggerInterface sözleşmesini uygulayan ve logları
  * bir veritabanı tablosuna yazan somut bir sınıftır.
  */
-class DatabaseLogger implements LoggerInterface
+class DataBaseLogger implements LoggerInterface
 {
     /**
      * Veritabanı bağlantı nesnesi.

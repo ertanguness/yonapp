@@ -252,6 +252,103 @@ class Model extends SSPModel
         return true;
     }
 
+    public function batchUpsert(array $rows): array
+    {
+        if (empty($rows)) {
+            return ['inserted' => 0, 'updated' => 0];
+        }
+        $pk = $this->primaryKey;
+        foreach ($rows as $r) {
+            if (!array_key_exists($pk, $r)) {
+                throw new \InvalidArgumentException('Satırda zorunlu "id" alanı yok.');
+            }
+        }
+        $table = $this->table;
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $table)) {
+            throw new \InvalidArgumentException('Geçersiz tablo adı.');
+        }
+        $colMap = [];
+        foreach ($rows as $r) {
+            foreach ($r as $k => $v) {
+                if ($k !== $pk && preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $k)) {
+                    $colMap[$k] = true;
+                }
+            }
+        }
+        $columns = array_keys($colMap);
+        if (empty($columns)) {
+            return ['inserted' => 0, 'updated' => 0];
+        }
+        $insertRows = [];
+        $updateRows = [];
+        foreach ($rows as $r) {
+            if ((int)$r[$pk] === 0) {
+                $insertRows[] = $r;
+            } else {
+                $updateRows[] = $r;
+            }
+        }
+        try {
+            $inserted = 0;
+            $updated = 0;
+            if (!empty($insertRows)) {
+                $valuesChunks = [];
+                $bindings = [];
+                foreach ($insertRows as $i => $r) {
+                    $placeholders = [];
+                    foreach ($columns as $col) {
+                        $ph = ":ins_{$col}_{$i}";
+                        $placeholders[] = $ph;
+                        $bindings[$ph] = $r[$col] ?? null;
+                    }
+                    $valuesChunks[] = '(' . implode(', ', $placeholders) . ')';
+                }
+                $sql = $this->db->prepare(
+                    "INSERT INTO {$table} (`" . implode('`, `', $columns) . "`) VALUES " . implode(', ', $valuesChunks)
+                );
+                foreach ($bindings as $ph => $val) {
+                    $sql->bindValue($ph, $val);
+                }
+                $sql->execute();
+                $inserted = count($insertRows);
+            }
+            if (!empty($updateRows)) {
+                $ids = [];
+                $setParts = [];
+                $params = [];
+                foreach ($columns as $col) {
+                    $cases = [];
+                    foreach ($updateRows as $r) {
+                        $idVal = (int)$r[$pk];
+                        if (!in_array($idVal, $ids, true)) {
+                            $ids[] = $idVal;
+                        }
+                        if (array_key_exists($col, $r)) {
+                            $cases[] = "WHEN `{$pk}` = ? THEN ?";
+                            $params[] = $idVal;
+                            $params[] = $r[$col];
+                        }
+                    }
+                    if (!empty($cases)) {
+                        $setParts[] = "`{$col}` = CASE " . implode(' ', $cases) . " ELSE `{$col}` END";
+                    }
+                }
+                if (!empty($setParts) && !empty($ids)) {
+                    $wherePlaceholders = implode(', ', array_fill(0, count($ids), '?'));
+                    $sql = $this->db->prepare(
+                        "UPDATE {$table} SET " . implode(', ', $setParts) . " WHERE `{$pk}` IN ({$wherePlaceholders})"
+                    );
+                    $execParams = array_merge($params, $ids);
+                    $sql->execute($execParams);
+                    $updated = count($updateRows);
+                }
+            }
+            return ['inserted' => $inserted, 'updated' => $updated];
+        } catch (\Throwable $e) {
+            throw $e;
+        }
+    }
+
     protected function update()
     {
         $setClause = '';

@@ -16,7 +16,7 @@ require_once PROJECT_ROOT . '/vendor/autoload.php';
 
 use App\InterFaces\LoggerInterface;
 use App\Services\FileLogger;
-use App\Services\DatabaseLogger;
+use App\Services\DataBaseLogger;
 use Database\Db;
 
 
@@ -48,7 +48,7 @@ function getDbConnection(): PDO
 function getLogger(): LoggerInterface
 {
     // --- DEĞİŞİKLİK 1: Loglama tipini 'database' olarak ayarlıyoruz ---
-    $loggerType = 'file'; 
+    $loggerType = 'database'; // 'file' veya 'database' olabilir.
 
     // Singleton Pattern: Logger'ı her seferinde yeniden oluşturmak yerine,
     // bir kere oluşturup tekrar tekrar aynı nesneyi kullanmak için.

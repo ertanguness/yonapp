@@ -1,9 +1,20 @@
+<?php
+
+use App\Services\Gate;
+?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h6 class="mb-0">İzin Listesi</h6>
+
     <div class="d-flex gap-2">
-        <button class="btn btn-outline-primary btn-sm" data-id="0" id="newLeaveBtn">Yeni İzin</button>
+        <!-- İzin ekleme yetkisi kontrolü -->
+        <?php if (Gate::allows("izin_ekle_guncelle_sil")): ?>
+            <button type="button" class="btn btn-outline-primary btn-sm" data-id="0" id="newLeaveBtn">Yeni İzin</button>
+        <?php else: ?>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="newLeaveBtn" disabled>Yeni İzin</button>
+        <?php endif; ?>
     </div>
+
 </div>
 <div class="table-responsive w-100">
     <table class="table table-hover dttables w-100" id="leavesTable">
@@ -16,7 +27,7 @@
                 <th>Gün</th>
                 <th>Açıklama</th>
                 <th>Durum</th>
-                 <th style="width:10%">İşlem</th>
+                <th style="width:10%">İşlem</th>
             </tr>
         </thead>
         <tbody></tbody>

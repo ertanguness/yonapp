@@ -5,9 +5,27 @@ $(document).on('click', '#savePerson', function () {
     var formData = new FormData(form[0]);
     formData.append('action', "savePerson");
 
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
+
+    form.validate({
+        rules:{
+            adi_soyadi: {required: true},
+            personel_tipi: {required: true},
+            ise_baslama_tarihi: {required: true},
+        },
+        messages:{
+            adi_soyadi: {required: "Adı Soyadı Zorunlu"},
+            personel_tipi: {required: "Personel Tipi Zorunlu"},
+            ise_baslama_tarihi: {required: "İşe Başlama Tarihi Zorunlu"},
+        },
+    })
+
+    if (!form.valid()) {
+        return;
     }
+
+    // for (let pair of formData.entries()) {
+    //     console.log(pair[0] + ', ' + pair[1]);
+    // }
 
     fetch(apiUrl, {
         method: 'POST',

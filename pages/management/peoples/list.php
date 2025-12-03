@@ -1,10 +1,11 @@
 <?php
 
-use App\Helper\Security;
-use Model\KisilerModel;
-use Model\BloklarModel;
-use Model\DairelerModel;
+use App\Helper\Date;
 use App\Helper\Helper;
+use Model\BloklarModel;
+use Model\KisilerModel;
+use App\Helper\Security;
+use Model\DairelerModel;
 
 
 $Kisiler = new KisilerModel();
@@ -89,6 +90,9 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                             <th>Telefon</th>
                                             <th>Araç Plakası</th>
                                             <th>İkamet Türü</th>
+                                            <th>Giriş Tarihi</th>
+                                            <th>Çıkış Tarihi</th>
+                                            <th>Durumu</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
@@ -107,6 +111,22 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                                 : '-';
                                             $ikametTuruList = Helper::ikametTuru;
                                             $ikamet_turu =  $ikametTuruList[$row->uyelik_tipi];
+
+                                            $giris_tarihi = !empty($row->giris_tarihi) && $row->giris_tarihi != '0000-00-00'
+                                                ? Date::dmY($row->giris_tarihi)
+                                                : '-';
+
+                                            $cikis_tarihi = !empty($row->cikis_tarihi) && $row->cikis_tarihi != '0000-00-00'
+                                                ? Date::dmY($row->cikis_tarihi)
+                                                : '-';
+
+                                            /** Çıkış Tarihi dolu ise pasif badge yap */
+                                            if (!empty($row->cikis_tarihi) && $row->cikis_tarihi != '0000-00-00') {
+                                                $durum = '<span class="badge text-danger border border-dashed border-gray-500">Pasif</span>';
+                                            }else{
+                                                $durum = '<span class="badge text-teal border border-dashed border-gray-500">Aktif</span>';
+                                            }
+
                                             $plaka = !empty($row->plaka_listesi)
                                                 ? nl2br(htmlspecialchars_decode($row->plaka_listesi))
                                                 : '-';
@@ -119,6 +139,10 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                                 <td><?php echo $telefon; ?></td>
                                                 <td><?php echo $plaka; ?></td>
                                                 <td><?php echo $ikamet_turu; ?></td>
+                                                <td><?php echo $giris_tarihi; ?></td>
+                                                <td><?php echo $cikis_tarihi; ?></td>
+                                                <td><?php echo $durum; ?></td>
+                                                
                                                 <td style="width: 7%;">
                                                     <div class="hstack gap-2">
                                                         <a href="javascript:void(0);" class="avatar-text avatar-md opensiteSakiniDetay" data-id="<?= $enc_id ?>">
