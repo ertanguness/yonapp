@@ -71,7 +71,12 @@
 
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="smtpPassword" class="fw-semibold">Şifre:</label></div>
-                        <div class="col-lg-6"><input type="password" class="form-control" id="smtpPassword" name="smtpPassword" placeholder="E-posta şifresi" value="<?php echo $AyarlarKV['smtp_password'] ?? ''; ?>"></div>
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="smtpPassword" name="smtpPassword" placeholder="E-posta şifresi" value="<?php echo $AyarlarKV['smtp_password'] ?? ''; ?>">
+                                <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#smtpPassword"><i class="feather-eye"></i></button>
+                            </div>
+                        </div>
                     </div>
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="emailAktif" class="fw-semibold">E-mail Aktif</label></div>
@@ -92,7 +97,26 @@
 
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-3"><label for="smsProvider" class="fw-semibold">Servis Sağlayıcı:</label></div>
-                        <div class="col-lg-6"><input type="text" class="form-control" id="smsProvider" name="smsProvider" placeholder="NetGSM, IletiMerkezi, vb." value="<?php echo $AyarlarKV['sms_provider'] ?? ''; ?>"></div>
+                        <div class="col-lg-6">
+                            <select class="form-select" id="smsProvider" name="smsProvider">
+                                <option value="">Seçiniz</option>
+                                <option value="netgsm" <?php echo (isset($AyarlarKV['sms_provider']) && strtolower($AyarlarKV['sms_provider'])==='netgsm') ? 'selected' : ''; ?>>NetGSM</option>
+                            </select>
+                            <small class="text-muted">Seçilen sağlayıcıya göre alanlar özelleştirilecektir.</small>
+                        </div>
+                    </div>
+
+                    <div id="smsFieldsNetgsm" class="provider-fields">
+                    <div class="row mb-3 align-items-center" id="smsBaslikSelectRow" style="display:none;">
+                        <div class="col-lg-3"><label for="smsBaslikSelect" class="fw-semibold">Kayıtlı SMS Başlığı:</label></div>
+                        <div class="col-lg-6">
+                            <select class="form-select" id="smsBaslikSelect" name="smsBaslikSelect"></select>
+                            <small class="text-muted">Seçtiğiniz başlık aşağıdaki alana aktarılır.</small>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-lg-3"><label for="smsBaslik" class="fw-semibold">SMS Başlığı:</label></div>
+                        <div class="col-lg-6"><input type="text" class="form-control" id="smsBaslik" name="smsBaslik" placeholder="Gönderen başlığı (örn: YonApp)" value="<?php echo $AyarlarKV['sms_baslik'] ?? ''; ?>"></div>
                     </div>
 
                     <div class="row mb-3 align-items-center">
@@ -102,7 +126,12 @@
 
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="smsPassword" class="fw-semibold">Şifre:</label></div>
-                        <div class="col-lg-6"><input type="password" class="form-control" id="smsPassword" name="smsPassword" placeholder="API şifresi" value="<?php echo $AyarlarKV['sms_password'] ?? ''; ?>"></div>
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="smsPassword" name="smsPassword" placeholder="API şifresi" value="<?php echo $AyarlarKV['sms_password'] ?? ''; ?>">
+                                <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#smsPassword"><i class="feather-eye"></i></button>
+                            </div>
+                        </div>
                     </div>
                     <div class="row mb-4 align-items-center">
                         <div class="col-lg-3"><label for="smsAktif" class="fw-semibold">Sms Aktif</label></div>
@@ -114,6 +143,7 @@
                                 <label class="custom-control-label" for="smsDurum">Aktif</label>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
 
@@ -209,3 +239,71 @@
         display: none;
     }
 </style>
+<script>
+    (function(){
+        function applySmsProvider(){
+            var el = document.getElementById('smsProvider');
+            var val = (el && el.value) ? el.value.toLowerCase() : '';
+            var netgsmBox = document.getElementById('smsFieldsNetgsm');
+            if(!netgsmBox) return;
+            if(val === 'netgsm'){ netgsmBox.style.display = ''; }
+            else { netgsmBox.style.display = 'none'; }
+        }
+        document.addEventListener('change', function(e){ if(e.target && e.target.id==='smsProvider'){ applySmsProvider(); } });
+        document.addEventListener('DOMContentLoaded', applySmsProvider);
+        applySmsProvider();
+    })();
+</script>
+<script>
+    document.addEventListener('click', function(e){
+        var btn = e.target.closest('.toggle-password');
+        if(!btn) return;
+        var target = btn.getAttribute('data-target');
+        var inp = document.querySelector(target);
+        if(!inp) return;
+        var toShow = inp.type === 'password';
+        inp.type = toShow ? 'text' : 'password';
+        var icon = btn.querySelector('i');
+        if(icon){ icon.className = toShow ? 'feather-eye-off' : 'feather-eye'; }
+    });
+</script>
+<script>
+    (function(){
+        function loadSmsHeadings(){
+            fetch('/pages/ayarlar/api.php?action=sms_headers')
+                .then(function(r){ return r.json(); })
+                .then(function(d){
+                    var items = d.items || [];
+                    var sel = document.getElementById('smsBaslikSelect');
+                    var row = document.getElementById('smsBaslikSelectRow');
+                    var inp = document.getElementById('smsBaslik');
+                    if(!sel || !row) return;
+                    sel.innerHTML = '';
+                    if(items.length <= 1){
+                        row.style.display = 'none';
+                        if(items.length === 1 && inp && !inp.value){ inp.value = items[0]; }
+                    } else {
+                        row.style.display = '';
+                        var current = inp ? (inp.value || '') : '';
+                        var defOpt = document.createElement('option');
+                        defOpt.value = '';
+                        defOpt.textContent = 'Seçiniz';
+                        sel.appendChild(defOpt);
+                        items.forEach(function(v){
+                            var opt = document.createElement('option');
+                            opt.value = v;
+                            opt.textContent = v;
+                            sel.appendChild(opt);
+                        });
+                        if(current){
+                            var options = Array.from(sel.options);
+                            var found = options.find(function(o){ return o.value === current; });
+                            if(found){ found.selected = true; }
+                        }
+                        sel.addEventListener('change', function(){ if(inp) inp.value = this.value; });
+                    }
+                }).catch(function(){ /* sessiz */ });
+        }
+        document.addEventListener('DOMContentLoaded', loadSmsHeadings);
+    })();
+</script>

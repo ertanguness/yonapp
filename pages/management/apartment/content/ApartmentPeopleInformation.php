@@ -40,7 +40,7 @@ $blocks = $Block->Blok($daire->blok_id ?? 0);
                     <div class="card">
                         <div class="card-body custom-card-action p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover datatables" id="peoplesList">
+                                <table class="table table-hover  w-100 datatables" id="peoplesList">
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>
@@ -48,7 +48,6 @@ $blocks = $Block->Blok($daire->blok_id ?? 0);
                                             <th>Telefon</th>
                                             <th>İkamet Türü</th>
                                             <th>Kullanım Durumu</th>
-                                            <th>Aktif/Pasif</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -99,7 +98,6 @@ $blocks = $Block->Blok($daire->blok_id ?? 0);
                                                     <td><?php echo $telefon; ?></td>
                                                     <td><?php echo $ikamet_turu; ?></td>
                                                     <td><?php echo $kullanim_durumu; ?></td>
-                                                    <td><?php echo $aktif_pasif; ?></td>
                                                 </tr>
                                         <?php
                                             endif;
