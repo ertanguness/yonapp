@@ -413,6 +413,7 @@ class KisilerModel extends Model
                 LEFT JOIN araclar arac ON kisiler.id = arac.kisi_id
                 LEFT JOIN daireler d ON kisiler.daire_id = d.id
                 WHERE bloklar.site_id = :site_id
+                AND kisiler.silinme_tarihi IS NULL
                 GROUP BY kisiler.id");
                 $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
         }

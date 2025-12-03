@@ -3,16 +3,19 @@ require_once dirname(__DIR__, levels: 4) . '/configs/bootstrap.php';
 
 $site_id = $_SESSION["site_id"];
 
+use Database\DB;
+use App\Helper\Date;
+use Model\KisilerModel;
 use App\Helper\Security;
 use Model\DairelerModel;
-use Model\KisilerModel;
-use App\Helper\Date;
-use Database\DB;
+use Model\TahsilatDetayModel;
+use Model\BorclandirmaDetayModel;
 use App\Modules\Onboarding\Events\OnboardingEvents;
 
 $Daireler = new DairelerModel();
 $Kisiler = new KisilerModel();
-
+$BorcDetay = new BorclandirmaDetayModel();
+$TahsilatDetay = new TahsilatDetayModel();
 
 $db = \getDbConnection();
 
@@ -126,11 +129,48 @@ if (isset($_POST["action"]) && $_POST["action"] == "save_peoples") {
 }
 
 if (isset($_POST["action"]) && $_POST["action"] == "delete_peoples") {
-    $Kisiler->backupDelete($_POST["id"], 'kisiler');
 
-    $res = [
-        "status" => "success",
-        "message" => "Başarılıyla silindi.",
-    ];
-    echo json_encode($res);
+    $kisiId = Security::decrypt($_POST["id"]);
+
+    $db->beginTransaction();
+    try {
+
+        /**Kişinin borçlandırması var mı? */
+        if ($BorcDetay->hasDebts($kisiId)) {
+            $status = "error";
+            $message = "Kişinin borçlandırması bulunduğundan kişi silinemiyor.";
+            echo json_encode([
+                "status" => $status,
+                "message" => $message
+            ]);
+            exit;
+        }
+
+        /** Kişinin tahsilatı var mı? */
+        if ($TahsilatDetay->hasCollections($kisiId)) {
+            $status = "error";
+            $message = "Kişinin tahsilatı bulunduğundan kişi silinemiyor.";
+            echo json_encode([
+                "status" => $status,
+                "message" => $message
+            ]);
+            exit;
+        }
+
+        $Kisiler->softDelete($kisiId);
+
+        $status = "success";
+        $message = "Kişi başarıyla silindi.";
+
+        $db->commit();
+    } catch (PDOException $ex) {
+        $db->rollBack();
+       $status = "error";
+       $message = "Bir hata oluştu: " . $ex->getMessage();
+
+    }
+    echo json_encode([
+        "status" => $status,
+        "message" => $message
+    ]);
 }

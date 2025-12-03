@@ -271,6 +271,8 @@ class BorclandirmaDetayModel extends Model
         }
     }
 
+
+
     /**
      * Belirtilen bir kişiye ait, henüz tamamen ödenmemiş borçları getirir.
      * Sadece anaparası 0'dan büyük olan borçları dikkate alır.
@@ -665,4 +667,16 @@ class BorclandirmaDetayModel extends Model
         
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
+
+
+
+    /**Kişinin borçlandırması var mı? */
+    public function hasDebts(int $kisi_id): bool
+    {
+        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE kisi_id = :kisi_id AND silinme_tarihi IS NULL";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':kisi_id' => $kisi_id]);
+        return $stmt->fetchColumn() > 0;
+    }
+
 }

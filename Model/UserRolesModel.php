@@ -28,10 +28,34 @@ class UserRolesModel extends Model
     {
         $ownerID = $_SESSION["owner_id"];
 
-        $sql = $this->db->prepare("SELECT * 
-                                   FROM $this->table 
-                                   WHERE owner_id = :owner_id 
-                                   ORDER BY id DESC");
+        $sql = $this->db->prepare("SELECT 
+                                            ur.id,
+                                            ur.owner_id,
+                                            ur.role_name,
+                                            ur.description,
+
+                                            -- toplam permission sayısı (sadece 1 kez hesaplanır)
+                                            p.total_permission_count AS toplam_yetki_sayisi,
+
+                                            -- bu role ait permission sayısı
+                                            COUNT(urp.id) AS yetki_sayisi
+
+                                        FROM user_roles ur
+
+                                        -- Role -> Permission bağları
+                                        LEFT JOIN user_role_permissions urp 
+                                            ON ur.id = urp.role_id
+
+                                        -- toplam permission sayısını tek seferde getiren alt tablo
+                                        LEFT JOIN (
+                                            SELECT COUNT(id) AS total_permission_count 
+                                            FROM permissions
+                                        ) p ON 1=1
+
+                                        WHERE ur.owner_id = :owner_id
+                                            -- AND ur.main_role != 1  -- Ana kullanıcı rolü hariç tutulur
+                                        GROUP BY ur.id
+                                        ORDER BY ur.id DESC;");
         $sql->execute([
             'owner_id' => $ownerID
         ]);

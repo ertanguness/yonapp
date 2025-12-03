@@ -4,7 +4,7 @@
 require_once dirname(__DIR__ ,levels: 2). '/configs/bootstrap.php';
 
 
-
+use Database\Db;
 use App\Helper\Helper;
 use Model\MenuModel;
 use Model\UserModel;
@@ -19,6 +19,8 @@ $User = new UserModel();
 $UserRoles = new UserRolesModel();
 $Permissions = new PermissionsModel();
 $UserPermissions = new UserRolePermissionsModel();
+
+$db = Db::getInstance();
 
 
 /**
@@ -124,7 +126,15 @@ if ($_POST['action'] == 'saveRole') {
     $description = $_POST['description'] ?? '';
 
     try {
-      
+        $db->beginTransaction();
+
+        /** Eğer aynı isimde bir rol varsa kayıt yapma */
+        if ($UserRoles->roleExists($roleName, $roleID)) {
+           $status = 'error';
+              $message = 'Aynı isimde bir kullanıcı grubu zaten mevcut. Lütfen farklı bir isim deneyin.';
+           throw new Exception($message);
+        }
+
             // Yeni rol ekleniyor
             $data = [
                 "id" => $roleID,
@@ -138,8 +148,10 @@ if ($_POST['action'] == 'saveRole') {
 
             $status = 'success';
             $message = 'Yeni kullanıcı grubu başarıyla eklendi.';
+        $db->commit();
        
     } catch (Exception $e) {
+        $db->rollBack();
         $status = 'error';
         $message = 'Bir hata oluştu: ' . $e->getMessage();
     }

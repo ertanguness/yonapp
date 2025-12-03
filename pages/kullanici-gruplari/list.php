@@ -67,6 +67,7 @@ $usergroups = $UserGroups->getUserGroups();
                                             <th style="width:7%">Sıra</th>
                                             <th style="width:27%">Pozisyon Adı</th>
                                             <th>Açıklama</th>
+                                            <th>Yetki Sayısı</th>
                                             <th style="width:7%">İşlem</th>
                                         </tr>
                                     </thead>
@@ -88,6 +89,12 @@ $usergroups = $UserGroups->getUserGroups();
 
                                             </td>
                                             <td><?php echo $group->description; ?></td>
+                                            <td class="text-center">
+                                                <?php 
+                                                    $permissionCount = $group->yetki_sayisi . " / " . $group->toplam_yetki_sayisi;
+                                                    echo $permissionCount;
+                                                ?>
+                                                </td>
 
                                             <td>
                                                 <div class="hstack gap-2 ">

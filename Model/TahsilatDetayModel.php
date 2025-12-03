@@ -228,6 +228,18 @@ class TahsilatDetayModel extends Model
     }
 
 
-
+    /** Kişinin tahsilatı var mı? */
+    public function hasCollections(int $kisiId): bool
+    {
+        $sql = $this->db->prepare("SELECT count(id) as tahsilat_varmi
+                                   FROM tahsilat_detay
+                                   WHERE borc_detay_id IN (SELECT id
+                                                            FROM borclandirma_detayi
+                                                            WHERE kisi_id = ?)
+                                     AND silinme_tarihi IS NULL
+                                   ");
+        $sql->execute([$kisiId]);
+        return $sql->fetchColumn() > 0 ? true : false;
+    }
 
 }

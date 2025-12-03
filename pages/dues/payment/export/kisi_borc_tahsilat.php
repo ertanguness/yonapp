@@ -3,27 +3,28 @@
 
 require_once dirname(__DIR__, 4) . '/configs/bootstrap.php';
 
-use App\Helper\Helper;
-use App\Services\Gate;
-use Model\KasaHareketModel;
-
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
-use PhpOffice\PhpSpreadsheet\Writer\Html;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf; // Dompdf'i kullanmak için
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
-use Model\FinansalRaporModel;
 use Dompdf\Options;
-use Dompdf\Dompdf as PDF;
+use App\Helper\Date;
+use App\Helper\Helper;
+
+use App\Services\Gate;
 use Model\KisilerModel;
 use Model\SitelerModel;
+use Dompdf\Dompdf as PDF;
+use Model\KasaHareketModel;
+use Model\FinansalRaporModel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Html;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf; // Dompdf'i kullanmak için
 
 
 
@@ -94,16 +95,19 @@ $spreadsheet->getDefaultStyle()->getFont()->setSize(10);
 
 
 
+/**Başlıkların yazılacağı satır no */
+$headerRow = 10;
+
 // Başlık satırı
 $headers = [
-    'A9' => 'ID',
-    'B9' => 'İşlem Tarihi',
-    'C9' => 'İşlem Tipi',
-    'D9' => 'Borç',
-    'E9' => 'Gecikme Zammı',
-    'F9' => 'Ödenen',
-    'G9' => 'Bakiye',
-    'H9' => 'Açıklama',
+    'A' . $headerRow => 'ID',
+    'B' . $headerRow => 'İşlem Tarihi',
+    'C' . $headerRow => 'İşlem Tipi',
+    'D' . $headerRow => 'Borç',
+    'E' . $headerRow => 'Gecikme Zammı',
+    'F' . $headerRow => 'Ödenen',
+    'G' . $headerRow => 'Bakiye',
+    'H' . $headerRow => 'Açıklama',
 ];
 
 // Başlıkları set et
@@ -115,7 +119,7 @@ foreach ($headers as $cell => $value) {
 
 $spreadsheet->setActiveSheetIndex(0);
 $sheet->mergeCells('A1:K3');
-$sheet->setCellValue('A1', 'Kişi Hesap Hareketleri');
+$sheet->setCellValue('A1', $site->site_adi . "\n" . 'Kişi Hesap Hareketleri');
 
 //Font Size ve Bold yap
 //$sheet->getStyle('A1')->getFont()->setSize(16)->setBold(true);
@@ -182,26 +186,32 @@ $sheet->getStyle('K6')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT
 $sheet->mergeCells('A7:B7');
 $sheet->mergeCells('C7:K7');
 
-$sheet->setCellValue('A7', 'Rapor Tarihi:');
-$sheet->setCellValue('C7', date('d.m.Y H:i'));
+$sheet->setCellValue('A7', 'Çıkış Tarihi:');
+$sheet->setCellValue('C7', Date::dmY($kisi->cikis_tarihi ?? ''));
 
 
-$sheet->mergeCells('A8:K8');
-$sheet->getStyle('A1:K8')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+$sheet->setCellValue('A8', 'Rapor Tarihi:');
+$sheet->setCellValue('C8', date('d.m.Y H:i'));
+$sheet->mergeCells('A8:B8');
+$sheet->mergeCells('C8:K8');
+
+
+$sheet->mergeCells('A9:K9');
+$sheet->getStyle('A1:K9')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
 //Satır yüksekliği 5 yap
-$sheet->getRowDimension(8)->setRowHeight(5);
-$sheet->getStyle('A2:K8')->getFont()->setSize(8);
+$sheet->getRowDimension(9)->setRowHeight(15);
+$sheet->getStyle('A2:K9')->getFont()->setSize(8);
 
 
-$sheet->mergeCells('H9:K9');
+$sheet->mergeCells('H10:K10');
 
 
 // Son başlık hücresini bul
 $lastHeaderColumn = 'K'; // 'A1'den 'G1'e kadar başlıklarınız var
 
 // Başlık satırını formatla
-$sheet->getStyle('A9:' . $lastHeaderColumn . '9')->applyFromArray([
+$sheet->getStyle('A10:' . $lastHeaderColumn . '10')->applyFromArray([
     'font' => [
         'bold' => false,
         'color' => ['rgb' => '000000'],
@@ -227,7 +237,7 @@ $sheet->getStyle('A9:' . $lastHeaderColumn . '9')->applyFromArray([
 
 
 // Veri satırlarını doldur
-$row = 10;
+$row = 11;
 foreach ($kisiHareketler as $hareket) {
     $sheet->setCellValue('A' . $row, $hareket->islem_id); // 'islem_id' daha mantıklı olabilir
     $sheet->setCellValue('B' . $row, date('d.m.Y H:i', strtotime($hareket->islem_tarihi ?? '')));
@@ -279,18 +289,18 @@ $sheet->getColumnDimension('J')->setWidth(15); // Açıklama
 $sheet->getColumnDimension('K')->setWidth(15); // Açıklama
 
 //D'den G'ye kadar olan sütunları sağa hizala
-$sheet->getStyle('D10:G' . ($row - 1))
+$sheet->getStyle('D11:G' . ($row - 1))
     ->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
 // Açıklama ve genel hücreler için satır kaydır
-$sheet->getStyle('H10:H' . ($row - 1))
+$sheet->getStyle('H11:H' . ($row - 1))
     ->getAlignment()
     ->setWrapText(true);
 
 
 //H sütununa indent ekle
-$sheet->getStyle('H10:H' . ($row - 1))
+$sheet->getStyle('H11:H' . ($row - 1))
     ->getAlignment()
     ->setIndent(1);
 
@@ -298,7 +308,7 @@ $printLastRow = $row - 1;
 
 
 // Tüm verilere border ekle (son kullanılan sütuna göre)
-$sheet->getStyle('A9:' . $lastHeaderColumn . ($row - 1))->applyFromArray([ // Burası düzeltildi
+$sheet->getStyle('A10:' . $lastHeaderColumn . ($row - 1))->applyFromArray([ // Burası düzeltildi
     'borders' => [
         'allBorders' => [
             'borderStyle' => Border::BORDER_THIN,

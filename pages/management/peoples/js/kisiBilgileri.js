@@ -123,9 +123,11 @@ $(document).on("click", ".delete-peoples", function () {
               table.row(buttonElement.closest("tr")).remove().draw(false);
               swal.fire(
                 "Silindi",
-                `${peopleName} adlı kişi  başarıyla silindi.`,
+                data.message,
                 "success"
               );
+            }else{
+              swal.fire("Hata", data.message, "error");
             }
           });
       }
