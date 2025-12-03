@@ -316,6 +316,8 @@ Object.defineProperty(messageTextarea, 'value', {
     smsGonderBtn.disabled = true;
     smsGonderBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Bekleyen...';
 
+
+    console.log('SMS form verileri:', formData);
     // AJAX isteği
     fetch("/pages/email-sms/api/APIsms.php", { // Path düzeltildi
       method: "POST",

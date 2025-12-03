@@ -174,12 +174,16 @@ foreach ($records as $borc) {
     $borc->durum = $borc->durum ?? '';
     $borc->daire_tipi = $borc->daire_tipi ?? '';
 
+    $telefonHam = (string)($borc->telefon ?? '');
+    $telefonTemiz = preg_replace('/\D/', '', $telefonHam);
     $adiHtml = '<div>'
         .'<a href="/site-sakini-duzenle/'.urlencode($encId).'">'.htmlspecialchars((string)($borc->adi_soyadi ?? '')).'</a>'
         .' '
         .'<a href="javascript:void(0)" class="d-inline-flex align-items-center ms-1 mesaj-gonder"'
         .' data-id="'.(int)$borc->kisi_id.'"'
         .' data-kisi-id="'.$encId.'"'
+        .' data-phone="'.htmlspecialchars($telefonTemiz).'"'
+        .' data-daire="'.htmlspecialchars((string)($borc->daire_kodu ?? '')).'"'
         .' title="Mesaj Gönder">'
         .'<i class="feather-message-square"></i>'
         .'</a>'

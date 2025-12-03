@@ -402,6 +402,8 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         $(document).on('click', '.mesaj-gonder', function() {
             var id = $(this).data('id');
             kisiId = $(this).data('kisi-id');
+            var phone = ($(this).data('phone') || '').toString();
+            var daire = ($(this).data('daire') || $(this).data('daire-kodu') || '').toString();
             makbuz_bildirim = $(this).data('makbuz-bildirim') || "false";
 
             $.get("/pages/email-sms/sms_gonder_modal.php", {
@@ -417,14 +419,13 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 // Modal'ı göster
                 $('#SendMessage').modal('show');
 
-                // Modal açıldıktan sonra SMS JS'ini başlat
                 setTimeout(function() {
+                    if (phone) { try { window.kisiTelefonNumarasi = ''; } catch(e){} }
                     if (typeof window.initSmsModal === 'function') {
-                        //$('#message').text('Merhaba, olarak size hatırlatmak isteriz ki, toplam borcunuz dir. Lütfen en kısa sürede ödeme yapınız.\n\nTeşekkürler.\nSite Yönetimi');
                         window.initSmsModal();
-                        window.kisiTelefonNumarasi = '<?php echo htmlspecialchars($telefonNumarasi ?? '', ENT_QUOTES); ?>';
-                        
-
+                    }
+                    if (typeof window.addPhoneToSMS === 'function' && phone) {
+                        window.addPhoneToSMS({ phone: phone, id: id, daire: daire });
                     }
                 }, 100);
             });

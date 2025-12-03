@@ -138,7 +138,7 @@ foreach ($recipients as $idx => $telRaw) {
     $sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
     
     /** Test için örnek kullan */
-   // $sent = true;
+    //$sent = true;
     
 
     
