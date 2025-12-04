@@ -133,6 +133,12 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
     require_once 'pages/components/alert.php';
     ?>
 
+<style>
+   table {
+    min-width: 300px;
+   }
+
+    </style>
     <div class="row mb-5">
         <div class="container-xl">
             <div class="row row-deck row-cards">
