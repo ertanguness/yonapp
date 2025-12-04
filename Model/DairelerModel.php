@@ -139,7 +139,8 @@ class DairelerModel extends Model
      */
     public function DaireBilgisi($site_id, $id)
     {
-        $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE site_id = ? AND id = ?");
+        $query = $this->db->prepare("SELECT * FROM {$this->table} 
+        WHERE site_id = ? AND id = ? and silinme_tarihi IS NULL");
         $query->execute([$site_id, $id]);
         return $query->fetch(PDO::FETCH_OBJ) ?: null;
 

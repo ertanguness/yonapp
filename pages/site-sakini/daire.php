@@ -50,6 +50,8 @@ $selectedTenantId    = (int)($_GET['kisi_id'] ?? 0);
 $apartment = $selectedApartmentId ? $Daireler->DaireBilgisi($site_id, $selectedApartmentId) : null;
 $blokAdi   = $apartment ? ($Bloklar->BlokAdi((int)($apartment->blok_id ?? 0)) ?? '-') : ($ownerPersons[0]->blok_kodu ?? '-');
 
+
+
 // Malik bilgisi: Öncelik aktif malik (cikis_tarihi boş), yoksa son kayıt
 $ownerForSelected = null;
 if ($selectedApartmentId) {
@@ -64,6 +66,11 @@ if ($selectedApartmentId) {
 $tenantForSelected = null;
 if ($selectedTenantId) {
     $tenantForSelected = $Kisiler->getPersonById($selectedTenantId);
+    if (!$tenantForSelected && $selectedApartmentId) {
+        $tenantsInApt = array_values(array_filter($tenants, function($p) use ($selectedApartmentId){ return (int)($p->daire_id ?? 0) === $selectedApartmentId; }));
+        $activeTenants = array_values(array_filter($tenantsInApt, function($p){ return empty($p->cikis_tarihi) || $p->cikis_tarihi === '0000-00-00'; }));
+        $tenantForSelected = $activeTenants[0] ?? ($tenantsInApt[0] ?? null);
+    }
 } elseif ($selectedApartmentId) {
     $tenantsInApt = array_values(array_filter($tenants, function($p) use ($selectedApartmentId){ return (int)($p->daire_id ?? 0) === $selectedApartmentId; }));
     $activeTenants = array_values(array_filter($tenantsInApt, function($p){ return empty($p->cikis_tarihi) || $p->cikis_tarihi === '0000-00-00'; }));
@@ -251,7 +258,7 @@ $emergencyList = $carOwnerId ? $AcilDurum->findWhere(['kisi_id' => $carOwnerId],
             </div>
         </div>
 
-        <div class="col-12 col-xl-6">
+        <div class="col-12 col-xl-6 mb-5">
             <div class="card rounded-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Acil İletişim</h5>

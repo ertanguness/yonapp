@@ -43,6 +43,8 @@ class KisilerModel extends Model
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
+
+
     /**************************************************************************************************** */
 
     /**Sitenin tüm kişilerini getirir 
@@ -56,7 +58,7 @@ class KisilerModel extends Model
                                                 d.daire_kodu
                                             FROM $this->table k
                                             LEFT JOIN daireler d ON d.id = k.daire_id  
-                                            WHERE k.site_id = ? 
+                                            WHERE k.site_id = ?  and k.silinme_tarihi IS NULL
                                           ");
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
@@ -219,7 +221,7 @@ class KisilerModel extends Model
      */
     public function getPersonById($id)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id = ? AND silinme_tarihi IS NULL");
         $sql->execute([$id]);
         return $sql->fetch(PDO::FETCH_OBJ);
     }
