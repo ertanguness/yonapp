@@ -112,7 +112,7 @@ foreach ($hareketler as $it) {
                     <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $activeKisiId; ?>&format=pdf" class="btn btn-light w-100">
                         <i class="bi bi-filetype-pdf me-2"></i>PDF Ekstre İndir
                     </a>
-                    <a href="/online-aidat-takip" class="btn btn-primary w-100">
+                    <a href="#" class="btn btn-primary w-100" disabled>
                         <i class="feather-credit-card me-2"></i>Online Ödeme
                     </a>
                 </div>
