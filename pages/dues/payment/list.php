@@ -150,7 +150,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                 <table class="table table-hover datatables" id="tahsilatTable">
                                     <thead>
                                         <tr>
-                                            <th class="wd-30 no-sorting" style="width: 40px;">
+                                            <th class="all wd-30 no-sorting" style="width: 40px;">
                                                 Sıra
                                             </th>
                                             <th class="all" style="width:7%">Daire Kodu</th>
