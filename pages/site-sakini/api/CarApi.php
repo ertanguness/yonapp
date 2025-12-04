@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__, 4) . '/configs/bootstrap.php';
+require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

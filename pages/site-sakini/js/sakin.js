@@ -5,7 +5,7 @@ $(function () {
     window.__carEditing = !!id;
     if (id) {
       $.post(
-        "/pages/home/site-sakini/api/CarApi.php",
+        "/pages/site-sakini/api/CarApi.php",
         { action: "get_car", id: id },
         function (res) {
           if (res.status === "success" && res.data) {
@@ -31,7 +31,7 @@ $(function () {
     window.__emEditing = !!id;
     if (id) {
       $.post(
-        "/pages/home/site-sakini/api/EmergencyApi.php",
+        "/pages/site-sakini/api/EmergencyApi.php",
         { action: "get_em", id: id },
         function (res) {
           if (res.status === "success" && res.data) {
@@ -69,7 +69,7 @@ $(function () {
         .then(function (r) {
           if (r.isConfirmed) {
             $.ajax({
-              url: "/pages/home/site-sakini/api/CarApi.php",
+              url: "/pages/site-sakini/api/CarApi.php",
               method: "POST",
               data: data,
               processData: false,
@@ -93,7 +93,7 @@ $(function () {
         });
     } else {
       $.ajax({
-        url: "/pages/home/site-sakini/api/CarApi.php",
+        url: "/pages/site-sakini/api/CarApi.php",
         method: "POST",
         data: data,
         processData: false,
@@ -124,7 +124,7 @@ $(function () {
       .then(function (r) {
         if (r.isConfirmed) {
           $.post(
-            "/pages/home/site-sakini/api/CarApi.php",
+            "/pages/site-sakini/api/CarApi.php",
             { action: "delete_car", id: id },
             function (res) {
               var title = res.status === "success" ? "Başarılı!" : "Hata!";
@@ -164,7 +164,7 @@ $(function () {
         .then(function (r) {
           if (r.isConfirmed) {
             $.ajax({
-              url: "/pages/home/site-sakini/api/EmergencyApi.php",
+              url: "/pages/site-sakini/api/EmergencyApi.php",
               method: "POST",
               data: data,
               processData: false,
@@ -188,7 +188,7 @@ $(function () {
         });
     } else {
       $.ajax({
-        url: "/pages/home/site-sakini/api/EmergencyApi.php",
+        url: "/pages/site-sakini/api/EmergencyApi.php",
         method: "POST",
         data: data,
         processData: false,
@@ -219,7 +219,7 @@ $(function () {
       .then(function (r) {
         if (r.isConfirmed) {
           $.post(
-            "/pages/home/site-sakini/api/EmergencyApi.php",
+            "/pages/site-sakini/api/EmergencyApi.php",
             { action: "delete_em", id: id },
             function (res) {
               var title = res.status === "success" ? "Silindi" : "Hata";

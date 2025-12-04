@@ -396,4 +396,4 @@ $emergencyList = $carOwnerId ? $AcilDurum->findWhere(['kisi_id' => $carOwnerId],
   </div>
   </div>
 
-<script src="/pages/home/site-sakini/js/sakin.js"></script>
+<script src="/pages/site-sakini/js/sakin.js"></script>

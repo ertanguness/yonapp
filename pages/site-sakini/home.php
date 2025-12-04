@@ -62,28 +62,9 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
             </div>
         </div>
 
-        <div class="col-12">
-            <div class="card rounded-3">
-                <div class="card-body d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="avatar-text avatar-md bg-soft-primary text-primary border-soft-primary rounded">
-                            <i class="feather-smile"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-0">Hoş geldiniz, <?php echo htmlspecialchars($_SESSION['user']->full_name ?? ''); ?></h5>
-                            <div class="fs-12 text-muted">Blok/Daire: <?php echo htmlspecialchars($kisi->daire_kodu ?? '-'); ?></div>
-                        </div>
-                    </div>
-                    <div class="d-none d-md-flex align-items-center gap-2">
-                        <a href="/sakin/profil" class="btn btn-light">Profil</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         
 
-        <div class="col-xxl-3 col-md-6 mt-0">
+        <div class="col-xxl-3 col-md-6 mt-0 mb-2">
             <div class="card rounded-3 h-100">
                 <div class="card-body">
                     <div class="hstack justify-content-between">
@@ -96,7 +77,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                 </div>
             </div>
         </div>
-        <div class="col-xxl-3 col-md-6 mt-0">
+        <div class="col-xxl-3 col-md-6 mt-0 mb-2">
             <div class="card rounded-3 h-100">
                 <div class="card-body">
                     <div class="hstack justify-content-between">
@@ -109,7 +90,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                 </div>
             </div>
         </div>
-        <div class="col-xxl-3 col-md-6 mt-0">
+        <div class="col-xxl-3 col-md-6 mt-0 mb-2">
             <div class="card rounded-3 h-100">
                 <div class="card-body">
                     <div class="hstack justify-content-between">
@@ -122,7 +103,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                 </div>
             </div>
         </div>
-        <div class="col-xxl-3 col-md-6 mt-0">
+        <div class="col-xxl-3 col-md-6 mt-0 mb-2">
             <div class="card rounded-3 h-100">
                 <div class="card-body">
                     <div class="hstack justify-content-between">
@@ -172,7 +153,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
         </div>
 
 
-        <div class="col-xxl-8 col-12 mt-0">
+        <div class="col-xxl-8 col-12 mt-0 ">
             <div class="card rounded-3">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title mb-0">Son Duyurular</h5>

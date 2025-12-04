@@ -100,7 +100,6 @@ use App\Services\Gate;
 
     /* Dropdown Menu */
     .mobile-dropdown-menu {
-        display: none;
         position: fixed;
         left: 0;
         right: 0;
@@ -109,22 +108,29 @@ use App\Services\Gate;
         border-top: 1px solid #e0e0e0;
         border-radius: 16px 16px 0 0;
         box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.18);
-        height: 50vh;
-        max-height: 50vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(16px);
+        transition: transform 0.25s ease, opacity 0.25s ease;
+        pointer-events: none;
+        height: auto;
     }
 
     .mobile-dropdown-menu.active {
-        display: block;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
     }
 
     .mobile-dropdown-menu a {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px 16px;
+        padding: 22px 16px;
         color: #555;
         text-decoration: none;
         border-bottom: 1px solid #f0f0f0;
@@ -164,6 +170,9 @@ use App\Services\Gate;
         border: none;
         cursor: pointer;
         z-index: 1002;
+    }
+    .mobile-fab-sakin{
+        background: linear-gradient(135deg, #34c38f, #28a745);
     }
 
     .mobile-fab-spacer {
@@ -242,7 +251,7 @@ use App\Services\Gate;
                 <p>Site Seçimi</p>
             </a>
             <?php }else{ ?>
-            <a href="/yonetici-aidat-odeme" class="mobile-quick-actions-item" title="Aidat Ödeme">
+            <a href="/sakin/finans" class="mobile-quick-actions-item" title="Aidat Ödeme">
                 <i class="bi bi-wallet"></i>
                 <p>Fins.İşl.</p>
             </a>
@@ -250,9 +259,16 @@ use App\Services\Gate;
         </div>
 
         <div class="mobile-actions-spacer" aria-hidden="true"></div>
-        <button class="mobile-fab" id="mobileMoreBtn" title="Ekle">
-            <i class="bi bi-plus"></i>
-        </button>
+        
+        <?php if(!Gate::isResident()){ ?>
+            <button class="mobile-fab" id="mobileMoreBtn" title="Daha Fazla">
+                <i class="bi bi-plus"></i>
+            </button>
+        <?php } else { ?>
+            <button class="mobile-fab mobile-fab-sakin" id="mobileMoreBtnSakin" title="Daha Fazla">
+                <i class="bi bi-plus"></i>
+            </button>
+        <?php } ?>
 
         <div class="mobile-actions-right">
             <?php if(!Gate::isResident()){ ?>
@@ -266,11 +282,11 @@ use App\Services\Gate;
             </a>
             <?php } else { ?>
     
-            <a href="/sakin/finans" class="mobile-quick-actions-item" title="Aidat Ödeme">
+            <a href="/sakin/taleplerim" class="mobile-quick-actions-item" title="Taleplerim">
                 <i class="bi bi-wallet"></i>
                 <p>Talepler.</p>
             </a>
-            <a href="/sakin/daireler" class="mobile-quick-actions-item" title="Borçlandırma">
+            <a href="/sakin/daire" class="mobile-quick-actions-item" title="Daireler">
                 <i class="bi bi-clipboard-plus"></i>
                 <p>Daireler</p>
             </a>
@@ -281,6 +297,7 @@ use App\Services\Gate;
     </div>
 
     <div class="mobile-dropdown-backdrop" id="mobileDropdownBackdrop"></div>
+    <?php if(!Gate::isResident()){ ?>
     <div class="mobile-dropdown-menu" id="mobileDropdownMenu">
         <a href="site-ekle">
             <i class="bi bi-plus-circle"></i>
@@ -330,59 +347,55 @@ use App\Services\Gate;
             <i class="bi bi-box-arrow-right"></i>
             <span>Çıkış Yap</span>
         </a>
-
-        <!-- bootstrap icons -->
     </div>
+    <?php } else { ?>
+    <div class="mobile-dropdown-menu" id="mobileDropdownMenuSakin">
+        <a href="site-ekle">
+            <i class="bi bi-plus-circle"></i>
+            <span>Site Ekle</span>
+        </a>
+    </div>
+    <?php } ?>
 </div>
 
 
 <script>
-    // Mobile Dropdown Menu
     $(document).ready(function() {
-        var dropdownOpen = false;
-
-        // Diğer butonuna tıklama
-        $('#mobileMoreBtn').click(function(e) {
-            e.preventDefault();
-            var $dropdown = $('#mobileDropdownMenu');
-            var $backdrop = $('#mobileDropdownBackdrop');
+        var dropdownOpenMenu = null;
+        function positionMenu($menu){
             var navH = $('.mobile-quick-actions').outerHeight();
-            $dropdown.css('bottom', navH + 'px');
-            
-            if (dropdownOpen) {
-                $dropdown.removeClass('active');
-                $backdrop.hide();
-                dropdownOpen = false;
-            } else {
-                $dropdown.addClass('active');
-                $backdrop.show();
-                dropdownOpen = true;
-            }
-        });
-
-        // Dropdown dışında tıklama
-        $(document).click(function(e) {
-            if (!$(e.target).closest('#mobileMoreBtn, #mobileDropdownMenu').length) {
-                $('#mobileDropdownMenu').removeClass('active');
-                $('#mobileDropdownBackdrop').hide();
-                dropdownOpen = false;
-            }
-        });
-
-        // Dropdown menü item'lerine tıklama
-        $('#mobileDropdownMenu a').click(function() {
-            $('#mobileDropdownMenu').removeClass('active');
+            var avail = Math.max(160, window.innerHeight - navH - 12);
+            $menu.css({ bottom: navH + 'px', maxHeight: avail + 'px', height: 'auto' });
+        }
+        function openMenu($menu){
+            positionMenu($menu);
+            $menu.addClass('active');
+            $('#mobileDropdownBackdrop').show();
+            dropdownOpenMenu = $menu.attr('id');
+        }
+        function closeMenu(){
+            $('.mobile-dropdown-menu').removeClass('active');
             $('#mobileDropdownBackdrop').hide();
-            dropdownOpen = false;
+            dropdownOpenMenu = null;
+        }
+        $('#mobileMoreBtn, #mobileMoreBtnSakin').on('click', function(e){
+            e.preventDefault();
+            var targetMenu = $(this).is('#mobileMoreBtnSakin') ? '#mobileDropdownMenuSakin' : '#mobileDropdownMenu';
+            var $menu = $(targetMenu);
+            if ($menu.hasClass('active')) { closeMenu(); } else { closeMenu(); openMenu($menu); }
         });
-
-        $(window).on('resize', function() {
-            if ($('#mobileDropdownMenu').hasClass('active')) {
-                var navH = $('.mobile-quick-actions').outerHeight();
-                $('#mobileDropdownMenu').css('bottom', navH + 'px');
+        $(document).on('click', function(e){
+            if (!$(e.target).closest('#mobileMoreBtn, #mobileMoreBtnSakin, #mobileDropdownMenu, #mobileDropdownMenuSakin').length) {
+                closeMenu();
             }
         });
-
+        $('.mobile-dropdown-menu a').on('click', function(){
+            closeMenu();
+        });
+        $(window).on('resize', function(){
+            var $active = $('.mobile-dropdown-menu.active');
+            if($active.length){ positionMenu($active); }
+        });
         var currentPath = window.location.pathname.replace(/\/+$/, '');
         $(".mobile-quick-actions a.mobile-quick-actions-item").each(function() {
             var href = $(this).attr('href');
