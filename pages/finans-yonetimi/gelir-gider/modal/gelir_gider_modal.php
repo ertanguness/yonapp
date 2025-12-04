@@ -27,6 +27,21 @@ $checked_gider = ($gelirGiderTipi == 'gider') ? 'checked' : '';
 $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
 
 ?>
+<style>
+#islem_tipi_gider.card-input-element:checked + .card {
+    border: 1px dashed var(--bs-danger);
+}
+#islem_tipi_gider.card-input-element:checked + .card .avatar-text {
+    color: var(--bs-danger);
+    border: 1px dashed var(--bs-danger);
+}
+#islem_tipi_gider.card-input-element:checked + .card .text-muted {
+    color: var(--bs-danger) !important;
+}
+#islem_tipi_gider.card-input-element:checked + .card::after {
+    color: var(--bs-danger);
+}
+</style>
 <div class="modal-header">
     <h5 class="modal-title" id="gelirGiderModalLabel">Gelir Gider İşlemleri</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -36,31 +51,39 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
         <input type="hidden" class="form-control d-none mb-3" name="islem_id" id="islem_id" value="<?= $enc_id; ?>">
 
         <!-- İşlem Türü -->
-        <div class="">
+        <div class="mb-3">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="option-card" id="standardOption">
-                        <label class="radio-label">
-                            <input type="radio" name="islem_tipi" value="gelir" <?= $checked_gelir ?>>
-                            <div class="radio-content">
-                                <div class="option-header">
-                                    <span class="option-title">Gelir</span>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
+                    <label class="w-100" for="islem_tipi_gelir">
+                        <input class="card-input-element visually-hidden" style="margin:0" type="radio" name="islem_tipi" id="islem_tipi_gelir" value="gelir" <?= $checked_gelir ?>>
+                        <span class="card card-body d-flex flex-row justify-content-between align-items-center p-3">
+                            <span class="hstack gap-2">
+                                <span class="avatar-text">
+                                    <i class="feather-trending-up"></i>
+                                </span>
+                                <span>
+                                    <span class="d-block fs-13 fw-bold text-dark">Gelir</span>
+                                    <span class="d-block text-muted mb-0">Gelir işlem kaydı</span>
+                                </span>
+                            </span>
+                        </span>
+                    </label>
                 </div>
                 <div class="col-md-6">
-                    <div class="option-card" id="expressOption">
-                        <label class="radio-label">
-                            <input type="radio" name="islem_tipi" value="gider" <?= $checked_gider ?>>
-                            <div class="radio-content">
-                                <div class="option-header">
-                                    <span class="option-title">Gider</span>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
+                    <label class="w-100" for="islem_tipi_gider">
+                        <input class="card-input-element visually-hidden" style="margin:0" type="radio" name="islem_tipi" id="islem_tipi_gider" value="gider" <?= $checked_gider ?>>
+                        <span class="card card-body d-flex flex-row justify-content-between align-items-center p-3">
+                            <span class="hstack gap-2">
+                                <span class="avatar-text">
+                                    <i class="feather-trending-down"></i>
+                                </span>
+                                <span>
+                                    <span class="d-block fs-13 fw-bold text-dark">Gider</span>
+                                    <span class="d-block text-muted mb-0">Gider işlem kaydı</span>
+                                </span>
+                            </span>
+                        </span>
+                    </label>
                 </div>
             </div>
         </div>

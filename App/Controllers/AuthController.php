@@ -155,7 +155,7 @@ class AuthController
          
 
             $returnUrl = urlencode($_SERVER['REQUEST_URI']);
-            header("Location: sign-in.php?returnUrl={$returnUrl}");
+            header("Location: /sign-in.php?returnUrl={$returnUrl}");
             exit();
         }
 
