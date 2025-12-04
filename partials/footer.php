@@ -350,9 +350,9 @@ use App\Services\Gate;
     </div>
     <?php } else { ?>
     <div class="mobile-dropdown-menu" id="mobileDropdownMenuSakin">
-        <a href="site-ekle">
+        <a href="#">
             <i class="bi bi-plus-circle"></i>
-            <span>Site Ekle</span>
+            <span>Ziyaretçi Kaydı</span>
         </a>
     </div>
     <?php } ?>
