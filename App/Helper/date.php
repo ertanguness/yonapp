@@ -76,40 +76,47 @@ public static function dmY($date = null, $format = 'd.m.Y')
         if (is_numeric($s)) {
             try {
                 $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float)$s);
-                return $dt->format('Y-m-d H:i');
+                return $dt->format(preg_match('/:\d{2}:\d{2}/', $s) ? 'Y-m-d H:i:s' : 'Y-m-d H:i');
             } catch (\Throwable $e) {
-                // devre dışı bırak, diğer formatlara dene
             }
         }
 
-        // Temizle: gereksiz karakterler (ör. sonuna eklenen "uud" gibi)
+        // Temizle: gereksiz karakterler
         $s = preg_replace('/[^0-9\.\-:\s\/]/u', '', $s);
+        // Tarih-saat arası tire ise boşluğa çevir (04/12/2025-16:13:53 → 04/12/2025 16:13:53)
+        $s = preg_replace('/([\/.])(\d{4})-/', '$1$2 ', $s);
+
+        $outFmt = preg_match('/:\d{2}:\d{2}/', $s) ? 'Y-m-d H:i:s' : 'Y-m-d H:i';
 
         $formats = [
-            'j.n.Y H:i:s',
-            'j.n.Y H:i',
+            'd/m/Y H:i:s',
+            'd/m/Y H:i',
             'd.m.Y H:i:s',
             'd.m.Y H:i',
+            'd-m-Y H:i:s',
+            'd-m-Y H:i',
             'Y-m-d H:i:s',
             'Y-m-d H:i',
             'Y/m/d H:i:s',
             'Y/m/d H:i',
-            'j.n.Y',
+            'd/m/Y',
             'd.m.Y',
+            'd-m-Y',
             'Y-m-d',
+            'Y/m/d',
         ];
 
         foreach ($formats as $fmt) {
             $dt = \DateTime::createFromFormat($fmt, $s);
             if ($dt !== false) {
-                return $dt->format('Y-m-d H:i');
+                return $dt->format($outFmt);
             }
         }
 
-        // Eğer hala başarısızsa, fallback olarak strtotime deneyelim
+        // Son çare: strtotime — US yorumu yapabilir, bu yüzden sadece çok net durumlarda kullanın
         $ts = strtotime($s);
         if ($ts !== false && $ts > 0) {
-            return date('Y-m-d H:i', $ts);
+            return date($outFmt, $ts);
         }
 
         return null;
