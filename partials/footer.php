@@ -232,6 +232,9 @@ use App\Services\Gate;
             display: none !important;
            
         }
+        .page-header{
+            display: none
+        }
     }
 </style>
 
