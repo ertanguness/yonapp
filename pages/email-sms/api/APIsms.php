@@ -88,11 +88,6 @@ $success = 0; $fail = 0; $errors = [];
 $insertRows = [];
 
 
-$logger->info('SMS gönderim isteği alındı', [
-    'site_id' => $siteId,
-    'settings' => $siteRow,
-    "recipients_count" => count($recipients),
-]);
 
 foreach ($recipients as $idx => $telRaw) {
     $telDigits = preg_replace('/\D/','', (string)$telRaw);
