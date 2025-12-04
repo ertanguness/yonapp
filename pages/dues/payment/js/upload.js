@@ -98,7 +98,7 @@ $(document).on("click", "#upload_payment_file", function (e) {
         icon: data.status,
         confirmButtonText: "Tamam",
       }).then(() => {
-        window.location.href = "/onay-bekleyen-tahsilatlar"; // Başarılı ise yönlendir
+        window.location.reload(); // Sayfayı yeniden yükle
       });
       
     })

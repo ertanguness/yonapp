@@ -25,17 +25,16 @@ public static function dmY($date = null, $format = 'd.m.Y')
     
     return date($format, $timestamp);
 }
-   public static function dmYHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
+   public static function dmYHIS(string|int|float|null $input, ?\DateTimeZone $tz = null): string
     {
         if ($input === null || $input === '' || $input === '0') {
             return '';
         }
-   
         return self::parseToFormat($input, 'd.m.Y H:i:s', $tz);
     }
 
    // 'Y-m-d' çıktısı
-    public static function Ymd(string|int|float $input, ?\DateTimeZone $tz = null): string
+    public static function Ymd(string|int|float|null $input, ?\DateTimeZone $tz = null): string
     {
         /** boş gelirse return */
        if ($input === null || $input === '' || $input === '0') {
@@ -44,8 +43,11 @@ public static function dmY($date = null, $format = 'd.m.Y')
         return self::parseToFormat($input, 'Y-m-d', $tz);
     }
 
-    public static function YmdHIS(string|int|float $input, ?\DateTimeZone $tz = null): string
+    public static function YmdHIS(string|int|float|null $input, ?\DateTimeZone $tz = null): string
     {
+        if ($input === null || $input === '' || $input === '0') {
+            return '';
+        }
         return self::parseToFormat($input, 'Y-m-d H:i:s', $tz);
     }
 
@@ -147,6 +149,7 @@ public static function dmY($date = null, $format = 'd.m.Y')
         // Denenecek formatlar (öncelik: Türkiye d/m/Y)
         $formats = [
             'd/m/Y H:i:s',
+            'd/m/Y-H:i:s',
             'd/m/Y H:i',
             'd.m.Y H:i:s',
             'd.m.Y H:i',

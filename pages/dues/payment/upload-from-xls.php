@@ -1,3 +1,8 @@
+<?php 
+use App\Services\FlashMessageService;
+
+?>
+
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -5,14 +10,14 @@
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="/ana-sayfa">Ana Sayfa</a></li>
-            <li class="breadcrumb-item"><a href="index?p=dues/payment/list">Borç Listesi</a></li>
+            <li class="breadcrumb-item"><a href="/yonetici-aidat-odeme">Borç Listesi</a></li>
             <li class="breadcrumb-item">Excelden Ödeme Yükle</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
         <div class="page-header-right-items">
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                <a href="index?p=dues/payment/list" class="btn btn-outline-secondary">
+                <a href="/yonetici-aidat-odeme" class="btn btn-outline-secondary">
                     <i class="feather-arrow-left me-2"></i>Listeye Dön
                 </a>
             </div>
@@ -57,6 +62,8 @@
 
     <div class="row">
         <div class="container-xl">
+
+          <?php include_once dirname(__DIR__,3) .'/partials/_flash_messages.php';  ?>
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">

@@ -5,9 +5,9 @@ require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 
 use Database\Db;
-use App\Helper\Alert;
 use App\Helper\Date;
 use Model\KasaModel;
+use App\Helper\Alert;
 use App\Helper\Error;
 use App\Helper\Helper;
 use App\Services\Gate;
@@ -16,19 +16,20 @@ use Model\KisilerModel;
 use App\Helper\Security;
 use Model\DairelerModel;
 use Model\TahsilatModel;
+use App\Helper\KisiHelper;
 use Model\KasaHareketModel;
 use Model\BorclandirmaModel;
 use Model\TahsilatOnayModel;
 use Model\FinansalRaporModel;
 use Model\KisiKredileriModel;
-use Model\KisiKrediKullanimModel;
 use Model\TahsilatDetayModel;
 use App\Helper\FinansalHelper;
-use App\Helper\KisiHelper;
-
-
 use Model\TahsilatHavuzuModel;
+
+
 use Model\BorclandirmaDetayModel;
+use Model\KisiKrediKullanimModel;
+use App\Services\FlashMessageService;
 use \PhpOffice\PhpSpreadsheet\IOFactory;
 use \PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
@@ -144,7 +145,12 @@ if ($_POST['action'] == 'payment_file_upload') {
          */
         function kaydetHavuz($TahsilatHavuzu, $data, $aciklamaEk = '')
         {
+            $logger = \getLogger();
+
             $islem_tarihi =  Date::YmdHis($data[0]);  // İşlem tarihi
+            $logger->info("havuz data: " . json_encode($data));
+
+
             $ham_aciklama = $data[5] ?? '';  // Ham açıklama alanı, varsa kullanılır
             $referans_no = $data[6] ?? '';  // Makbuz no, varsa kullanılır
             // Tutar artık temizlenmiş durumda gelmeli
@@ -176,6 +182,22 @@ if ($_POST['action'] == 'payment_file_upload') {
         foreach ($rows as $i => $data) {
             if ($i == 0)
                 continue;  // Başlık satırını atla
+
+            $tarihCell = $data[0] ?? null;
+            if ($tarihCell === null || trim((string)$tarihCell) === '') {
+                $failCount++;
+                $failRows[] = $i + 1;
+                $logger->info("Satır atlandı (tarih boş/geçersiz): " . json_encode($data));
+                continue;
+            }
+            $parsedDate = Date::parseExcelDate($tarihCell);
+            if ($parsedDate === null || $parsedDate === '') {
+                $failCount++;
+                $failRows[] = $i + 1;
+                $logger->info("Satır atlandı (tarih çözümlenemedi): " . json_encode($data));
+                continue;
+            }
+            $data[0] = $parsedDate;
             try {
 
 
@@ -269,6 +291,8 @@ if ($_POST['action'] == 'payment_file_upload') {
 
             
         }
+        $status = "success";
+        $message ="Yükleme tamamlandı";
         $db->commit();
     } catch (Exception $ex) {
         if ($db->inTransaction()) {
@@ -285,6 +309,7 @@ if ($_POST['action'] == 'payment_file_upload') {
         $message = "Yükleme tamamlandı.<br> Başarılı: $successCount, <br>Hatalı: $failCount";
         if ($failCount > 0) {
             $message .= '. <br>Hatalı satırlar: ' . implode(', ', $failRows);
+            FlashMessageService::add('error', 'Hatalı Satırlar', implode(', ', $failRows));
         }
         if ($eşleşmeyen_kayıtlar > 0) {
             $message .= '. <br>Eşleşmeyen kayıt sayısı: ' . $eşleşmeyen_kayıtlar;
