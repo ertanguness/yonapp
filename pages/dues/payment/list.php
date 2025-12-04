@@ -135,7 +135,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 
 <style>
    table {
-    min-width: 500px;
+    min-width: 300px;
    }
 
     </style>
@@ -154,7 +154,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                                 Sıra
                                             </th>
                                             <th style="width:7%">Daire Kodu</th>
-                                            <th>
+                                            <th style="min-width: 200px;">
                                            
                                             Ad Soyad
                                             </th>
