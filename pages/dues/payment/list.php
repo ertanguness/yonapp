@@ -164,7 +164,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                             <th class="text-end" style="width:11%">Gecikme Zammı</th>
                                             <th class="text-end" style="width:11%">Toplam Borç</th>
                                             <th class="text-end" style="width:11%">Kredi Tutarı</th>
-                                            <th class="text-end" style="width:11%">Kalan Borç</th>
+                                            <th class="all text-end" style="width:11%">Kalan Borç</th>
 
                                             <th>İşlem</th>
                                         </tr>

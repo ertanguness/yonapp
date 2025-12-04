@@ -7,12 +7,23 @@ use App\Services\SmsGonderService;
 use App\Helper\Security;
 use Model\UserModel;
 
+
+$logger = \getLogger();
+
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $action = $input['action'] ?? '';
 $encKisi = $input['kisi_id'] ?? '';
 $email = trim($input['email'] ?? '');
 $phone = preg_replace('/\D+/', '', (string)($input['phone'] ?? ''));
 $kisiId = Security::decrypt($encKisi);
+
+// $logger->info('Davet API isteği alındı', [
+//     'action' => $action,
+//     'kisi_id' => $kisiId,
+// 'phone' => $phone,
+// 'email' => $email,
+// ]);
+
 
 function jsonOut($arr){ header('Content-Type: application/json'); echo json_encode($arr); exit; }
 if (!$kisiId) { jsonOut(['status'=>'error','message'=>'Geçersiz kişi']); }
@@ -48,7 +59,7 @@ if ($action === 'send_invite_sms') {
     if (empty($phone)) { jsonOut(['status'=>'error','message'=>'Telefon bulunamadı']); }
     if (strlen($phone) < 10) { jsonOut(['status'=>'error','message'=>'Telefon formatı hatalı']); }
     $msg = 'YonApp giriş davet linkiniz: ' . $shortLink;
-    $ok = SmsGonderService::gonder(['+' . $phone], $msg);
+    $ok = SmsGonderService::gonder([$phone], $msg);
     jsonOut($ok?['status'=>'success','message'=>'SMS gönderildi','link'=>$shortLink]:['status'=>'error','message'=>'SMS gönderilemedi']);
 }
 

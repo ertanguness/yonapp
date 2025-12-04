@@ -86,6 +86,14 @@ $recipientIds = $postData['recipient_ids'] ?? $postData['ids'] ?? [];
 
 $success = 0; $fail = 0; $errors = [];
 $insertRows = [];
+
+
+$logger->info('SMS gönderim isteği alındı', [
+    'site_id' => $siteId,
+    'settings' => $siteRow,
+    "recipients_count" => count($recipients),
+]);
+
 foreach ($recipients as $idx => $telRaw) {
     $telDigits = preg_replace('/\D/','', (string)$telRaw);
     $kisiId = 0;
@@ -135,7 +143,7 @@ foreach ($recipients as $idx => $telRaw) {
         ($daireKodu ?: '')
     ], $messageText);
     /** Gerçek kullanımda açıkacak */
-    $sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
+    //$sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
     
     /** Test için örnek kullan */
    // $sent = true;

@@ -89,7 +89,7 @@ $page = isset($page) ? $page : 'ana-sayfa';
 
     <script src="/assets/js/jquery.3.7.1.min.js"></script>
     <script src="/assets/js/common-init.min.js"></script>
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     
 
 </head>

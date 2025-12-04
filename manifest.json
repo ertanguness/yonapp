@@ -5,7 +5,7 @@
   "name": "test.yonapp.com",
   "orientation": "any",
   "scope": "/",
-  "short_name": "test.yonapp.com",
+  "short_name": "YonApp",
   "start_url": "/ana-sayfa",
   "theme_color": "#ffffff",
   "icons": [
