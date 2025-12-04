@@ -153,7 +153,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                             <th class="wd-30 no-sorting" style="width: 40px;">
                                                 Sıra
                                             </th>
-                                            <th style="width:7%">Daire Kodu</th>
+                                            <th class="all" style="width:7%">Daire Kodu</th>
                                             <th class="all" style="min-width: 200px;">
                                            
                                             Ad Soyad
