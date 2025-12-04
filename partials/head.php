@@ -29,7 +29,8 @@ $page = isset($page) ? $page : 'ana-sayfa';
     <link rel="stylesheet" type="text/css" href="/assets/vendors/css/vendors.min.css" />
     <!-- Development version -->
 
-    
+    <!-- Bootstrap icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     
     <?php 
 // Sadece anasayfa için gerekli olan css dosyaları

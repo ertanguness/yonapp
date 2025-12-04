@@ -265,11 +265,11 @@ use App\Services\Gate;
         
         <?php if(!Gate::isResident()){ ?>
             <button class="mobile-fab" id="mobileMoreBtn" title="Daha Fazla">
-                <i class="bi bi-plus"></i>
+                <i class="bi bi-list"></i>
             </button>
         <?php } else { ?>
             <button class="mobile-fab mobile-fab-sakin" id="mobileMoreBtnSakin" title="Daha Fazla">
-                <i class="bi bi-plus"></i>
+                <i class="bi bi-list"></i>
             </button>
         <?php } ?>
 
@@ -354,8 +354,12 @@ use App\Services\Gate;
     <?php } else { ?>
     <div class="mobile-dropdown-menu" id="mobileDropdownMenuSakin">
         <a href="#">
-            <i class="bi bi-plus-circle"></i>
+            <i class="bi bi-people-fill"></i>
             <span>Ziyaretçi Kaydı</span>
+        </a>
+        <a href="/sakin/talep-ekle">
+            <i class="bi bi-person-vcard"></i>
+            <span>Talep Ekle</span>
         </a>
     </div>
     <?php } ?>

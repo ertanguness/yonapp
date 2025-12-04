@@ -10,7 +10,7 @@ use Model\SikayetOneriModel;
 $Model = new SikayetOneriModel();
 
 $enc_id = $id ?? 0;
-$id = Security::decrypt($id);
+$id = Security::decrypt($id ?? 0);
 
 $talep = $Model->find($id);
 
