@@ -135,7 +135,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
 
 <style>
    table {
-    min-width: 300px;
+    min-width: 400px;
    }
 
     </style>
