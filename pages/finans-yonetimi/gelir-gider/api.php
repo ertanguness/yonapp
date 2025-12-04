@@ -20,6 +20,13 @@ if ($_POST['action'] == 'gelir-gider-kaydet') {
     $islem_id = Security::decrypt($_POST['islem_id'] ?? 0);
     $site_id = $_SESSION['site_id'];
     $kasa_id = $_SESSION['kasa_id'];
+    $islem_tipi = $_POST['islem_tipi'];
+
+    /** Tutar gider ise - koy */
+    if ($islem_tipi == 'Gider' || $islem_tipi == 'gider') {
+        $tutar = -abs(Helper::formattedMoneyToNumber($_POST['tutar']));
+    }
+
     $lastInsertId = 0;
 
     try {
@@ -34,7 +41,7 @@ if ($_POST['action'] == 'gelir-gider-kaydet') {
             "islem_tipi" => $_POST['islem_tipi'],
             "kategori" => $_POST['kategori'],
             "makbuz_no" => $_POST['makbuz_no'],
-            "tutar" => Helper::formattedMoneyToNumber($_POST['tutar']),
+            "tutar" => ($tutar),
             "aciklama" => $_POST['aciklama'],
             "guncellenebilir" => 1
         ];
