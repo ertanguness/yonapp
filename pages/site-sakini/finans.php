@@ -49,6 +49,7 @@ if ($selectedAll && !empty($kisiAdaylari)) {
 } else {
     $hesap_ozet = $Rapor->KisiFinansalDurum($activeKisiId);
     $hareketler = $Rapor->kisiHesapHareketleri($activeKisiId);
+    $kategoriOzet = $Rapor->getKisiKategoriOzet($activeKisiId);
 }
 
 $sonOdeme = null;
@@ -133,6 +134,58 @@ foreach ($hareketler as $it) {
 
 
         <div class="col-12">
+            <div class="card rounded-3 mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0">Tür Bazında Özet</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-12 col-lg-6">
+                            <div class="accordion" id="katAccordion">
+                                <?php $i = 0; foreach (($kategoriOzet ?? []) as $k): $cid = 'katItem'.(++$i); ?>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="h-<?php echo $cid; ?>">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-<?php echo $cid; ?>" aria-expanded="false" aria-controls="c-<?php echo $cid; ?>">
+                                                <?php echo htmlspecialchars($k->kategori ?? ''); ?>
+                                            </button>
+                                        </h2>
+                                        <div id="c-<?php echo $cid; ?>" class="accordion-collapse collapse" aria-labelledby="h-<?php echo $cid; ?>" data-bs-parent="#katAccordion">
+                                            <div class="accordion-body">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span class="text-muted">Toplam Borç</span>
+                                                    <span class="text-danger fw-semibold"><?php echo Helper::formattedMoney($k->toplam_borc ?? 0); ?></span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span class="text-muted">Toplam Ödeme</span>
+                                                    <span class="text-success fw-semibold"><?php echo Helper::formattedMoney($k->toplam_odeme ?? 0); ?></span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span class="text-muted">Kalan</span>
+                                                    <span class="fw-semibold text-<?php echo (($k->kalan ?? 0) > 0) ? 'danger' : 'success'; ?>"><?php echo Helper::formattedMoney($k->kalan ?? 0); ?></span>
+                                                </div>
+                                                <?php 
+                                                    $borc = (float)($k->toplam_borc ?? 0); 
+                                                    $odeme = (float)($k->toplam_odeme ?? 0); 
+                                                    $rate = $borc > 0 ? max(0, min(100, round(($odeme/$borc)*100))) : 100; 
+                                                ?>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $rate; ?>%" aria-valuenow="<?php echo $rate; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                                <?php if (empty($kategoriOzet)): ?>
+                                    <div class="text-muted">Kayıt bulunamadı.</div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div id="chartByCategory"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="card rounded-3">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title mb-0">Borç/Alacak Tablosu</h5>
@@ -253,6 +306,50 @@ $payVals = array_values($pay);
                     strokeDashArray: 4
                 }
             }).render();
+        }
+    });
+</script>
+<?php 
+// Tür bazlı özet grafik verileri
+$katLabels = []; $katBorc = []; $katOdeme = []; $katKalan = [];
+foreach (($kategoriOzet ?? []) as $k) {
+    $katLabels[] = (string)($k->kategori ?? '');
+    $katBorc[]   = (float)($k->toplam_borc ?? 0);
+    $katOdeme[]  = (float)($k->toplam_odeme ?? 0);
+    $katKalan[]  = (float)($k->kalan ?? 0);
+}
+?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function initCategoryChart() {
+            if (!window.ApexCharts) return;
+            var cats = <?php echo json_encode($katLabels, JSON_UNESCAPED_UNICODE); ?>;
+            var borc = <?php echo json_encode(array_map('floatval', $katBorc)); ?>;
+            var odeme = <?php echo json_encode(array_map('floatval', $katOdeme)); ?>;
+            var kalan = <?php echo json_encode(array_map('floatval', $katKalan)); ?>;
+            var el = document.querySelector('#chartByCategory');
+            if (!el) return;
+            new ApexCharts(el, {
+                chart: { type: 'bar', height: 300, stacked: false, toolbar: { show: false } },
+                series: [
+                    { name: 'Toplam Borç', data: borc },
+                    { name: 'Toplam Ödeme', data: odeme },
+                    { name: 'Kalan', data: kalan }
+                ],
+                xaxis: { categories: cats },
+                colors: ['#dc3545', '#28a745', '#ffc107'],
+                plotOptions: { bar: { horizontal: false } },
+                dataLabels: { enabled: false },
+                grid: { strokeDashArray: 4 }
+            }).render();
+        }
+        if (!window.ApexCharts) {
+            var s = document.createElement('script');
+            s.src = '/assets/vendors/js/apexcharts.min.js';
+            s.onload = initCategoryChart;
+            document.body.appendChild(s);
+        } else {
+            initCategoryChart();
         }
     });
 </script>

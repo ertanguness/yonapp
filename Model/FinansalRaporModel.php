@@ -243,6 +243,27 @@ class FinansalRaporModel extends Model
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
+    /**
+     * Kişi borçlarını borç adı/kategoriye göre özetler.
+     * Dönen: [ (object){ kategori, toplam_borc, toplam_odeme, kalan } ]
+     */
+    public function getKisiKategoriOzet(int $kisi_id): array
+    {
+        $sql = $this->db->prepare(
+            "SELECT 
+                COALESCE(borc_adi, aciklama, 'Diğer') AS kategori,
+                SUM(COALESCE(tutar,0))               AS toplam_borc,
+                SUM(COALESCE(yapilan_tahsilat,0))    AS toplam_odeme,
+                SUM(COALESCE(tutar,0) - COALESCE(yapilan_tahsilat,0)) AS kalan
+             FROM {$this->table}
+             WHERE kisi_id = ?
+             GROUP BY kategori
+             ORDER BY kategori ASC"
+        );
+        $sql->execute([$kisi_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
 
 
 
