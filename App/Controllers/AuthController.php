@@ -47,9 +47,7 @@ class AuthController
             FlashMessageService::add('error', 'Giriş Başarısız!', 'E-posta veya telefon ve şifre zorunludur.', 'ikaz2.png');
             $validationError = true;
         } else {
-            $user = null;
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $user = $this->userModel->getUserByEmail($email);
                 $searchEmail = $email;
             } else {
                 $identifier = preg_replace('/\s+/', '', $email);
@@ -64,24 +62,8 @@ class AuthController
                     } else {
                         $candidate = $identifier;
                     }
-                    $user = $this->userModel->getUserByPhone($candidate);
                     $searchPhone = $candidate;
                 }
-            }
-
-            if (!$user) {
-                FlashMessageService::add('error', 'Giriş Başarısız!', 'Kullanıcı bulunamadı.', 'ikaz2.png');
-                $validationError = true;
-            } elseif ($user->status == 0) {
-                FlashMessageService::add('warning', 'Hesap Beklemede', 'Hesabınız henüz yönetici tarafından aktifleştirilmedi.', 'bilgi.png');
-                $validationError = true;
-            } elseif (!password_verify($password, $user->password)) {
-                FlashMessageService::add('error', 'Giriş Başarısız!', 'Hatalı şifre girdiniz.', 'ikaz2.png');
-                $this->logger->error("Başarısız giriş denemesi.", ['identifier' => $email, 'ip' => $_SERVER['REMOTE_ADDR']]);
-                $validationError = true;
-            } else {
-                // Demo kontrolü (Bu metot hata durumunda zaten yönlendirme yapıyor)
-                self::validateDemoPeriod($user);
             }
         }
         if ($validationError) {
@@ -90,14 +72,29 @@ class AuthController
             header("Location: /sign-in");
             exit();
         }
-        
         $accounts = $this->userModel->getAccountsByEmailOrPhone($searchEmail, $searchPhone);
+        if (empty($accounts)) {
+            FlashMessageService::add('error', 'Giriş Başarısız!', 'Kullanıcı bulunamadı.', 'ikaz2.png');
+            $_SESSION['old_form_input'] = ['email' => $email];
+            header("Location: /sign-in");
+            exit();
+        }
+
         $matched = [];
         foreach ($accounts as $acc) {
             if (password_verify($password, $acc->password)) {
                 $matched[] = $acc;
             }
         }
+
+        if (count($matched) === 0) {
+            FlashMessageService::add('error', 'Giriş Başarısız!', 'Hatalı şifre girdiniz.', 'ikaz2.png');
+            $this->logger->error("Başarısız giriş denemesi.", ['identifier' => $email, 'ip' => $_SERVER['REMOTE_ADDR']]);
+            $_SESSION['old_form_input'] = ['email' => $email];
+            header("Location: /sign-in");
+            exit();
+        }
+
         if (count($matched) > 1) {
             $_SESSION['role_select_candidates'] = array_map(function ($a) {
                 return [
@@ -116,7 +113,10 @@ class AuthController
             header("Location: sign-in.php?chooseRole=1");
             exit();
         }
-        self::performLogin($user);
+
+        $selectedUser = $matched[0];
+        self::validateDemoPeriod($selectedUser);
+        self::performLogin($selectedUser);
     }
 
 
