@@ -60,13 +60,57 @@ class UserModel extends Model
         if (empty($where)) {
             return [];
         }
-        $sql = 'SELECT u.*, r.role_name FROM ' . $this->table . ' u LEFT JOIN user_roles r ON u.roles = r.id WHERE (' . implode(' OR ', $where) . ') AND u.status = 1 ORDER BY u.is_main_user DESC, u.id ASC';
+        $sql = 'SELECT u.*, r.role_name FROM ' . $this->table . ' u LEFT JOIN user_roles r ON u.roles = r.id WHERE (' . implode(' OR ', $where) . ') AND u.status = 1 ORDER BY IFNULL(u.login_favorite,0) DESC, IFNULL(u.login_usage_count,0) DESC, u.is_main_user DESC, u.id ASC';
         $stmt = $this->db->prepare($sql);
         foreach ($params as $k => $v) {
             $stmt->bindValue(':' . $k, $v);
         }
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ) ?? [];
+    }
+
+    public function ensureLoginPreferenceColumns(): void
+    {
+        try {
+            $checkFav = $this->db->query("SHOW COLUMNS FROM $this->table LIKE 'login_favorite'");
+            $checkUse = $this->db->query("SHOW COLUMNS FROM $this->table LIKE 'login_usage_count'");
+            $hasFav = $checkFav && $checkFav->fetch(PDO::FETCH_ASSOC);
+            $hasUse = $checkUse && $checkUse->fetch(PDO::FETCH_ASSOC);
+            if (!$hasFav) {
+                $this->db->exec("ALTER TABLE $this->table ADD COLUMN login_favorite TINYINT(1) NOT NULL DEFAULT 0");
+            }
+            if (!$hasUse) {
+                $this->db->exec("ALTER TABLE $this->table ADD COLUMN login_usage_count INT NOT NULL DEFAULT 0");
+            }
+        } catch (\Exception $e) {
+            // Sessiz geç, login akışını engelleme
+        }
+    }
+
+    public function setLoginFavorite(int $userId, int $favorite): bool
+    {
+        $stmt = $this->db->prepare("UPDATE $this->table SET login_favorite = :fav WHERE id = :id");
+        return $stmt->execute(['fav' => $favorite, 'id' => $userId]);
+    }
+
+    public function incLoginUsage(int $userId): bool
+    {
+        $stmt = $this->db->prepare("UPDATE $this->table SET login_usage_count = IFNULL(login_usage_count,0) + 1 WHERE id = :id");
+        return $stmt->execute(['id' => $userId]);
+    }
+
+    public function getLoginPreferenceStatus(array $ids): array
+    {
+        if (empty($ids)) { return []; }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->db->prepare("SELECT id, IFNULL(login_favorite,0) AS fav, IFNULL(login_usage_count,0) AS cnt FROM $this->table WHERE id IN ($placeholders)");
+        $stmt->execute($ids);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
+        $out = [];
+        foreach ($rows as $r) {
+            $out[(int)$r['id']] = ['fav' => (int)$r['fav'], 'cnt' => (int)$r['cnt']];
+        }
+        return $out;
     }
 
     //Kullanıcı adı vey emailden kullanıcı kontrolü yapılır,true veya false döner

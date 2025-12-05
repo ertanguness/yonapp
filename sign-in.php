@@ -111,6 +111,9 @@ include './partials/head.php';
 .role-item .role-text{display:flex;flex-direction:column}
 .role-item .role-name{font-weight:600}
 .role-item .role-badge{font-size:12px;color:#64748b}
+.role-item .favorite-toggle{margin-left:auto;border:none;background:transparent;color:#9ca3af;padding:6px;border-radius:8px}
+.role-item .favorite-toggle:hover{color:#4f46e5;background:#eef2ff}
+.role-item .favorite-toggle.active{color:#f59e0b}
 #roleSelectSubmit[disabled]{opacity:.6;cursor:not-allowed}
 .modal-footer{border-top:none}
 </style>
@@ -217,13 +220,16 @@ include './partials/head.php';
                                         <div class="role-list">
                                             <?php foreach ($_SESSION['role_select_candidates'] as $c): ?>
                                                 <?php $rn = strtolower($c['role_name'] ?? ''); $icon = 'bi-person-badge'; if (strpos($rn,'sak') !== false) { $icon = 'bi-house-heart'; } elseif (strpos($rn,'yönet') !== false || strpos($rn,'admin') !== false) { $icon = 'bi-shield-check'; } ?>
-                                                <label class="role-item">
+                                                <label class="role-item" data-id="<?php echo (int)$c['id']; ?>">
                                                     <input class="form-check-input me-3" type="radio" name="user_id" value="<?php echo (int)$c['id']; ?>">
                                                     <span class="role-icon"><i class="bi <?php echo $icon; ?>"></i></span>
                                                     <span class="role-text">
                                                         <span class="role-name"><?php echo htmlspecialchars($c['full_name'] ?? ''); ?></span>
                                                         <span class="role-badge"><?php echo htmlspecialchars($c['role_name'] ?? ''); ?></span>
                                                     </span>
+                                                    <button type="button" class="favorite-toggle" aria-label="Favori">
+                                                        <i class="bi bi-star"></i>
+                                                    </button>
                                                 </label>
                                             <?php endforeach; ?>
                                         </div>
@@ -250,6 +256,44 @@ include './partials/head.php';
                                 var cancelBtn = document.getElementById('roleSelectCancel');
                                 var form = document.getElementById('roleSelectForm');
                                 var options = form.querySelectorAll('.role-item');
+                                var list = form.querySelector('.role-list');
+
+                                function applyFavoriteUI(){
+                                    options.forEach(function(opt){
+                                        var id = opt.getAttribute('data-id');
+                                        var btn = opt.querySelector('.favorite-toggle');
+                                        if (!btn) return;
+                                        var isActive = btn.getAttribute('data-active') === '1';
+                                        if (isActive) { btn.classList.add('active'); btn.querySelector('i').className = 'bi bi-star-fill'; }
+                                        else { btn.classList.remove('active'); btn.querySelector('i').className = 'bi bi-star'; }
+                                    });
+                                }
+                                function sortList(){
+                                    var items = Array.prototype.slice.call(list.querySelectorAll('.role-item'));
+                                    items.sort(function(a,b){
+                                        var fa = a.querySelector('.favorite-toggle')?.getAttribute('data-active') === '1' ? 1 : 0;
+                                        var fb = b.querySelector('.favorite-toggle')?.getAttribute('data-active') === '1' ? 1 : 0;
+                                        if (fa !== fb) return fb - fa;
+                                        var ua = parseInt(a.getAttribute('data-usage')||'0',10);
+                                        var ub = parseInt(b.getAttribute('data-usage')||'0',10);
+                                        if (!isNaN(ua) && !isNaN(ub) && ua !== ub) return ub - ua;
+                                        var na = (a.querySelector('.role-name')?.textContent||'').toLowerCase();
+                                        var nb = (b.querySelector('.role-name')?.textContent||'').toLowerCase();
+                                        return na.localeCompare(nb);
+                                    });
+                                    items.forEach(function(it){ list.appendChild(it); });
+                                    options = form.querySelectorAll('.role-item');
+                                }
+
+                                function selectDefaultTop(){
+                                    var first = list.querySelector('.role-item');
+                                    if (!first) return;
+                                    options.forEach(function(o){ o.classList.remove('selected'); });
+                                    first.classList.add('selected');
+                                    var radio = first.querySelector('input[type="radio"]');
+                                    if (radio) { radio.checked = true; submitBtn.removeAttribute('disabled'); }
+                                }
+
                                 options.forEach(function(opt){
                                     opt.addEventListener('click', function(){
                                         options.forEach(function(o){ o.classList.remove('selected'); });
@@ -258,10 +302,32 @@ include './partials/head.php';
                                         if (radio) { radio.checked = true; submitBtn.removeAttribute('disabled'); }
                                     });
                                     opt.addEventListener('dblclick', function(){ if (!submitBtn.hasAttribute('disabled')) { form.submit(); } });
+                                    var favBtn = opt.querySelector('.favorite-toggle');
+                                    if (favBtn) {
+                                        favBtn.addEventListener('click', function(e){
+                                            e.stopPropagation();
+                                            var id = opt.getAttribute('data-id');
+                                            var active = favBtn.getAttribute('data-active') === '1';
+                                            var fd = new FormData();
+                                            fd.append('action','toggle_favorite');
+                                            fd.append('user_id', id);
+                                            fd.append('token', '<?php echo isset($_SESSION['role_select_csrf']) ? htmlspecialchars($_SESSION['role_select_csrf']) : '' ?>');
+                                            fd.append('fav', active ? '0' : '1');
+                                            fetch('api/role-preferences.php', { method:'POST', body: fd })
+                                                .then(function(r){ return r.json(); })
+                                                .then(function(j){ if (j && j.ok){ favBtn.setAttribute('data-active', active ? '0' : '1'); applyFavoriteUI(); sortList(); } });
+                                        });
+                                    }
                                 });
                                 submitBtn.addEventListener('click', function(){
                                     var checked = form.querySelector('input[name="user_id"]:checked');
-                                    if (checked) { form.submit(); }
+                                    if (checked) {
+                                        var fd = new FormData();
+                                        fd.append('action','inc_usage');
+                                        fd.append('user_id', checked.value);
+                                        fd.append('token', '<?php echo isset($_SESSION['role_select_csrf']) ? htmlspecialchars($_SESSION['role_select_csrf']) : '' ?>');
+                                        fetch('api/role-preferences.php', { method:'POST', body: fd }).finally(function(){ form.submit(); });
+                                    }
                                 });
                                 cancelBtn.addEventListener('click', function(){
                                     m.classList.remove('show');
@@ -272,9 +338,37 @@ include './partials/head.php';
                                 });
                                 document.addEventListener('keydown', function(e){
                                     if (e.key === 'Enter') {
-                                        if (!submitBtn.hasAttribute('disabled')) { form.submit(); }
+                                        if (!submitBtn.hasAttribute('disabled')) {
+                                            var checked = form.querySelector('input[name="user_id"]:checked');
+                                            if (checked) {
+                                                var fd = new FormData();
+                                                fd.append('action','inc_usage');
+                                                fd.append('user_id', checked.value);
+                                                fd.append('token', '<?php echo isset($_SESSION['role_select_csrf']) ? htmlspecialchars($_SESSION['role_select_csrf']) : '' ?>');
+                                                fetch('api/role-preferences.php', { method:'POST', body: fd }).finally(function(){ form.submit(); });
+                                            }
+                                        }
                                     }
                                 });
+                                options.forEach(function(opt){
+                                    var id = opt.getAttribute('data-id');
+                                    var favBtn = opt.querySelector('.favorite-toggle');
+                                    if (favBtn) { favBtn.setAttribute('data-active','0'); }
+                                    opt.setAttribute('data-usage','0');
+                                });
+                                fetch('api/role-preferences.php', { method:'POST', body: (function(){ var f=new FormData(); f.append('action','status'); f.append('token', '<?php echo isset($_SESSION['role_select_csrf']) ? htmlspecialchars($_SESSION['role_select_csrf']) : '' ?>'); return f; })() }).then(function(r){ return r.json(); }).then(function(j){
+                                    if (j && j.data) {
+                                        options.forEach(function(opt){
+                                            var id = opt.getAttribute('data-id');
+                                            var favBtn = opt.querySelector('.favorite-toggle');
+                                            if (j.data[id]) {
+                                                var d = j.data[id];
+                                                if (favBtn) { favBtn.setAttribute('data-active', d.fav ? '1' : '0'); }
+                                                opt.setAttribute('data-usage', String(d.cnt||0));
+                                            }
+                                        });
+                                    }
+                                }).catch(function(){ }).finally(function(){ applyFavoriteUI(); sortList(); selectDefaultTop(); });
                             }
                         });
                     </script>

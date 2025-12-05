@@ -42,6 +42,7 @@ class AuthController
         $validationError = false;
         $searchEmail = null;
         $searchPhone = null;
+        try { (new UserModel())->ensureLoginPreferenceColumns(); } catch (\Exception $e) {}
 
         if (empty($email) || empty($password)) {
             FlashMessageService::add('error', 'Giriş Başarısız!', 'E-posta veya telefon ve şifre zorunludur.', 'ikaz2.png');
