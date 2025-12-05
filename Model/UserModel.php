@@ -24,11 +24,49 @@ class UserModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ) ?? null;
     }
 
+    /** email kontrolü-kisi_id ve roles ile beraber kontrol  
+     * @param string $email Kullanıcı email adresi
+     * @param int $kisi_id Kullanıcı ID'si(opsiyonel, varsayılan olarak 0)
+     * @param int $roles Kullanıcı rolü(varsayılan olarak 3=>site sakini)
+     * @return object|null
+    */
+    public function getUserByEmailWithID($email, $kisi_id= 0, $roles = 3)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table 
+                                          WHERE email = ? AND kisi_id = ? and roles = ?");
+        $sql->execute(array($email, $kisi_id, $roles)); 
+        return $sql->fetch(PDO::FETCH_OBJ) ?? null;
+    }
+
     public function getUserByPhone($phone)
     {
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE phone = ?");
         $sql->execute([$phone]);
         return $sql->fetch(PDO::FETCH_OBJ) ?? null;
+    }
+
+    public function getAccountsByEmailOrPhone(?string $email, ?string $phone): array
+    {
+        $params = [];
+        $where = [];
+        if ($email) {
+            $where[] = 'u.email = :email';
+            $params['email'] = $email;
+        }
+        if ($phone) {
+            $where[] = 'u.phone = :phone';
+            $params['phone'] = $phone;
+        }
+        if (empty($where)) {
+            return [];
+        }
+        $sql = 'SELECT u.*, r.role_name FROM ' . $this->table . ' u LEFT JOIN user_roles r ON u.roles = r.id WHERE (' . implode(' OR ', $where) . ') AND u.status = 1 ORDER BY u.is_main_user DESC, u.id ASC';
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue(':' . $k, $v);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ) ?? [];
     }
 
     //Kullanıcı adı vey emailden kullanıcı kontrolü yapılır,true veya false döner

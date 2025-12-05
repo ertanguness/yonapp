@@ -7,12 +7,35 @@ require_once __DIR__ . '/configs/bootstrap.php';
 
 // Artık Controller'ları ve diğer sınıfları güvenle kullanabiliriz.
 use App\Controllers\AuthController;
+use Model\UserModel;
+use App\Services\FlashMessageService;
 
 $errors = [];
 // Sadece POST isteği varsa kontrolcüyü çalıştır
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'choose_role') {
+    $token = $_POST['token'] ?? '';
+    $selectedId = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
+    $candidates = $_SESSION['role_select_candidates'] ?? [];
+    $ids = array_map(function($c){ return (int)$c['id']; }, $candidates);
+    if (!empty($_SESSION['role_select_csrf']) && hash_equals($_SESSION['role_select_csrf'], $token) && in_array($selectedId, $ids, true)) {
+        $userModel = new UserModel();
+        $user = $userModel->getUser($selectedId);
+        unset($_SESSION['role_select_candidates'], $_SESSION['role_select_csrf']);
+        if (isset($_SESSION['role_select_returnUrl'])) {
+            $_GET['returnUrl'] = $_SESSION['role_select_returnUrl'];
+            unset($_SESSION['role_select_returnUrl']);
+        }
+        AuthController::performLogin($user);
+    } else {
+        FlashMessageService::add('error', 'Seçim geçersiz', 'Rol seçimi doğrulanamadı.', 'ikaz2.png');
+        header("Location: /sign-in.php");
+        exit();
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitForm'])) {
     $authController = new AuthController();
-   
+    
     $authController->handleLoginRequest();
 }
 
@@ -77,6 +100,19 @@ include './partials/head.php';
 .swiper-pagination-bullet-active {
     background-color: #4f46e5;
 }
+.modal-content{border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 18px 36px rgba(17,24,39,.12)}
+/* .modal-header{background:#111827;color:#fff;border-bottom:none;border-top-left-radius:14px;border-top-right-radius:14px} */
+.modal-title{font-weight:700}
+.role-list{display:block}
+.role-item{display:flex;align-items:center;padding:12px;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:box-shadow .15s ease,border-color .15s ease,background-color .15s ease}
+.role-item:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);border-color:#d1d5db;background-color:#f9fafb}
+.role-item.selected{border-color:#4f46e5;background:#f5f7ff;box-shadow:0 8px 24px rgba(79,70,229,.16)}
+.role-item .role-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#eef2ff;color:#4f46e5;margin-right:12px;font-size:18px}
+.role-item .role-text{display:flex;flex-direction:column}
+.role-item .role-name{font-weight:600}
+.role-item .role-badge{font-size:12px;color:#64748b}
+#roleSelectSubmit[disabled]{opacity:.6;cursor:not-allowed}
+.modal-footer{border-top:none}
 </style>
 
 <body>
@@ -167,7 +203,82 @@ include './partials/head.php';
                     </div>
                     </form>
 
-                    <!-- ... (Formun alt kısmı aynı kalabilir) ... -->
+                    <?php if (isset($_SESSION['role_select_candidates']) && is_array($_SESSION['role_select_candidates']) && count($_SESSION['role_select_candidates']) > 1): ?>
+                    <div class="modal fade" id="roleSelectModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Giriş Rolünü Seçin</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="sign-in.php<?php echo isset($_GET['returnUrl']) ? '?returnUrl=' . htmlspecialchars($_GET['returnUrl']) : ''; ?>" id="roleSelectForm">
+                                        <input type="hidden" name="action" value="choose_role" />
+                                        <input type="hidden" name="token" value="<?php echo htmlspecialchars($_SESSION['role_select_csrf']); ?>" />
+                                        <div class="role-list">
+                                            <?php foreach ($_SESSION['role_select_candidates'] as $c): ?>
+                                                <?php $rn = strtolower($c['role_name'] ?? ''); $icon = 'bi-person-badge'; if (strpos($rn,'sak') !== false) { $icon = 'bi-house-heart'; } elseif (strpos($rn,'yönet') !== false || strpos($rn,'admin') !== false) { $icon = 'bi-shield-check'; } ?>
+                                                <label class="role-item">
+                                                    <input class="form-check-input me-3" type="radio" name="user_id" value="<?php echo (int)$c['id']; ?>">
+                                                    <span class="role-icon"><i class="bi <?php echo $icon; ?>"></i></span>
+                                                    <span class="role-text">
+                                                        <span class="role-name"><?php echo htmlspecialchars($c['full_name'] ?? ''); ?></span>
+                                                        <span class="role-badge"><?php echo htmlspecialchars($c['role_name'] ?? ''); ?></span>
+                                                    </span>
+                                                </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" id="roleSelectCancel">İptal</button>
+                                    <button type="button" class="btn btn-primary" id="roleSelectSubmit" disabled>Devam Et</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var m = document.getElementById('roleSelectModal');
+                            if (m) {
+                                m.classList.add('show');
+                                m.style.display = 'block';
+                                document.body.classList.add('modal-open');
+                                var backdrop = document.createElement('div');
+                                backdrop.className = 'modal-backdrop fade show';
+                                document.body.appendChild(backdrop);
+                                var submitBtn = document.getElementById('roleSelectSubmit');
+                                var cancelBtn = document.getElementById('roleSelectCancel');
+                                var form = document.getElementById('roleSelectForm');
+                                var options = form.querySelectorAll('.role-item');
+                                options.forEach(function(opt){
+                                    opt.addEventListener('click', function(){
+                                        options.forEach(function(o){ o.classList.remove('selected'); });
+                                        opt.classList.add('selected');
+                                        var radio = opt.querySelector('input[type="radio"]');
+                                        if (radio) { radio.checked = true; submitBtn.removeAttribute('disabled'); }
+                                    });
+                                    opt.addEventListener('dblclick', function(){ if (!submitBtn.hasAttribute('disabled')) { form.submit(); } });
+                                });
+                                submitBtn.addEventListener('click', function(){
+                                    var checked = form.querySelector('input[name="user_id"]:checked');
+                                    if (checked) { form.submit(); }
+                                });
+                                cancelBtn.addEventListener('click', function(){
+                                    m.classList.remove('show');
+                                    m.style.display = 'none';
+                                    document.body.classList.remove('modal-open');
+                                    var bd = document.querySelector('.modal-backdrop');
+                                    if (bd) bd.remove();
+                                });
+                                document.addEventListener('keydown', function(e){
+                                    if (e.key === 'Enter') {
+                                        if (!submitBtn.hasAttribute('disabled')) { form.submit(); }
+                                    }
+                                });
+                            }
+                        });
+                    </script>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

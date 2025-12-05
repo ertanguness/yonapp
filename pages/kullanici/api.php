@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__DIR__ ,levels: 2). '/configs/bootstrap.php';
 
-
+use App\Services\Gate;
 use App\Helper\Helper;
 use App\Helper\Security;
 use Model\UserModel;
@@ -18,16 +18,21 @@ $User = new UserModel();
 
 if ($_POST["action"] == "kullanici-kaydet") {
     $id = Security::decrypt($_POST['user_id']) ?? 0;
+    $email = $_POST['email_adresi'];
+    $roles = Security::decrypt($_POST['user_roles'] ?? '') ?? 0;
+    $kisi_id = isset($_POST['kisi_id']) ? (int) (Security::decrypt($_POST['kisi_id']) ?? 0) : 0;
+
+   // Gate::can('kullanici-kaydet');
 
     $lastInsertedId = 0; // Son eklenen ID başlangıç değeri
     $rowData = ''; // Satır verisi başlangıç değeri
 
-    //Email adresi ile kayıt var mı kontrol et
-    $existingUser = $User->getUserByEmail($_POST['email_adresi'], $id);
+    // Email, kisi_id ve rol üçlüsü aynı ise mükerrer kayıt engellenir
+    $existingUser = $User->getUserByEmailWithID($email, $kisi_id, $roles);
     if ($existingUser && $id == 0) {
         echo json_encode([
             'status' => 'error',
-            'message' => 'Bu e-posta adresi zaten kayıtlı.'
+            'message' => 'Aynı e-posta, kişi ve rol ile kullanıcı zaten mevcut.'
         ]);
         exit;
     }
@@ -52,7 +57,8 @@ if ($_POST["action"] == "kullanici-kaydet") {
             'owner_id' => $_SESSION["owner_id"],
             "status" => 1,
             "is_main_user" => 0,
-            'roles' => Security::decrypt($_POST['user_roles']),
+            'roles' => $roles,
+            'kisi_id' => $kisi_id,
         ];
         if (!empty($_POST['password'])) {
             $data['password'] = password_hash($_POST['password'], PASSWORD_BCRYPT);

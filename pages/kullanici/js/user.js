@@ -111,6 +111,7 @@ $(document).on("click", "#userSaveBtn", function () {
       //   }
       // }
 
+      $("#user_id").val(data.lastInsertedId);
       swal.fire({
         title: title,
         text: data.message,

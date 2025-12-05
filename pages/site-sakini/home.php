@@ -45,7 +45,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
 <div class="main-content" style="margin-bottom: 50px;">
     <div class="row g-4 align-items-stretch mb-5">
         
-        <div class="col-12 d-block d-md-none">
+        <div class="col-12 d-block d-md-none mb-2">
             <div class="card shadow-md rounded-3">
                 <div class="card-body d-flex align-items-center gap-3">
                     <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary rounded">
@@ -64,7 +64,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
 
         
 
-        <div class="col-xxl-3 col-md-6 mt-0 mb-2">
+        <div class="col-xxl-3 col-md-6 mt-0 mb-2 mt-4">
             <div class="card rounded-3 h-100">
                 <div class="card-body">
                     <div class="hstack justify-content-between">
@@ -77,7 +77,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                 </div>
             </div>
         </div>
-        <div class="col-xxl-3 col-md-6 mt-0 mb-2">
+        <div class="col-xxl-3 col-md-6 mt-0 mb-2 mt-4">
             <div class="card rounded-3 h-100">
                 <div class="card-body">
                     <div class="hstack justify-content-between">
@@ -90,7 +90,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                 </div>
             </div>
         </div>
-        <div class="col-xxl-3 col-md-6 mt-0 mb-2">
+        <div class="col-xxl-3 col-md-6 mt-0 mb-2 mt-4">
             <div class="card rounded-3 h-100">
                 <div class="card-body">
                     <div class="hstack justify-content-between">
@@ -103,7 +103,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
                 </div>
             </div>
         </div>
-        <div class="col-xxl-3 col-md-6 mt-0 mb-2">
+        <div class="col-xxl-3 col-md-6 mt-0 mb-2 mt-4">
             <div class="card rounded-3 h-100">
                 <div class="card-body">
                     <div class="hstack justify-content-between">

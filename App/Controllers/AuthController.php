@@ -40,6 +40,8 @@ class AuthController
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
         $validationError = false;
+        $searchEmail = null;
+        $searchPhone = null;
 
         if (empty($email) || empty($password)) {
             FlashMessageService::add('error', 'Giriş Başarısız!', 'E-posta veya telefon ve şifre zorunludur.', 'ikaz2.png');
@@ -48,6 +50,7 @@ class AuthController
             $user = null;
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $user = $this->userModel->getUserByEmail($email);
+                $searchEmail = $email;
             } else {
                 $identifier = preg_replace('/\s+/', '', $email);
                 $digits = preg_replace('/\D+/', '', $identifier);
@@ -62,6 +65,7 @@ class AuthController
                         $candidate = $identifier;
                     }
                     $user = $this->userModel->getUserByPhone($candidate);
+                    $searchPhone = $candidate;
                 }
             }
 
@@ -80,7 +84,6 @@ class AuthController
                 self::validateDemoPeriod($user);
             }
         }
-        
         if ($validationError) {
             // Hata varsa, girilen e-postayı session'da saklayıp formu tekrar göster
             $_SESSION['old_form_input'] = ['email' => $email];
@@ -88,8 +91,31 @@ class AuthController
             exit();
         }
         
-        // Hata yoksa ve demo süresi de dolmamışsa, giriş yap.
-        // Bu metot zaten kendi içinde yönlendirme ve exit() içeriyor.
+        $accounts = $this->userModel->getAccountsByEmailOrPhone($searchEmail, $searchPhone);
+        $matched = [];
+        foreach ($accounts as $acc) {
+            if (password_verify($password, $acc->password)) {
+                $matched[] = $acc;
+            }
+        }
+        if (count($matched) > 1) {
+            $_SESSION['role_select_candidates'] = array_map(function ($a) {
+                return [
+                    'id' => (int)$a->id,
+                    'role_id' => (int)$a->roles,
+                    'role_name' => $a->role_name ?? null,
+                    'full_name' => $a->full_name ?? null
+                ];
+            }, $matched);
+            $_SESSION['role_select_csrf'] = bin2hex(random_bytes(16));
+            $_SESSION['old_form_input'] = ['email' => $email];
+            $returnUrl = !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : null;
+            if ($returnUrl) {
+                $_SESSION['role_select_returnUrl'] = $returnUrl;
+            }
+            header("Location: sign-in.php?chooseRole=1");
+            exit();
+        }
         self::performLogin($user);
     }
 
