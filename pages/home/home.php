@@ -470,7 +470,7 @@ $script = ob_get_clean();
 
         #tui-calendar-init {
             width: 100%;
-            height: 100%;
+            /* height: 100%; */
         }
 
         /* Responsive */
