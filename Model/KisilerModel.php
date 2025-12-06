@@ -387,10 +387,12 @@ class KisilerModel extends Model
                     kisiler.*, 
                     arac.id AS arac_id,
                     arac.plaka,
-                    arac.marka_model
+                    arac.marka_model,
+                    u.full_name AS kayit_yapan
                 FROM kisiler
                 INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
                 INNER JOIN araclar arac ON kisiler.id = arac.kisi_id
+                LEFT JOIN users u ON arac.kayit_yapan = u.id
                 WHERE bloklar.site_id = :site_id
             ";
 

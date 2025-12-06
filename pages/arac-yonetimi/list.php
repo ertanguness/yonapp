@@ -61,6 +61,7 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
                                             <th>Telefon</th>
                                             <th>Plaka</th>
                                             <th>Marka/Model</th>
+                                            <th>Kayıt Yapan</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>
@@ -82,6 +83,7 @@ $kisiListesi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? 0, 'arac', $id
                                                 <td><?= htmlspecialchars($row->telefon ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($row->plaka) ?></td>
                                                 <td><?= htmlspecialchars($row->marka_model ?? '-') ?></td>
+                                                <td><?= htmlspecialchars($row->kayit_yapan ?? '-') ?></td>
                                                 <td>
                                                     <div class="hstack gap-2">
                                                         <a href="javascript:void(0);" class="avatar-text avatar-md btn-edit" title="Düzenle" data-id="<?= $enc_id ?>">

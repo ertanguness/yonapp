@@ -3,6 +3,7 @@ require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
 
 use App\Helper\Security;
 use App\Helper\BlokHelper;
+use App\Helper\Arac;
 use Model\KisilerModel;
 use Model\AraclarModel;
 
@@ -18,6 +19,10 @@ $kisiId = is_object($car) ? ($car->kisi_id ?? 0) : 0;
 $kisi = $kisiId ? $KisiModel->find($kisiId) : null;
 $blokId = is_object($kisi) ? ($kisi->blok_id ?? 0) : 0;
 $daireId = is_object($kisi) ? ($kisi->daire_id ?? 0) : 0;
+
+
+
+
 ?>
 
 <div class="modal-header">
