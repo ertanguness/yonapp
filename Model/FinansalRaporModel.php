@@ -111,6 +111,20 @@ class FinansalRaporModel extends Model
     }
 
 
+    /** Gelen tutardan büyük ve eşit tutarda borcu olanları getirir.
+     * @param float $minAmount
+     * @return array
+     */
+    public function getKisiBorclarByMinAmount($minAmount): array
+    {
+        $sql = $this->db->prepare("SELECT * 
+                                          FROM $this->vw_hesap_ozet 
+                                          WHERE bakiye <= ? 
+                                          ORDER BY bakiye asc
+                                          LIMIT 10");
+        $sql->execute([$minAmount]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
 
 
 

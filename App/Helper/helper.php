@@ -423,22 +423,26 @@ class Helper
      * @param int $count Baş harf sayısı
      * @return string Baş harfler
      */
-    public static function getInitials($name, $count = 2)
-    {
-        if (empty($name) || $name == null) {
-            return '';
-        }
-        $name = explode(' ', $name);
-        $initials = '';
-        $counter = 0;
-        foreach ($name as $n) {
-            if (!empty($n) && $counter < $count) {  // Boş olup olmadığını ve counter'ı kontrol et
-                $initials .= $n[0];
-                $counter++;
-            }
-        }
-        return strtoupper($initials);
+  public static function getInitials($name, $count = 2)
+{
+    if (empty($name)) {
+        return '';
     }
+
+    $parts = preg_split('/\s+/', trim($name)); // birden fazla boşluğu parçala
+    $initials = '';
+    $counter = 0;
+
+    foreach ($parts as $p) {
+        if (!empty($p) && $counter < $count) {
+            $initials .= mb_substr($p, 0, 1, 'UTF-8'); // Türkçe karakterler için doğru
+            $counter++;
+        }
+    }
+
+    return mb_strtoupper($initials, 'UTF-8');
+}
+
 
     // authorize sayfasını include eder
     public static function authorizePage()

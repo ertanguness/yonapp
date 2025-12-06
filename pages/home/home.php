@@ -493,9 +493,11 @@ $script = ob_get_clean();
         'calendar-card',
         'payment-records-chart-card',
         'leads-inquiry-channel-card',
+        'borc-listele',
     ];
     $userId = $_SESSION['user']->id ?? 0;
     $layout = [];
+    $available = array_map(function($p){ return basename($p, '.php'); }, glob(__DIR__ . '/cards/*.php'));
     if ($userId) {
         $layout = $UserDashBoardModel->getUserDashboardLayout((int)$userId);
     }
@@ -504,7 +506,7 @@ $script = ob_get_clean();
     if (!empty($layout)) {
         foreach ($layout as $it) {
             $k = $it['widget_key'];
-            if (in_array($k, $defaultOrder, true)) {
+            if (in_array($k, $available, true)) {
                 if ((int)$it['column'] === 2) {
                     $orderCol2[] = $k;
                 } else {
@@ -517,11 +519,21 @@ $script = ob_get_clean();
                 $orderCol1[] = $k;
             }
         }
+        foreach ($available as $k) {
+            if (!in_array($k, $orderCol1, true) && !in_array($k, $orderCol2, true)) {
+                $orderCol1[] = $k;
+            }
+        }
     } else {
         $orderCol1 = $defaultOrder;
+        foreach ($available as $k) {
+            if (!in_array($k, $orderCol1, true)) {
+                $orderCol1[] = $k;
+            }
+        }
     }
     ?>
-    <div class="row">
+    <div class="row mb-5">
         <div id="dashboard-col-1" class="col-xxl-6 col-md-6">
             <?php foreach ($orderCol1 as $cardKey): $file = __DIR__ . '/cards/' . $cardKey . '.php'; if (file_exists($file)) { include $file; } endforeach; ?>
         </div>
@@ -1022,4 +1034,7 @@ $script = ob_get_clean();
             }
         });
     })();
+
+
+
 </script>

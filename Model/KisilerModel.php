@@ -21,6 +21,7 @@ class KisilerModel extends Model
 
     protected $view_site_aktif_evsahipleri = 'view_site_aktif_evsahipleri'; // Sadece ev sahiplerini içeren görünüm
 
+    protected $kisiHesapOzet = 'view_kisiler_hesap_ozet';
     protected $kisilerborcozet = 'view_kisi_borc_ozet';
 
     public function __construct()
@@ -348,6 +349,21 @@ class KisilerModel extends Model
         $sql = $this->db->prepare("SELECT * FROM $this->kisilerborcozet WHERE site_id = ?");
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function getDebtorsByMinAmount(int $site_id, float $min, int $limit = 10): array
+    {
+        $limit = max(1, (int)$limit);
+        $sql = "SELECT kisi_id, adi_soyadi, daire_kodu, site_id, toplam_anapara, toplam_gecikme_zammi, toplam_odenen, toplam_borc, toplam_tahsilat, bakiye
+                FROM view_kisiler_hesap_ozet
+                WHERE site_id = :site_id AND bakiye < 0 AND ABS(bakiye) >= :min
+                ORDER BY ABS(bakiye) DESC
+                LIMIT {$limit}";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':site_id', $site_id, PDO::PARAM_INT);
+        $stmt->bindValue(':min', $min);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
