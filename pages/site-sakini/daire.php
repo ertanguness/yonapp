@@ -22,6 +22,12 @@ $AcilDurum = new AcilDurumKisileriModel();
 // Tüm site kişileri
 $allPersons = $Kisiler->SiteTumKisileri($site_id);
 
+if (isset($_GET['clear_context'])) {
+    unset($_SESSION['selected_apartment_id'], $_SESSION['selected_person_id']);
+    header('Location: /sakin/daire');
+    exit;
+}
+
 // Kullanıcı ile eşleşen tüm malik kayıtları (çoklu daire)
 $ownerPersons = array_values(array_filter($allPersons, function($p) use ($sessionEmail,$sessionPhone,$sessionName){
     $e = trim((string)($p->eposta ?? ''));
@@ -42,9 +48,29 @@ $tenants = array_values(array_filter($allPersons, function($p) use ($ownerApartm
         && mb_strtolower((string)($p->uyelik_tipi ?? '')) === mb_strtolower('Kiracı');
 }));
 
-// Seçilen bağlam
-$selectedApartmentId = (int)($_GET['daire_id'] ?? ($ownerApartmentIds[0] ?? 0));
-$selectedTenantId    = (int)($_GET['kisi_id'] ?? 0);
+$selectedApartmentId = (int)($_SESSION['selected_apartment_id'] ?? 0);
+$selectedTenantId    = (int)($_SESSION['selected_person_id'] ?? 0);
+
+if (isset($_GET['daire_id'])) {
+    $selectedApartmentId = (int)$_GET['daire_id'];
+    $_SESSION['selected_apartment_id'] = $selectedApartmentId;
+    if (!isset($_GET['kisi_id'])) {
+        $selectedTenantId = 0;
+        unset($_SESSION['selected_person_id']);
+    }
+}
+
+if (isset($_GET['kisi_id'])) {
+    $selectedTenantId = (int)$_GET['kisi_id'];
+    $_SESSION['selected_person_id'] = $selectedTenantId;
+    if (isset($_GET['daire_id'])) {
+        $_SESSION['selected_apartment_id'] = (int)$_GET['daire_id'];
+    }
+}
+
+if (!$selectedApartmentId) {
+    $selectedApartmentId = (int)($ownerApartmentIds[0] ?? 0);
+}
 
 // Daire ve blok bilgileri
 $apartment = $selectedApartmentId ? $Daireler->DaireBilgisi($site_id, $selectedApartmentId) : null;
@@ -106,10 +132,21 @@ $emergencyList = $carOwnerId ? $AcilDurum->findWhere(['kisi_id' => $carOwnerId],
                     <div class="row g-3">
                         <div class="col-12 col-xl-6">
                             <div class="fw-semibold mb-2">Dairelerim</div>
-                            <div class="hstack gap-2 flex-wrap">
+                            <div class="vstack gap-2">
                                 <?php foreach ($ownerApartmentIds as $did) { $d = $Daireler->DaireBilgisi($site_id, $did); $blk = $Bloklar->BlokAdi((int)($d->blok_id ?? 0)) ?? '-'; ?>
-                                    <a href="/sakin/daire?daire_id=<?php echo (int)$did; ?>" class="btn btn-sm btn-light<?php echo ($selectedApartmentId === (int)$did) ? ' active' : ''; ?>">
-                                        <?php echo htmlspecialchars($d->daire_kodu ?? ($blk . ' D' . ($d->daire_no ?? ''))); ?>
+                                    <a href="/sakin/daire?daire_id=<?php echo (int)$did; ?>" class="d-flex align-items-center justify-content-between border rounded px-3 py-2 text-decoration-none<?php echo ($selectedApartmentId === (int)$did) ? ' bg-soft-primary border-soft-primary' : ''; ?>">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary rounded">
+                                                <i class="feather-home"></i>
+                                            </div>
+                                            <div class="ms-3">
+                                                <div class="fw-semibold"><?php echo htmlspecialchars($d->daire_kodu ?? ($blk . ' D' . ($d->daire_no ?? ''))); ?></div>
+                                                <div class="fs-12 text-muted fw-normal"><?php echo 'Blok: ' . htmlspecialchars($blk ?? '-'); ?></div>
+                                            </div>
+                                        </div>
+                                        <div class="avatar-text avatar-md">
+                                            <i class="feather feather-arrow-right"></i>
+                                        </div>
                                     </a>
                                 <?php } ?>
                                 <?php if (empty($ownerApartmentIds)) { ?>
@@ -119,11 +156,21 @@ $emergencyList = $carOwnerId ? $AcilDurum->findWhere(['kisi_id' => $carOwnerId],
                         </div>
                         <div class="col-12 col-xl-6">
                             <div class="fw-semibold mb-2">Kiracılarım</div>
-                            <div class="hstack gap-2 flex-wrap">
+                            <div class="vstack gap-2">
                                 <?php foreach ($tenants as $t) { $aktif = empty($t->cikis_tarihi) || $t->cikis_tarihi === '0000-00-00'; ?>
-                                    <a href="/sakin/daire?kisi_id=<?php echo (int)$t->id; ?>&daire_id=<?php echo (int)($t->daire_id ?? 0); ?>" class="btn btn-sm btn-light<?php echo ($selectedTenantId === (int)$t->id) ? ' active' : ''; ?>">
-                                        <?php echo htmlspecialchars($t->adi_soyadi ?? '-'); ?>
-                                        <span class="badge ms-2 <?php echo $aktif ? 'bg-soft-success text-success' : 'bg-soft-secondary text-secondary'; ?>"><?php echo $aktif ? 'Aktif' : 'Eski'; ?></span>
+                                    <a href="/sakin/finans?kisi_id=<?php echo (int)$t->id; ?>" class="d-flex align-items-center justify-content-between border rounded px-3 py-2 text-decoration-none<?php echo ($selectedTenantId === (int)$t->id) ? ' bg-soft-success border-soft-success' : ''; ?>">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-text avatar-lg bg-soft-warning text-warning border-soft-warning rounded">
+                                                <i class="feather-user"></i>
+                                            </div>
+                                            <div class="ms-3">
+                                                <div class="fw-semibold"><?php echo htmlspecialchars($t->adi_soyadi ?? '-'); ?></div>
+                                                <div class="fs-12 text-muted fw-normal"><?php echo $aktif ? 'Aktif' : 'Eski'; ?></div>
+                                            </div>
+                                        </div>
+                                        <div class="avatar-text avatar-md">
+                                            <i class="feather feather-arrow-right"></i>
+                                        </div>
                                     </a>
                                 <?php } ?>
                                 <?php if (empty($tenants)) { ?>

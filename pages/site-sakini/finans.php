@@ -60,6 +60,7 @@ foreach ($hareketler as $it) {
         }
     }
 }
+$kisiInfo = $Kisiler->getKisiByDaireId((int)$activeKisiId);
 ?>
 
 <div class="page-header">
@@ -81,6 +82,25 @@ foreach ($hareketler as $it) {
 </div>
 
 <div class="main-content">
+    <div class="p-4 mb-4 d-xxl-flex d-xl-block d-md-flex align-items-center justify-content-between gap-4 border border-dashed border-gray-5 rounded-1">
+        <div>
+            <div class="fs-14 fw-bold text-dark mb-1">
+                <span class="me-2"><?php echo htmlspecialchars($kisiInfo->adi_soyadi ?? '-'); ?></span>
+                <?php if (!empty($kisiInfo->uyelik_tipi)) { ?>
+                <a href="javascript:void(0);" class="badge bg-primary text-white ms-2"><?php echo htmlspecialchars($kisiInfo->uyelik_tipi); ?></a>
+                <?php } ?>
+            </div>
+            <div class="fs-12 text-muted">Daire: <span class="text-dark fw-medium"><?php echo htmlspecialchars($kisiInfo->daire_kodu ?? '-'); ?></span></div>
+        </div>
+        <div class="my-3 my-xxl-0 my-md-3 my-md-0">
+            <div class="fs-20 text-dark"><span class="fw-bold"><?php echo Helper::formattedMoney($hesap_ozet->bakiye ?? 0); ?></span> / <em class="fs-11 fw-medium">Güncel Bakiye</em></div>
+            <div class="fs-12 text-muted mt-1">Son ödeme: <strong class="text-dark"><?php echo $sonOdeme ? Date::dmy($sonOdeme) : '-'; ?></strong></div>
+        </div>
+        <div class="hstack gap-3">
+            <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo (int)$activeKisiId; ?>&format=pdf" class="text-danger">Ekstre İndir (PDF)</a>
+            <a href="javascript:void(0);" class="btn btn-light-brand" disabled>Ödeme Yap</a>
+        </div>
+    </div>
     <div class="row g-4 mb-5">
         <div class="col-12 col-lg-4">
             <div class="card rounded-3">

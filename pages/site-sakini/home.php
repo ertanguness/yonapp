@@ -10,7 +10,20 @@ use Model\AnketOyModel;
 
 $UserPayment = new UserPaymentModel();
 $Rapor = new FinansalRaporModel();
+$selectedApartmentId = (int)($_SESSION['selected_apartment_id'] ?? 0);
 $user_id = $_SESSION['user']->kisi_id ?? ($_SESSION['user']->id ?? 0);
+if ($selectedApartmentId > 0) {
+    $Kisiler = new KisilerModel();
+    $aktifOturan = $Kisiler->AktifKisiByDaire((int)$selectedApartmentId);
+    if ($aktifOturan && (int)($aktifOturan->id ?? 0) > 0) {
+        $user_id = (int)$aktifOturan->id;
+    } else {
+        $aktifMalik = $Kisiler->AktifKisiByDaireId((int)$selectedApartmentId, 'Kat Maliki');
+        if ($aktifMalik && (int)($aktifMalik->id ?? 0) > 0) {
+            $user_id = (int)$aktifMalik->id;
+        }
+    }
+}
 $hesap_ozet = $Rapor->KisiFinansalDurum((int)$user_id);
 $bakiye_color = ($hesap_ozet->bakiye ?? 0) < 0 ? "danger" : "success";
 $BorcTahsilatDetay = $UserPayment->kisiBorcTahsilatDetay(user_id: $user_id);
@@ -27,7 +40,7 @@ usort($BorcTahsilatDetay, function($a,$b){
 });
 $sonHareketler = array_slice($BorcTahsilatDetay, 0, 5);
 
-$Kisiler = new KisilerModel();
+$Kisiler = isset($Kisiler) ? $Kisiler : new KisilerModel();
 $kisi = $Kisiler->getKisiByDaireId($user_id);
 $site_id = (int) ($_SESSION['site_id'] ?? 0);
 $sessionEmail = trim((string) ($_SESSION['user']->email ?? ''));

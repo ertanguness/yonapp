@@ -48,6 +48,23 @@ if (!in_array($page, $skipPagesForSiteCheck, true)) {
     Security::ensureSiteSelected('/site-ekle');
 }
 
+// Seçim bağlamını header'dan önce güncelle
+if (isset($_GET['clear_context'])) {
+    unset($_SESSION['selected_apartment_id'], $_SESSION['selected_person_id']);
+}
+if (isset($_GET['daire_id'])) {
+    $_SESSION['selected_apartment_id'] = (int)$_GET['daire_id'];
+    if (!isset($_GET['kisi_id'])) {
+        unset($_SESSION['selected_person_id']);
+    }
+}
+if (isset($_GET['kisi_id'])) {
+    $_SESSION['selected_person_id'] = (int)$_GET['kisi_id'];
+    if (isset($_GET['daire_id'])) {
+        $_SESSION['selected_apartment_id'] = (int)$_GET['daire_id'];
+    }
+}
+
 // PDF benzeri özel sayfalar: layout'u basmadan doğrudan çıktıyı üret
 if (preg_match('/-pdf$/', $page)) {
     call_user_func_array($resolvedRoute['callback'], $resolvedRoute['params']);

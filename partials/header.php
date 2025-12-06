@@ -8,6 +8,7 @@ $site_id = isset($_SESSION['site_id']) ? $_SESSION['site_id'] : 0;
 
 use App\Helper\Site;
 use App\Services\Gate;
+use Model\DairelerModel;
 
 
 
@@ -116,6 +117,31 @@ try {
                         </div>
 
                     <?php        }           ?>
+
+                    <?php
+                    $selectedApartmentId = (int)($_SESSION['selected_apartment_id'] ?? 0);
+                    $selectedApartmentCode = '';
+
+                    if ($selectedApartmentId && $site_id) {
+                        try {
+                            $Daireler = new DairelerModel();
+                            $apt = $Daireler->DaireBilgisi((int)$site_id, (int)$selectedApartmentId);
+                            $selectedApartmentCode = (string)($apt->daire_kodu ?? '');
+                        } catch (\Throwable $e) { }
+                    }
+                    ?>
+                    <div class="ms-3 d-flex align-items-center gap-2">
+                        <?php if (!empty($selectedApartmentCode)) { ?>
+                            <span class="badge bg-soft-primary text-primary border-soft-primary py-08">
+                                <i class="feather-home me-1"></i><?php echo htmlspecialchars($selectedApartmentCode, ENT_QUOTES, 'UTF-8'); ?>
+                            </span>
+                        <?php } ?>
+                        <?php if (!empty($selectedApartmentCode)) { ?>
+                            <a href="/sakin/daire?clear_context=1" class="badge bg-soft-secondary text-secondary border-soft-secondary py-08">
+                                <i class="feather-x me-1"></i>Temizle
+                            </a>
+                        <?php } ?>
+                    </div>
 
 
 
