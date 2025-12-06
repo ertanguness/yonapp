@@ -1,11 +1,12 @@
 <?php
 require_once __DIR__ . '/../configs/bootstrap.php';
 
+use Database\Db;
 use App\Services\FlashMessageService;
 use App\Helper\Security;
 use App\Services\SmsGonderService;
-use Database\Db;
 use Model\UserModel;
+use Model\UserRegistirationModel;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: /register-member.php');
@@ -29,18 +30,14 @@ if ($action === 'verify_phone') {
 
 try {
     $db = Db::getInstance();
-    $pdo = $db->connect();
-    $pdo->beginTransaction();
+    $db->beginTransaction();
+    $RegistrationModel = new UserRegistirationModel();
 
-    // Son doğrulama kaydını al
     if ($verifyId) {
-        $stmt = $pdo->prepare('SELECT * FROM user_phone_verifications WHERE id = ?');
-        $stmt->execute([$verifyId]);
+        $verify = $RegistrationModel->getVerificationById($verifyId);
     } else {
-        $stmt = $pdo->prepare('SELECT * FROM user_phone_verifications WHERE user_id = ? ORDER BY id DESC LIMIT 1');
-        $stmt->execute([$userId]);
+        $verify = $RegistrationModel->getLatestVerificationByUserId($userId);
     }
-    $verify = $stmt->fetch(\PDO::FETCH_OBJ);
 
     if (!$verify) {
         throw new \Exception('Doğrulama kaydı bulunamadı');
@@ -67,6 +64,7 @@ try {
             'full_name' => $verify->full_name,
             'email' => $pseudoEmail,
             'phone' => $verify->phone,
+            'kisi_id' => $verify->id,
             'status' => 1,
             'roles' => 3,
             'is_main_user' => 0,
@@ -75,20 +73,26 @@ try {
         $encUserId = $User->saveWithAttr($data);
         $createdUserId = Security::decrypt($encUserId);
         // doğrulama kaydını güncelle ve ilişkilendir
-        $pdo->prepare('UPDATE user_phone_verifications SET verified_at = NOW(), user_id = ? WHERE id = ?')->execute([$createdUserId, $verify->id]);
+        $RegistrationModel->verifyPhone($createdUserId, $verify);
 
         // kayıt yöntemi işaretle
-        $pdo->exec("CREATE TABLE IF NOT EXISTS user_registration_methods (user_id INT PRIMARY KEY, method ENUM('email','phone') NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci");
-        $stmtUp = $pdo->prepare('INSERT INTO user_registration_methods (user_id, method) VALUES (?, ?) ON DUPLICATE KEY UPDATE method = VALUES(method)');
-        $stmtUp->execute([$createdUserId, 'phone']);
+        $data = [
+            'id' => 0,
+            'user_id' => $createdUserId,
+            'method' => 'phone'
+        ];
+        $RegistrationModel->userRegistiration($data);
+        // $pdo->exec("CREATE TABLE IF NOT EXISTS user_registration_methods (user_id INT PRIMARY KEY, method ENUM('email','phone') NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci");
+        // $stmtUp = $pdo->prepare('INSERT INTO user_registration_methods (user_id, method) VALUES (?, ?) ON DUPLICATE KEY UPDATE method = VALUES(method)');
+        // $stmtUp->execute([$createdUserId, 'phone']);
         FlashMessageService::add('success', 'Başarılı!', 'Telefon doğrulandı. Artık giriş yapabilirsiniz.', 'onay2.png');
     }
 
-    $pdo->commit();
+    $db->commit();
     header('Location: /sign-in.php');
     exit;
 } catch (\Throwable $e) {
-    if (isset($pdo) && $pdo->inTransaction()) { $pdo->rollBack(); }
+    if (isset($db) && $db->inTransaction()) { $db->rollBack(); }
     FlashMessageService::add('error', 'Hata!', 'Doğrulama başarısız: ' . $e->getMessage());
     $back = $vidEnc ? ('vid=' . urlencode($vidEnc)) : ('uid=' . urlencode($uidEnc));
     header('Location: /register-member-phone-verify.php?' . $back);
@@ -108,25 +112,21 @@ if ($action === 'resend_code') {
             exit;
         }
 
-        $db = Db::getInstance();
-        $pdo = $db->connect();
+        $RegistrationModel = new UserRegistirationModel();
 
         if ($verifyId) {
-            $stmt = $pdo->prepare('SELECT phone, country_code FROM user_phone_verifications WHERE id = ?');
-            $stmt->execute([$verifyId]);
+            $row = $RegistrationModel->getVerificationById($verifyId);
         } else {
-            $stmt = $pdo->prepare('SELECT phone, country_code FROM user_phone_verifications WHERE user_id = ? ORDER BY id DESC LIMIT 1');
-            $stmt->execute([$userId]);
+            $row = $RegistrationModel->getLatestVerificationByUserId($userId);
         }
-        $row = $stmt->fetch(\PDO::FETCH_OBJ);
         if (!$row) { throw new \Exception('Doğrulama kaydı bulunamadı'); }
 
         $code = (string)random_int(100000, 999999);
         $expiresAt = date('Y-m-d H:i:s', time() + 10*60);
         if ($verifyId) {
-            $pdo->prepare('UPDATE user_phone_verifications SET code = ?, expires_at = ?, verified_at = NULL WHERE id = ?')->execute([$code, $expiresAt, $verifyId]);
+            $RegistrationModel->updateVerificationCodeById($verifyId, $code, $expiresAt);
         } else {
-            $pdo->prepare('UPDATE user_phone_verifications SET code = ?, expires_at = ?, verified_at = NULL WHERE user_id = ? ORDER BY id DESC LIMIT 1')->execute([$code, $expiresAt, $userId]);
+            $RegistrationModel->updateLatestVerificationCodeByUserId($userId, $code, $expiresAt);
         }
         SmsGonderService::gonder([$row->phone], 'YONAPP doğrulama kodunuz: ' . $code);
         $_SESSION[$key] = $count + 1;

@@ -97,7 +97,7 @@ if (!empty($email)) {
                 </div>
               </div>
               <div class="mt-3">
-                <button type="submit" class="btn btn-lg btn-primary w-100">E-posta ile Kayıt</button>
+                <button type="submit" class="btn btn-lg btn-primary w-100">Kayıt Ol</button>
               </div>
             </form>
           </div>
@@ -106,7 +106,7 @@ if (!empty($email)) {
               <input type="hidden" name="action" value="register_member_phone">
               <input type="hidden" name="kisi" value="<?= htmlspecialchars($kisiEnc) ?>">
               <div class="mb-3">
-                <input type="text" class="form-control" name="full_name" id="full_name_phone" placeholder="Adınız Soyadınız" value="<?= htmlspecialchars($fullName) ?>" required>
+                <input type="text" class="form-control" readonly name="full_name" id="full_name_phone" placeholder="Adınız Soyadınız" value="<?= htmlspecialchars($fullName) ?>" required>
               </div>
           <div class="row g-2 mb-3">
             <div class="col-4">
@@ -137,7 +137,7 @@ if (!empty($email)) {
                 </div>
               </div>
               <div class="mt-3">
-                <button type="submit" class="btn btn-lg btn-success w-100">Cep Telefonu ile Kayıt</button>
+                <button type="submit" class="btn btn-lg btn-success w-100">Kayıt Ol</button>
               </div>
             </form>
           </div>

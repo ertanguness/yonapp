@@ -1,5 +1,6 @@
 <?php
 ob_start();
+
 $page = "sign-in";
 
 
@@ -9,6 +10,9 @@ require_once __DIR__ . '/configs/bootstrap.php';
 use App\Controllers\AuthController;
 use Model\UserModel;
 use App\Services\FlashMessageService;
+
+unset($_SESSION['user']);
+
 
 $errors = [];
 // Sadece POST isteği varsa kontrolcüyü çalıştır
@@ -43,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitForm'])) {
 $oldEmail = $_SESSION['old_form_input']['email'] ?? '';
 // Okuduktan sonra session'ı temizle
 unset($_SESSION['old_form_input']);
+
 
 // HTML'i başlatalım
 include './partials/head.php';
@@ -100,22 +105,41 @@ include './partials/head.php';
 .swiper-pagination-bullet-active {
     background-color: #4f46e5;
 }
-.modal-content{border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 18px 36px rgba(17,24,39,.12)}
-/* .modal-header{background:#111827;color:#fff;border-bottom:none;border-top-left-radius:14px;border-top-right-radius:14px} */
-.modal-title{font-weight:700}
-.role-list{display:block}
-.role-item{display:flex;align-items:center;padding:12px;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:box-shadow .15s ease,border-color .15s ease,background-color .15s ease}
-.role-item:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);border-color:#d1d5db;background-color:#f9fafb}
-.role-item.selected{border-color:#4f46e5;background:#f5f7ff;box-shadow:0 8px 24px rgba(79,70,229,.16)}
-.role-item .role-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#eef2ff;color:#4f46e5;margin-right:12px;font-size:18px}
+.modal-backdrop{
+    background: radial-gradient(90% 140% at 50% 50%, rgba(17,24,39,.65) 0%, rgba(2,6,23,.85) 100%);
+    backdrop-filter: blur(6px);
+}
+.modal-content.role-select{
+    border-radius:24px;
+    border:1px solid rgba(255,255,255,.14);
+    background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.10));
+    backdrop-filter: blur(20px) saturate(140%);
+    box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+    color:#e5e7eb;
+}
+.role-modal-header{border-bottom:none;display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 24px 6px;background:transparent}
+.role-avatar{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24)}
+.role-avatar i{font-size:32px}
+.modal-title.role-title{font-weight:800;color:#fff}
+.role-subtitle{font-size:13px;color:#cbd5e1}
+.role-list{display:block;margin-top:6px}
+.role-item{display:flex;align-items:center;gap:12px;padding:14px 14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);border-radius:18px;margin-bottom:12px;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease, background-color .15s ease}
+.role-item:hover{transform:translateY(-1px);box-shadow:0 20px 40px rgba(0,0,0,.24);border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.14)}
+.role-item.selected{border-color:#3b82f6;background:rgba(59,130,246,.18);box-shadow:0 24px 48px rgba(59,130,246,.35)}
+.role-item .form-check-input{position:absolute;opacity:0;pointer-events:none}
+.role-item .role-icon{position:relative;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.18);color:#60a5fa;margin-right:2px;font-size:20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24)}
+.role-item.selected .role-icon::after{content:'\F26A'; /* bi-check-circle */ font-family:'bootstrap-icons'; position:absolute; right:-6px; bottom:-6px; width:22px; height:22px; border-radius:50%; background:#3b82f6; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; box-shadow:0 8px 20px rgba(59,130,246,.45)}
 .role-item .role-text{display:flex;flex-direction:column}
-.role-item .role-name{font-weight:600}
-.role-item .role-badge{font-size:12px;color:#64748b}
-.role-item .favorite-toggle{margin-left:auto;border:none;background:transparent;color:#9ca3af;padding:6px;border-radius:8px}
-.role-item .favorite-toggle:hover{color:#4f46e5;background:#eef2ff}
+.role-item .role-name{font-weight:700;color:#fff}
+.role-item .role-badge{font-size:12px;color:#e2e8f0}
+.role-item .role-go{margin-left:auto;border:none;background:rgba(255,255,255,.14);color:#fff;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;transition:background .15s ease, transform .15s ease}
+.role-item .role-go:hover{background:#3b82f6;transform:translateX(1px)}
+.role-item .favorite-toggle{margin-left:8px;border:none;background:transparent;color:#cbd5e1;padding:6px;border-radius:10px}
+.role-item .favorite-toggle:hover{color:#60a5fa;background:rgba(96,165,250,.12)}
 .role-item .favorite-toggle.active{color:#f59e0b}
 #roleSelectSubmit[disabled]{opacity:.6;cursor:not-allowed}
-.modal-footer{border-top:none}
+.modal-footer{border-top:none;padding:18px 24px}
+.modal-footer .btn{border-radius:14px;padding:10px 16px}
 </style>
 
 <body>
@@ -209,9 +233,11 @@ include './partials/head.php';
                     <?php if (isset($_SESSION['role_select_candidates']) && is_array($_SESSION['role_select_candidates']) && count($_SESSION['role_select_candidates']) > 1): ?>
                     <div class="modal fade" id="roleSelectModal" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Giriş Rolünü Seçin</h5>
+                            <div class="modal-content role-select">
+                                <div class="modal-header role-modal-header">
+                                    <div class="role-avatar"><i class="bi bi-person"></i></div>
+                                    <h5 class="modal-title role-title">Giriş Rolünü Seçin</h5>
+                                    <div class="role-subtitle">Giriş yapmak istediğiniz rolü seçin.</div>
                                 </div>
                                 <div class="modal-body">
                                     <form method="POST" action="sign-in.php<?php echo isset($_GET['returnUrl']) ? '?returnUrl=' . htmlspecialchars($_GET['returnUrl']) : ''; ?>" id="roleSelectForm">
@@ -227,6 +253,9 @@ include './partials/head.php';
                                                         <span class="role-name"><?php echo htmlspecialchars($c['full_name'] ?? ''); ?></span>
                                                         <span class="role-badge"><?php echo htmlspecialchars($c['role_name'] ?? ''); ?></span>
                                                     </span>
+                                                    <button type="button" class="role-go" aria-label="Seç">
+                                                        <i class="bi bi-arrow-right"></i>
+                                                    </button>
                                                     <button type="button" class="favorite-toggle" aria-label="Favori">
                                                         <i class="bi bi-star"></i>
                                                     </button>
@@ -316,6 +345,26 @@ include './partials/head.php';
                                             fetch('api/role-preferences.php', { method:'POST', body: fd })
                                                 .then(function(r){ return r.json(); })
                                                 .then(function(j){ if (j && j.ok){ favBtn.setAttribute('data-active', active ? '0' : '1'); applyFavoriteUI(); sortList(); } });
+                                        });
+                                    }
+                                    var goBtn = opt.querySelector('.role-go');
+                                    if (goBtn) {
+                                        goBtn.addEventListener('click', function(e){
+                                            e.stopPropagation();
+                                            options.forEach(function(o){ o.classList.remove('selected'); });
+                                            opt.classList.add('selected');
+                                            var radio = opt.querySelector('input[type="radio"]');
+                                            if (radio) { radio.checked = true; submitBtn.removeAttribute('disabled'); }
+                                            if (!submitBtn.hasAttribute('disabled')) {
+                                                var checked = form.querySelector('input[name="user_id"]:checked');
+                                                if (checked) {
+                                                    var fd = new FormData();
+                                                    fd.append('action','inc_usage');
+                                                    fd.append('user_id', checked.value);
+                                                    fd.append('token', '<?php echo isset($_SESSION['role_select_csrf']) ? htmlspecialchars($_SESSION['role_select_csrf']) : '' ?>');
+                                                    fetch('api/role-preferences.php', { method:'POST', body: fd }).finally(function(){ form.submit(); });
+                                                }
+                                            }
                                         });
                                     }
                                 });

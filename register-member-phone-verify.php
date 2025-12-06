@@ -51,7 +51,7 @@ $resendCount = $_SESSION[$resendKey] ?? 0;
             <input type="hidden" name="vid" value="<?= htmlspecialchars($vid) ?>">
             <div class="mb-2 text-muted text-center">Kodu şu numaraya gönderdik: <?= htmlspecialchars($maskedPhone) ?></div>
             <?php if ((isset($_ENV['APP_ENV']) && in_array(strtolower($_ENV['APP_ENV']), ['local','development'])) && !empty($devCode)): ?>
-            <div class="mb-2 text-center"><small class="text-danger">Geliştirici modu: Kod <?= htmlspecialchars($devCode) ?></small></div>
+            <div class="mb-2 text-center d-none"><small class="text-danger">Geliştirici modu: Kod <?= htmlspecialchars($devCode) ?></small></div>
             <?php endif; ?>
             <div class="mb-3 d-flex justify-content-center gap-2 otp-wrap">
               <input class="otp" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" required>

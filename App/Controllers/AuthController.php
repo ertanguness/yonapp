@@ -37,6 +37,10 @@ class AuthController
      */
     public function handleLoginRequest(): void
     {
+        /** Önce tüm session'u temizle */
+        session_unset();
+        session_regenerate_id(true);    
+
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
         $validationError = false;

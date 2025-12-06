@@ -13,7 +13,7 @@ $minAmount = $FinansalRaporModel->getKisiBorclarByMinAmount($amount);
 
 
 
-<div class="col-xxl-12 col-lg-6 card-wrapper" id="borc-listele">
+<div class="col-xxl-12 col-lg-6 card-wrapper" data-card="borc-listele">
     <div class="card stretch stretch-full">
 
         <div class="card-header">
@@ -25,7 +25,7 @@ $minAmount = $FinansalRaporModel->getKisiBorclarByMinAmount($amount);
             </div>
         </div>
 
-        <div class="card-body custom-card-action borc-listele">
+        <div class="card-body custom-card-action">
            <?php foreach ($minAmount as $borc): ?>
            <div class="d-md-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">

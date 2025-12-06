@@ -525,12 +525,10 @@ $script = ob_get_clean();
             }
         }
     } else {
-        $orderCol1 = $defaultOrder;
-        foreach ($available as $k) {
-            if (!in_array($k, $orderCol1, true)) {
-                $orderCol1[] = $k;
-            }
-        }
+        // Eğer veritabanında sıralama yoksa, defaultOrder'ın yarısı 1. kolona, yarısı 2. kolona yerleşsin
+        $half = (int) ceil(count($defaultOrder) / 2);
+        $orderCol1 = array_slice($defaultOrder, 0, $half);
+        $orderCol2 = array_slice($defaultOrder, $half);
     }
     ?>
     <div class="row mb-5">
