@@ -351,6 +351,10 @@ use App\Services\Gate;
     </div>
     <?php } else { ?>
     <div class="mobile-dropdown-menu" id="mobileDropdownMenuSakin">
+        <a href="/site-sakini/anket-listesi">
+            <i class="bi bi-clipboard"></i>
+            <span>Anketler</span>
+        </a>
         <a href="#">
             <i class="bi bi-people-fill"></i>
             <span>Ziyaretçi Kaydı</span>

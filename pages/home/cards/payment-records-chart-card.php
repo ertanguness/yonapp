@@ -1,6 +1,6 @@
 <div class="col-xxl-12 card-wrapper" data-card="payment-records-chart-card">
     <div class="card stretch stretch-full">
-        <div class="card-header">
+        <div class="card-header d-flex align-items-center justify-content-between">
             <h5 class="card-title">Yıllık Gelir-Gider Grafiği</h5>
             <div class="card-header-action">
                 <div class="card-header-btn">
@@ -18,6 +18,7 @@
                     </div>
                 </div>
             </div>
+            <span class="drag-handle" title="Taşı"><i class="bi bi-arrows-move"></i></span>
         </div>
         <div class="card-body custom-card-action">
             <div id="payment-records-chart"></div>

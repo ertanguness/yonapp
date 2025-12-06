@@ -1,5 +1,5 @@
 ;(function(){
-  const API_URL = '/pages/duyuru-talep/users/api/APIAnket.php';
+  const API_URL = '/pages/site-sakini/api/APIAnket.php';
 
   const Api = {
     async list(){

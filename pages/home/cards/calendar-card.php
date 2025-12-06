@@ -5,6 +5,9 @@
 <?php if(Gate::allows('takvimi_goruntule')): ?>
 <div class="card stretch stretch-full card-wrapper" data-card="calendar-card">
     <div class="apps-container apps-calendar">
+        <div class="p-2 text-end">
+            <span class="drag-handle" title="Taşı"><i class="bi bi-arrows-move"></i></span>
+        </div>
         <div class="nxl-content without-header nxl-full-content">
             <!-- [ Main Content ] start -->
             <div class="main-content d-flex" style="gap: 0;">

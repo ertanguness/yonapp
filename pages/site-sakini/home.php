@@ -4,6 +4,9 @@ use App\Helper\Date;
 use Model\UserPaymentModel;
 use Model\FinansalRaporModel;
 use Model\KisilerModel;
+use Model\AnketModel;
+use Model\AnketVoteModel;
+use Model\AnketOyModel;
 
 $UserPayment = new UserPaymentModel();
 $Rapor = new FinansalRaporModel();
@@ -30,6 +33,7 @@ $site_id = (int) ($_SESSION['site_id'] ?? 0);
 $sessionEmail = trim((string) ($_SESSION['user']->email ?? ''));
 $sessionPhone = trim((string) ($_SESSION['user']->phone ?? ''));
 $sessionName  = trim((string) ($_SESSION['user']->full_name ?? ''));
+$currentUserId = (int) ($_SESSION['user']->id ?? 0);
 $tumKisiler = $Kisiler->SiteTumKisileri($site_id);
 $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessionEmail, $sessionPhone, $sessionName){
     $e = trim((string) ($k->eposta ?? ''));
@@ -40,6 +44,74 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
     $phoneMatch = ($sessionPhone && $p && $sessionPhone === $p);
     return $nameMatch || $emailMatch || $phoneMatch;
 }));
+
+$Anket = new AnketModel();
+$latestActiveList = $Anket->findWhere(['status' => 'Aktif'], 'created_at DESC', null);
+$aktifAnket = null;
+if (!empty($latestActiveList)) {
+    foreach ($latestActiveList as $row) {
+        $endDateStr = trim((string)($row->end_date ?? ''));
+        $isActiveByDate = true;
+        if ($endDateStr !== '') {
+            try {
+                $endDate = new \DateTimeImmutable($endDateStr);
+                $today = new \DateTimeImmutable('today');
+                $isActiveByDate = $endDate >= $today;
+            } catch (\Throwable $e) { $isActiveByDate = true; }
+        }
+        if ($isActiveByDate) { $aktifAnket = $row; break; }
+    }
+}
+if (!$aktifAnket) {
+    $latestAny = $Anket->findWhere([], 'created_at DESC', 1);
+    $aktifAnket = $latestAny[0] ?? null;
+}
+$aktifAnketOptions = [];
+$aktifAnketPercentages = [];
+$kullaniciOy = null;
+$isPassiveByDate = false;
+$isActiveHeader = false;
+if ($aktifAnket) {
+    $aktifAnketOptions = json_decode($aktifAnket->options_json ?? '[]', true) ?: [];
+    $Vote = new AnketVoteModel();
+    $VoteLegacy = new AnketOyModel();
+    $normalize = function($s){ return mb_strtolower(trim((string)$s)); };
+    if ($currentUserId > 0) {
+        $kullaniciOy = $Vote->getUserVote((int)$aktifAnket->id, $currentUserId);
+    }
+    $countsNew = $Vote->getCountsByOption((int)$aktifAnket->id);
+    $legacy = $VoteLegacy->getResults((int)$aktifAnket->id);
+    $countMap = [];
+    $total = 0;
+    foreach ($countsNew as $c) {
+        $opt = $normalize($c['option_text']);
+        $countMap[$opt] = ($countMap[$opt] ?? 0) + (int)$c['c'];
+    }
+    foreach ($legacy['rows'] as $r) {
+        $opt = $normalize($r['option_text']);
+        $countMap[$opt] = ($countMap[$opt] ?? 0) + (int)$r['votes'];
+    }
+    foreach ($countMap as $k => $v) { $total += (int)$v; }
+    foreach ($aktifAnketOptions as $opt) {
+        $v = $countMap[$normalize($opt)] ?? 0;
+        $p = $total > 0 ? round($v * 100 / $total) : 0;
+        $aktifAnketPercentages[$opt] = $p;
+    }
+    $endDateStr = trim((string)($aktifAnket->end_date ?? ''));
+    if ($endDateStr !== '') {
+        try {
+            $endDate = new \DateTimeImmutable($endDateStr);
+            $today = new \DateTimeImmutable('today');
+            $isPassiveByDate = $endDate < $today;
+            $isActiveHeader = !$isPassiveByDate && (($aktifAnket->status ?? '') === 'Aktif');
+        } catch (\Throwable $e) {
+            $isPassiveByDate = false;
+            $isActiveHeader = (($aktifAnket->status ?? '') === 'Aktif');
+        }
+    } else {
+        $isActiveHeader = (($aktifAnket->status ?? '') === 'Aktif');
+    }
+}
 ?>
 
 <div class="main-content" style="margin-bottom: 50px;">
@@ -171,15 +243,35 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessio
         <div class="col-xxl-4 col-12 mt-0">
             <div class="card rounded-3">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Aktif Anket</h5>
+                    <h5 class="card-title mb-0"><?php echo ($isActiveHeader ? 'Aktif Anket' : 'Anket'); ?></h5>
+                    <a href="/sakin/anket-listesi" class="btn btn-light">Tümünü Gör</a>
+                    
+
+                    
                 </div>
                 <div class="card-body">
-                    <div class="d-flex flex-column gap-2">
-                        <div class="d-flex align-items-center justify-content-between"><span>Koşu Bandı</span><span class="badge bg-soft-primary text-primary">%45</span></div>
-                        <div class="d-flex align-items-center justify-content-between"><span>Dambıl Seti</span><span class="badge bg-soft-primary text-primary">%30</span></div>
-                        <div class="d-flex align-items-center justify-content-between"><span>Pilates Topu</span><span class="badge bg-soft-primary text-primary">%25</span></div>
-                    </div>
-                    <a href="/sakin/anketler" class="btn btn-primary mt-3 w-100">Oy Ver</a>
+                    <?php if ($aktifAnket && $kullaniciOy) { ?>
+                        <div class="d-flex flex-column gap-2">
+                            <?php foreach ($aktifAnketOptions as $opt) { ?>
+                            <div class="d-flex align-items-center justify-content-between"><span><?php echo htmlspecialchars($opt); ?></span><span class="badge bg-soft-primary text-primary">%<?php echo (int)($aktifAnketPercentages[$opt] ?? 0); ?></span></div>
+                            <?php } ?>
+                        </div>
+                        <a href="/sakin/anketler?id=<?php echo (int)($aktifAnket->id ?? 0); ?>" class="btn btn-light mt-3 w-100">Görüntüle</a>
+                    <?php } elseif ($aktifAnket) { ?>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="fw-semibold"><?php echo htmlspecialchars($aktifAnket->title ?? ''); ?></div>
+                            <div class="text-muted"><?php echo htmlspecialchars($aktifAnket->description ?? ''); ?></div>
+                            <div class="fs-12 text-muted">Başlangıç: <?php echo $aktifAnket->start_date ? \App\Helper\Date::dmy($aktifAnket->start_date) : '-'; ?></div>
+                            <div class="fs-12 text-muted">Bitiş: <?php echo $aktifAnket->end_date ? \App\Helper\Date::dmy($aktifAnket->end_date) : '-'; ?></div>
+                        </div>
+                        <?php if (!$isPassiveByDate) { ?>
+                        <a href="/sakin/anketler?id=<?php echo (int)($aktifAnket->id ?? 0); ?>" class="btn btn-primary mt-3 w-100">Oy Ver</a>
+                        <?php } else { ?>
+                        <a href="/sakin/anketler?id=<?php echo (int)($aktifAnket->id ?? 0); ?>" class="btn btn-light mt-3 w-100">Görüntüle</a>
+                        <?php } ?>
+                    <?php } else { ?>
+                        <div class="alert alert-info mb-0">Henüz anket yok.</div>
+                    <?php } ?>
                 </div>
             </div>
         </div>

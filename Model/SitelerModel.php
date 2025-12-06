@@ -29,7 +29,10 @@ class SitelerModel extends Model
         if ($isSubUser) {
             $user_id = $_SESSION['user']->owner_id;
         }
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE user_id = ? ORDER BY favori_mi DESC, click_count DESC, aktif_mi DESC, site_adi ASC");
+        $sql = $this->db->prepare("SELECT * FROM $this->table 
+                                            WHERE user_id = ? 
+                                            and silinme_tarihi IS NULL
+                                            ORDER BY favori_mi DESC, click_count DESC, aktif_mi DESC, site_adi ASC");
         $sql->execute([$user_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }

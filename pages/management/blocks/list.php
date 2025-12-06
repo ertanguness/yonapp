@@ -10,7 +10,7 @@ use App\Services\Gate;
 
 /** Yetkisiz Erişim Kontrolü */
 
-Gate::authorizeOrDie('blok_ekle_guncelle_sils');
+Gate::authorizeOrDie('blok_ekle_guncelle_sil');
 
 $Site = new SitelerModel();
 

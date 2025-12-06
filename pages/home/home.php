@@ -681,7 +681,7 @@ $script = ob_get_clean();
     let url ="pages/home/api.php";
     const col1 = document.getElementById('dashboard-col-1');
     const col2 = document.getElementById('dashboard-col-2');
-    const opts = { group: 'dashboard', animation: 150, handle: ".card",
+    const opts = { group: 'dashboard', animation: 150, handle: ".drag-handle",
         onEnd: function () {
             let items = [];
             let fd = new FormData();
@@ -703,6 +703,9 @@ $script = ob_get_clean();
 
 
 <style>
+    .drag-handle { cursor: grab; user-select: none; -webkit-user-drag: none; touch-action: none; display: inline-flex; align-items: center; gap: 6px; color: #6c757d; }
+    .drag-handle:hover { color: #495057; }
+    .drag-handle i { pointer-events: none; }
     /* Modal backdrop z-index otomatik yönetilecek */
     .stacked-backdrop {
         opacity: 0.3 !important;

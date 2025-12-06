@@ -6,6 +6,9 @@ use App\Helper\Helper;
 ?>
 
 <div class="row row-cards card-wrapper" data-card="row-cards">
+    <div class="d-flex justify-content-end px-2 pt-2">
+        <span class="drag-handle" title="Taşı"><i class="bi bi-arrows-move"></i></span>
+    </div>
     <!-- [Mini Card] start -->
     <div class="col-xxl-3 col-md-6">
         <div class="card stretch stretch-full">

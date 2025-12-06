@@ -59,7 +59,8 @@ if (
     $page == "anket-listesi" || $page == "duyuru-listesi" ||
     $page == "arac-yonetimi" ||
     $page == "kullanici-ekle" || 
-    $page == "sakin/duyurular" || $page == "toplu-sms"
+    $page == "sakin/duyurular" || $page == "toplu-sms" ||
+    $page == "sakin/anket-listesi" 
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  

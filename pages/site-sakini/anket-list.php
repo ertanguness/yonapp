@@ -18,7 +18,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body table-responsive">
-                            <table class="table table-hover table-bordered align-middle" id="userSurveyList">
+                            <table class="table table-hover table-bordered align-middle datatables" id="userSurveyList">
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th>
@@ -78,7 +78,7 @@
     </div>
 </div>
 
-<script src="/pages/duyuru-talep/users/js/anket.js"></script>
+<script src="/pages/site-sakini/js/anket.js"></script>
 <script>
 $(function(){ window.UserSurvey && window.UserSurvey.init && window.UserSurvey.init(); });
 </script>

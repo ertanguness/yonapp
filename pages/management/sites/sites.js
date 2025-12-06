@@ -64,7 +64,7 @@ $(document).on("click", ".delete-Siteler", function () {
   swal
     .fire({
       title: "Emin misiniz?",
-      html: `${sitesName} <br> sitesini silmek istediğinize emin misiniz?`,
+      html: `${sitesName} <br> sitesini tüm verileri ile birlikte silmek istediğinize emin misiniz?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Evet",
@@ -82,6 +82,7 @@ $(document).on("click", ".delete-Siteler", function () {
         })
           .then((response) => response.json())
           .then((data) => {
+            let title = data.status == "success" ? "Başarılı" : "Hata";
             if (data.status == "success") {
            // console.log("Çözümlenmiş ID:", data.decrypted_id);
            //window.location.reload(); // Sayfayı yeniden yükle
@@ -92,6 +93,13 @@ $(document).on("click", ".delete-Siteler", function () {
                 "Silindi",
                 `${sitesName} sitesi  tanımı başarıyla silindi.`,
                 "success"
+              );
+             }
+             else{
+              swal.fire(
+                "Hata",
+                data.message,
+                "error"
               );
              }
           });

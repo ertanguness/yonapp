@@ -140,7 +140,7 @@ $router->get('anket-api', fn() => require 'pages/duyuru-talep/admin/api/APIAnket
 
 
 //Kullanıcı anket listesi
-$router->get('sakin/anket-listesi', fn() => require 'pages/duyuru-talep/users/anket-list.php');
+$router->get('sakin/anket-listesi', fn() => require 'pages/site-sakini/anket-list.php');
 
 
 /* ----------------------------------------------------

@@ -23,7 +23,7 @@
 
 <div class="main-content">
     <div class="row">
-        <div class="container-xl">
+        <div class="container-xl mb-5">
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
@@ -60,13 +60,13 @@
                                 <!-- Bitiş Tarihi -->
                                 <div class="mb-4">
                                     <label for="pollEndDate" class="form-label fw-semibold">Bitiş Tarihi</label>
-                                    <input type="date" class="form-control" id="pollEndDate" name="end_date" required>
+                                    <input type="date" class="form-control flatpickr" id="pollEndDate" name="end_date" required>
                                 </div>
 
                                 <!-- Başlangıç Tarihi -->
                                 <div class="mb-4">
                                     <label for="pollStartDate" class="form-label fw-semibold">Başlangıç Tarihi</label>
-                                    <input type="date" class="form-control" id="pollStartDate" name="start_date">
+                                    <input type="date" class="form-control flatpickr" id="pollStartDate" name="start_date">
                                 </div>
 
                                 <!-- Durum -->

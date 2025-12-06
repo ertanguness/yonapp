@@ -4,8 +4,9 @@ use App\Services\Gate;
 
 <div class="col-xxl-12 quick-actions-card card-wrapper" data-card="quick-actions-card">
     <div class="card stretch stretch-full">
-        <div class="card-header">
-            <h5 class="card-title">Hızlı İşlemler</h5>
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title mb-0">Hızlı İşlemler</h5>
+            <span class="drag-handle" title="Taşı"><i class="bi bi-arrows-move"></i></span>
         </div>
         <div class="card-body">
 

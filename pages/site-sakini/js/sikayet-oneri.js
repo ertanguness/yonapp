@@ -1,4 +1,4 @@
-let url = "/pages/duyuru-talep/users/api/APISikayet_oneri.php";
+let url = "/pages/site-sakini/api/APISikayet_oneri.php";
 
 $(function () {
   $("#btnSubmit").on("click", function () {
