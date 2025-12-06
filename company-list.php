@@ -308,6 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .quick-actions .btn {
@@ -699,6 +700,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
 
             .stats-section,.info-section{
                 display: none;
+            }
+
+            /* Quick actions: prevent horizontal overflow on mobile */
+            .quick-actions {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .quick-actions .toggle-control,
+            .quick-actions .view-toggle,
+            .quick-actions .btn-group,
+            .quick-actions #addSiteBtn {
+                flex: 1 1 100%;
+            }
+            .quick-actions .btn {
+                padding: .375rem .5rem;
             }
         }
     </style>
