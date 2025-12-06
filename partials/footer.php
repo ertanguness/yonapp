@@ -359,6 +359,10 @@ use App\Services\Gate;
             <i class="bi bi-person-vcard"></i>
             <span>Talep Ekle</span>
         </a>
+        <a href="/logout">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Çıkış Yap</span>
+        </a>
     </div>
     <?php } ?>
 </div>

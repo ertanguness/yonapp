@@ -100,7 +100,7 @@ foreach ($hareketler as $it) {
                             <div class="text-muted">Toplam Tahsilat</div>
                             <h4 class="text-success mb-3"><?php echo Helper::formattedMoney($hesap_ozet->toplam_tahsilat ?? 0); ?></h4>
                             <div class="text-muted">Kalan</div>
-                            <h6 class="text-<?php echo (($hesap_ozet->bakiye ?? 0) > 0) ? 'danger' : 'success'; ?> mb-0"><?php echo Helper::formattedMoney($hesap_ozet->bakiye ?? 0); ?></h6>
+                            <h6 class="text-<?php echo (($hesap_ozet->bakiye ?? 0) < 0) ? 'danger' : 'success'; ?> mb-0"><?php echo Helper::formattedMoney($hesap_ozet->bakiye ?? 0); ?></h6>
                         </div>
                     </div>
                 </div>
@@ -161,7 +161,7 @@ foreach ($hareketler as $it) {
                                                 </div>
                                                 <div class="d-flex justify-content-between mb-3">
                                                     <span class="text-muted">Kalan</span>
-                                                    <span class="fw-semibold text-<?php echo (($k->kalan ?? 0) > 0) ? 'danger' : 'success'; ?>"><?php echo Helper::formattedMoney($k->kalan ?? 0); ?></span>
+                                                    <span class="fw-semibold text-<?php echo (($k->kalan ?? 0) < 0) ? 'danger' : 'success'; ?>"><?php echo Helper::formattedMoney($k->kalan ?? 0); ?></span>
                                                 </div>
                                                 <?php 
                                                     $borc = (float)($k->toplam_borc ?? 0); 

@@ -1,8 +1,6 @@
 <?php
 require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+
 
 use App\Helper\Security;
 use Model\AraclarModel;
@@ -44,6 +42,8 @@ if ($action === 'save_car') {
         'marka_model' => trim((string)($_POST['marka_model'] ?? '')),
         'renk' => trim((string)($_POST['renk'] ?? '')),
         'arac_tipi' => trim((string)($_POST['arac_tipi'] ?? '')),
+        'kayit_yapan' => $_SESSION['user']->id ?? 0
+
     ];
 
     $lastInsertId = $Araclar->saveWithAttr($data);
@@ -55,7 +55,7 @@ if ($action === 'save_car') {
         exit;
     }
 
-    echo json_encode(['status' => 'success', 'id' => $isUpdate ? $id : normalizeId($lastInsertId)]);
+    echo json_encode(['status' => 'success', 'message' => 'Araç kaydedildi', 'id' => $isUpdate ? $id : normalizeId($lastInsertId)]);
     exit;
 }
 

@@ -947,6 +947,7 @@ if ($_POST['action'] == 'get_daire_kisileri') {
 
 
 //Yapılan borçlandırmayı detay modalindan sil butonu ile silmek için
+/** Tahsilat yapıldıysa yaılan tahsilat kredi olarak eklenir */
 if ($_POST['action'] == 'borc_sil') { {
 
         $id = Security::decrypt($_POST['id']);

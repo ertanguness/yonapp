@@ -28,6 +28,7 @@ if ($action === "AracEkle") {
             "kisi_id" => $_POST["kisi_id"],
             "plaka" => $_POST["modalAracPlaka"],
             "marka_model" => $_POST["modalAracMarka"],
+            "kayit_yapan" => $_SESSION["user"]->id
         ];
 
         $lastInsertId = $Araclar->saveWithAttr($data);
