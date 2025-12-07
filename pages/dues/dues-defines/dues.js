@@ -83,10 +83,16 @@ $(function () {
     }
 
     //Tabloda aynı borçlandırma tipi var mı kontrol et
+    //Daire Kodu, Adı Soyadı, Blok Adı, Daire Tipi aynı ise uyarı ver
     var exists = false;
     table.rows().every(function (rowIdx, tableLoop, rowLoop) {
       var data = this.node();
-      if ($(data).data("target") === hedef_tipi_text) {
+      if ($(data).data("target") === hedef_tipi_text
+      && $(data).find("td[data-daire-ids]").data("daire-ids") === daireIds
+      && $(data).find("td[data-kisi-ids]").data("kisi-ids") === kisiIds
+      && $(data).find("td[data-blok-ids]").data("blok-ids") === blokIds
+      && $(data).find("td[data-daire-tipi-ids]").data("daire-tipi-ids") === daireTipiIds
+    ) {
         exists = true;
         Swal.fire({
           icon: "warning",

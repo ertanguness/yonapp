@@ -117,12 +117,14 @@ class FinansalRaporModel extends Model
      */
     public function getKisiBorclarByMinAmount($minAmount): array
     {
+        $site_id = $_SESSION['site_id'] ?? 0;
         $sql = $this->db->prepare("SELECT * 
                                           FROM $this->vw_hesap_ozet 
                                           WHERE bakiye <= ? 
+                                          and site_id = ?
                                           ORDER BY bakiye asc
                                           LIMIT 10");
-        $sql->execute([$minAmount]);
+        $sql->execute([$minAmount, $site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 

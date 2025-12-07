@@ -16,13 +16,21 @@ class DueDetailModel extends Model
         parent::__construct($this->table);
     }
 
-const BORCLANDIRMA_TIPI = [
-    "all" => "Tüm Sakinler",
-];
+    const BORCLANDIRMA_TIPI = [
+        "all" => "Tüm Sakinler",
+        "sakinler" => "Evde Oturanlar(Ev Sahibi / Kiracı)",
+        "evsahibi" => "Sahipler (Ev Sahibi)",
+        'isyerisakinleri'  => 'İşyeri Sakinleri(İşyeri Sahibi / Kiracı)',
+        'isyerisahipleri'  => 'Sahipler (İşyeri)',
+        'block'     => 'Blok Bazında',
+        'person'    => 'Kişi Borçlandırma',
+        'dairetipi' => 'Daire Tipine Göre',
+
+    ];
 
     /** Tanımlı Borçlandırmaları getirir 
      * 
-    */
+     */
     public function getTanimliBorclandirmalar()
     {
         $caseSql = "CASE dd.borclandirma_tipi ";
@@ -58,7 +66,7 @@ const BORCLANDIRMA_TIPI = [
                 and d.site_id = ?
                 GROUP BY dd.due_id";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$_SESSION['site_id'] ]);
+        $stmt->execute([$_SESSION['site_id']]);
         return $stmt->fetchAll(PDO::FETCH_OBJ) ?? [];
     }
 }

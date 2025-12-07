@@ -538,3 +538,29 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, tabl
     line-height: 14px;
 
 }
+
+@media (max-width: 576px) {
+  .nav-tabs-wrapper {
+    height: auto;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .nav-tabs-wrapper .nav-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+    padding: 0 8px;
+  }
+  .nav-tabs-wrapper .nav-tabs .nav-item {
+    flex: 0 0 auto;
+  }
+  .nav-tabs-custom-style .nav-link {
+    padding: 10px 12px;
+    white-space: nowrap;
+  }
+}
