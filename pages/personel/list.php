@@ -153,12 +153,8 @@ $personelList = $Personel->getPersonel();
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td colspan="8" class="text-center text-muted py-4">
-                                                    <i class="feather-inbox me-2"></i>Henüz personel kaydı yok
-                                                </td>
-                                            </tr>
+                                  
+                                           
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
