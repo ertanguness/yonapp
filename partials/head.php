@@ -36,7 +36,7 @@ $page = isset($page) ? $page : 'ana-sayfa';
 // Sadece anasayfa için gerekli olan css dosyaları
 
 
-    if(isset($page) && $page == "ana-sayfa"){
+    if(isset($page) && ($page == "ana-sayfa" || $page == "takvim" || $page == "notlar")){
     ?>
       <!--! BEGIN: Vendors CSS-->
     <link rel="stylesheet" type="text/css" href="/assets/vendors/css/daterangepicker.min.css" />

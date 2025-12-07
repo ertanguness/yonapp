@@ -272,6 +272,8 @@ $router->get('ana-sayfa', function () {
         require 'pages/home/home.php';
     }
 });
+$router->get('takvim', fn() => require 'pages/takvim/index.php');
+$router->get('notlar', fn() => require 'pages/takvim/index.php');
 $router->get('index', fn() => require 'index.php');
 
 $router->get('ssp-test', fn() => require 'pages/server_processing.php');
