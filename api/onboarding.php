@@ -7,7 +7,7 @@ use App\Modules\Onboarding\Policies\OnboardingPolicy;
 header('Content-Type: application/json; charset=utf-8');
 
 if (!OnboardingPolicy::canManage()) {
-    echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim']);
+    echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erisim']);
     exit;
 }
 
