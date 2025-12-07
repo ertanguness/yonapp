@@ -1,4 +1,12 @@
-                            <input type="hidden" class="form-control" id="user_id" name="user_id"
+                           <?php 
+                           use App\Helper\Site;
+
+                           $SiteHelper = new Site();
+                           
+                           ?>
+                           
+                           
+                           <input type="hidden" class="form-control" id="user_id" name="user_id"
                                 value="<?php echo $_GET["id"] ?? 0 ?>">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
@@ -62,13 +70,13 @@
                                         </div>
 
                                         <div class="col-lg-2">
-                                            <label for="job" class="fw-semibold">Mesleği: </label>
+                                            <label for="job" class="fw-semibold">Yetkili Olduğu Siteler: </label>
                                         </div>
                                         <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <div class="input-group-text"><i class="feather-pen-tool"></i></div>
-                                                <input type="text" class="form-control" name="job"
-                                                    value="<?php echo $user->job ?? '' ?>" id="job">
+                                                                               <div class="input-group flex-nowrap w-100">
+
+                                                <div class="input-group-text"><i class="bi bi-building"></i></i></div>
+                                                <?php echo $SiteHelper->SitelerimSelectMultiple("sitelerim", $user->sitelerim ?? '') ?>
                                             </div>
                                         </div>
                                     </div>

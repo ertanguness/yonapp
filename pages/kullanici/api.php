@@ -1,12 +1,20 @@
 <?php
-require_once dirname(__DIR__ ,levels: 2). '/configs/bootstrap.php';
+
+use JsonSchema\Exception\JsonDecodingException;
+
+require_once dirname(__DIR__, levels: 2) . '/configs/bootstrap.php';
 
 use App\Services\Gate;
 use App\Helper\Helper;
 use App\Helper\Security;
 use Model\UserModel;
 
+
+
+
 $User = new UserModel();
+
+$logger = \getlogger();
 
 // if(!Helper::isAdmin()) {
 //     echo json_encode([
@@ -22,7 +30,7 @@ if ($_POST["action"] == "kullanici-kaydet") {
     $roles = Security::decrypt($_POST['user_roles'] ?? '') ?? 0;
     $kisi_id = isset($_POST['kisi_id']) ? (int) (Security::decrypt($_POST['kisi_id']) ?? 0) : 0;
 
-   // Gate::can('kullanici-kaydet');
+    // Gate::can('kullanici-kaydet');
 
     $lastInsertedId = 0; // Son eklenen ID başlangıç değeri
     $rowData = ''; // Satır verisi başlangıç değeri
@@ -38,7 +46,7 @@ if ($_POST["action"] == "kullanici-kaydet") {
     }
 
     //** Roles boş ise kayıt yapma */
-    if(empty($_POST['user_roles'])) {
+    if (empty($_POST['user_roles'])) {
         echo json_encode([
             'status' => 'error',
             'message' => 'Kullanıcı Rolü boş olamaz.'
@@ -46,11 +54,40 @@ if ($_POST["action"] == "kullanici-kaydet") {
         exit;
     }
 
-      
-    
+    /** Sitelerden gelen veriyi diziye çevir */
+    $sitelerimArray = [];
+    $logger->info('Sitelerim degeri: ' . json_encode($_POST['sitelerim']));
+
+    if (isset($_POST['sitelerim']) && $_POST['sitelerim'] !== '') {
+
+        $rawSitelerim = $_POST['sitelerim'];
+
+        // 1) Her durumda dizi haline getir
+        if (!is_array($rawSitelerim)) {
+            // Tek string geldiyse (örn: "enc1,enc2") önce virgülden böl
+            $rawSitelerim = explode(',', (string)$rawSitelerim);
+        }
+
+        // 2) Her bir şifreli site ID'sini tek tek decrypt et
+        foreach ($rawSitelerim as $encSiteId) {
+            $encSiteId = trim((string)$encSiteId);
+            if ($encSiteId === '') {
+                continue;
+            }
+
+            $cozulen = Security::decrypt($encSiteId);
+
+            if ($cozulen !== null && $cozulen !== '') {
+                $sitelerimArray[] = $cozulen;
+            } else {
+                $logger->warning('Site ID çözümlenemedi: ' . $encSiteId);
+            }
+        }
+    }
+
     try {
         $data = [
-            'id' => $id , // Eğer id varsa deşifre et
+            'id' => $id, // Eğer id varsa deşifre et
             'full_name' => $_POST['adi_soyadi'],
             'email' => $_POST['email_adresi'],
             'phone' => $_POST['phone'],
@@ -58,6 +95,7 @@ if ($_POST["action"] == "kullanici-kaydet") {
             "status" => 1,
             "is_main_user" => 0,
             'roles' => $roles,
+            'siteler_ids' => json_encode($sitelerimArray),
             'kisi_id' => $kisi_id,
         ];
         if (!empty($_POST['password'])) {
@@ -71,7 +109,7 @@ if ($_POST["action"] == "kullanici-kaydet") {
         $message = "Kullanıcı başarıyla kaydedildi.";
     } catch (PDOException $ex) {
 
-        if( $ex->getCode() == 23000) { // 23000 hata kodu, genellikle benzersiz kısıtlama ihlali anlamına gelir
+        if ($ex->getCode() == 23000) { // 23000 hata kodu, genellikle benzersiz kısıtlama ihlali anlamına gelir
             $message = "Bu kullanıcı adı veya e-posta zaten kayıtlı.";
         } else {
             $message = $ex->getMessage();
@@ -90,7 +128,7 @@ if ($_POST["action"] == "kullanici-kaydet") {
 
 //Kullanıcı silme işlemi
 if ($_POST["action"] == "kullanici-sil") {
-    $id = $_POST['id'] ;
+    $id = $_POST['id'];
 
     try {
         $User->delete($id);

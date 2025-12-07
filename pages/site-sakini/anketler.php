@@ -4,7 +4,7 @@ use Model\AnketVoteModel;
 use Model\AnketOyModel;
 use App\Helper\Date;
 use App\Helper\Helper;
-$surveyId = (int)($_GET['id'] ?? 0);
+$surveyId = (int)(($id ?? ($_GET['id'] ?? 0)));
 $Anket = new AnketModel();
 $Vote = new AnketVoteModel();
 $VoteLegacy = new AnketOyModel();

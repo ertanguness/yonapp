@@ -45,4 +45,43 @@ class Site extends Db{
         $select .= '</select>';
         return $select;
     }
+
+
+    /** Giriş Yapan Kullanıcının sitelerini multiple select olarak döndürür */
+    public static function SitelerimSelectMultiple($name = 'companies', $ids = null, $disabled = null)
+    {
+        $Siteler = new SitelerModel();  // SitelerModel sınıfından bir örnek oluştur
+        $results = $Siteler->Sitelerim();
+        $select = '<select name="' . $name . '[]" class="form-select select2 w-100" id="' . $name . '" style="min-width:200px;width:100%" ' . $disabled . ' multiple>';
+        $idsArray = [];
+        if (is_array($ids)) {
+            $idsArray = $ids;
+        } elseif (is_string($ids)) {
+            $trimmed = trim($ids);
+            if ($trimmed !== '') {
+                if ($trimmed[0] === '[') {
+                    $decoded = json_decode($trimmed, true);
+                    if (is_array($decoded)) {
+                        $idsArray = $decoded;
+                    }
+                } elseif (strpos($trimmed, ',') !== false) {
+                    $idsArray = array_map('trim', explode(',', $trimmed));
+                } else {
+                    $idsArray = [$trimmed];
+                }
+            }
+        } elseif (is_int($ids)) {
+            $idsArray = [$ids];
+        }
+        $idsArray = array_values(array_filter(array_map(function($v){ return is_numeric($v) ? (int)$v : $v; }, $idsArray), function($v){ return $v !== '' && $v !== null; }));
+        foreach ($results as $row) {
+            $selected = in_array((int)$row->id, $idsArray, true) ? ' selected' : '';
+            $select .= '<option value="' . Security::encrypt($row->id) . '"' . $selected . '>' . $row->site_adi . '</option>';  // $row->title yerine $row->name kullanıldı
+        }
+        $select .= '</select>';
+        return $select;
+    }
+
+
+
 }

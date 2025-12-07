@@ -1,8 +1,10 @@
 <?php
+require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
 use Model\AnketModel;
 use Model\AnketVoteModel;
 use Model\AnketOyModel;
 use Model\AnketApprovalModel;
+use App\Helper\Security;
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -29,6 +31,7 @@ function computeVoteStats(int $surveyId, array $options): array {
 }
 
 try {
+    Security::checkLogin();
     if ($action === 'surveys_to_review') {
         $Anket = new AnketModel();
         $list = $Anket->findWhere([], 'created_at DESC', null);

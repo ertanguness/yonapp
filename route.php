@@ -286,6 +286,7 @@ $router->get('sakin/finans', fn() => require 'pages/site-sakini/finans.php');
 $router->get('sakin/daire', fn() => require 'pages/site-sakini/daire.php');
 $router->get('sakin/duyurular', fn() => require 'pages/site-sakini/duyurular.php');
 $router->get('sakin/anketler', fn() => require 'pages/site-sakini/anketler.php');
+$router->get('sakin/anketler/{id}', fn($id) => require 'pages/site-sakini/anketler.php');
 $router->get('sakin/belgeler', fn() => require 'pages/site-sakini/belgeler.php');
 $router->get('sakin/iletisim', fn() => require 'pages/site-sakini/iletisim.php');
 $router->get('sakin/profil', fn() => require 'pages/site-sakini/profil.php');
