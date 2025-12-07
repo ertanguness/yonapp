@@ -1,9 +1,11 @@
 <?php
 
+
 use Model\UserModel;
+use App\Services\Gate;
+use App\Helper\Helper;
 use App\Helper\Security;
 use App\Helper\UserHelper;
-use App\Services\Gate;
 
 
 $User = new UserModel();
@@ -22,6 +24,9 @@ if ($id == null && isset($_GET['id'])) {
     exit;
 }
 $user = $User->find($id);
+$site_ids = $user ? json_decode($user->siteler_ids ?? '[]', true) : [];
+
+// Helper::dd($site_ids);
 //$Auths->checkFirm();
 ?>
 
