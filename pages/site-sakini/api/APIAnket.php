@@ -36,10 +36,26 @@ try {
         $rows = [];
         foreach ($list as $r) {
             $counts = $Approval->getCounts((int)$r->id);
+            $startYmd = '';
+            $endYmd = '';
+            if (!empty($r->start_date)) {
+                $startYmd = \App\Helper\Date::Ymd($r->start_date);
+                if ($startYmd === '') { $startYmd = \DateFormat::Ymd($r->start_date); }
+            }
+            if (!empty($r->end_date)) {
+                $endYmd = \App\Helper\Date::Ymd($r->end_date);
+                if ($endYmd === '') { $endYmd = \DateFormat::Ymd($r->end_date); }
+            }
+            $todayYmd = date('Y-m-d');
+            $isBeforeStart = ($startYmd !== '' && $todayYmd < $startYmd);
+            $isAfterEnd = ($endYmd !== '' && $todayYmd > $endYmd);
+            $statusEffective = $isBeforeStart ? 'Beklemede' : ($isAfterEnd ? 'Pasif' : 'Aktif');
             $rows[] = [
                 'id' => (int)$r->id,
                 'title' => (string)($r->title ?? ''),
                 'status' => (string)($r->status ?? ''),
+                'status_effective' => $statusEffective,
+                'start_date' => (string)($r->start_date ?? ''),
                 'end_date' => (string)($r->end_date ?? ''),
                 'approved' => (int)($counts['approved'] ?? 0),
                 'rejected' => (int)($counts['rejected'] ?? 0),
@@ -92,4 +108,3 @@ try {
 } catch (\Throwable $e) {
     echo json_encode(['status'=>'error','message'=>'Hata: '.$e->getMessage()]);
 }
-

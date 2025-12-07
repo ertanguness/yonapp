@@ -203,6 +203,7 @@ if ($page == 'site-sakinleri' || $page == 'site-sakini-ekle' || $page == 'site-s
     echo '<script src="/pages/management/peoples/js/kisiBilgileri.js?v=' . filemtime('pages/management/peoples/js/kisiBilgileri.js') . '"></script>';
     echo '<script src="/pages/management/peoples/js/aracBilgileri.js"></script>';
     echo '<script src="/pages/management/peoples/js/acilDurumKisiBilgileri.js"></script>';
+    echo '<script src="/pages/management/peoples/js/kisiNotlar.js"></script>';
 }
 
 if ($page == 'arac-yonetimi' || $page == 'arac-ekle' || $page == 'arac-duzenle') {

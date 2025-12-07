@@ -37,6 +37,46 @@ $(function () {
           });
       });
   });
+// $(function() {
+//                 const url = "/pages/site-sakini/api/APISikayet_oneri.php";
+//                 $('#btnSubmit').on('click', function() {
+//                     const title = $('#inpTitle').val().trim();
+//                     const content = $('#inpContent').val().trim();
+//                     if (!title || !content) {
+//                         swal.fire({
+//                             title: 'Hata',
+//                             text: 'Başlık ve içerik zorunludur',
+//                             icon: 'error'
+//                         });
+//                         return;
+//                     }
+//                     const fd = new FormData(document.getElementById('formSikayetOneri'));
+//                     fd.append('action', 'CreateOrUpdate');
+//                     fetch(url, {
+//                             method: 'POST',
+//                             body: fd
+//                         })
+//                         .then(r => r.json())
+//                         .then(data => {
+//                             const titleMsg = data.status === 'success' ? 'Başarılı' : 'Hata';
+//                             swal.fire({
+//                                     title: titleMsg,
+//                                     text: data.message,
+//                                     icon: data.status,
+//                                     confirmButtonText: 'Tamam'
+//                                 })
+//                                 .then(() => {
+//                                     if (data.status === 'success') {
+//                                         window.location.href = '/sakin/taleplerim';
+//                                     }
+//                                 });
+//                         });
+//                 });
+//             });
+
+
+
+
 
   $(document).on("click", ".sikayet-oneri-sil", function () {
       const id = $(this).data("id");

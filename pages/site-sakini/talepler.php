@@ -96,4 +96,4 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
     </div>
 </div>
 
-<script src="/pages/duyuru-talep/users/js/sikayet-oneri.js"></script>
+<script src="/pages/site-sakini/js/sikayet-oneri.js"></script>

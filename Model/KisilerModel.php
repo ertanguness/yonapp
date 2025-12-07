@@ -424,6 +424,32 @@ class KisilerModel extends Model
                 }
                 break;
 
+            case 'not':
+                $sql = 
+               "SELECT 
+                    kisiler.*, 
+                    kn.id AS not_id,
+                    kn.icerik,
+                    u.full_name AS kayit_yapan
+                FROM kisiler
+                INNER JOIN bloklar ON kisiler.blok_id = bloklar.id
+                INNER JOIN kisi_notlar kn ON kisiler.id = kn.kisi_id
+                LEFT JOIN users u ON kn.kayit_yapan = u.id
+                WHERE bloklar.site_id = :site_id
+            ";
+
+                if ($kisi_id) {
+                    $sql .= " AND kisiler.id = :kisi_id";
+                }
+
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':site_id', $site_id, PDO::PARAM_INT);
+
+                if ($kisi_id) {
+                    $stmt->bindParam(':kisi_id', $kisi_id, PDO::PARAM_INT);
+                }
+                break;
+
             default:
                 $stmt = $this->db->prepare(
         "SELECT  kisiler.*,

@@ -62,19 +62,33 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
         <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link"
                 data-bs-toggle="tab" data-bs-target="#peopleInfoTab"
-                role="tab">Genel Bilgiler</a>
+                role="tab">
+                 <i class="feather feather-home me-2"></i>
+                Genel Bilgiler</a>
         </li>
         <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
-                data-bs-target="#girisbilgileri" role="tab">Program Giriş Bilgileri</a>
+                data-bs-target="#girisbilgileri" role="tab">
+                 <i class="feather feather-smartphone me-2"></i>
+                Program Giriş Bilgileri</a>
         </li>
         <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
-                data-bs-target="#peopleCarInfoTab" role="tab">Araç Bilgileri</a>
+                data-bs-target="#peopleCarInfoTab" role="tab">
+                 <i class="feather feather-truck me-2"></i>
+                Araç Bilgileri</a>
         </li>
         <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
-                data-bs-target="#peoplesEmergencyInfoTab" role="tab">Acil Durum Bilgileri</a>
+                data-bs-target="#peoplesEmergencyInfoTab" role="tab">
+                 <i class="feather feather-activity me-2"></i>
+                Acil Durum Bilgileri</a>
+        </li>
+        <li class="nav-item border-top" role="presentation">
+            <a href="javascript:void(0);" class="nav-link " data-bs-toggle="tab"
+                data-bs-target="#peoplesNotesTab" role="tab">
+                <i class="feather feather-file-text me-2"></i>
+                Notlar</a>
         </li>
     </ul>
 </div>
@@ -122,6 +136,11 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                                                 require_once 'pages/management/peoples/content/PeoplesEmergencyInfoTab.php';
                                                 ?>
                                             </div>
+                                            <div class="tab-pane fade " id="peoplesNotesTab" role="tabpanel">
+                                                <?php
+                                                require_once 'pages/management/peoples/content/PeoplesNotesTab.php';
+                                                ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -152,6 +171,9 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                     saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
                 } else if (targetId === '#peoplesEmergencyInfoTab') {
                     saveButton.id = 'ekle_acildurum';
+                    saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
+                } else if (targetId === '#peoplesNotesTab') {
+                    saveButton.id = 'ekle_not';
                     saveButton.innerHTML = '<i class="feather-plus me-2"></i>Ekle';
                 }
             });
@@ -184,6 +206,17 @@ $site = $Siteler->SiteBilgileri($_SESSION['site_id'] ?? null);
                         acilDurumModal.show();
                     })
                     .catch(error => console.error('Acil Durum Modal yüklenirken hata oluştu:', error));
+            }
+            if (e.target && e.target.id === 'ekle_not') {
+                const kisiId = document.getElementById('kisi_id').value;
+                fetch(`/pages/management/peoples/content/KisiNotModal.php?kisi_id=${kisiId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalContainer').innerHTML = html;
+                        let kisiNotModal = new bootstrap.Modal(document.getElementById('kisiNotModal'));
+                        kisiNotModal.show();
+                    })
+                    .catch(error => console.error('Kişi Not Modal yüklenirken hata oluştu:', error));
             }
         });
     });

@@ -50,8 +50,23 @@ if ($survey) {
             foreach ($chartCounts as $c) { $chartPercentages[] = 0; }
         }
         if ($userId > 0) { $userVoted = $Vote->getUserVote((int)$survey->id, $userId) !== null; }
-        if (!empty($survey->end_date)) {
-            $isPassiveByDate = strtotime($survey->end_date) < time();
+        if (!empty($survey->start_date) || !empty($survey->end_date)) {
+            $startYmd = '';
+            if (!empty($survey->start_date)) {
+                $startYmd = Date::Ymd($survey->start_date);
+                if ($startYmd === '') { $startYmd = \DateFormat::Ymd($survey->start_date); }
+                if ($startYmd === '') { $ts = strtotime($survey->start_date); $startYmd = $ts ? date('Y-m-d', $ts) : ''; }
+            }
+            $endYmd = '';
+            if (!empty($survey->end_date)) {
+                $endYmd = Date::Ymd($survey->end_date);
+                if ($endYmd === '') { $endYmd = \DateFormat::Ymd($survey->end_date); }
+                if ($endYmd === '') { $ts = strtotime($survey->end_date); $endYmd = $ts ? date('Y-m-d', $ts) : ''; }
+            }
+            $todayYmd = date('Y-m-d');
+            $isBeforeStart = ($startYmd !== '' && $todayYmd < $startYmd);
+            $isAfterEnd = ($endYmd !== '' && $todayYmd > $endYmd);
+            $isPassiveByDate = $isBeforeStart || $isAfterEnd;
         }
     }
 }
@@ -83,7 +98,7 @@ if ($survey) {
                             <div class="fs-12 text-muted mb-1"><?php echo htmlspecialchars($survey->description ?? ''); ?></div>
                             <div class="fs-12 text-muted mb-3">Başlangıç: <?php echo $survey->start_date ? Date::dmy($survey->start_date) : '-'; ?></div>
                             <div class="fs-12 text-muted mb-3">Son tarih: <?php echo $survey->end_date ? Date::dmy($survey->end_date) : '-'; ?></div>
-                            <?php if (!$userVoted && !empty($options)) { ?>
+                            <?php if (!$userVoted && !empty($options) && !$isPassiveByDate) { ?>
                             <div class="d-flex flex-column gap-2" id="voteOptions">
                                 <?php foreach ($options as $opt) { ?>
                                 <label class="d-flex align-items-center gap-2">
@@ -97,7 +112,7 @@ if ($survey) {
                             </div>
                             <?php } ?>
                         </div>
-                        <?php if ($userVoted && !empty($options)) { ?>
+                        <?php if ((!empty($options)) && ($userVoted || $isPassiveByDate)) { ?>
                             <hr class="border-dashed">
                             <div>
                                 <div class="fw-semibold mb-2">Sonuç</div>
@@ -116,7 +131,7 @@ if ($survey) {
 <script>
 document.addEventListener('DOMContentLoaded', function(){
     var surveyId = <?php echo (int)($survey->id ?? 0); ?>;
-    var hasChart = <?php echo ($userVoted && !empty($options)) ? 'true' : 'false'; ?>;
+    var hasChart = <?php echo (($userVoted || $isPassiveByDate) && !empty($options)) ? 'true' : 'false'; ?>;
     var categories = <?php echo json_encode($chartCategories ?? [], JSON_UNESCAPED_UNICODE); ?>;
     var data = <?php echo json_encode($chartPercentages ?? [], JSON_UNESCAPED_UNICODE); ?>;
     function render(){

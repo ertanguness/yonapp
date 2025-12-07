@@ -67,46 +67,7 @@ $talep = $Model->find($id);
             </div>
         </div>
 
-        <script>
-            $(function() {
-                const url = "/pages/duyuru-talep/users/api/APISikayet_oneri.php";
-                $('#btnSubmit').on('click', function() {
-                    const title = $('#inpTitle').val().trim();
-                    const content = $('#inpContent').val().trim();
-                    if (!title || !content) {
-                        swal.fire({
-                            title: 'Hata',
-                            text: 'Başlık ve içerik zorunludur',
-                            icon: 'error'
-                        });
-                        return;
-                    }
-                    const fd = new FormData(document.getElementById('formSikayetOneri'));
-                    fd.append('action', 'CreateOrUpdate');
-                    fetch(url, {
-                            method: 'POST',
-                            body: fd
-                        })
-                        .then(r => r.json())
-                        .then(data => {
-                            const titleMsg = data.status === 'success' ? 'Başarılı' : 'Hata';
-                            swal.fire({
-                                    title: titleMsg,
-                                    text: data.message,
-                                    icon: data.status,
-                                    confirmButtonText: 'Tamam'
-                                })
-                                .then(() => {
-                                    if (data.status === 'success') {
-                                        window.location.href = '/sakin/taleplerim';
-                                    }
-                                });
-                        });
-                });
-            });
-        </script>
-
-        <div class="col-12 col-xl-6">
+          <div class="col-12 col-xl-6">
             <div class="card rounded-3">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Talep Durumları</h5>
@@ -158,3 +119,5 @@ $talep = $Model->find($id);
         </div>
     </div>
 </div>
+
+<script src="/pages/site-sakini/js/sikayet-oneri.js"></script>

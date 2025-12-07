@@ -139,9 +139,6 @@ $router->get('anket-sonuc/{id}', function($id){ $GLOBALS['id'] = $id; require 'p
 $router->get('anket-api', fn() => require 'pages/duyuru-talep/admin/api/APIAnket.php');
 
 
-//Kullanıcı anket listesi
-$router->get('sakin/anket-listesi', fn() => require 'pages/site-sakini/anket-list.php');
-
 
 /* ----------------------------------------------------
 |  BAKIM – ARIZA – PERİYODİK BAKIM
@@ -292,6 +289,9 @@ $router->get('sakin/anketler', fn() => require 'pages/site-sakini/anketler.php')
 $router->get('sakin/belgeler', fn() => require 'pages/site-sakini/belgeler.php');
 $router->get('sakin/iletisim', fn() => require 'pages/site-sakini/iletisim.php');
 $router->get('sakin/profil', fn() => require 'pages/site-sakini/profil.php');
+
+//Kullanıcı anket listesi
+$router->get('sakin/anket-listesi', fn() => require 'pages/site-sakini/anket-list.php');
 
 // Kullanıcı (Sakin) tarafı
 $router->get('sakin/taleplerim', fn() => require 'pages/site-sakini/talepler.php');

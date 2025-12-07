@@ -89,11 +89,12 @@
       const rows = out.data || [];
       const $tb = $('#userSurveyList tbody'); $tb.empty();
       rows.forEach((r, i)=>{
-        const statusBadge = r.status==='Onay Bekliyor'?'warning':(r.status==='Aktif'||r.status==='Yayında'?'success':'secondary');
+        const eff = r.status_effective || r.status || '';
+        const statusBadge = eff==='Aktif'?'success':(eff==='Beklemede'?'warning':'secondary');
         const tr = `<tr>
           <td>${i+1}</td>
           <td>${r.title}</td>
-          <td><span class="badge bg-${statusBadge}">${r.status}</span></td>
+          <td><span class="badge bg-${statusBadge}">${eff}</span></td>
           <td>${r.end_date||''}</td>
           <td>${r.approved}</td>
           <td>${r.rejected}</td>
