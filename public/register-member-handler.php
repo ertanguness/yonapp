@@ -129,7 +129,7 @@ try {
 
         // Ön-kayıt: kullanıcıyı oluşturma, doğrulama sonrası users içine eklenecek
         // Pseudo email role bilgisi ile benzersizleştirilir
-        $pseudoEmail = 'phone_' . ($normalizedCode . $normalizedPhone) . '_r' . $roleId . '@yonapp.local';
+        $pseudoEmail = 'phone_' . ($normalizedCode . $normalizedPhone) . '@yonapp.local';
         $code = (string)random_int(100000, 999999);
         $expiresAt = date('Y-m-d H:i:s', time() + 10 * 60);
 

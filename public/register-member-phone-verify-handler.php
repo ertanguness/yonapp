@@ -56,7 +56,7 @@ try {
         $roleId = 3;
         $existByPhone = $User->findWhere(['phone' => $verify->phone, 'roles' => $roleId]);
         if (!empty($existByPhone)) { throw new \Exception('Bu telefon bu rol için zaten kayıtlı.'); }
-        $pseudoEmail = $verify->pseudo_email ?: ('phone_' . $verify->country_code . preg_replace('/\D+/','',$verify->phone) . '_r' . $roleId . '@yonapp.local');
+        $pseudoEmail = $verify->pseudo_email ?: ('phone_' . $verify->country_code . preg_replace('/\D+/','',$verify->phone) . '@yonapp.local');
         $existByEmail = $User->findWhere(['email' => $pseudoEmail, 'roles' => $roleId]);
         if (!empty($existByEmail)) { throw new \Exception('Email bu rol için zaten kayıtlı.'); }
 
