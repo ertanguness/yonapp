@@ -52,19 +52,20 @@ try {
     } else {
         // Kullanıcıyı oluştur ve doğrula (OTP sonrası kayıt tamamlanır)
         $User = new UserModel();
-        // benzersizlik kontrolü
-        $existByPhone = $User->findWhere(['phone' => $verify->phone]);
-        if (!empty($existByPhone)) { throw new \Exception('Bu telefon zaten kayıtlı.'); }
-        $pseudoEmail = $verify->pseudo_email ?: ('phone_' . $verify->country_code . preg_replace('/\D+/','',$verify->phone) . '@yonapp.local');
-        $existByEmail = $User->isEmailExists($pseudoEmail);
-        if ($existByEmail) { throw new \Exception('Email zaten kayıtlı.'); }
+        // benzersizlik kontrolü (sadece aynı role için kontrol edilir)
+        $roleId = 3;
+        $existByPhone = $User->findWhere(['phone' => $verify->phone, 'roles' => $roleId]);
+        if (!empty($existByPhone)) { throw new \Exception('Bu telefon bu rol için zaten kayıtlı.'); }
+        $pseudoEmail = $verify->pseudo_email ?: ('phone_' . $verify->country_code . preg_replace('/\D+/','',$verify->phone) . '_r' . $roleId . '@yonapp.local');
+        $existByEmail = $User->findWhere(['email' => $pseudoEmail, 'roles' => $roleId]);
+        if (!empty($existByEmail)) { throw new \Exception('Email bu rol için zaten kayıtlı.'); }
 
         $data = [
             'id' => 0,
             'full_name' => $verify->full_name,
             'email' => $pseudoEmail,
             'phone' => $verify->phone,
-            'kisi_id' => $verify->id,
+            'kisi_id' => $verify->kisi_id,
             'status' => 1,
             'roles' => 3,
             'is_main_user' => 0,

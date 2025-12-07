@@ -29,6 +29,20 @@ $selectedId = !$selectedAll ? (int)($selectedParam ?: 0) : 0;
 $defaultUserId = (int)($_SESSION['user']->kisi_id ?? ($_SESSION['user']->id ?? 0));
 $activeKisiId = $selectedId ?: $defaultUserId;
 
+// Seçili daire bağlamı varsa ve kisi_id parametresi yoksa, dairenin aktif oturanını; yoksa aktif maliki kullan
+$selectedApartmentIdCtx = (int)($_SESSION['selected_apartment_id'] ?? 0);
+if ($selectedApartmentIdCtx > 0 && $selectedId === 0) {
+    $aktifOturan = $Kisiler->AktifKisiByDaire((int)$selectedApartmentIdCtx);
+    if ($aktifOturan && (int)($aktifOturan->id ?? 0) > 0) {
+        $activeKisiId = (int)$aktifOturan->id;
+    } else {
+        $aktifMalik = $Kisiler->AktifKisiByDaireId((int)$selectedApartmentIdCtx, 'Kat Maliki');
+        if ($aktifMalik && (int)($aktifMalik->id ?? 0) > 0) {
+            $activeKisiId = (int)$aktifMalik->id;
+        }
+    }
+}
+
 if ($selectedAll && !empty($kisiAdaylari)) {
     $hesap_ozet = (object)[
         'toplam_borc' => 0,

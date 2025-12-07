@@ -102,6 +102,12 @@ try {
     } else { // phone: kullanıcıyı OTP doğrulanınca oluştur
         $countryCode = trim($_POST['country_code'] ?? '');
         $phoneRaw    = trim($_POST['phone'] ?? '');
+
+        /**Başında 0'ı kaldır */
+        $phoneRaw = ltrim($phoneRaw, '0');
+
+
+
         if ($countryCode === '' || $phoneRaw === '') {
             FlashMessageService::add('error', 'Hata!', 'Ülke kodu ve telefon zorunludur.');
             header('Location: /register-member.php');
@@ -112,8 +118,9 @@ try {
         $normalizedCode  = preg_replace('/\D+/', '', $countryCode);
         $fullPhone       = '+' . $normalizedCode . $normalizedPhone;
 
-        // Telefon zaten kullanıcıda mevcutsa uyarı
-        $existingByPhone = $User->findWhere(['phone' => $fullPhone]);
+        // Telefon zaten aynı role sahip kullanıcıda mevcutsa uyarı
+        $roleId = 3;
+        $existingByPhone = $User->findWhere(['phone' => $fullPhone, 'roles' => $roleId]);
         if (!empty($existingByPhone)) {
             FlashMessageService::add('error', 'Hata!', 'Bu telefon numarası ile daha önce kayıt olunmuş.');
             header('Location: /sign-in.php');
@@ -121,14 +128,15 @@ try {
         }
 
         // Ön-kayıt: kullanıcıyı oluşturma, doğrulama sonrası users içine eklenecek
-        $pseudoEmail = 'phone_' . ($normalizedCode . $normalizedPhone) . '@yonapp.local';
+        // Pseudo email role bilgisi ile benzersizleştirilir
+        $pseudoEmail = 'phone_' . ($normalizedCode . $normalizedPhone) . '_r' . $roleId . '@yonapp.local';
         $code = (string)random_int(100000, 999999);
         $expiresAt = date('Y-m-d H:i:s', time() + 10 * 60);
 
         // tablo kolonları önceden güvene alındı
 
-        $stmt = $pdo->prepare('INSERT INTO user_phone_verifications (user_id, country_code, phone, code, expires_at, full_name, password_hash, pseudo_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-        $stmt->execute([0, $normalizedCode, $fullPhone, $code, $expiresAt, Security::escape($fullName), password_hash($pass, PASSWORD_DEFAULT), $pseudoEmail]);
+        $stmt = $pdo->prepare('INSERT INTO user_phone_verifications (user_id,kisi_id, country_code, phone, code, expires_at, full_name, password_hash, pseudo_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([0, (int)Security::decrypt($kisiEnc), $normalizedCode, $fullPhone, $code, $expiresAt,$fullName, password_hash($pass, PASSWORD_DEFAULT), $pseudoEmail]);
 
         $verifyId = $pdo->lastInsertId();
 

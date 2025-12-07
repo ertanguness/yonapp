@@ -19,6 +19,7 @@ if (!empty($kisiEnc)) {
       $kisi = $Kisiler->KisiBilgileri($kisiId);
       if ($kisi && !empty($kisi->adi_soyadi)) {
         $fullName = $kisi->adi_soyadi;
+        $phone = $kisi->telefon ?? '';
       }
     }
   } catch (\Throwable $e) {
@@ -118,7 +119,7 @@ if (!empty($email)) {
               </select>
             </div>
             <div class="col-8">
-              <input type="tel" class="form-control" name="phone" id="phone" placeholder="5XX XXX XX XX" required>
+              <input type="tel" class="form-control" name="phone" readonly id="phone" value="<?= htmlspecialchars($phone) ?>" placeholder="5XX XXX XX XX" required>
             </div>
           </div>
           <div class="mb-3">

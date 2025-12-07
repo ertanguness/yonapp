@@ -51,6 +51,7 @@ $Kisi = new KisilerModel();
 /** Kullanıcı site sakini ise kullanıcının sitesini sessiona ata */
 if (Gate::isResident()) {
     $_SESSION['site_id'] = $Kisi->getSiteIdByKisiId($user_id);
+    
 
     $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'ana-sayfa';
     header("Location: $redirectUri");
