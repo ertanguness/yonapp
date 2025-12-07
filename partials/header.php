@@ -92,6 +92,28 @@ try {
                 padding-top: 0.8rem !important;
                 padding-bottom: 0.8rem !important;
             }
+
+            .nxl-header img.user-avtar {
+                width: 40px !important;
+                height: 40px !important;
+                border-radius: 50% !important;
+                object-fit: cover !important;
+                object-position: center !important;
+                border: 2px solid #d1d5db;
+                background-color: #f0f2f5;
+                display: inline-block;
+            }
+
+            .nxl-user-dropdown .dropdown-header img.user-avtar {
+                width: 56px !important;
+                height: 56px !important;
+                border-radius: 50% !important;
+                object-fit: cover !important;
+                object-position: center !important;
+                border: 3px solid #d1d5db;
+                background-color: #f0f2f5;
+                display: inline-block;
+            }
         </style>
 
         <!--! [End] Header Left !-->
@@ -190,12 +212,12 @@ try {
 
                 <div class="dropdown nxl-h-item">
                     <a href="javascript:void(0);" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
-                        <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" alt="user-image" class="img-fluid user-avtar me-0" />
+                        <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" alt="user-image" class="rounded-circle user-avtar me-0" />
                     </a>
                     <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown">
                         <div class="dropdown-header">
                             <div class="d-flex align-items-center">
-                                <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" alt="user-image" class="img-fluid user-avtar" />
+                                <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" alt="user-image" class="rounded-circle user-avtar" />
                                 <div>
                                     <h6 class="text-dark mb-0"><?php echo $_SESSION["user"]->full_name; ?> <span
                                             class="badge bg-soft-success text-success ms-1">PRO</span></h6>

@@ -490,7 +490,6 @@ $script = ob_get_clean();
     $defaultOrder = [
         'quick-actions-card',
         'row-cards',
-        'calendar-card',
         'payment-records-chart-card',
         'leads-inquiry-channel-card',
         'borc-listele',
@@ -498,6 +497,7 @@ $script = ob_get_clean();
     $userId = $_SESSION['user']->id ?? 0;
     $layout = [];
     $available = array_map(function($p){ return basename($p, '.php'); }, glob(__DIR__ . '/cards/*.php'));
+    $available = array_values(array_filter($available, function($k){ return $k !== 'calendar-card'; }));
     if ($userId) {
         $layout = $UserDashBoardModel->getUserDashboardLayout((int)$userId);
     }
