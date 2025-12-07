@@ -1,6 +1,7 @@
 <?php
 
 use App\Helper\Site;
+use App\Services\Gate;
 
 $SiteHelper = new Site();
 
@@ -69,17 +70,18 @@ $SiteHelper = new Site();
                     <?php echo $UserHelper->userRoles("user_roles", $user->roles ?? '') ?>
                 </div>
             </div>
-
-            <div class="col-lg-2">
-                <label for="job" class="fw-semibold">Yetkili Olduğu Siteler: </label>
-            </div>
-            <div class="col-lg-4">
-                <div class="input-group flex-nowrap w-100">
-
-                    <div class="input-group-text"><i class="bi bi-building"></i></i></div>
-                    <?php echo $SiteHelper->SitelerimSelectMultiple("sitelerim", $site_ids ?? '') ?>
+            <?php if (Gate::allows("kullaniciya_site_atama")): ?>
+                <div class="col-lg-2">
+                    <label for="job" class="fw-semibold">Yetkili Olduğu Siteler: </label>
                 </div>
-            </div>
+                <div class="col-lg-4">
+                    <div class="input-group flex-nowrap w-100">
+
+                        <div class="input-group-text"><i class="bi bi-building"></i></i></div>
+                        <?php echo $SiteHelper->SitelerimSelectMultiple("sitelerim", $site_ids ?? '') ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

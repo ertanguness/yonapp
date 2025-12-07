@@ -56,7 +56,7 @@ if ($_POST["action"] == "kullanici-kaydet") {
 
     /** Sitelerden gelen veriyi diziye çevir */
     $sitelerimArray = [];
-    $logger->info('Sitelerim degeri: ' . json_encode($_POST['sitelerim']));
+    $logger->info('Sitelerim degeri: ' . json_encode($_POST['sitelerim'] ?? ''));
 
     if (isset($_POST['sitelerim']) && $_POST['sitelerim'] !== '') {
 

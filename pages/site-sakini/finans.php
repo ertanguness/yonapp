@@ -96,7 +96,7 @@ $kisiInfo = $Kisiler->getKisiByDaireId((int)$activeKisiId);
 </div>
 
 <div class="main-content">
-    <div class="p-4 mb-4 d-xxl-flex d-xl-block d-md-flex align-items-center justify-content-between gap-4 border border-dashed border-gray-5 rounded-1">
+    <div class="bg-white p-4 mb-4 d-xxl-flex d-xl-block d-md-flex align-items-center justify-content-between gap-4 border border-dashed border-gray-5 rounded-1">
         <div>
             <div class="fs-14 fw-bold text-dark mb-1">
                 <span class="me-2"><?php echo htmlspecialchars($kisiInfo->adi_soyadi ?? '-'); ?></span>

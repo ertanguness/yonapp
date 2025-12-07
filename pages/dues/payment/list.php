@@ -84,11 +84,20 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                     </div>
                 </div>
                 <div class="dropdown">
+                    <?php $qParamInline = trim($_GET['q'] ?? ''); ?>
                     <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside">
-                        <i class="feather-filter"></i>
+                        <i class="feather-filter<?= ($qParamInline !== '' ? ' text-primary' : '') ?>"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item">
+                        <?php if ($qParamInline !== '') { ?>
+                        <div class="px-3 py-2">
+                            <span id="activeListFilterTagDropdown" class="badge bg-soft-primary text-primary border-soft-primary">
+                                <i class="feather-search me-1"></i><?= htmlspecialchars($qParamInline, ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <?php } ?>
+                        <a href="javascript:void(0);" class="dropdown-item" id="js-filter-all">
                             <i class="feather-eye me-3"></i>
                             <span>Tümü</span>
                         </a>
@@ -96,10 +105,9 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                             <i class="feather-send me-3"></i>
                             <span>Borcu olmayanları da getir</span>
                         </a>
-
-
                     </div>
                 </div>
+             
                 <div class="dropdown">
                     <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside" aria-expanded="false">
                         <i class="feather-paperclip"></i>
@@ -305,9 +313,9 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
         };
     }
 
-    window.onDataTablesReady(function(){
-     
-        table = initDataTable('#tahsilatTable',{
+        window.onDataTablesReady(function(){
+         
+            table = initDataTable('#tahsilatTable',{
             processing: true,
             serverSide: true,
             retrieve: true,
@@ -330,6 +338,36 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
             ],
             order: [[1, 'asc']],
             // initComplete ortak fonksiyonda geliyor (attachDtColumnSearch)
+        });
+        try {
+            var params = new URLSearchParams(window.location.search);
+            var q = params.get('q');
+            if (q && $.fn.dataTable.isDataTable('#tahsilatTable')) {
+                var dt = $('#tahsilatTable').DataTable();
+                dt.search(q).draw();
+            }
+        } catch(e) {}
+        $(document).on('click', '#clearListFilter', function(){
+            var dt = $('#tahsilatTable').DataTable();
+            dt.search('').draw();
+            try {
+                var url = new URL(window.location.href);
+                url.searchParams.delete('q');
+                window.history.replaceState(null, '', url.toString());
+            } catch(e) {}
+            $('#activeListFilterTag').remove();
+            $('#clearListFilter').remove();
+            $('#activeListFilterTagDropdown').remove();
+        });
+        $(document).on('click', '#js-filter-all', function(){
+            var dt = $('#tahsilatTable').DataTable();
+            dt.search('').draw();
+            try {
+                var url = new URL(window.location.href);
+                url.searchParams.delete('q');
+                window.history.replaceState(null, '', url.toString());
+            } catch(e) {}
+            $('#activeListFilterTag, #activeListFilterTagDropdown, #clearListFilter').remove();
         });
         var __rt;
         $(window).on('resize', function(){

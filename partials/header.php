@@ -118,6 +118,20 @@ try {
 
                     <?php        }           ?>
 
+                    <!-- Arama Kutusu -->
+                    <div class="ms-4 d-flex align-items-center" id="globalHeaderSearchWrap">
+                        <a href="javascript:void(0);" class="nxl-head-link me-0" id="globalHeaderSearchToggle"><i class="feather-search"></i></a>
+                        <div class="d-none ms-2 position-relative" id="globalHeaderSearchBox" style="width: 260px;">
+                            <div class="input-group flex-nowrap w-100 m-0 p-0">
+                                
+                                <input type="text" class="form-control" 
+                                autocomplete="off"
+                                id="globalHeaderSearch" placeholder="Daire kodu veya ad soyad">
+                                <a href="javascript:void(0);" class="input-group-text" id="globalHeaderSearchClose"><i class="feather-x"></i></a>
+                            </div>
+                            <div id="globalHeaderSearchResults" class="shadow" style="position: absolute; top: 100%; left: 0; right: 0; z-index: 1055; display: none; background: #fff; border: 1px solid #e5e7eb; border-top: 0; max-height: 280px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
                     <?php
                     $selectedApartmentId = (int)($_SESSION['selected_apartment_id'] ?? 0);
                     $selectedApartmentCode = '';
@@ -127,7 +141,8 @@ try {
                             $Daireler = new DairelerModel();
                             $apt = $Daireler->DaireBilgisi((int)$site_id, (int)$selectedApartmentId);
                             $selectedApartmentCode = (string)($apt->daire_kodu ?? '');
-                        } catch (\Throwable $e) { }
+                        } catch (\Throwable $e) {
+                        }
                     }
                     ?>
                     <div class="ms-3 d-flex align-items-center gap-2">
@@ -189,6 +204,143 @@ try {
                                 </div>
                             </div>
                         </div>
+                        <script>
+                            (function() {
+                                var $input = $('#globalHeaderSearch');
+                                var $list = $('#globalHeaderSearchResults');
+                                var $wrap = $('#globalHeaderSearchWrap');
+                                var $box = $('#globalHeaderSearchBox');
+                                var $toggle = $('#globalHeaderSearchToggle');
+                                var $close = $('#globalHeaderSearchClose');
+                                var pending;
+
+                                function render(items) {
+                                    if (!items || !items.length) {
+                                        $list.hide().empty();
+                                        return;
+                                    }
+                                    var html = '';
+                                    for (var i = 0; i < items.length; i++) {
+                                        var r = items[i] || {};
+                                        var name = (r.adi_soyadi || '').toString();
+                                        var code = (r.daire_kodu || '').toString();
+                                        var uyelik = (r.uyelik_tipi || '').toString();
+                                        var durum = (r.durum || '').toString();
+                                        var durumClass = (durum.toLowerCase() === 'aktif') ? 'text-success' : 'text-danger';
+                                        var uyelikLower = uyelik.toLowerCase();
+                                        var roleTone = (uyelikLower.indexOf('kiracı') !== -1) ? 'warning' : (uyelikLower.indexOf('kat mal') !== -1 ? 'teal' : 'teal');
+                                        var uyelikClass = (roleTone === 'warning') ? 'text-warning' : 'text-teal';
+                                        html += '<a href="javascript:void(0)" class="d-block px-3 py-3 text-decoration-none" data-daire-kodu="' + $('<div>').text(code).html() + '" style="border-top:1px solid #f1f5f9;">'
+                                            + '<div class="d-flex align-items-start">'
+                                            +   '<div class="avatar-text avatar bg-soft-' + roleTone + ' text-' + roleTone + ' border-soft-' + roleTone + ' rounded me-3">' + $('<div>').text(code).html() + '</div>'
+                                            +   '<div class="flex-grow-1">'
+                                            +       '<div class="fw-semibold text-dark">' + $('<div>').text(name).html() + '</div>'
+                                            +       '<div class="d-flex align-items-center gap-2 mt-1">'
+                                            +           '<span class="badge ' + uyelikClass + ' border border-dashed border-gray-500">' + $('<div>').text(uyelik).html() + '</span>'
+                                            +           '<span class="badge ' + durumClass + ' border border-dashed border-gray-500">' + $('<div>').text(durum).html() + '</span>'
+                                            +       '</div>'
+                                            +   '</div>'
+                                            + '</div>'
+                                            + '</a>';
+                                    }
+                                    $list.html(html).show();
+                                }
+
+                                function parseBlockFlat(daire) {
+                                    daire = (daire || '').toString();
+                                    var m = daire.match(/^([A-Za-zÇĞİÖŞÜ]+)\s*[-]?\s*(\d+)/);
+                                    if (m) return {
+                                        block: m[1],
+                                        flat: m[2]
+                                    };
+                                    var letters = daire.match(/[A-Za-zÇĞİÖŞÜ]+/);
+                                    var digits = daire.match(/\d+/);
+                                    return {
+                                        block: letters ? letters[0] : '',
+                                        flat: digits ? digits[0] : ''
+                                    };
+                                }
+
+                                function search(q) {
+                                    if (pending) {
+                                        clearTimeout(pending);
+                                    }
+                                    pending = setTimeout(function() {
+                                        var term = (q || '').trim();
+                                        if (term.length < 2) {
+                                            render([]);
+                                            return;
+                                        }
+                                        $.getJSON('/pages/dues/payment/server_processing.php', {
+                                            action: 'sms_kisiler',
+                                            'search[value]': term,
+                                            start: 0,
+                                            length: 7,
+                                            draw: 1
+                                        }).done(function(resp) {
+                                            var rows = (resp && resp.data) ? resp.data : [];
+                                            render(rows);
+                                        }).fail(function() {
+                                            render([]);
+                                        });
+                                    }, 200);
+                                }
+                                $input.on('input', function() {
+                                    search(this.value);
+                                });
+                                $input.on('focus', function() {
+                                    if ($list.children().length) {
+                                        $list.show();
+                                    }
+                                });
+
+                                function openBox() {
+                                    $box.removeClass('d-none').addClass('d-inline-block');
+                                    setTimeout(function() {
+                                        $input.trigger('focus');
+                                    }, 10);
+                                }
+
+                                function closeBox() {
+                                    $box.addClass('d-none').removeClass('d-inline-block');
+                                    $list.hide().empty();
+                                    $input.val('');
+                                }
+                                $(document).on('click', function(e) {
+                                    if (!$(e.target).closest('#globalHeaderSearchWrap').length) {
+                                        closeBox();
+                                    }
+                                });
+                                $toggle.on('click', function() {
+                                    if ($box.hasClass('d-none')) {
+                                        openBox();
+                                    } else {
+                                        closeBox();
+                                    }
+                                });
+                                $close.on('click', function() {
+                                    closeBox();
+                                });
+                                $(document).on('keydown', function(e) {
+                                    if (e.key === 'Escape') {
+                                        closeBox();
+                                    }
+                                });
+                                $list.on('click', 'a', function() {
+                                    var code = $(this).data('daire-kodu') || '';
+                                    var url = 'index?p=yonetici-aidat-odeme&q=' + encodeURIComponent(code);
+                                    window.location.href = url;
+                                });
+                                $input.on('keydown', function(e) {
+                                    if (e.key === 'Enter') {
+                                        var term = ($input.val() || '').trim();
+                                        if (term) {
+                                            window.location.href = 'index?p=yonetici-aidat-odeme&q=' + encodeURIComponent(term);
+                                        }
+                                    }
+                                });
+                            })();
+                        </script>
 
                         <a href="/profile" class="dropdown-item">
                             <i class="feather-user"></i>
