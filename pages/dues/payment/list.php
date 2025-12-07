@@ -21,6 +21,7 @@ $Tahsilat = new TahsilatModel();
 $FinansalRapor = new FinansalRaporModel();
 
 
+Gate::authorizeOrDie('yonetici_aidat_odeme');
 
 //$kisiler = $KisiModel->SiteKisiBorcOzet($_SESSION['site_id']);
 
@@ -88,10 +89,10 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                     <a class="btn btn-icon btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 12" data-bs-auto-close="outside">
                         <i class="feather-filter<?= ($qParamInline !== '' ? ' text-primary' : '') ?>"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end">
+                    <div class="dropdown-menu dropdown-menu-end" id="filterDropdown">
                         <?php if ($qParamInline !== '') { ?>
                         <div class="px-3 py-2">
-                            <span id="activeListFilterTagDropdown" class="badge bg-soft-primary text-primary border-soft-primary">
+                            <span id="activeListFilterTagDropdown" class="badge bg-soft-primary py-2 text-primary border-soft-primary">
                                 <i class="feather-search me-1"></i><?= htmlspecialchars($qParamInline, ENT_QUOTES, 'UTF-8') ?>
                             </span>
                         </div>
@@ -99,7 +100,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                         <?php } ?>
                         <a href="javascript:void(0);" class="dropdown-item" id="js-filter-all">
                             <i class="feather-eye me-3"></i>
-                            <span>Tümü</span>
+                            <span>Filtreyi Temizle</span>
                         </a>
                         <a href="javascript:void(0);" class="dropdown-item">
                             <i class="feather-send me-3"></i>
@@ -368,6 +369,8 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 window.history.replaceState(null, '', url.toString());
             } catch(e) {}
             $('#activeListFilterTag, #activeListFilterTagDropdown, #clearListFilter').remove();
+            // $("#filterDropdown").removeClass("show");   
+
         });
         var __rt;
         $(window).on('resize', function(){

@@ -15,8 +15,10 @@ class PersonelModel extends Model
 
     public function getPersonel()
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE silinme_tarihi IS NULL ORDER BY adi_soyadi ASC");
-        $sql->execute();
+        $sql = $this->db->prepare("SELECT * FROM $this->table 
+        WHERE site_id = ? AND silinme_tarihi IS NULL 
+        ORDER BY adi_soyadi ASC");
+        $sql->execute([$_SESSION['site_id']]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 

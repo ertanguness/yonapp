@@ -141,19 +141,20 @@ try {
                     <?php        }           ?>
 
                     <!-- Arama Kutusu -->
-                    <div class="ms-4 d-flex align-items-center" id="globalHeaderSearchWrap">
-                        <a href="javascript:void(0);" class="nxl-head-link me-0" id="globalHeaderSearchToggle"><i class="feather-search"></i></a>
-                        <div class="d-none ms-2 position-relative" id="globalHeaderSearchBox" style="width: 260px;">
-                            <div class="input-group flex-nowrap w-100 m-0 p-0">
-                                
-                                <input type="text" class="form-control" 
-                                autocomplete="off"
-                                id="globalHeaderSearch" placeholder="Daire kodu veya ad soyad">
-                                <a href="javascript:void(0);" class="input-group-text" id="globalHeaderSearchClose"><i class="feather-x"></i></a>
+                    <?php if (!Gate::isResident()) { ?>
+                        <?php if (Gate::allows('yonetici_aidat_odeme')) { ?>
+                            <div class="ms-4 d-flex align-items-center" id="globalHeaderSearchWrap">
+                                <a href="javascript:void(0);" class="nxl-head-link me-0" id="globalHeaderSearchToggle"><i class="feather-search"></i></a>
+                                <div class="d-none ms-2 position-relative" id="globalHeaderSearchBox" style="width: 260px;">
+                                    <input type="text" class="form-control"
+                                        autocomplete="off"
+                                        id="globalHeaderSearch" placeholder="Daire kodu veya ad soyad">
+                                    <div id="globalHeaderSearchResults" class="shadow" style="position: absolute; top: 100%; left: 0; right: 0; z-index: 1055; display: none; background: #fff; border: 1px solid #e5e7eb; border-top: 0; max-height: 280px; overflow-y: auto;"></div>
+                                </div>
                             </div>
-                            <div id="globalHeaderSearchResults" class="shadow" style="position: absolute; top: 100%; left: 0; right: 0; z-index: 1055; display: none; background: #fff; border: 1px solid #e5e7eb; border-top: 0; max-height: 280px; overflow-y: auto;"></div>
-                        </div>
-                    </div>
+                        <?php } ?>
+
+                    <?php } ?>
                     <?php
                     $selectedApartmentId = (int)($_SESSION['selected_apartment_id'] ?? 0);
                     $selectedApartmentCode = '';
@@ -252,18 +253,18 @@ try {
                                         var uyelikLower = uyelik.toLowerCase();
                                         var roleTone = (uyelikLower.indexOf('kiracı') !== -1) ? 'warning' : (uyelikLower.indexOf('kat mal') !== -1 ? 'teal' : 'teal');
                                         var uyelikClass = (roleTone === 'warning') ? 'text-warning' : 'text-teal';
-                                        html += '<a href="javascript:void(0)" class="d-block px-3 py-3 text-decoration-none" data-daire-kodu="' + $('<div>').text(code).html() + '" style="border-top:1px solid #f1f5f9;">'
-                                            + '<div class="d-flex align-items-start">'
-                                            +   '<div class="avatar-text avatar bg-soft-' + roleTone + ' text-' + roleTone + ' border-soft-' + roleTone + ' rounded me-3">' + $('<div>').text(code).html() + '</div>'
-                                            +   '<div class="flex-grow-1">'
-                                            +       '<div class="fw-semibold text-dark">' + $('<div>').text(name).html() + '</div>'
-                                            +       '<div class="d-flex align-items-center gap-2 mt-1">'
-                                            +           '<span class="badge ' + uyelikClass + ' border border-dashed border-gray-500">' + $('<div>').text(uyelik).html() + '</span>'
-                                            +           '<span class="badge ' + durumClass + ' border border-dashed border-gray-500">' + $('<div>').text(durum).html() + '</span>'
-                                            +       '</div>'
-                                            +   '</div>'
-                                            + '</div>'
-                                            + '</a>';
+                                        html += '<a href="javascript:void(0)" class="d-block px-3 py-3 text-decoration-none" data-daire-kodu="' + $('<div>').text(code).html() + '" style="border-top:1px solid #f1f5f9;">' +
+                                            '<div class="d-flex align-items-start">' +
+                                            '<div class="avatar-text avatar bg-soft-' + roleTone + ' text-' + roleTone + ' border-soft-' + roleTone + ' rounded me-3">' + $('<div>').text(code).html() + '</div>' +
+                                            '<div class="flex-grow-1">' +
+                                            '<div class="fw-semibold text-dark">' + $('<div>').text(name).html() + '</div>' +
+                                            '<div class="d-flex align-items-center gap-2 mt-1">' +
+                                            '<span class="badge ' + uyelikClass + ' border border-dashed border-gray-500">' + $('<div>').text(uyelik).html() + '</span>' +
+                                            '<span class="badge ' + durumClass + ' border border-dashed border-gray-500">' + $('<div>').text(durum).html() + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '</a>';
                                     }
                                     $list.html(html).show();
                                 }

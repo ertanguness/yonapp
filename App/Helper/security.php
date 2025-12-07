@@ -9,7 +9,7 @@ class Security
 {
     public static function escape($data)
     {
-        return htmlentities ($data, ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars ($data, ENT_QUOTES, 'UTF-8');
     }
 
     // CSRF Token
