@@ -27,6 +27,31 @@ if (!empty($kisiEnc)) {
   }
 }
 
+try {
+  $kisiIdForCheck = !empty($kisiEnc) ? (int) \App\Helper\Security::decrypt($kisiEnc) : 0;
+  if ($kisiIdForCheck > 0) {
+    $UserCheck = new \Model\UserModel();
+    $existing = $UserCheck->findWhere(['kisi_id' => $kisiIdForCheck, 'roles' => 3], 'id DESC', 1);
+    if (!empty($existing)) {
+      $u = $existing[0];
+      if ((int)$u->status === 1) {
+        \App\Services\FlashMessageService::add('info', 'Bilgi', 'Bu davet linki ile doğrulama yapılmıştır. Lütfen giriş yapınız.');
+        header('Location: /sign-in.php');
+        exit;
+      } else {
+        \App\Services\FlashMessageService::add('warning', 'Bilgi', 'Bu davet linki ile kayıt oluşturulmuştur. Lütfen aktivasyonu tamamlayınız.');
+        if (!empty($u->email)) {
+          header('Location: /register-activate.php?email=' . urlencode($u->email));
+        } else {
+          header('Location: /sign-in.php');
+        }
+        exit;
+      }
+    }
+  }
+} catch (\Throwable $e) {
+}
+
 // Eğer e-posta mevcut ise ve zaten kayıtlıysa, giriş sayfasına yönlendir
 if (!empty($email)) {
   $User = new UserModel();
