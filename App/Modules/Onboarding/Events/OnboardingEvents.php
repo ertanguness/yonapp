@@ -10,7 +10,7 @@ class OnboardingEvents
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
         $user = $_SESSION['user'] ?? null;
         if (!$user) { return; }
-        $ownerId = $_SESSION['owner_id'] ?? ($user->owner_id ?? null);
+        $ownerId = $user->owner_id ?? ($_SESSION['owner_id'] ?? null);
         if ((int)$ownerId !== 0) { return; }
         (new OnboardingService())->completeTask((int)$user->id, $taskKey, $siteId, 'auto');
     }

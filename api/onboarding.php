@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__) . '/configs/bootstrap.php';
+require_once dirname(__DIR__,1) . '/configs/bootstrap.php';
 
 use App\Modules\Onboarding\Controllers\OnboardingController;
 use App\Modules\Onboarding\Policies\OnboardingPolicy;

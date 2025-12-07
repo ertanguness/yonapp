@@ -947,8 +947,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
 
     <!-- JS -->
     <script src="./assets/js/jquery.3.7.1.min.js"></script>
-    <div id="onboarding-checklist-root"></div>
-    <script src="/assets/js/onboarding.js"></script>
     <script>
         $(document).ready(function() {
             function refreshFavoritesEmptyState() {

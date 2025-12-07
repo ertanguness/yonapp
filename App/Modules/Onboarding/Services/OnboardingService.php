@@ -96,7 +96,7 @@ class OnboardingService
     public function shouldShowChecklist(int $userId, ?int $siteId): bool
     {
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
-        $ownerId = $_SESSION['owner_id'] ?? ($_SESSION['user']->owner_id ?? null);
+        $ownerId = $_SESSION['user']->owner_id ?? ($_SESSION['owner_id'] ?? null);
         if ((int)$ownerId !== 0) { return false; }
         if (!empty($_SESSION['onboarding_shown_this_login'])) { return false; }
         if (!empty($_SESSION['onboarding_dismissed'])) { return false; }

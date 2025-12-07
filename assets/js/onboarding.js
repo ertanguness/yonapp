@@ -136,7 +136,16 @@ const renderModal = (data) => {
   overlay.addEventListener('click', () => { root.innerHTML = ''; });
 };
 
+const isAllowedPage = () => {
+  const dp = document.body ? document.body.getAttribute('data-page') : null;
+  if (dp) { return dp === 'ana-sayfa'; }
+  const path = (window.location.pathname || '').toLowerCase();
+  if (path.endsWith('/company-list.php')) { return false; }
+  return false;
+};
+
 (async () => {
+  if (!isAllowedPage()) { return; }
   const status = await fetchStatus();
   if (status && status.status === 'success') {
     if (status.should_show) { renderModal(status); }
