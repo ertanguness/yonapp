@@ -88,17 +88,21 @@ $site_ids = $user ? json_decode($user->siteler_ids ?? '[]', true) : [];
             </div>
             <ul class="nav nav-tabs nav-tabs-custom-style" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#proposalTab">Genel Bilgiler</button>
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#proposalTab">
+                    <i class="feather-home"></i>    
+                    Genel Bilgiler</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#loginsTab">Giriş Kayıtları</button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#loginsTab">
+                    <i class="feather-log-in"></i>    
+                    Giriş Kayıtları</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#notesTab">Aktiviteler</button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#notesTab">
+                    <i class="feather-file-text"></i>    
+                    Aktiviteler</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#commentTab">Comments</button>
-                </li>
+               
             </ul>
         </div>
         <div class="page-content-right-sidebar-wrapper">
@@ -164,9 +168,7 @@ $site_ids = $user ? json_decode($user->siteler_ids ?? '[]', true) : [];
         <div class="tab-pane fade" id="notesTab">
 
         </div>
-        <div class="tab-pane fade" id="commentTab">
-
-        </div>
+ 
     </div>
 </div>
 <script>
