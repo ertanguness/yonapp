@@ -26,6 +26,48 @@ class KasaHareketModel extends Model
         parent::__construct($this->table);
     }
 
+    /**
+     * Site ID'ye göre aylık gelir ve gider toplamlarını view tablosundan çeker.
+     * @param int $site_id
+     * @param int $year
+     * @return array [month => ['gelir' => float, 'gider' => float]]
+     */
+    public function getMonthlySummaryBySiteId(int $site_id, int $year): array
+    {
+        $query = "SELECT 
+                    MONTH(kh.islem_tarihi) as ay,
+                    SUM(CASE WHEN kh.islem_tipi = 'Gelir' THEN kh.tutar ELSE 0 END) as toplam_gelir,
+                    SUM(CASE WHEN kh.islem_tipi = 'Gider' THEN ABS(kh.tutar) ELSE 0 END) as toplam_gider
+                  FROM {$this->view} kh
+                  WHERE kh.kasa_id IN (SELECT id FROM kasa WHERE site_id = :site_id)
+                  AND YEAR(kh.islem_tarihi) = :year
+                  AND kh.silinme_tarihi IS NULL
+                  GROUP BY MONTH(kh.islem_tarihi)
+                  ORDER BY ay ASC";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':site_id', $site_id, \PDO::PARAM_INT);
+        $stmt->bindParam(':year', $year, \PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $results = $stmt->fetchAll(\PDO::FETCH_OBJ);
+        
+        // Sonucu ay bazlı anahtarlarla diziye çevir
+        $monthlyData = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthlyData[$m] = ['gelir' => 0.0, 'gider' => 0.0];
+        }
+        
+        foreach ($results as $row) {
+            $m = (int)$row->ay;
+            if (isset($monthlyData[$m])) {
+                $monthlyData[$m]['gelir'] = (float)$row->toplam_gelir;
+                $monthlyData[$m]['gider'] = (float)$row->toplam_gider;
+            }
+        }
+        
+        return $monthlyData;
+    }
 
     /**Kaynak tablo ve kaynek_id alanına göre kayıtları sil 
      * @param string $kaynak_tablo

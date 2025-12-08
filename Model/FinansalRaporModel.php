@@ -451,4 +451,29 @@ class FinansalRaporModel extends Model
         $sql->execute([$site_id, $startDate, $endDate]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+
+    public function getGecikenOdemeTutarByDate(int $site_id, string $endDate): float
+    {
+        $sql = $this->db->prepare("SELECT  
+                                            (SUM(tutar) - SUM(yapilan_tahsilat)) AS geciken_tutar
+                                      FROM {$this->table}
+                                      WHERE bitis_tarihi < ?
+                                        AND yapilan_tahsilat < tutar
+                                        AND site_id = ?");
+        $sql->execute([$endDate, $site_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? (float)$result->geciken_tutar : 0.0;
+    }
+
+    public function getGecikenTahsilatSayisiByDate(int $site_id, string $endDate): int
+    {
+        $sql = $this->db->prepare("SELECT COUNT(id) as geciken_sayisi 
+                                      FROM {$this->table}
+                                      WHERE yapilan_tahsilat <= 0 
+                                        AND bitis_tarihi < ?
+                                        AND site_id = ?");
+        $sql->execute([$endDate, $site_id]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+        return $result ? (int)$result->geciken_sayisi : 0;
+    }
 }

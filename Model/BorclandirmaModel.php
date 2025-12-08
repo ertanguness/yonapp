@@ -157,4 +157,83 @@ class BorclandirmaModel extends Model
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+
+    /**
+     * Yıl bazında aidat tahsilat durumunu getirir (SQL tabanlı hesaplama).
+     * 
+     * @param int $site_id
+     * @param int $year
+     * @return array [month => ['odenecek' => float, 'odenen' => float]]
+     */
+    public function getAidatYearlyStats(int $site_id, int $year): array
+    {
+        // Temel sorgu: Borçlandırma Özet mantığını kullanır, ancak aylık gruplar
+        $query = "SELECT 
+                    MONTH(b.bitis_tarihi) as ay,
+                    SUM(IFNULL(borc_ozeti.toplam_borc, 0)) AS aylik_toplam_borc,
+                    SUM(IFNULL(tahsilat_ozeti.toplam_tahsilat, 0)) AS aylik_toplam_tahsilat
+                FROM 
+                    borclandirma AS b
+                LEFT JOIN dues d ON b.borc_tipi_id = d.id
+                LEFT JOIN (
+                    -- Borçları toplayan alt sorgu
+                    SELECT borclandirma_id, SUM(tutar) AS toplam_borc 
+                    FROM borclandirma_detayi 
+                    WHERE silinme_tarihi IS NULL 
+                    GROUP BY borclandirma_id 
+                ) AS borc_ozeti ON b.id = borc_ozeti.borclandirma_id 
+                LEFT JOIN (
+                    -- Tahsilatları toplayan alt sorgu
+                    SELECT bd.borclandirma_id, SUM(td.odenen_tutar) AS toplam_tahsilat 
+                    FROM tahsilat_detay AS td 
+                    JOIN borclandirma_detayi AS bd ON td.borc_detay_id = bd.id 
+                    WHERE td.silinme_tarihi IS NULL 
+                    GROUP BY bd.borclandirma_id 
+                ) AS tahsilat_ozeti ON b.id = tahsilat_ozeti.borclandirma_id 
+                WHERE 
+                    b.site_id = :site_id 
+                    AND b.silinme_tarihi IS NULL
+                    AND YEAR(b.bitis_tarihi) = :year
+                    AND (d.due_name LIKE :aidat_filter OR b.aciklama LIKE :aidat_filter_desc)
+                GROUP BY MONTH(b.bitis_tarihi)";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':site_id', $site_id, PDO::PARAM_INT);
+        $stmt->bindValue(':year', $year, PDO::PARAM_INT);
+        $stmt->bindValue(':aidat_filter', '%aidat%', PDO::PARAM_STR);
+        $stmt->bindValue(':aidat_filter_desc', '%aidat%', PDO::PARAM_STR);
+        
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        // Sonuçları işle ve aylık formata çevir
+        $monthlyData = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthlyData[$m] = ['odenecek' => 0.0, 'odenen' => 0.0];
+        }
+
+        foreach ($results as $row) {
+            $m = (int)$row->ay;
+            if ($m >= 1 && $m <= 12) {
+                $monthlyData[$m]['odenecek'] = (float)$row->aylik_toplam_borc;
+                $monthlyData[$m]['odenen'] = (float)$row->aylik_toplam_tahsilat;
+            }
+        }
+
+        return $monthlyData;
+    }
+
+    /**
+     * Yıl bazında aidat tahsilat durumunu getirir.
+     * list.php'deki mantığı kullanarak borçlandırmaları çeker ve işler.
+     * 
+     * @param int $site_id
+     * @param int $year
+     * @return array [month => ['odenecek' => float, 'odenen' => float]]
+     */
+    public function getAidatSummaryByYear(int $site_id, int $year): array
+    {
+        // Geriye dönük uyumluluk veya alternatif kullanım için wrapper
+        return $this->getAidatYearlyStats($site_id, $year);
+    }
 }

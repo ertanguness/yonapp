@@ -114,6 +114,27 @@ try {
                 background-color: #f0f2f5;
                 display: inline-block;
             }
+
+            /* Dark Mode Select2 Fix */
+            html.app-skin-dark .select2-container--default .select2-selection--single {
+                background-color: #0f172a !important;
+                border-color: #1b2436 !important;
+            }
+            html.app-skin-dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: #b1b4c0 !important;
+            }
+            html.app-skin-dark .select2-dropdown {
+                background-color: #0f172a !important;
+                border-color: #1b2436 !important;
+            }
+            html.app-skin-dark .select2-results__option {
+                color: #b1b4c0 !important;
+            }
+            html.app-skin-dark .select2-container--default .select2-results__option--highlighted[aria-selected],
+            html.app-skin-dark .select2-container--default .select2-results__option[aria-selected=true] {
+                background-color: #1b2436 !important;
+                color: #fff !important;
+            }
         </style>
 
         <!--! [End] Header Left !-->
