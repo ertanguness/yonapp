@@ -39,8 +39,18 @@ class SmsGonderService
                 "settings" => $allSettings
             ]));
 
-            $username = $_ENV['SMS_API_KULLANICI'] ?? $_ENV['NETGSM_USERNAME'] ?? ($allSettings['sms_api_kullanici'] ?? '');
-            $password = $_ENV['SMS_API_SIFRE'] ?? $_ENV['NETGSM_PASSWORD'] ?? ($allSettings['sms_api_sifre'] ?? '');
+            $username = ($allSettings['sms_api_kullanici'] ?? '');
+            $password =  ($allSettings['sms_api_sifre'] ?? '');
+
+
+            /** Username veya şifre boş ise uyarı ver */
+            if (empty($username) || empty($password)) {
+                
+                throw new Exception("SMS API kimlik bilgileri eksik. Lütfen ayarları kontrol edin.");
+            }
+
+
+
             $msgheader = $gondericiBaslik ?? ($_ENV['SMS_SENDER_ID'] ?? ($allSettings['sms_baslik'] ?? 'YONAPP'));
 
             if (empty($username) || empty($password)) {

@@ -10,6 +10,7 @@ use Model\KisilerModel;
 use Model\FinansalRaporModel;
 use App\Helper\Site;
 use App\Helper\Helper;
+use Model\SettingsModel;
 
 
 
@@ -19,6 +20,26 @@ $apiResponse = [
     'message' => 'Bilinmeyen bir hata oluştu.',
     'data' => null
 ];
+
+
+/** ayarlardan sms api kullanıcı ve şifre al */
+$SettingsModel = new SettingsModel();
+$allSettings = $SettingsModel->getAllSettingsAsKeyValue();
+
+$username = ($allSettings['sms_api_kullanici'] ?? '');
+$password =  ($allSettings['sms_api_sifre'] ?? '');
+
+/** Username veya şifre boş ise uyarı ver */
+if (empty($username) || empty($password)) {
+ $apiResponse = [
+    'status' => 'error', // Varsayılan durum
+    'message' => 'SMS API kimlik bilgileri eksik. Lütfen ayarları kontrol edin.',
+    'data' => null
+];
+ echo json_encode($apiResponse, JSON_UNESCAPED_UNICODE);
+ exit;
+}
+
 
 
 $postData = json_decode(file_get_contents('php://input'), true);
@@ -68,7 +89,8 @@ try {
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE type='sms' AND site_id = :sid AND created_at >= (NOW() - INTERVAL 1 MINUTE)");
     $stmt->execute([':sid' => $siteId]);
     $recentCount = (int)$stmt->fetchColumn();
-} catch (Exception $e) { /* yoksay */ }
+} catch (Exception $e) { /* yoksay */
+}
 // if (!$testMode && (($recentCount + count($recipients)) > $limitPerMinute)) {
 //     http_response_code(429);
 //     $apiResponse['message'] = 'SMS gönderim limiti aşıldı. Lütfen daha sonra tekrar deneyin.';
@@ -84,13 +106,15 @@ $siteName = $siteRow->site_adi ?? '';
 
 $recipientIds = $postData['recipient_ids'] ?? $postData['ids'] ?? [];
 
-$success = 0; $fail = 0; $errors = [];
+$success = 0;
+$fail = 0;
+$errors = [];
 $insertRows = [];
 
 
 
 foreach ($recipients as $idx => $telRaw) {
-    $telDigits = preg_replace('/\D/','', (string)$telRaw);
+    $telDigits = preg_replace('/\D/', '', (string)$telRaw);
     $kisiId = 0;
     if (is_array($recipientIds) && isset($recipientIds[$idx])) {
         $kisiId = (int)$recipientIds[$idx];
@@ -105,7 +129,9 @@ foreach ($recipients as $idx => $telRaw) {
         try {
             $ozet = $FinModel->getKisiGuncelBorcOzet($kisiId);
             $borcBakiye = Helper::formattedMoneyWithoutCurrency((float)($ozet->guncel_borc ?? 0));
-        } catch (\Throwable $e) { $borcBakiye = ''; }
+        } catch (\Throwable $e) {
+            $borcBakiye = '';
+        }
     } else if ($telDigits) {
         try {
             $matches = $KisiModel->findWhere(['telefon' => $telDigits]);
@@ -119,10 +145,12 @@ foreach ($recipients as $idx => $telRaw) {
                     try {
                         $ozet = $FinModel->getKisiGuncelBorcOzet($kisiIdGuess);
                         $borcBakiye = Helper::formattedMoneyWithoutCurrency((float)($ozet->guncel_borc ?? 0));
-                    } catch (\Throwable $e) { /* yoksay */ }
+                    } catch (\Throwable $e) { /* yoksay */
+                    }
                 }
             }
-        } catch (\Throwable $e) { /* yoksay */ }
+        } catch (\Throwable $e) { /* yoksay */
+        }
     }
     $msg = str_replace([
         '{ADISOYADI}',
@@ -139,13 +167,18 @@ foreach ($recipients as $idx => $telRaw) {
     ], $messageText);
     /** Gerçek kullanımda açıkacak */
     $sent = SmsGonderService::gonder([$telDigits ?: $telRaw], $msg, $msgheader);
-    
-    /** Test için örnek kullan */
-   // $sent = true;
-    
 
-    
-    if ($sent) { $success++; } else { $fail++; $errors[] = $telRaw; }
+    /** Test için örnek kullan */
+    // $sent = true;
+
+
+
+    if ($sent) {
+        $success++;
+    } else {
+        $fail++;
+        $errors[] = $telRaw;
+    }
     $insertRows[] = [
         'type' => 'sms',
         'site_id' => $siteId,

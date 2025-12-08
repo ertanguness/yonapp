@@ -20,6 +20,7 @@ $db = Db::getInstance();
 
 $action = $_POST['action'] ?? '';
 $post = $_POST;
+$site_id = $_SESSION['site_id'] ?? 0;
 
 if ($action == "savePerson") {
     $id = Security::decrypt($post['personelId'] ?? 0);
@@ -28,6 +29,7 @@ if ($action == "savePerson") {
         $db->beginTransaction();
         $data = [
             'id' => $id,
+            'site_id' => $site_id,
             'adi_soyadi' => $post['adi_soyadi'] ?? '',
             'eposta' => $post['eposta'] ?? '',
             'telefon' => $post['telefon'] ?? '',
