@@ -305,33 +305,109 @@ if (!empty($request['order'][0]['column'])) {
     }
 }
 
-// Kolon bazlı arama
+// Kolon bazlı arama (operatör ve tip destekli)
 if (!empty($request['columns']) && is_array($request['columns'])) {
-    foreach ($request['columns'] as $idx => $reqCol) {
-        $val = trim($reqCol['search']['value'] ?? '');
-        if ($val === '') continue;
+    $parseNumber = function($s){
+        $s = trim((string)$s);
+        if ($s === '') return null;
+        $s = str_replace(['.', ' '], ['', ''], $s);
+        $s = str_replace(',', '.', $s);
+        return is_numeric($s) ? (float)$s : null;
+    };
+    $parseDate = function($s){
+        $s = trim((string)$s);
+        if ($s === '') return null;
+        $dt = \DateTime::createFromFormat('d.m.Y', $s);
+        return $dt ? $dt->getTimestamp() : null;
+    };
+    $applyString = function($target, $op, $val) use ($normalize){
+        $t = $normalize($target);
         $q = $normalize($val);
+        if ($op === 'none' || $q === '') return true;
+        if ($op === 'starts') return mb_strpos($t, $q) === 0;
+        if ($op === 'contains') return mb_strpos($t, $q) !== false;
+        if ($op === 'not_contains') return mb_strpos($t, $q) === false;
+        if ($op === 'ends') return $q === '' ? true : (mb_substr($t, -mb_strlen($q)) === $q);
+        if ($op === 'equals') return $t === $q;
+        if ($op === 'not_equals') return $t !== $q;
+        return mb_strpos($t, $q) !== false;
+    };
+    $applyNumber = function($target, $op, $val) use ($parseNumber){
+        $tv = (float)$target; $q = $parseNumber($val);
+        if ($q === null) return true;
+        if ($op === 'none') return true;
+        if ($op === 'gt') return $tv > $q;
+        if ($op === 'gte') return $tv >= $q;
+        if ($op === 'lt') return $tv < $q;
+        if ($op === 'lte') return $tv <= $q;
+        if ($op === 'equals') return $tv == $q;
+        if ($op === 'not_equals') return $tv != $q;
+        return $tv == $q;
+    };
+    $applyDate = function($target, $op, $val) use ($parseDate){
+        $tv = $parseDate($target); $q = $parseDate($val);
+        if ($q === null || $tv === null) return true;
+        if ($op === 'none') return true;
+        if ($op === 'after') return $tv > $q;
+        if ($op === 'before') return $tv < $q;
+        if ($op === 'on') return $tv === $q;
+        if ($op === 'not_on') return $tv !== $q;
+        return $tv === $q;
+    };
+
+    foreach ($request['columns'] as $idx => $reqCol) {
+        $raw = trim($reqCol['search']['value'] ?? '');
+        if ($raw === '') continue;
+        $decoded = json_decode($raw, true);
+        $op = is_array($decoded) ? (string)($decoded['op'] ?? 'contains') : 'contains';
+        $val = is_array($decoded) ? (string)($decoded['val'] ?? '') : $raw;
+        $type = is_array($decoded) ? (string)($decoded['type'] ?? 'string') : 'string';
+
         if ($idx === 1) { // daire_kodu
-            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
-                return mb_strpos($normalize($r['daire_kodu']), $q) !== false;
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyString) {
+                return $applyString($r['daire_kodu'] ?? '', $op, $val);
             }));
         }
         else if ($idx === 2) { // ad soyad
-            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
-                return mb_strpos($normalize($r['_adi_soyadi']), $q) !== false;
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyString) {
+                return $applyString($r['_adi_soyadi'] ?? '', $op, $val);
             }));
         }
         else if ($idx === 3) { // giris_tarihi (formatted)
-            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
-                return mb_strpos($normalize($r['giris_tarihi']), $q) !== false;
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyDate) {
+                return $applyDate($r['giris_tarihi'] ?? '', $op, $val);
             }));
         }
         else if ($idx === 4) { // cikis_tarihi (formatted)
-            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize) {
-                return mb_strpos($normalize($r['cikis_tarihi']), $q) !== false;
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyDate) {
+                return $applyDate($r['cikis_tarihi'] ?? '', $op, $val);
             }));
         }
-        // Diğer kolonlar için gerekirse filtre eklenebilir
+        else if ($idx === 5) { // kalan_anapara
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_kalan_anapara'] ?? 0, $op, $val);
+            }));
+        }
+        else if ($idx === 6) { // gecikme zammı
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_gecikme_zammi'] ?? 0, $op, $val);
+            }));
+        }
+        else if ($idx === 7) { // toplam kalan borç
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_toplam_kalan'] ?? 0, $op, $val);
+            }));
+        }
+        else if ($idx === 8) { // kredi tutarı
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_kredi_tutari'] ?? 0, $op, $val);
+            }));
+        }
+        else if ($idx === 9) { // net borç
+            $rows = array_values(array_filter($rows, function($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_net_borc'] ?? 0, $op, $val);
+            }));
+        }
     }
 }
 

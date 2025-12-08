@@ -90,7 +90,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                             <th>Telefon</th>
                                             <th>Araç Plakası</th>
                                             <th>İkamet Türü</th>
-                                            <th>Giriş Tarihi</th>
+                                            <th data-filter="date">Giriş Tarihi</thd>
                                             <th>Çıkış Tarihi</th>
                                             <th>Durumu</th>
                                             <th>İşlem</th>

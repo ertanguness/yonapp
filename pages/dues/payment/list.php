@@ -159,21 +159,21 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                 <table class="table table-hover datatables" id="tahsilatTable">
                                     <thead>
                                         <tr>
-                                            <th class="all wd-30 no-sorting" style="width: 40px;">
+                                            <th class="wd-30 no-sorting" style="width: 40px;">
                                                 Sıra
                                             </th>
-                                            <th class="all" style="width:7%">Daire Kodu</th>
-                                            <th class="all" style="min-width: 200px;">
+                                            <th class="all" style="width:7%" data-filter="string">Daire Kodu</th>
+                                            <th class="all" style="min-width: 200px;" data-filter="string">
                                            
                                             Ad Soyad
                                             </th>
-                                            <th>Giriş Tarihi</th>
-                                            <th>Çıkış Tarihi</th>
-                                            <th class="text-end" style="width:11%">Borç Tutarı</th>
-                                            <th class="text-end" style="width:11%">Gecikme Zammı</th>
-                                            <th class="text-end" style="width:11%">Toplam Borç</th>
-                                            <th class="text-end" style="width:11%">Kredi Tutarı</th>
-                                            <th class="all text-end" style="width:11%">Kalan Borç</th>
+                                            <th data-filter="date">Giriş Tarihi</th>
+                                            <th data-filter="date">Çıkış Tarihi</th>
+                                            <th class="text-end" style="width:11%" data-filter="number">Borç Tutarı</th>
+                                            <th class="text-end" style="width:11%" data-filter="number">Gecikme Zammı</th>
+                                            <th class="text-end" style="width:11%" data-filter="number">Toplam Borç</th>
+                                            <th class="text-end" style="width:11%" data-filter="number">Kredi Tutarı</th>
+                                            <th class="all text-end" style="width:11%" data-filter="number">Kalan Borç</th>
 
                                             <th class="all">İşlem</th>
                                         </tr>

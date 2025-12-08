@@ -129,11 +129,118 @@ $("#exportExcel").on("click", function () {
 
 /** Datatable sütun arama özelliği */
 function attachDtColumnSearch(api, tableId) {
+  window.__dtFilters = window.__dtFilters || {};
+  const isServerSide = !!(api.settings()[0]?.oInit?.serverSide || api.settings()[0]?.serverSide);
+  const STRING_LABELS = {
+    starts: "Başında",
+    contains: "İçerir",
+    not_contains: "İçermez",
+    ends: "Sonunda",
+    equals: "Eşittir",
+    not_equals: "Eşit değil",
+    none: "Filtre yok"
+  };
+  const NUMBER_LABELS = {
+    gt: "Büyüktür (>)",
+    gte: "Büyük eşittir (>=)",
+    lt: "Küçüktür (<)",
+    lte: "Küçük eşittir (<=)",
+    equals: "Eşittir (=)",
+    not_equals: "Eşit değil (≠)",
+    none: "Filtre yok"
+  };
+  const DATE_LABELS = {
+    after: "Sonra",
+    before: "Önce",
+    on: "Aynı gün",
+    not_on: "Değil",
+    none: "Filtre yok"
+  };
+
+  function encodeSearch(op, val, type) {
+    return JSON.stringify({ op: op || "contains", val: val || "", type: (type || "string") });
+  }
+
+  function decodeSearch(s) {
+    try {
+      const obj = JSON.parse(s);
+      if (obj && typeof obj === "object" && "op" in obj) return obj;
+      return { op: "contains", val: s, type: "string" };
+    } catch (e) {
+      return { op: "contains", val: s || "", type: "string" };
+    }
+  }
+
+  function normalizeText(s) {
+    return (String(s || "").toLowerCase()).normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  }
+  function parseNumber(s) {
+    let t = String(s || "");
+    t = t.replace(/[^\d,.-]/g, '');
+    t = t.replace(/\./g, '');
+    t = t.replace(/,/g, '.');
+    const n = parseFloat(t);
+    return isNaN(n) ? null : n;
+  }
+  function parseDateDMY(s) {
+    const m = String(s || '').match(/(\d{2})\.(\d{2})\.(\d{4})/);
+    if (!m) return null;
+    const d = new Date(parseInt(m[3],10), parseInt(m[2],10)-1, parseInt(m[1],10));
+    return isNaN(d.getTime()) ? null : d.getTime();
+  }
+
+  if (!window.__dtExtSearchAdded) {
+    $.fn.dataTable.ext.search.push(function(settings, data){
+      if (settings?.oInit?.serverSide) return true;
+      const tid = settings.sTableId;
+      const filters = window.__dtFilters[tid];
+      if (!filters) return true;
+      for (const idx in filters) {
+        const f = filters[idx];
+        if (!f || !f.val || String(f.val).trim() === '') continue;
+        const type = f.type || 'string';
+        const op = f.op || 'contains';
+        const cell = data[idx];
+        if (type === 'number') {
+          const cv = parseNumber(cell);
+          const qv = parseNumber(f.val);
+          if (qv === null || cv === null) continue;
+          if (op === 'gt' && !(cv > qv)) return false;
+          if (op === 'gte' && !(cv >= qv)) return false;
+          if (op === 'lt' && !(cv < qv)) return false;
+          if (op === 'lte' && !(cv <= qv)) return false;
+          if (op === 'equals' && !(cv == qv)) return false;
+          if (op === 'not_equals' && !(cv != qv)) return false;
+        } else if (type === 'date') {
+          const cv = parseDateDMY(cell);
+          const qv = parseDateDMY(f.val);
+          if (qv === null || cv === null) continue;
+          if (op === 'after' && !(cv > qv)) return false;
+          if (op === 'before' && !(cv < qv)) return false;
+          if (op === 'on' && !(cv === qv)) return false;
+          if (op === 'not_on' && !(cv !== qv)) return false;
+        } else {
+          const t = normalizeText(cell);
+          const q = normalizeText(f.val);
+          if (op === 'starts' && !(t.startsWith(q))) return false;
+          if (op === 'contains' && !(t.includes(q))) return false;
+          if (op === 'not_contains' && (t.includes(q))) return false;
+          if (op === 'ends' && !(t.endsWith(q))) return false;
+          if (op === 'equals' && !(t === q)) return false;
+          if (op === 'not_equals' && !(t !== q)) return false;
+        }
+      }
+      return true;
+    });
+    window.__dtExtSearchAdded = true;
+  }
+
   $("#" + tableId + " thead").append('<tr class="search-input-row"></tr>');
   api.columns().every(function () {
-    let column = this;
-    let $header = $(column.header());
-    let title = $header.text().trim() || $header.attr("data-title") || $header.attr("aria-label") || "";
+    const column = this;
+    const $header = $(column.header());
+    const title = $header.text().trim() || $header.attr("data-title") || $header.attr("aria-label") || "";
+    const filterType = ($header.attr("data-filter") || "").toLowerCase();
     if (
       title != "İşlem" &&
       title != "Detay" &&
@@ -142,48 +249,134 @@ function attachDtColumnSearch(api, tableId) {
       title != "Sıra" &&
       $header.find('input[type="checkbox"]').length === 0
     ) {
-      let input = document.createElement("input");
+      const th = $('<th class="search text-center align-middle"></th>');
+      const wrap = $('<div class="d-flex align-items-center gap-1"></div>');
+
+      const input = document.createElement("input");
       input.placeholder = title || "Ara...";
       input.classList.add("form-control", "form-control-sm");
       input.setAttribute("autocomplete", "off");
-      const th = $('<th class="search text-center align-middle">').append(
-        input
-      );
-      $("#" + tableId + " thead .search-input-row").append(th);
+
+      const hasTypedFilter = (filterType === "string" || filterType === "number" || filterType === "date");
+      function setActiveOp($menu, op) {
+        if (!$menu || $menu.length === 0) return;
+        $menu.find('.dropdown-item').removeClass('active').removeAttr('aria-selected');
+        if (!op) return; 
+        const $item = $menu.find(`.dropdown-item[data-op="${op}"]`);
+        $item.addClass('active').attr('aria-selected', 'true');
+      }
+      function setButtonIcon($btn, active) {
+        if (!$btn || $btn.length === 0) return;
+        const $i = $btn.find('i');
+        if (!$i.length) return;
+        if (active) {
+          $i.removeClass().addClass('bi bi-funnel-fill');
+        } else {
+          $i.removeClass().addClass('bi bi-funnel');
+        }
+      }
+      let btn, menu;
+      if (hasTypedFilter) {
+        btn = $('<button type="button" class="btn btn-icon btn-light-brand btn-sm p-2 me-2" aria-label="Filtre" data-bs-toggle="dropdown"><i class="bi bi-funnel"></i></i></button>');
+        const labels = filterType === "number" ? NUMBER_LABELS : (filterType === "date" ? DATE_LABELS : STRING_LABELS);
+        menu = $('<div class="dropdown-menu"></div>');
+        Object.entries(labels).forEach(([key, label]) => {
+          if (key === 'none') menu.append('<div class="dropdown-divider m-0"></div>');
+          menu.append(`<a class="dropdown-item m-0" data-op="${key}" href="javascript:void(0)">${label}</a>`);
+        });
+      }
+
+      let currentOp = hasTypedFilter ? (filterType === "number" ? "equals" : (filterType === "date" ? "on" : "contains")) : "contains";
+      if (btn) btn.data("op", currentOp);
+      if (menu) setActiveOp(menu, null);
+
       $(input).on("keyup change", function () {
-        if (column.search() !== this.value) {
-          column.search(this.value).draw();
-          console.log(column.search());
+        const val = this.value;
+        const opNow = (btn ? btn.data("op") : currentOp) || currentOp;
+        const typeNow = hasTypedFilter ? filterType : "string";
+        const hasVal = !!(val && String(val).trim() !== "");
+        if (menu) setActiveOp(menu, hasVal ? opNow : null);
+        if (btn) setButtonIcon(btn, hasVal && opNow !== 'none');
+        if (isServerSide) {
+          const payload = encodeSearch(opNow, val, typeNow);
+          if (column.search() !== payload) column.search(payload).draw();
+        } else {
+          const idx = $(this).closest('th').index();
+          window.__dtFilters[tableId] = window.__dtFilters[tableId] || {};
+          if (hasVal && opNow !== 'none') {
+            window.__dtFilters[tableId][idx] = { op: opNow, val: val, type: typeNow };
+          } else {
+            delete window.__dtFilters[tableId][idx];
+          }
+          api.draw();
         }
       });
-      const isColumnVisible =
-        column.visible() && !$header.hasClass("dtr-hidden");
-      if (!isColumnVisible) {
-        th.hide();
+
+      if (menu) {
+        menu.on("click", ".dropdown-item", function () {
+          currentOp = $(this).data("op");
+          btn.data("op", currentOp);
+          let val = input.value || "";
+          if (currentOp === 'none') { input.value = ''; val = ''; }
+          const hasVal = !!(val && String(val).trim() !== "");
+          setActiveOp(menu, hasVal ? currentOp : null);
+          setButtonIcon(btn, hasVal && currentOp !== 'none');
+          if (isServerSide) {
+            const payload = encodeSearch(currentOp, val, filterType);
+            column.search(payload).draw();
+          } else {
+            const idx = $(input).closest('th').index();
+            window.__dtFilters[tableId] = window.__dtFilters[tableId] || {};
+            if (hasVal && currentOp !== 'none') {
+              window.__dtFilters[tableId][idx] = { op: currentOp, val: val, type: filterType };
+            } else {
+              delete window.__dtFilters[tableId][idx];
+            }
+            api.draw();
+          }
+        });
       }
+
+      if (btn && menu) {
+        wrap.append(input).append($('<div class="dropdown"></div>').append(btn).append(menu));
+      } else {
+        wrap.append(input);
+      }
+      th.append(wrap);
+      $("#" + tableId + " thead .search-input-row").append(th);
+
+      const isColumnVisible = column.visible() && !$header.hasClass("dtr-hidden");
+      if (!isColumnVisible) th.hide();
     } else {
       $("#" + tableId + " thead .search-input-row").append("<th></th>");
     }
   });
+
   api.on("responsive-resize", function (e, datatable, columns) {
     $("#" + tableId + " thead .search-input-row th").each(function (index) {
-      if (columns[index]) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
+      if (columns[index]) $(this).show(); else $(this).hide();
     });
   });
-  var state = api.state.loaded();
+
+  const state = api.state.loaded();
   if (state && state.sTableId === tableId) {
-    var inputs = $("#" + tableId + " thead input");
+    const inputs = $("#" + tableId + " thead input");
     inputs.each(function () {
-      var columnIndex = $(this).closest("th").index();
-      var searchValue = state.columns[columnIndex]?.search?.search || "";
-      if (searchValue) {
-        $(this).val(searchValue);
-        api.column(columnIndex).search(searchValue);
+      const columnIndex = $(this).closest("th").index();
+      const raw = state.columns[columnIndex]?.search?.search || "";
+      const parsed = decodeSearch(raw);
+      if (parsed.val) {
+        $(this).val(parsed.val);
       }
+      const th = $(this).closest("th");
+      const btn = th.find("button[data-bs-toggle=\"dropdown\"]");
+      const menu = th.find(".dropdown-menu");
+      const typeForColumn = parsed.type || "string";
+      const hasValue = (parsed.val && String(parsed.val).trim() !== "");
+      if (btn.length) btn.data("op", hasValue ? (parsed.op || (typeForColumn === "number" ? "equals" : (typeForColumn === "date" ? "on" : "contains"))) : (typeForColumn === "number" ? "equals" : (typeForColumn === "date" ? "on" : "contains")));
+      if (menu.length) setActiveOp(menu, hasValue ? (parsed.op || (typeForColumn === "number" ? "equals" : (typeForColumn === "date" ? "on" : "contains"))) : null);
+      if (btn.length) setButtonIcon(btn, hasValue && (parsed.op || 'contains') !== 'none');
+      if (hasValue) api.column(columnIndex).search(encodeSearch(parsed.op, parsed.val, typeForColumn));
     });
     api.draw();
   } else {
