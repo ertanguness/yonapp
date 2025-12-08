@@ -61,4 +61,33 @@ class SikayetOneriModel extends Model
         if ($siteId) { $conds['site_id'] = $siteId; }
         return $this->findAll($conds, 'id DESC');
     }
+
+    public function getLatestWithUser(?int $siteId = null, int $limit = 5, ?string $status = null): array
+    {
+        $sql = "SELECT so.*, k.adi_soyadi, d.daire_kodu 
+                FROM {$this->table} so
+                LEFT JOIN kisiler k ON so.kisi_id = k.id
+                LEFT JOIN daireler d ON k.daire_id = d.id
+                WHERE 1=1";
+        
+        $params = [];
+        if ($siteId) {
+            $sql .= " AND so.site_id = :site_id";
+            $params[':site_id'] = $siteId;
+        }
+
+        if ($status) {
+            $sql .= " AND so.status = :status";
+            $params[':status'] = $status;
+        }
+        
+        $sql .= " ORDER BY so.id DESC LIMIT " . (int)$limit;
+        
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
 }

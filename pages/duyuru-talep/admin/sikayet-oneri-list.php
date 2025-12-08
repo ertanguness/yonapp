@@ -29,7 +29,7 @@ $model = new SikayetOneriModel();
 
 <div class="main-content">
     <?php
-    $title = "Şikayet ve Öneriles";
+    $title = "Şikayet ve Öneriler";
     $text = "Kullanıcı taleplerini görüntüleyin, durum güncelleyin ve yanıt yazın.";
     require_once 'pages/components/alert.php';
    

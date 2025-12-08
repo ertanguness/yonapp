@@ -28,8 +28,8 @@
             .tui-full-calendar-month-view .tui-full-calendar-date{display:flex;align-items:center;justify-content:center;width:100%;text-align:center}
             .tui-full-calendar-month-view .tui-full-calendar-month-day .tui-full-calendar-date{position:relative !important;left:auto !important;right:auto !important;margin:0 auto !important}
             .tui-full-calendar-month-view .tui-full-calendar-date .tui-full-calendar-dayname-date{display:inline-block;text-align:center;margin:0 auto}
-            .calendar-event-modal .modal-footer{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
-            .calendar-event-modal .modal-footer .action-buttons{display:flex;gap:.5rem;margin-left:auto}
+            .calendar-event-modal .modal-footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+            .calendar-event-modal .modal-footer .action-buttons{display:flex;gap:.75rem;margin-left:auto}
             .calendar-event-modal .modal-footer .btn{padding:.5rem 1rem;font-size:.85rem;font-weight:600;border-radius:10px}
             #preview-edit-btn,#preview-delete-btn{min-width:120px}
             #calendar-save-btn{min-width:120px}

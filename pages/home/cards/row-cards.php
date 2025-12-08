@@ -4,6 +4,27 @@ use App\Helper\Helper;
 
 
 ?>
+<style>
+.card-wrapper[data-card="row-cards"] .card { overflow: hidden; }
+.card-wrapper[data-card="row-cards"] .card-body .hstack,
+.card-wrapper[data-card="row-cards"] .card-footer .hstack { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-width: 0; }
+.card-wrapper[data-card="row-cards"] .hstack > div:first-child { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: .25rem; }
+.card-wrapper[data-card="row-cards"] .hstack > .text-end { flex: 0 0 auto; min-width: 2.25rem; }
+.card-wrapper[data-card="row-cards"] .card-body h4 { margin: 0; white-space: nowrap; font-size: 1.125rem; line-height: 1.25; text-align: center; display: block; width: 100%; }
+.card-wrapper[data-card="row-cards"] .card-body .text-muted { margin: 0; white-space: normal; overflow: visible; text-overflow: clip; word-break: break-word; overflow-wrap: anywhere; }
+.card-wrapper[data-card="row-cards"] .metric-inline { display: flex; align-items: baseline; gap: .25rem; flex-wrap: wrap; min-width: 0; margin-left: -1.25rem; }
+.card-wrapper[data-card="row-cards"] .metric-inline .text-muted { flex: 1 1 auto; min-width: 12ch; }
+.card-wrapper[data-card="row-cards"] .metric-inline h4 { flex: 0 0 auto; }
+.card-wrapper[data-card="row-cards"] .metric-icon { display: block; align-self: center; }
+.card-wrapper[data-card="row-cards"] .late-count-center { width: 100%; display: flex; justify-content: center; }
+.card-wrapper[data-card="row-cards"] .late-count-center h4 { text-align: center; }
+.card-wrapper[data-card="row-cards"] .amount-center { width: 100%; display: flex; justify-content: center; flex: 0 0 100%; }
+.card-wrapper[data-card="row-cards"] .amount-center h4 { text-align: center; display: block; width: 100%; }
+.card-wrapper[data-card="row-cards"] .card-footer { min-height: 72px; height: auto; display: flex; align-items: flex-start; }
+.card-wrapper[data-card="row-cards"] .card-footer .hstack { width: 100%; gap: .5rem; align-items: flex-start; }
+.card-wrapper[data-card="row-cards"] .card-footer p { margin: 0; white-space: normal; overflow: visible; text-overflow: clip; }
+.card-wrapper[data-card="row-cards"] .card-footer .text-end { flex: 0 0 auto; min-width: 2rem; }
+</style>
 
 <div class="row row-cards card-wrapper" data-card="row-cards">
     <div class="d-flex justify-content-end px-2 pt-2">
@@ -15,19 +36,19 @@ use App\Helper\Helper;
             <div class="card-body">
                 <div class="hstack justify-content-between">
                     <div>
-                        <h4 class="text-success"><?php echo Helper::formattedMoney($toplam_aidat_geliri); ?></h4>
-                        <div class="text-muted">Toplam Aidat Geliri</div>
-                    </div>
-                    <div class="text-end">
-                        <i class="feather-credit-card fs-2"></i>
+                        <i class="feather-credit-card fs-2 metric-icon"></i>
+                        <div class="metric-inline">
+                            <div class="amount-center"><h4 class="text-success"><?php echo Helper::formattedMoney($toplam_aidat_geliri); ?></h4></div>
+                            <div class="text-muted">Toplam Aidat Geliri</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-footer bg-success py-3">
                 <div class="hstack justify-content-between">
-                    <p class="text-white mb-0">+5% artış</p>
+                    <p class="text-white mb-0"><?php echo $aidat_tr['text'] ?? 'Sabit'; ?></p>
                     <div class="text-end">
-                        <i class="feather-trending-up text-white"></i>
+                        <i class="<?php echo ($aidat_tr['icon'] ?? 'feather-minus'); ?> text-white"></i>
                     </div>
                 </div>
             </div>
@@ -39,19 +60,19 @@ use App\Helper\Helper;
             <div class="card-body">
                 <div class="hstack justify-content-between">
                     <div>
-                        <h4 class="text-danger"><?php echo Helper::formattedMoney($geciken_odeme_tutari); ?></h4>
-                        <div class="text-muted">Gecikmiş Ödemeler</div>
-                    </div>
-                    <div class="text-end">
-                        <i class="feather-alert-triangle fs-2"></i>
+                        <i class="feather-alert-triangle fs-2 metric-icon"></i>
+                        <div class="metric-inline">
+                            <div class="amount-center"><h4 class="text-danger"><?php echo Helper::formattedMoney($geciken_odeme_tutari); ?></h4></div>
+                            <div class="text-muted">Gecikmiş Ödemeler</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-footer bg-danger py-3">
                 <div class="hstack justify-content-between">
-                    <p class="text-white mb-0">+2.5% artış</p>
+                    <p class="text-white mb-0"><?php echo $overdue_tr['text'] ?? 'Sabit'; ?></p>
                     <div class="text-end">
-                        <i class="feather-trending-up text-white"></i>
+                        <i class="<?php echo ($overdue_tr['icon'] ?? 'feather-minus'); ?> text-white"></i>
                     </div>
                 </div>
             </div>
@@ -63,19 +84,19 @@ use App\Helper\Helper;
             <div class="card-body">
                 <div class="hstack justify-content-between">
                     <div>
-                        <h4 class="text-warning"><?php echo Helper::formattedMoney($toplam_gider); ?></h4>
-                        <div class="text-muted">Toplam Giderler</div>
-                    </div>
-                    <div class="text-end">
-                        <i class="feather-dollar-sign fs-2"></i>
+                        <i class="feather-dollar-sign fs-2 metric-icon"></i>
+                        <div class="metric-inline">
+                            <div class="amount-center"><h4 class="text-warning"><?php echo Helper::formattedMoney($toplam_gider); ?></h4></div>
+                            <div class="text-muted">Toplam Giderler</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-footer bg-warning py-3">
                 <div class="hstack justify-content-between">
-                    <p class="text-white mb-0">-1.2% azalma</p>
+                    <p class="text-white mb-0"><?php echo $gider_tr['text'] ?? 'Sabit'; ?></p>
                     <div class="text-end">
-                        <i class="feather-trending-down text-white"></i>
+                        <i class="<?php echo ($gider_tr['icon'] ?? 'feather-minus'); ?> text-white"></i>
                     </div>
                 </div>
             </div>
@@ -87,19 +108,19 @@ use App\Helper\Helper;
             <div class="card-body">
                 <div class="hstack justify-content-between">
                     <div>
-                        <h4 class="text-danger"><?php echo Helper::formattedMoney($geciken_tahsilat_sayisi); ?></h4>
-                        <div class="text-muted">Gecikmiş Aidat Sayısı</div>
-                    </div>
-                    <div class="text-end">
-                        <i class="feather-alert-circle fs-2"></i>
+                        <i class="feather-alert-circle fs-2 metric-icon"></i>
+                        <div class="metric-inline">
+                            <div class="late-count-center"><h4 class="text-danger"><?php echo (int)$geciken_tahsilat_sayisi; ?></h4></div>
+                            <div class="text-muted">Gecikmiş Aidat Sayısı</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-footer bg-info py-3">
                 <div class="hstack justify-content-between">
-                    <p class="text-white mb-0">Sabit</p>
+                    <p class="text-white mb-0"><?php echo $late_tr['text'] ?? 'Sabit'; ?></p>
                     <div class="text-end">
-                        <i class="feather-minus text-white"></i>
+                        <i class="<?php echo ($late_tr['icon'] ?? 'feather-minus'); ?> text-white"></i>
                     </div>
                 </div>
             </div>

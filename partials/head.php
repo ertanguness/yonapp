@@ -5,6 +5,31 @@ $page = isset($page) ? $page : 'ana-sayfa';
 
 ?>
 <head>
+    <script>
+        (function() {
+            try {
+                var appSkin = localStorage.getItem('app-skin');
+                if (appSkin) {
+                    document.documentElement.classList.add(appSkin);
+                }
+                
+                var appNavigation = localStorage.getItem('app-navigation');
+                if (appNavigation) {
+                    document.documentElement.classList.add(appNavigation);
+                }
+                
+                var appHeader = localStorage.getItem('app-header');
+                if (appHeader) {
+                    document.documentElement.classList.add(appHeader);
+                }
+                
+                var fontFamily = localStorage.getItem('font-family');
+                if (fontFamily) {
+                    document.documentElement.classList.add(fontFamily);
+                }
+            } catch (e) {}
+        })();
+    </script>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

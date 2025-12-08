@@ -433,6 +433,25 @@
         });
     }
 
+    function confirmDeletePrompt(message) {
+        if (window.Swal && typeof Swal.fire === 'function') {
+            return Swal.fire({
+                title: 'Silme Onayı',
+                text: message || 'Bu etkinliği silmek istediğinize emin misiniz?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, sil',
+                cancelButtonText: 'Vazgeç',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-outline-danger',
+                    cancelButton: 'btn btn-outline-secondary'
+                }
+            }).then(function(result){ return !!result.isConfirmed; });
+        }
+        return Promise.resolve(window.confirm(message || 'Bu etkinliği silmek istediğinize emin misiniz?'));
+    }
+
     // Yeni eklenen önizleme fonksiyonları
     function showSchedulePreview(schedule) {
         try {
@@ -588,13 +607,11 @@
             const deleteBtn = document.getElementById('preview-delete-btn');
             if (deleteBtn) {
                 deleteBtn.onclick = function() {
-                    if (confirm('Bu etkinliği silmek istediğinize emin misiniz?')) {
+                    confirmDeletePrompt('Bu etkinliği silmek istediğinize emin misiniz?').then(function(confirmed){
+                        if (!confirmed) return;
                         try {
-                            // Önizleme modal'ını kapat
                             const previewModal = bootstrap.Modal.getInstance(document.getElementById('calendarEventPreviewModal'));
                             if (previewModal) previewModal.hide();
-                            
-                            // Silme işlemini gerçekleştir
                             setTimeout(function() {
                                 persistSchedule({ action: 'delete', id: schedule.id })
                                     .then(refreshSchedules)
@@ -607,7 +624,7 @@
                             console.error('Error deleting schedule:', error);
                             showAlert('Etkinlik silinemedi.');
                         }
-                    }
+                    });
                 };
             }
         } catch (error) {
@@ -1021,18 +1038,21 @@
                 if (!scheduleId) {
                     return;
                 }
-                clearAlert();
-                persistSchedule({ action: 'delete', id: scheduleId })
-                    .then(function () {
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        }
-                        resetForm();
-                        refreshSchedules();
-                    })
-                    .catch(function (error) {
-                        showAlert(error.message || 'Etkinlik silinemedi.');
-                    });
+                confirmDeletePrompt('Bu etkinliği silmek istediğinize emin misiniz?').then(function(confirmed){
+                    if (!confirmed) return;
+                    clearAlert();
+                    persistSchedule({ action: 'delete', id: scheduleId })
+                        .then(function () {
+                            if (modalInstance) {
+                                modalInstance.hide();
+                            }
+                            resetForm();
+                            refreshSchedules();
+                        })
+                        .catch(function (error) {
+                            showAlert(error.message || 'Etkinlik silinemedi.');
+                        });
+                });
             });
         }
 
