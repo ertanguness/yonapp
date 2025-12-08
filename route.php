@@ -94,6 +94,9 @@ $router->get('site-sakini-ekle', fn() => require 'pages/management/peoples/manag
 $router->get('site-sakini-duzenle/{id}', fn($id) => require 'pages/management/peoples/manage.php');
 $router->get('excelden-site-sakini-yukle', fn() => require 'pages/management/peoples/upload-from-xls.php');
 
+// Program Giriş Bilgileri (Aktif sakinler için toplu davet ve giriş logları)
+$router->get('program-giris-bilgileri', fn() => require 'pages/management/peoples/program-giris-bilgileri.php');
+
 $router->get('acil-durum-kisileri', fn() => require 'pages/acil-durum-kisileri/list.php');
 
 

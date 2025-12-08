@@ -105,6 +105,7 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
                         // YARDIMCI FONKSİYONU YENİ PARAMETRE İLE ÇAĞIR
                         renderMenuItems($items, $activeMenuInfo);
                     }
+                    
                 } else {
                     echo '<li class="nxl-item"><span class="nxl-mtext px-3">Görüntülenecek menü bulunamadı.</span></li>';
                 }

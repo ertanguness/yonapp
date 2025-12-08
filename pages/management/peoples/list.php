@@ -43,6 +43,11 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                // require_once 'pages/components/download.php'
                 ?>
            
+              <a href="/program-giris-bilgileri" class="btn btn-icon has-tooltip tooltip-bottom"
+                   data-tooltip="Program giriş bilgileri">
+                    <i class="feather-log-in me-2"></i>
+                    Program Giriş Bilgileri
+                </a>
                 <a href="/excelden-site-sakini-yukle" class="btn btn-icon has-tooltip tooltip-bottom"
                    data-tooltip="Site Sakinlerini Excelden Yükle">
                     <i class="feather-upload me-2"></i>
@@ -144,14 +149,14 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                                 <td><?php echo $durum; ?></td>
                                                 
                                                 <td style="width: 7%;">
-                                                    <div class="hstack gap-2">
+                                                    <div class="hstack gap-1">
                                                         <a href="javascript:void(0);" class="avatar-text avatar-md opensiteSakiniDetay" data-id="<?= $enc_id ?>">
                                                             <i class="feather-eye"></i>
                                                         </a>
-                                                        <a href="site-sakini-duzenle/<?php echo $enc_id; ?>" class="avatar-text avatar-md" title="Düzenle">
+                                                        <a href="/site-sakini-duzenle/<?= $enc_id ?>" class="avatar-text avatar-md" title="Düzenle">
                                                             <i class="feather-edit"></i>
                                                         </a>
-                                                        <a href="javascript:void(0);" data-name="<?php echo $adi_soyadi; ?>" data-id="<?php echo $enc_id; ?>" class="avatar-text avatar-md delete-peoples" data-id="<?php echo $enc_id; ?>" data-name="<?php echo $adi_soyadi; ?>">
+                                                        <a href="javascript:void(0);" data-name="<?= $adi_soyadi ?>" data-id="<?= $enc_id ?>" class="avatar-text avatar-md delete-peoples">
                                                             <i class="feather-trash-2"></i>
                                                         </a>
                                                     </div>

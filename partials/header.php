@@ -351,14 +351,14 @@ try {
                                 });
                                 $list.on('click', 'a', function() {
                                     var code = $(this).data('daire-kodu') || '';
-                                    var url = 'index?p=yonetici-aidat-odeme&q=' + encodeURIComponent(code);
+                                    var url = '/index?p=yonetici-aidat-odeme&q=' + encodeURIComponent(code);
                                     window.location.href = url;
                                 });
                                 $input.on('keydown', function(e) {
                                     if (e.key === 'Enter') {
                                         var term = ($input.val() || '').trim();
                                         if (term) {
-                                            window.location.href = 'index?p=yonetici-aidat-odeme&q=' + encodeURIComponent(term);
+                                            window.location.href = '/index?p=yonetici-aidat-odeme&q=' + encodeURIComponent(term);
                                         }
                                     }
                                 });

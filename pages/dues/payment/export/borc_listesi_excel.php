@@ -52,44 +52,130 @@ foreach ($records as $borc) {
     ];
 }
 
-// Global arama
+// Normalize helper (accent-insensitive lowercase)
+$normalize = function($s){
+    $t = mb_strtolower((string)$s, 'UTF-8');
+    return preg_replace('/\x{0307}/u', '', $t);
+};
+
+// Global arama (ad, daire kodu)
 if (!empty($request['search']['value'])) {
-    $q = mb_strtolower(trim($request['search']['value']));
-    $rows = array_values(array_filter($rows, function ($r) use ($q) {
+    $q = $normalize(trim($request['search']['value']));
+    $rows = array_values(array_filter($rows, function ($r) use ($q, $normalize) {
         return (
-            mb_strpos(mb_strtolower($r['adi_soyadi']), $q) !== false ||
-            mb_strpos(mb_strtolower($r['daire_kodu']), $q) !== false
+            mb_strpos($normalize($r['adi_soyadi']), $q) !== false ||
+            mb_strpos($normalize($r['daire_kodu']), $q) !== false
         );
     }));
 }
 
-// Kolon bazlı arama
+// Kolon bazlı arama (typed operators: string/number/date)
 if (!empty($request['columns']) && is_array($request['columns'])) {
+    $parseNumber = function($s){
+        $s = trim((string)$s);
+        if ($s === '') return null;
+        $s = str_replace(['.', ' '], ['', ''], $s);
+        $s = str_replace(',', '.', $s);
+        return is_numeric($s) ? (float)$s : null;
+    };
+    $parseDate = function($s){
+        $s = trim((string)$s);
+        if ($s === '') return null;
+        $dt = \DateTime::createFromFormat('d.m.Y', $s);
+        return $dt ? $dt->getTimestamp() : null;
+    };
+    $applyString = function($target, $op, $val) use ($normalize){
+        $t = $normalize($target);
+        $q = $normalize($val);
+        if ($op === 'none' || $q === '') return true;
+        if ($op === 'starts') return mb_strpos($t, $q) === 0;
+        if ($op === 'contains') return mb_strpos($t, $q) !== false;
+        if ($op === 'not_contains') return mb_strpos($t, $q) === false;
+        if ($op === 'ends') return $q === '' ? true : (mb_substr($t, -mb_strlen($q)) === $q);
+        if ($op === 'equals') return $t === $q;
+        if ($op === 'not_equals') return $t !== $q;
+        return mb_strpos($t, $q) !== false;
+    };
+    $applyNumber = function($target, $op, $val) use ($parseNumber){
+        $tv = (float)$target; $q = $parseNumber($val);
+        if ($q === null) return true;
+        if ($op === 'none') return true;
+        if ($op === 'gt') return $tv > $q;
+        if ($op === 'gte') return $tv >= $q;
+        if ($op === 'lt') return $tv < $q;
+        if ($op === 'lte') return $tv <= $q;
+        if ($op === 'equals') return $tv == $q;
+        if ($op === 'not_equals') return $tv != $q;
+        return $tv == $q;
+    };
+    $applyDate = function($target, $op, $val) use ($parseDate){
+        $tv = $parseDate($target); $q = $parseDate($val);
+        if ($q === null || $tv === null) return true;
+        if ($op === 'none') return true;
+        if ($op === 'after') return $tv > $q;
+        if ($op === 'before') return $tv < $q;
+        if ($op === 'on') return $tv === $q;
+        if ($op === 'not_on') return $tv !== $q;
+        return $tv === $q;
+    };
+
     foreach ($request['columns'] as $idx => $reqCol) {
-        $val = trim($reqCol['search']['value'] ?? '');
-        if ($val === '') continue;
-        $q = mb_strtolower($val);
+        $raw = trim($reqCol['search']['value'] ?? '');
+        if ($raw === '') continue;
+        $decoded = json_decode($raw, true);
+        $op = is_array($decoded) ? (string)($decoded['op'] ?? 'contains') : 'contains';
+        $val = is_array($decoded) ? (string)($decoded['val'] ?? '') : $raw;
+        $type = is_array($decoded) ? (string)($decoded['type'] ?? 'string') : 'string';
+
         if ($idx === 1) { // daire_kodu
-            $rows = array_values(array_filter($rows, function ($r) use ($q) {
-                return mb_strpos(mb_strtolower($r['daire_kodu']), $q) !== false;
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyString) {
+                return $applyString($r['daire_kodu'] ?? '', $op, $val);
             }));
-        } elseif ($idx === 2) { // ad soyad
-            $rows = array_values(array_filter($rows, function ($r) use ($q) {
-                return mb_strpos(mb_strtolower($r['adi_soyadi']), $q) !== false;
+        }
+        else if ($idx === 2) { // ad soyad
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyString) {
+                return $applyString($r['adi_soyadi'] ?? '', $op, $val);
             }));
-        } elseif ($idx === 3) { // giris_tarihi (formatted)
-            $rows = array_values(array_filter($rows, function ($r) use ($q) {
-                return mb_strpos(mb_strtolower($r['giris_tarihi']), $q) !== false;
+        }
+        else if ($idx === 3) { // giris_tarihi (formatted)
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyDate) {
+                return $applyDate($r['giris_tarihi'] ?? '', $op, $val);
             }));
-        } elseif ($idx === 4) { // cikis_tarihi (formatted)
-            $rows = array_values(array_filter($rows, function ($r) use ($q) {
-                return mb_strpos(mb_strtolower($r['cikis_tarihi']), $q) !== false;
+        }
+        else if ($idx === 4) { // cikis_tarihi (formatted)
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyDate) {
+                return $applyDate($r['cikis_tarihi'] ?? '', $op, $val);
+            }));
+        }
+        else if ($idx === 5) { // kalan anapara
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_kalan_anapara'] ?? 0, $op, $val);
+            }));
+        }
+        else if ($idx === 6) { // gecikme zammı
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_gecikme_zammi'] ?? 0, $op, $val);
+            }));
+        }
+        else if ($idx === 7) { // toplam kalan borç
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_toplam_kalan'] ?? 0, $op, $val);
+            }));
+        }
+        else if ($idx === 8) { // kredi tutarı
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_kredi_tutari'] ?? 0, $op, $val);
+            }));
+        }
+        else if ($idx === 9) { // net borç
+            $rows = array_values(array_filter($rows, function ($r) use ($op, $val, $applyNumber) {
+                return $applyNumber($r['_net_borc'] ?? 0, $op, $val);
             }));
         }
     }
 }
 
-// Sıralama
+// Sıralama (DataTables'daki kolon indekslerine göre)
 if (!empty($request['order'][0]['column'])) {
     $col = (int)$request['order'][0]['column'];
     $dir = ($request['order'][0]['dir'] ?? 'asc') === 'desc' ? -1 : 1;
@@ -118,17 +204,13 @@ if (!empty($request['order'][0]['column'])) {
     } else {
         $keyMap = [
             2 => function ($r) { return $r['adi_soyadi']; },
-            3 => function ($r) { return $r['telefon']; },
-            4 => function ($r) { return $r['uyelik_tipi']; },
-            5 => function ($r) { return $r['durum']; },
-            6 => function ($r) { return $r['daire_tipi']; },
-            7 => function ($r) { return $r['giris_tarihi']; },
-            8 => function ($r) { return $r['cikis_tarihi']; },
-            9 => function ($r) { return $r['_kalan_anapara']; },
-            10 => function ($r) { return $r['_gecikme_zammi']; },
-            11 => function ($r) { return $r['_toplam_kalan']; },
-            12 => function ($r) { return $r['_kredi_tutari']; },    
-            13 => function ($r) { return $r['_net_borc']; },
+            3 => function ($r) { return $r['giris_tarihi']; },
+            4 => function ($r) { return $r['cikis_tarihi']; },
+            5 => function ($r) { return $r['_kalan_anapara']; },
+            6 => function ($r) { return $r['_gecikme_zammi']; },
+            7 => function ($r) { return $r['_toplam_kalan']; },
+            8 => function ($r) { return $r['_kredi_tutari']; },
+            9 => function ($r) { return $r['_net_borc']; },
         ];
         if (isset($keyMap[$col])) {
             $getter = $keyMap[$col];
@@ -222,7 +304,7 @@ for ($i = 1; $i <= $lastColIdx; $i++) {
 }
 
 // Sayısal kolonlar için format ve hizalama
-$numericStartColIdx = 9; // Borç Tutarı sütunu
+$numericStartColIdx = 10; // Borç Tutarı sütunu
 $numericStartCol = Coordinate::stringFromColumnIndex($numericStartColIdx);
 $sheet->getStyle($numericStartCol . '5:' . $lastCol . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00');
 $sheet->getStyle($numericStartCol . '5:' . $lastCol . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
