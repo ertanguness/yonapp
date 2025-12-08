@@ -12,7 +12,7 @@ $requests = $SikayetOneriModel->getLatestWithUser($site_id, 5, 'Yeni');
         <div class="card-header">
             <h5 class="card-title">Talep ve Öneriler</h5>
             <div class="card-header-action">
-                <a href="?p=sikayet-oneri-listesi" class="btn btn-primary">Tümü</a>
+                <a href="/sikayet-oneri-listesi" class="btn btn-primary">Tümü</a>
                 <span class="drag-handle" title="Taşı"><i class="bi bi-arrows-move"></i></span>
             </div>
         </div>
