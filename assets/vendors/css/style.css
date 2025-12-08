@@ -563,4 +563,8 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, tabl
     padding: 10px 12px;
     white-space: nowrap;
   }
+
+  .site-select{
+    display: none;
+  }
 }

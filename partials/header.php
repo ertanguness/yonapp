@@ -117,17 +117,17 @@ try {
         </style>
 
         <!--! [End] Header Left !-->
-        <div class="header d-flex me-auto ps-3">
+        <div class="header d-flex me-auto">
             <div class="d-flex align-items-center">
                 <div class="col-6 d-flex me-auto">
 
                     <?php if (Gate::isResident()) {
                         $currentSite = (new Site())->getCurrentSite();
                         if ($currentSite) {
-                            echo '<span class="text-nowrap" style="color: #333;">' . htmlspecialchars($currentSite->site_adi ?? 'Site Adı Yok', ENT_QUOTES, 'UTF-8') . '</span>';
+                            echo '<span class="text-nowrap site-select" style="color: #333;">' . htmlspecialchars($currentSite->site_adi ?? 'Site Adı Yok', ENT_QUOTES, 'UTF-8') . '</span>';
                         }
                     } else { ?>
-                        <div class="input-group flex-nowrap w-100 m-0 p-0 " style="min-width: 200px;">
+                        <div class="input-group flex-nowrap w-100 p-0 site-select ps-3" style="min-width: 260px;">
                             <div class="input-group-text"><i class="feather-grid"></i></div>
                             <?php
 
@@ -143,9 +143,9 @@ try {
                     <!-- Arama Kutusu -->
                     <?php if (!Gate::isResident()) { ?>
                         <?php if (Gate::allows('yonetici_aidat_odeme')) { ?>
-                            <div class="ms-4 d-flex align-items-center" id="globalHeaderSearchWrap">
+                            <div class="d-flex align-items-center" id="globalHeaderSearchWrap">
                                 <a href="javascript:void(0);" class="nxl-head-link me-0" id="globalHeaderSearchToggle"><i class="feather-search"></i></a>
-                                <div class="d-none ms-2 position-relative" id="globalHeaderSearchBox" style="width: 260px;">
+                                <div class="d-none ms-2 position-relative" id="globalHeaderSearchBox" style="width: 180px;">
                                     <input type="text" class="form-control"
                                         autocomplete="off"
                                         id="globalHeaderSearch" placeholder="Daire kodu veya ad soyad">

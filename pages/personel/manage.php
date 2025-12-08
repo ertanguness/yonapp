@@ -4,6 +4,7 @@ use App\Services\Gate;
 use App\Helper\Helper;
 use App\Helper\Security;
 use Model\PersonelModel;
+use Model\PersonelOdemelerModel;
 
 
 /**Yetkisiz Erişimi Engelle */
@@ -17,6 +18,11 @@ $PersonelModel = new PersonelModel();
 $id = $id ?? 0;
 $personel = $PersonelModel->find($id, true);
 $person_id = Security::decrypt($id) ?? 0;
+$yearTotal = 0;
+if ($person_id) {
+    $PaymentModel = new PersonelOdemelerModel();
+    $yearTotal = $PaymentModel->sumByPersonYear((int)$person_id);
+}
 
 ?>
 
@@ -55,26 +61,34 @@ $person_id = Security::decrypt($id) ?? 0;
     <!-- Nav tabs -->
     <ul class="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs"
         id="myTab" role="tablist">
-        <li class="nav-item flex-fill border-top" role="presentation">
+        <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link active"
                 data-bs-toggle="tab" data-bs-target="#personsInfoTab"
-                role="tab">Personel Bilgileri</a>
+                role="tab">
+                <i class="feather-user me-2"></i>
+                Personel Bilgileri</a>
         </li>
-        <li class="nav-item flex-fill border-top" role="presentation">
+        <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link"
                 data-bs-toggle="tab" data-bs-target="#taskManagementTab"
-                role="tab">Görev Yönetimi</a>
+                role="tab">
+                <i class="feather-list me-2"></i>
+                Görev Yönetimi</a>
         </li>
-        <li class="nav-item flex-fill border-top" role="presentation">
+        <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link"
                 data-bs-toggle="tab" data-bs-target="#leaveTrackingTab"
-                role="tab">İzin Takip Yönetimi</a>
+                role="tab">
+                <i class="feather-calendar me-2"></i>
+                İzin Takip Yönetimi</a>
         </li>
 
-        <li class="nav-item flex-fill border-top" role="presentation">
+        <li class="nav-item border-top" role="presentation">
             <a href="javascript:void(0);" class="nav-link"
                 data-bs-toggle="tab" data-bs-target="#paymentsTab"
-                role="tab">Ödemeler</a>
+                role="tab">
+                <i class="feather-credit-card me-2"></i>
+                Ödemeler</a>
         </li>
     </ul>
 </div>
@@ -83,7 +97,6 @@ $person_id = Security::decrypt($id) ?? 0;
     <div class="col-lg-12">
         <div class="card stretch stretch-full">
             <div class="card-body task-header d-lg-flex align-items-center justify-content-between">
-
                 <div class="hstack gap-3">
                     <div class="avatar-image">
                         <img src="/assets/images/avatar/1.png" alt="" class="img-fluid">
@@ -95,6 +108,7 @@ $person_id = Security::decrypt($id) ?? 0;
                 </div>
             </div>
         </div>
+        
         <div class="row">
             <div class="container-xl">
                 <div class="row row-deck row-cards">
@@ -162,5 +176,4 @@ $person_id = Security::decrypt($id) ?? 0;
 </div>
 <script>
     window.personId = <?php echo isset($person_id) ? (int)$person_id : 0; ?>;
-   
 </script>
