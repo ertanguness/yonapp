@@ -1,4 +1,5 @@
 <?php
+ob_start();
 /**
  * DataTables server-side endpoint – Gelir/Gider Listesi
  *
@@ -69,8 +70,20 @@ if (isset($_POST['columns']) && is_array($_POST['columns'])) {
         8 => 'aciklama'
     ];
     foreach ($_POST['columns'] as $idx => $col) {
-        $val = isset($col['search']['value']) ? trim((string)$col['search']['value']) : '';
-        if ($val !== '' && isset($mapCols[$idx])) { $filters[$mapCols[$idx]] = $val; }
+        $raw = isset($col['search']['value']) ? trim((string)$col['search']['value']) : '';
+        if ($raw === '' || !isset($mapCols[$idx])) { continue; }
+        if ($raw[0] === '{') {
+            $j = json_decode($raw, true);
+            if (is_array($j)) {
+                $filters[$mapCols[$idx]] = [
+                    'op' => isset($j['op']) ? (string)$j['op'] : 'contains',
+                    'val' => isset($j['val']) ? (string)$j['val'] : '',
+                    'type' => isset($j['type']) ? (string)$j['type'] : 'string'
+                ];
+                continue;
+            }
+        }
+        $filters[$mapCols[$idx]] = $raw;
     }
 }
 // Sayım: toplam ve filtreli kayıt
@@ -120,6 +133,7 @@ foreach ($items as $hareket) {
 }
 
 // DataTables beklenen JSON çıktısı
+if (function_exists('ob_get_level')) { while (ob_get_level()) { ob_end_clean(); } }
 echo json_encode([
     'draw' => $draw,
     'recordsTotal' => $total,

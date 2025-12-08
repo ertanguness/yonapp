@@ -299,8 +299,8 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                                     <th>İşlem Türü</th>
                                     <th>Daire Kodu</th>
                                     <th>Hesap Adı</th>
-                                    <th>Tutar</th>
-                                    <th>Bakiye</th>
+                                    <th data-filter="number">Tutar</th>
+                                    <th data-filter="number">Bakiye</th>
                                     <th>Kategori</th>
                                     <th>Makbuz No</th>
                                     <th>Açıklama</th>

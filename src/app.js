@@ -5,8 +5,12 @@ $(document).ready(function () {
   //const tahsilatTable = $("#tahsilatTable");
   const $gg = $("#gelirGiderTable");
   if ($gg.length) {
-    table = $gg.DataTable({
+    if ($.fn.DataTable.isDataTable($gg[0])) {
+      table = $gg.DataTable();
+    } else {
+      table = $gg.DataTable({
       //stateSave: true,
+      destroy: true,
       responsive: true,
       searching: true,
       info: true,
@@ -63,13 +67,28 @@ $(document).ready(function () {
           sortDescending: ": azalan sütuna sırala"
         }
       },
-      ajax: {
-        url: "/pages/finans-yonetimi/gelir-gider/server_side_api.php",
-        type: "POST",
-        data: function (d) {
-          d.action = "datatable-list";
-        },
-        dataSrc: "data"
+      ajax: function (d, callback, settings) {
+        var urls = [
+          "/pages/finans-yonetimi/gelir-gider/server_side_api.php"
+          
+        ];
+        var payload = $.extend(true, {}, d, { action: "datatable-list" });
+        var i = 0;
+        function next() {
+          if (i >= urls.length) {
+            callback({ draw: d.draw || 1, recordsTotal: 0, recordsFiltered: 0, data: [] });
+            return;
+          }
+          $.ajax({
+            url: urls[i++],
+            type: "POST",
+            data: payload,
+            dataType: "json",
+            success: function (json) { callback(json); },
+            error: function () { next(); }
+          });
+        }
+        next();
       },
       ordering: false,
 
@@ -78,11 +97,11 @@ $(document).ready(function () {
         var tableId = settings.sTableId;
         attachDtColumnSearch(api, tableId);
         api.columns.adjust().responsive.recalc();
-        api.draw();
       }
     });
+    }
 
-    $(window).on("resize.gg", function () {
+    $(window).off("resize.gg").on("resize.gg", function () {
       try {
         table.columns.adjust().responsive.recalc();
       } catch (e) {}
@@ -235,7 +254,9 @@ function attachDtColumnSearch(api, tableId) {
     window.__dtExtSearchAdded = true;
   }
 
-  $("#" + tableId + " thead").append('<tr class="search-input-row"></tr>');
+  var $thead = $("#" + tableId + " thead");
+  $thead.find('.search-input-row').remove();
+  $thead.append('<tr class="search-input-row"></tr>');
   api.columns().every(function () {
     const column = this;
     const $header = $(column.header());

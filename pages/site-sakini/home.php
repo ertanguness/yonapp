@@ -328,12 +328,43 @@ if ($aktifAnket) {
 document.addEventListener('DOMContentLoaded', function(){
     var container = document.getElementById('duyuruPreview');
     if (!container) return;
-    fetch('/pages/duyuru-talep/admin/api/APIDuyuru.php?datatables=1')
+    function statusClass(s){
+        if (!s) return 'bg-soft-secondary text-secondary';
+        var v = String(s).toLowerCase();
+        if (v === 'published' || v === 'yayinda' || v === 'aktif') return 'bg-soft-success text-success';
+        if (v === 'archived' || v === 'arsivlendi' || v === 'pasif') return 'bg-soft-dark text-dark';
+        return 'bg-soft-secondary text-secondary';
+    }
+    function formatDate(s){
+        if (!s) return '-';
+        var parts = String(s).split('-');
+        if (parts.length === 3) return parts[2] + '.' + parts[1] + '.' + parts[0];
+        return s;
+    }
+    fetch('/pages/duyuru-talep/admin/api/APIDuyuru.php')
         .then(function(r){ return r.ok ? r.json() : null; })
         .then(function(json){
-            if (!json || !json.data || !Array.isArray(json.data) || json.data.length === 0) return;
+            if (!json) return;
+            var rows = [];
+            if (Array.isArray(json.data)) {
+                if (json.data.length > 0 && !Array.isArray(json.data[0])) {
+                    rows = json.data;
+                } else {
+                    rows = json.data.map(function(row){
+                        return {
+                            id: row[0],
+                            baslik: row[1],
+                            icerik: row[2],
+                            baslangic_tarihi: row[3],
+                            bitis_tarihi: row[4],
+                            durum: row[5]
+                        };
+                    });
+                }
+            }
+            if (!rows.length) return;
             container.innerHTML = '';
-            json.data.slice(0,3).forEach(function(item){
+            rows.slice(0,3).forEach(function(item){
                 var col = document.createElement('div');
                 col.className = 'col-12';
                 var card = document.createElement('div');
@@ -343,14 +374,28 @@ document.addEventListener('DOMContentLoaded', function(){
                 icon.innerHTML = '<i class="feather-speaker"></i>';
                 var body = document.createElement('div');
                 body.className = 'flex-fill';
+                var header = document.createElement('div');
+                header.className = 'd-flex align-items-center justify-content-between';
                 var title = document.createElement('div');
                 title.className = 'fw-semibold text-dark';
                 title.textContent = item.baslik || 'Duyuru';
+                var status = document.createElement('span');
+                status.className = 'badge ' + statusClass(item.durum || '');
+                status.textContent = item.durum || '';
+                header.appendChild(title);
+                header.appendChild(status);
                 var summary = document.createElement('div');
                 summary.className = 'fs-12 text-muted';
-                summary.textContent = (item.icerik || '').substring(0,120);
-                body.appendChild(title);
+                var plain = String(item.icerik || '').replace(/<[^>]*>/g, '');
+                summary.textContent = plain.substring(0,120);
+                var dates = document.createElement('div');
+                dates.className = 'fs-12 text-muted';
+                var start = formatDate(item.baslangic_tarihi || '');
+                var end = formatDate(item.bitis_tarihi || '');
+                dates.textContent = 'Başlangıç: ' + start + ' · Bitiş: ' + end;
+                body.appendChild(header);
                 body.appendChild(summary);
+                body.appendChild(dates);
                 var right = document.createElement('div');
                 right.className = 'text-end';
                 right.innerHTML = '<a href="/sakin/duyurular" class="btn btn-light btn-sm">Detay</a>';

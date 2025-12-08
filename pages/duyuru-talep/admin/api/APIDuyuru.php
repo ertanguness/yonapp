@@ -104,7 +104,7 @@ if ($method==='POST') {
     if (is_string($kisiIds)) { $kisiIds = array_filter(array_map('intval', explode(',', $kisiIds))); }
     if (is_array($kisiIds)) { $targetIds = json_encode(array_map('intval', $kisiIds)); }
   }
-  $stmt = $pdo->prepare('INSERT INTO duyurular (baslik, icerik, baslangic_tarihi, bitis_tarihi, durum, target_type, target_ids) VALUES (?,?,?,?,?,?,?,?)');
+  $stmt = $pdo->prepare('INSERT INTO duyurular (baslik, icerik, baslangic_tarihi, bitis_tarihi, durum, target_type, target_ids) VALUES (?,?,?,?,?,?,?)');
   $ok = $stmt->execute([$title, $content, $start?:null, $end?:null, $status, $targetType, $targetIds]);
   if (!$ok) respond('error','Kaydedilemedi');
   $id = $pdo->lastInsertId();
