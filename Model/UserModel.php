@@ -60,7 +60,7 @@ class UserModel extends Model
         if (empty($where)) {
             return [];
         }
-        $sql = 'SELECT u.*, r.role_name FROM ' . $this->table . ' u LEFT JOIN user_roles r ON u.roles = r.id WHERE (' . implode(' OR ', $where) . ') AND u.status = 1 ORDER BY IFNULL(u.login_favorite,0) DESC, IFNULL(u.login_usage_count,0) DESC, u.is_main_user DESC, u.id ASC';
+        $sql = 'SELECT u.*, r.role_name FROM ' . $this->table . ' u LEFT JOIN user_roles r ON u.roles = r.id WHERE (' . implode(' OR ', $where) . ') AND (u.status = 1 OR u.roles = 3) ORDER BY IFNULL(u.login_favorite,0) DESC, IFNULL(u.login_usage_count,0) DESC, u.is_main_user DESC, u.id ASC';
         $stmt = $this->db->prepare($sql);
         foreach ($params as $k => $v) {
             $stmt->bindValue(':' . $k, $v);

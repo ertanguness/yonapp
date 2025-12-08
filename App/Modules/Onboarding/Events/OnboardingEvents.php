@@ -2,12 +2,14 @@
 namespace App\Modules\Onboarding\Events;
 
 use App\Modules\Onboarding\Services\OnboardingService;
+use App\Services\Gate;
 
 class OnboardingEvents
 {
     public static function complete(string $taskKey, ?int $siteId = null): void
     {
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        if (Gate::isResident()) { return; }
         $user = $_SESSION['user'] ?? null;
         if (!$user) { return; }
         $ownerId = $user->owner_id ?? ($_SESSION['owner_id'] ?? null);

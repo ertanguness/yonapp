@@ -3,6 +3,7 @@ namespace App\Modules\Onboarding\Services;
 
 use App\Modules\Onboarding\Models\OnboardingTaskModel;
 use App\Modules\Onboarding\Models\UserOnboardingProgressModel;
+use App\Services\Gate;
 use PDO;
 
 class OnboardingService
@@ -96,6 +97,7 @@ class OnboardingService
     public function shouldShowChecklist(int $userId, ?int $siteId): bool
     {
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        if (Gate::isResident()) { return false; }
         $ownerId = $_SESSION['user']->owner_id ?? ($_SESSION['owner_id'] ?? null);
         if ((int)$ownerId !== 0) { return false; }
         if (!empty($_SESSION['onboarding_shown_this_login'])) { return false; }

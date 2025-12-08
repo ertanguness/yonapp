@@ -101,6 +101,18 @@ class AuthController
         }
 
         if (count($matched) > 1) {
+            $eligible = array_values(array_filter($matched, function($u){ return self::canLoginForRole($u); }));
+            if (count($eligible) === 0) {
+                FlashMessageService::add('error', 'Giriş Başarısız!', 'Uygun rol bulunamadı.', 'ikaz2.png');
+                $_SESSION['old_form_input'] = ['email' => $email];
+                header("Location: /sign-in");
+                exit();
+            }
+            if (count($eligible) === 1) {
+                $selectedUser = $eligible[0];
+                self::validateDemoPeriod($selectedUser);
+                self::performLogin($selectedUser);
+            }
             $_SESSION['role_select_candidates'] = array_map(function ($a) {
                 return [
                     'id' => (int)$a->id,
@@ -108,7 +120,7 @@ class AuthController
                     'role_name' => $a->role_name ?? null,
                     'full_name' => $a->full_name ?? null
                 ];
-            }, $matched);
+            }, $eligible);
             $_SESSION['role_select_csrf'] = bin2hex(random_bytes(16));
             $_SESSION['old_form_input'] = ['email' => $email];
             $returnUrl = !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : null;
@@ -121,6 +133,7 @@ class AuthController
 
         $selectedUser = $matched[0];
         self::validateDemoPeriod($selectedUser);
+        self::validateLoginEligibility($selectedUser);
         self::performLogin($selectedUser);
     }
 
@@ -266,6 +279,92 @@ class AuthController
         }
     }
 
+    private static function validateLoginEligibility(object $user): void
+    {
+        $roleId = isset($user->roles) ? (int)$user->roles : null;
+        $roleName = $user->role_name ?? '';
+        $isResidentRole = ($roleId === 3) || (stripos((string)$roleName, 'sakin') !== false);
+
+        if ($isResidentRole) {
+            if (!self::isResidentActive($user)) {
+                FlashMessageService::add('error', 'Giriş Başarısız!', 'Çıkış tarihi dolu olduğu için giriş yapamazsınız.', 'ikaz2.png');
+                header("Location: /sign-in");
+                exit();
+            }
+            return;
+        }
+
+        $ownerId = isset($user->owner_id) ? (int)$user->owner_id : 0;
+        if ($ownerId > 0) {
+            $isActive = null;
+            if (isset($user->is_active)) {
+                $isActive = (int)$user->is_active;
+            } elseif (isset($user->status)) {
+                $isActive = (int)$user->status;
+            }
+            if ($isActive === 0) {
+                FlashMessageService::add('error', 'Giriş Başarısız!', 'Hesabınız pasif olduğu için giriş yapamazsınız.', 'ikaz2.png');
+                header("Location: /sign-in");
+                exit();
+            }
+        }
+    }
+
+    private static function canLoginForRole(object $user): bool
+    {
+        $roleId = isset($user->roles) ? (int)$user->roles : null;
+        $roleName = $user->role_name ?? '';
+        $isResidentRole = ($roleId === 3) || (stripos((string)$roleName, 'sakin') !== false);
+        if ($isResidentRole) {
+            return self::isResidentActive($user);
+        }
+        $ownerId = isset($user->owner_id) ? (int)$user->owner_id : 0;
+        if ($ownerId > 0) {
+            $isActive = null;
+            if (isset($user->is_active)) {
+                $isActive = (int)$user->is_active;
+            } elseif (isset($user->status)) {
+                $isActive = (int)$user->status;
+            }
+            return $isActive !== 0;
+        }
+        return true;
+    }
+
+    private static function isResidentActive(object $user): bool
+    {
+        try {
+            $pdo = \getDbConnection();
+            $conditions = [];
+            $params = [];
+            if (!empty($user->email)) {
+                $conditions[] = "LOWER(eposta) = LOWER(:email)";
+                $params[':email'] = $user->email;
+            }
+            if (!empty($user->phone)) {
+                $conditions[] = "telefon = :phone";
+                $params[':phone'] = $user->phone;
+            }
+            if (!empty($user->full_name)) {
+                $conditions[] = "LOWER(adi_soyadi) = LOWER(:name)";
+                $params[':name'] = $user->full_name;
+            }
+            if (empty($conditions)) {
+                return true;
+            }
+            $sql = "SELECT COUNT(*) FROM kisiler WHERE (" . implode(' OR ', $conditions) . ") AND silinme_tarihi IS NULL AND (uyelik_tipi IN ('Kiracı','Kat Maliki')) AND (cikis_tarihi IS NULL OR cikis_tarihi = '0000-00-00')";
+            $stmt = $pdo->prepare($sql);
+            foreach ($params as $k => $v) {
+                $stmt->bindValue($k, $v);
+            }
+            $stmt->execute();
+            $count = (int)$stmt->fetchColumn();
+            return $count > 0;
+        } catch (\Throwable $e) {
+            return true;
+        }
+    }
+
     /**
      * Gerekli session'ları ayarlar, loglama yapar.
      * Bu metot artık private değil, public static.
@@ -273,6 +372,8 @@ class AuthController
      */
     public static function performLogin(object $user): void
     {
+        self::validateDemoPeriod($user);
+        self::validateLoginEligibility($user);
         session_regenerate_id(true);
 
         $_SESSION['user'] = $user;
