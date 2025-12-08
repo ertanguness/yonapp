@@ -29,7 +29,7 @@ $authController->checkAuthentication();
 require_once __DIR__ . '/route.php'; 
 
 
-//dev branch 
+//dev branch mainde güncelleme yapıldı
 
 
 // Gelen URL'yi al
