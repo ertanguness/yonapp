@@ -137,11 +137,13 @@ const renderModal = (data) => {
 };
 
 const isAllowedPage = () => {
-  const dp = document.body ? document.body.getAttribute('data-page') : null;
-  if (dp) { return dp === 'ana-sayfa'; }
   const path = (window.location.pathname || '').toLowerCase();
   if (path.endsWith('/company-list.php')) { return false; }
-  return false;
+  const dp = document.body ? document.body.getAttribute('data-page') : null;
+  if (!dp) { return false; }
+  const deny = ['sign-in','kayit-ol','logout','forgot-password','reset-password'];
+  if (deny.indexOf(dp) !== -1) { return false; }
+  return true;
 };
 
 (async () => {

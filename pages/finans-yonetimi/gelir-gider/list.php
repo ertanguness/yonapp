@@ -295,15 +295,15 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                         <table id="gelirGiderTable" class="table table-hover table-bordered datatables no-footer">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Tarih</th>
-                                    <th>İşlem Türü</th>
-                                    <th>Daire Kodu</th>
-                                    <th>Hesap Adı</th>
+                                    <th data-filter="date">Tarih</th>
+                                    <th data-filter="string">İşlem Türü</th>
+                                    <th data-filter="string">Daire Kodu</th>
+                                    <th data-filter="string">Hesap Adı</th>
                                     <th data-filter="number">Tutar</th>
                                     <th data-filter="number">Bakiye</th>
-                                    <th>Kategori</th>
-                                    <th>Makbuz No</th>
-                                    <th>Açıklama</th>
+                                    <th data-filter="string">Kategori</th>
+                                    <th data-filter="string">Makbuz No</th>
+                                    <th data-filter="string">Açıklama</th>
                                     <th>İşlemler</th>
                                 </tr>
                             </thead>
