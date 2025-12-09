@@ -60,7 +60,7 @@ class RegisterActivateController
             } else {
                 $User->ActivateUser($email);
                 FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!',"onay2");
-                MailGonderService::gonder(["beyzade83@gmail.com"], $user->full_name, $user->full_name . "Kullanıcı hesabını aktifleştirdi.");
+                MailGonderService::gonder(["beyzade83@gmail.com","bilgekazaz@gmail.com","ertanguness@gmail.com"], $user->full_name, $user->full_name . " isimli kullanıcı hesabını aktifleştirdi.");
             }
         }
         return $token_renegate;
