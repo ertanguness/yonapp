@@ -2,7 +2,7 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "standalone",
-  "name": "test.yonapp.com",
+  "name": "yonapp.com.tr",
   "orientation": "any",
   "scope": "/",
   "short_name": "YonApp",
@@ -10,7 +10,7 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "https://test.yonapp.com.tr/assets/images/logo/favicon.svg",
+      "src": "https://yonapp.com.tr/assets/images/logo/favicon.svg",
       "type": "image/x-icon",
       "isSquare": false,
       "isPng": false,
