@@ -16,6 +16,9 @@ $Tanımlamalar = new DefinesModel();
 $db = Db::getInstance();
 $logger = \getlogger();
 
+$action = $_POST['action'] ?? '';
+$post = $_POST;
+
 if ($_POST['action'] == 'gelir-gider-kaydet') {
     $islem_id = Security::decrypt($_POST['islem_id'] ?? 0);
     $site_id = $_SESSION['site_id'];
@@ -40,6 +43,7 @@ if ($_POST['action'] == 'gelir-gider-kaydet') {
             "islem_tarihi" => Date::YmdHis($_POST['islem_tarihi']),
             "islem_tipi" => $_POST['islem_tipi'],
             "kategori" => $_POST['kategori'],
+            "alt_tur" => $_POST['gelir_gider_kalemi'],
             "makbuz_no" => $_POST['makbuz_no'],
             "tutar" => ($tutar),
             "aciklama" => $_POST['aciklama'],
@@ -153,7 +157,7 @@ if ($_POST['action'] == 'gelir-gider-sil') {
             }
         } else {
             // Tekil silme
-            $deleted = $kasaHareketModel->softDelete($islem_id);
+            $deleted = $kasaHareketModel->softDelete(Security::decrypt($islem_id));
             if (!$deleted) {
                 $logger->error('Gelir Gider Silme İşlemi', ['kasa_hareket' => json_encode($kasaHareket)]);
                 throw new Exception("Kayıt silinemedi.");
@@ -218,5 +222,22 @@ if ($_POST['action'] == 'kategori-getir') {
         "kategoriler" => $kategoriler
     ];
 
+    echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+}
+
+
+/** Gelir Gider Kalemleri */
+if ($action == 'get-gelir-gider-kalemleri') {
+
+
+    $type = isset($post['type']) ? (int)$post['type'] : 0;
+    $kategori = isset($post['kategori']) ? trim($post['kategori']) : '';
+
+    $kalemler = $Tanımlamalar->getGelirGiderKalemleri($type, $kategori);
+    $res = [
+        "status" => "success",
+        "message" => "Kayıt bulundu.",
+        "data" => $kalemler
+    ];
     echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 }

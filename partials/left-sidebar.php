@@ -96,7 +96,7 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
             <img src="/assets/images/logo/logo.svg" alt="" class="logo logo-sm" />
         </div>
         <div class="navbar-content">
-            <ul class="nxl-navbar " id="side-menu">
+            <ul class="nxl-navbar mb-5" id="side-menu">
                 <?php
                 if (!empty($menuTree)) {
                     foreach ($menuTree as $groupName => $items) {
@@ -105,7 +105,6 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
                         // YARDIMCI FONKSİYONU YENİ PARAMETRE İLE ÇAĞIR
                         renderMenuItems($items, $activeMenuInfo);
                     }
-                    
                 } else {
                     echo '<li class="nxl-item"><span class="nxl-mtext px-3">Görüntülenecek menü bulunamadı.</span></li>';
                 }

@@ -116,45 +116,9 @@ $kisiInfo = $Kisiler->getKisiByDaireId((int)$activeKisiId);
         </div>
     </div>
     <div class="row g-4 mb-5">
-        <div class="col-12 col-lg-4">
-            <div class="card rounded-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="fw-semibold">Özet Bakiye</div>
-                        <i class="feather-pie-chart"></i>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="text-muted">Toplam Borç</div>
-                            <h4 class="text-danger mb-3"><?php echo Helper::formattedMoney($hesap_ozet->toplam_borc ?? 0); ?></h4>
-                            <div class="text-muted">Son Ödeme</div>
-                            <h6 class="text-success mb-0"><?php echo $sonOdeme ? Date::dmy($sonOdeme) : '-'; ?></h6>
-                        </div>
-                        <div class="text-end">
-                            <div class="text-muted">Toplam Tahsilat</div>
-                            <h4 class="text-success mb-3"><?php echo Helper::formattedMoney($hesap_ozet->toplam_tahsilat ?? 0); ?></h4>
-                            <div class="text-muted">Kalan</div>
-                            <h6 class="text-<?php echo (($hesap_ozet->bakiye ?? 0) < 0) ? 'danger' : 'success'; ?> mb-0"><?php echo Helper::formattedMoney($hesap_ozet->bakiye ?? 0); ?></h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card rounded-3 mt-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Hızlı Bağlantılar</h5>
-                </div>
-                <div class="card-body d-flex flex-column gap-2">
-                    <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo $activeKisiId; ?>&format=pdf" class="btn btn-light w-100">
-                        <i class="bi bi-filetype-pdf me-2"></i>PDF Ekstre İndir
-                    </a>
-                    <a href="#" class="btn btn-primary w-100" disabled>
-                        <i class="feather-credit-card me-2"></i>Online Ödeme
-                    </a>
-                </div>
-            </div>
-        </div>
+      
 
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-lg-12">
             <div class="card rounded-3">
                 <div class="card-header">
                     <h5 class="card-title mb-0">12 Ay Ödeme Grafiği</h5>
@@ -173,7 +137,7 @@ $kisiInfo = $Kisiler->getKisiByDaireId((int)$activeKisiId);
                     <h5 class="card-title mb-0">Tür Bazında Özet</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row g-4">
+                    <div class="row">
                         <div class="col-12 col-lg-6">
                             <div class="accordion" id="katAccordion">
                                 <?php $i = 0; foreach (($kategoriOzet ?? []) as $k): $cid = 'katItem'.(++$i); ?>
