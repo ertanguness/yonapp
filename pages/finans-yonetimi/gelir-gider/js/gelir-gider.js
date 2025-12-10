@@ -37,7 +37,8 @@ $(document).on('click', '#gelirGiderKaydet', function () {
 
     var formData = new FormData(form[0]);
     formData.append('action', 'gelir-gider-kaydet');
-    formData.append("kategori", $('#gelir_gider_tipi option:selected').text());
+    formData.append("kategori", $('#gelir_gider_grubu option:selected').text());
+    formData.append("alt_tur", $('#gelir_gider_kalemi option:selected').text());
 
     $.ajax({
         url: url,
@@ -161,6 +162,10 @@ $(document).on('click', '.GuncellemeYetkisiYok', function () {
 // Gelir/Gider sil
 $(document).on('click', '.gelirGiderSil', function () {
     var id = $(this).data('id');
+
+
+    console.log("kasahareket id " + id);
+
     let row = $(this).closest('tr');
     console.log(url);
     swal.fire({
@@ -227,8 +232,13 @@ $(document).on('shown.bs.modal', '#gelirGiderModal', function () {
 //islem_tipi radio butonuna tıklanınca
 $(document).on('change', 'input[name="islem_tipi"]', function () {
     var islemTipi = $(this).val();
-    var kategoriSelect = $('#gelir_gider_tipi   ');
+    var kategoriSelect = $('#gelir_gider_grubu');
     kategoriSelect.empty(); // Mevcut seçenekleri temizle
+
+    /**İslem tiplerini labela ata */
+    var label = islemTipi === 'gelir' ? 'Gelir' : 'Gider';
+    $('.islem-tipi-grup').text(label + ' Grubu');
+    $('.islem-tipi-kalem').text(label + ' Kalemi');
 
     fetch(url, {
         method: 'POST',
@@ -243,15 +253,65 @@ $(document).on('change', 'input[name="islem_tipi"]', function () {
         .then(response => response.json())
         .then(data => {
             if (data.status === "success") {
+                // Gelen kategorileri option olarak ekle, define_name'i hem text'te hem de data-name attribute'unda tut
                 data.kategoriler.forEach(function (kategori) {
                     var newOption = new Option(kategori.define_name, kategori.id, false, false);
+                    $(newOption).attr('data-name', kategori.define_name);
                     kategoriSelect.append(newOption);
                 });
+
+                // En az bir kategori varsa ilkini seç ve alt türleri getir
+                if (kategoriSelect.find('option').length > 0) {
+                    kategoriSelect.prop('selectedIndex', 0);
+                    // Seçilen kategoriye göre kalemleri yükle
+                    gelirGiderKalemleriGetir();
+                }
+
+                // Select2'yi güncelle
+                kategoriSelect.trigger('change');
             } else {
                 swal.fire("Hata!", data.message, "error");
             }
         })
-
-    // Select2'yi güncelle
-    kategoriSelect.trigger('change');
 });
+
+
+$(document).on('change', '#gelir_gider_grubu', function (e) {
+    gelirGiderKalemleriGetir();
+});
+
+
+/** Defines Tablosundan type değeri ve kategoriye göre alt türleri getirir */
+function gelirGiderKalemleriGetir() {
+    var type = $("input[name='islem_tipi']:checked").val() == "gider" ? 7 : 6;
+    var $selected = $('#gelir_gider_grubu').find('option:selected');
+
+    // Kategori seçilmediyse fonksiyondan çık
+    if ($selected.length === 0 || !$selected.val()) {
+        return;
+    }
+
+    // define_name'i data-name attribute'undan al; yoksa text'i kullan
+    var category = $selected.data('name') || $selected.text();
+    var fd = new FormData();
+    fd.append('action', 'get-gelir-gider-kalemleri');
+    fd.append('type', type);
+    fd.append('kategori', category);
+
+
+    fetch(url, {
+        method: 'POST',
+        body: fd
+    })
+        .then(response => response.json())
+        .then(function (response) {
+            var data = response.data;
+            var options = '<option value="">Seçiniz</option>';
+            $.each(data, function (index, item) {
+                options += '<option value="' + item.id + '">' + item.alt_tur + '</option>';
+            });
+            $('#gelir_gider_kalemi').html(options);
+        });
+}
+
+

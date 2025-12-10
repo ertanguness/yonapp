@@ -2,10 +2,11 @@
 // App/Controllers/RegisterActivateController.php
 namespace App\Controllers;
 
-use App\Helper\Security;
-use App\Services\FlashMessageService;
-use App\Services\MailGonderService;
 use Model\UserModel;
+use App\Services\Gate;
+use App\Helper\Security;
+use App\Services\MailGonderService;
+use App\Services\FlashMessageService;
 
 class RegisterActivateController
 {
@@ -60,7 +61,11 @@ class RegisterActivateController
             } else {
                 $User->ActivateUser($email);
                 FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!',"onay2");
-                MailGonderService::gonder(["beyzade83@gmail.com","bilgekazaz@gmail.com","ertanguness@gmail.com"], $user->full_name, $user->full_name . " isimli kullanıcı hesabını aktifleştirdi.");
+                
+                /**Site sakini ise mail matnine sakin ekle */
+                $sakin = Gate::isResident() ? " (Site Sakini)" : "";
+
+                MailGonderService::gonder(["beyzade83@gmail.com","bilgekazaz@gmail.com","ertanguness@gmail.com"], $user->full_name, $user->full_name .  $sakin . " isimli kullanıcı hesabını aktifleştirdi.");
             }
         }
         return $token_renegate;

@@ -88,13 +88,10 @@ if ($documentRootPath && $projectRootPath) {
 
 ob_start();
 ?>
-<script>
-    window.calendarConfig = <?php echo json_encode($calendarConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
-</script>
-<!-- Takvim türleri verisi - JavaScript için -->
-<script id="calendar-types-data" type="application/json">
-<?php echo json_encode($calendarTypes, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>
-</script>
+<!-- <script>
+    window.calendarConfig = <?php //echo json_encode($calendarConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+</script> -->
+
 <?php
 $script = ob_get_clean();
 

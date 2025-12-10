@@ -303,3 +303,9 @@ $router->get('sakin/anket-listesi', fn() => require 'pages/site-sakini/anket-lis
 $router->get('sakin/taleplerim', fn() => require 'pages/site-sakini/talepler.php');
 $router->get('sakin/talep-ekle', fn() => require 'pages/site-sakini/talep-manage.php');
 $router->get('sakin/talep-duzenle/{id}', fn($id) => require 'pages/site-sakini/talep-manage.php');
+
+
+/** YARDIM VE DESTEK */
+$router->get('destek-talepleri', fn() => require 'pages/yardim-destek/list.php');
+$router->get('destek-talep-ekle', fn() => require 'pages/yardim-destek/manage.php');
+$router->get('destek-talep-duzenle/{id}', fn($id) => require 'pages/yardim-destek/manage.php');

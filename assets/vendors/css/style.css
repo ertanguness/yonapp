@@ -539,6 +539,10 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, tabl
 
 }
 
+.bi-arrows-move{
+  cursor: move;
+}
+
 @media (max-width: 576px) {
   .nav-tabs-wrapper {
     height: auto;

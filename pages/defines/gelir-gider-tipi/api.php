@@ -42,8 +42,9 @@ if ($_POST["action"] == "gelir-gider-tipi-kaydet") {
         $data =  [
             "id" => $id,
             "define_name" => $_POST['gelir_gider_tipi_name'] ?? '',
-            "type" => $_POST['gelir_gider_tipi'] ?? '',
+            "type" => $_POST['gelir_gider_tipi'] ?? '' ,// 6 gelir - 7 gider,
             "islem_kodu" => $_POST['islem_kodu'] ?? null,
+            'alt_tur' => $_POST['alt_tur'] ?? '',
             "description" => $_POST['description'] ?? '',
             "site_id" => $_SESSION['site_id'] ?? 0,
         ];
@@ -51,8 +52,10 @@ if ($_POST["action"] == "gelir-gider-tipi-kaydet") {
         $lastInsertId = $Tanimlamalar->saveWithAttr($data);
 
 
+        $type = $_POST["gelir_gider_tipi"] == 6 ? "Gelir" : "Gider";
+
         $status = "success";
-        $message = "Gelir-gider tipi başarıyla kaydedildi.";
+        $message = "$type tipi başarıyla kaydedildi.";
         $db->commit();
     } catch (PDOException $ex) {
         $db->rollBack();

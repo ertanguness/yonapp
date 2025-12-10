@@ -105,3 +105,18 @@ $(document).on("click", ".gelir-gider-tipi-sil", function () {
   });
 });
 
+  $(document).ready(function() {
+        $('#gelir_gider_tipi').on('select2:select', function(e) {
+
+
+            let $gelirGrubu = $('#gelir_grubu_label');
+            let $gelirKalemi = $('#gelir_kalemi_label');
+            window.islem_type = e.params.data.text;
+
+            // console.log(window.islem_type);
+
+
+            $gelirGrubu.text(e.params.data.text + ' Grubu');
+            $gelirKalemi.text(e.params.data.text + ' Kalemi');
+        });
+    });

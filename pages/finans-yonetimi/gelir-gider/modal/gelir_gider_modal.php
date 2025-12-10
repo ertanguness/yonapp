@@ -20,7 +20,7 @@ $id = Security::decrypt($_GET['id'] ?? 0);
 if ($id > 0) {
     $kasaHareket = $kasaHareketModel->find($id);
 }
-$gelirGiderTipi = $kasaHareket->islem_tipi ?? 'gelir';
+$gelirGiderTipi = $kasaHareket->islem_tipi ?? 'gider';
 $type_code = $gelirGiderTipi == 'gelir' ? 6 : 7;
 $checked_gelir = ($gelirGiderTipi == 'gelir') ? 'checked' : '';
 $checked_gider = ($gelirGiderTipi == 'gider') ? 'checked' : '';
@@ -28,19 +28,22 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
 
 ?>
 <style>
-#islem_tipi_gider.card-input-element:checked + .card {
-    border: 1px dashed var(--bs-danger);
-}
-#islem_tipi_gider.card-input-element:checked + .card .avatar-text {
-    color: var(--bs-danger);
-    border: 1px dashed var(--bs-danger);
-}
-#islem_tipi_gider.card-input-element:checked + .card .text-muted {
-    color: var(--bs-danger) !important;
-}
-#islem_tipi_gider.card-input-element:checked + .card::after {
-    color: var(--bs-danger);
-}
+    #islem_tipi_gider.card-input-element:checked+.card {
+        border: 1px dashed var(--bs-danger);
+    }
+
+    #islem_tipi_gider.card-input-element:checked+.card .avatar-text {
+        color: var(--bs-danger);
+        border: 1px dashed var(--bs-danger);
+    }
+
+    #islem_tipi_gider.card-input-element:checked+.card .text-muted {
+        color: var(--bs-danger) !important;
+    }
+
+    #islem_tipi_gider.card-input-element:checked+.card::after {
+        color: var(--bs-danger);
+    }
 </style>
 <div class="modal-header">
     <h5 class="modal-title" id="gelirGiderModalLabel">Gelir Gider İşlemleri</h5>
@@ -113,10 +116,18 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
                 </div>
             </div>
         </div>
+
+
         <!-- Kategori -->
         <div class="mb-3">
-            <label for="kategori" class="form-label">Kategori *</label>
-            <?php echo $Tanimlamalar->getGelirGiderTipiSelect("gelir_gider_tipi", $type_code, $kasaHareket->kategori ?? ''); ?>
+            <label for="kategori" class="form-label islem-tipi-grup"><?= ucfirst($gelirGiderTipi); ?> Grubu *</label>
+            <?php echo $Tanimlamalar->getGelirGiderTipiSelect("gelir_gider_grubu", $type_code, $kasaHareket->kategori ?? ''); ?>
+        </div>
+        <!-- Kategori -->
+        <div class="mb-3">
+            <label for="kategori" class="form-label islem-tipi-kalem"><?= ucfirst($gelirGiderTipi); ?> Kalemi </label>
+            <select name="gelir_gider_kalemi" id="gelir_gider_kalemi" class="form-select select2">
+            </select>
         </div>
 
 
@@ -130,14 +141,14 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
         <!-- Ödeme Yöntemi -->
         <div class="mb-3">
             <label for="odeme_yontemi" class="form-label">Ödeme Yöntemi</label>
-            <?php echo Helper::getOdemeYontemiSelect("odeme_yontemi",3) ?>
+            <?php echo Helper::getOdemeYontemiSelect("odeme_yontemi", 3) ?>
         </div>
 
         <!-- Belge No -->
         <div class="mb-3">
             <label for="makbuz_no" class="form-label">Makbuz No</label>
             <input type="text" class="form-control" id="makbuz_no" name="makbuz_no"
-                    value="<?= $kasaHareket->makbuz_no ?? ''; ?>"
+                value="<?= $kasaHareket->makbuz_no ?? ''; ?>"
                 placeholder="Fatura, fiş veya belge numarası">
         </div>
 
@@ -150,3 +161,8 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
     <button type="button" class="btn btn-primary" id="gelirGiderKaydet">Kaydet</button>
 </div>
+
+
+<script>
+  
+</script>

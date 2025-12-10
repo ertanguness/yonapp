@@ -26,27 +26,29 @@ class DefinesModel extends Model
      */
     public function getGelirGiderTipleri()
     {
-        $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
-        $gelirTipi = self::TYPE_GELIR_TIPI;
-        $giderTipi = self::TYPE_GIDER_TIPI;
-        $sql = $this->db->prepare("SELECT d.*,
-                                            case 
-                                                when d.type = :gelirTipi then 'Gelir'
-                                                when d.type = :giderTipi then 'Gider'
-                                                else 'Diğer'    
-                                            end as type_name
-                                          FROM $this->table d
-                                          WHERE site_id = :site_id 
-                                          AND type IN (:gelirTipi, :giderTipi)
-                                          AND silinme_tarihi IS NULL 
-                                          ORDER BY define_name ASC");
-        $sql->execute([
-            ':site_id' => $site_id,
-            ':gelirTipi' => $gelirTipi,
-            ':giderTipi' => $giderTipi
-        ]);
-        return $sql->fetchAll(PDO::FETCH_OBJ);
+            $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
+            $gelirTipi = self::TYPE_GELIR_TIPI;
+            $giderTipi = self::TYPE_GIDER_TIPI;
+            $sql = $this->db->prepare("SELECT d.*,
+                                                case 
+                                                    when d.type = :gelirTipi then 'Gelir'
+                                                    when d.type = :giderTipi then 'Gider'
+                                                    else 'Diğer'    
+                                                end as type_name
+                                            FROM $this->table d
+                                            WHERE site_id = :site_id 
+                                            AND type IN (:gelirTipi, :giderTipi)
+                                            AND silinme_tarihi IS NULL 
+                                            GROUP BY define_name
+                                            ORDER BY define_name ASC");
+            $sql->execute([
+                ':site_id' => $site_id,
+                ':gelirTipi' => $gelirTipi,
+                ':giderTipi' => $giderTipi
+            ]);
+            return $sql->fetchAll(PDO::FETCH_OBJ);
     }
+
 
     /** Gelir veya gider kategorilerini getirir
      * @param mixed $type
@@ -56,7 +58,9 @@ class DefinesModel extends Model
     {
         $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
         $sql = $this->db->prepare("SELECT * FROM $this->table 
-                                          WHERE site_id = ? AND type = ? AND silinme_tarihi IS NULL 
+                                          WHERE site_id = ? AND type = ? 
+                                          AND silinme_tarihi IS NULL 
+                                          GROUP BY define_name
                                           ORDER BY define_name ASC");
         $sql->execute([
             $site_id,
@@ -92,6 +96,29 @@ class DefinesModel extends Model
             }
         }
         return "<select name=\"{$name}\" id=\"{$name}\" class=\"form-select select2\">{$options}</select>";
+    }
+
+
+/** Gelir-gider kalemlerini gelen type ve define_name'e göre için getirir */
+    public function getGelirGiderKalemleri($type, $define_name)
+    {
+        $site_id = $_SESSION['site_id'] ?? 1; // aktif site ID’sini alıyoruz
+        $sql = $this->db->prepare("SELECT d.*
+                                          FROM $this->table d
+                                          WHERE site_id = :site_id 
+                                            AND type = :type 
+                                            AND define_name = :define_name
+                                            AND silinme_tarihi IS NULL
+                                            AND alt_tur IS NOT NULL AND alt_tur != ''
+                                          GROUP BY define_name, alt_tur
+                                          ORDER BY alt_tur ASC");
+        $sql->execute([
+            ':site_id' => $site_id,
+            ':type' => $type,
+            ':define_name' => $define_name
+        ]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+
     }
 
     public function daireTipiGetir($type)

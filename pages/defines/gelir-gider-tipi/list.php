@@ -69,7 +69,8 @@ $items = $defines->getGelirGiderTipleri();
                                             <th>Sıra</th>
                                             <th>İşlem Kodu</th>
                                             <th>Türü</th>
-                                            <th style="width: 40%;">Adı</th>
+                                            <th>Gelir/Gider Kategorisi</th>
+                                            <th>Gelir/Gider Kalemi</th>
                                             <th style="width: 20%;">Açıklama</th>
                                             <th>Eklenme Tarihi</th>
                                             <th>İşlem</th>
@@ -94,6 +95,7 @@ $items = $defines->getGelirGiderTipleri();
 
                                                 </td>
                                                 <td><?php echo $item->define_name; ?></td>
+                                                <td><?php echo $item->alt_tur; ?></td>
                                                 <td><?php echo $item->description; ?></td>
                                                 <td><?php echo Date::dmY($item->created_at); ?></td>
 
