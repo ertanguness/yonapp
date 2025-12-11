@@ -100,9 +100,21 @@ div:where(.swal2-icon-content) {
   color: #dc3545 !important;
 }
 
-/* .select2-container{
-  z-index: 1 !important;
-} */
+.select2-container {
+  z-index: 101 !important;
+}
+#select2-mySite-container {
+  z-index: 9999 !important;
+}
+
+#select2-mySite-results {
+  z-index: 9999 !important;
+}
+
+.select2-container--open {
+  z-index: 9999 !important;
+}
+
 
 .select2-container
   .select2-selection--multiple
