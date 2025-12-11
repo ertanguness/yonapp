@@ -18,7 +18,7 @@ $(document).on("click", "#createThreadBtn", function () {
       var title = data.status === "success" ? "Başarılı" : "Hata";
       swal.fire({ title, text: data.message, icon: data.status }).then(function () {
         if (data.status === "success" && data.id) {
-          window.location.href = "/pages/yardim-destek/manage.php?id=" + data.id;
+          window.location.reload();
         }
       });
     },

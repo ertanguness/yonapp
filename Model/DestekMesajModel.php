@@ -6,7 +6,7 @@ use Model\Model;
 
 class DestekMesajModel extends Model
 {
-    protected $table = "destek_mesajlari";
+    protected $table = "destek_talep_yanitlari";
 
     public function __construct()
     {

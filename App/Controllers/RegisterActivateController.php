@@ -60,10 +60,11 @@ class RegisterActivateController
                 FlashMessageService::add('info', 'Bilgi', 'Kullanıcı zaten aktif');
             } else {
                 $User->ActivateUser($email);
-                FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!',"onay2");
+                FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!',"onay2.png");
                 
-                /**Site sakini ise mail matnine sakin ekle */
-                $sakin = Gate::isResident() ? " (Site Sakini)" : "";
+                /**Site sakini ise mail metnine sakin ekle */
+                $sakin = $user->kisi_id > 0 ? " (Site Sakini)" : "";
+                
 
                 MailGonderService::gonder(["beyzade83@gmail.com","bilgekazaz@gmail.com","ertanguness@gmail.com"], $user->full_name, $user->full_name .  $sakin . " isimli kullanıcı hesabını aktifleştirdi.");
             }
