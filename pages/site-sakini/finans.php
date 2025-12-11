@@ -76,7 +76,14 @@ foreach ($hareketler as $it) {
 }
 $kisiInfo = $Kisiler->getKisiByDaireId((int)$activeKisiId);
 ?>
+<style>
 
+html.app-skin-dark .accordion .accordion-item .accordion-header .accordion-button.collapsed {
+    color: #f8f8f8ff !important;
+    border-color: #3e495fff;
+    background-color: #282f3dff;
+}
+</style>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
         <div class="page-header-title">
@@ -88,11 +95,11 @@ $kisiInfo = $Kisiler->getKisiByDaireId((int)$activeKisiId);
         </ul>
     </div>
    
-    <div class="d-md-none d-flex align-items-center">
+    <!-- <div class="d-md-none d-flex align-items-center">
         <a href="javascript:void(0)" class="page-header-right-open-toggle">
             <i class="feather-align-right fs-20"></i>
         </a>
-    </div>
+    </div> -->
 </div>
 
 <div class="main-content">
