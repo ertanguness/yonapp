@@ -63,7 +63,8 @@ class RegisterActivateController
                 FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!',"onay2.png");
                 
                 /**Site sakini ise mail metnine sakin ekle */
-                //$sakin = Gate::isResident() ? " (Site Sakini)" : "";
+                $sakin = $user->kisi_id > 0 ? " (Site Sakini)" : "";
+                
 
                 MailGonderService::gonder(["beyzade83@gmail.com","bilgekazaz@gmail.com","ertanguness@gmail.com"], $user->full_name, $user->full_name .  $sakin . " isimli kullanıcı hesabını aktifleştirdi.");
             }
