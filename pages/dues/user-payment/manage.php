@@ -44,7 +44,7 @@
                 <form id="paymentForm" action="#" method="POST">
                     <div class="table-responsive mb-4">
                         <table class="table table-hover align-middle datatables">
-                            <thead class="table-light">
+                            <thead >
                                 <tr>
                                     <th>
                                         <div class="custom-control custom-checkbox ms-1">

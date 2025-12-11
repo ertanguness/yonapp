@@ -58,7 +58,7 @@ if (
     $page == "sakin/taleplerim" || $page == "talep-duzenle" ||
     $page == "anket-listesi" || $page == "duyuru-listesi" ||
     $page == "arac-yonetimi" ||
-    $page == "kullanici-ekle" || 
+    $page == "kullanici-ekle" || $page == "kullanici-duzenle" ||
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
     $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri"
 ) { ?>
@@ -373,6 +373,7 @@ echo '<script src="/assets/js/lock-screen.js"></script>';
 
 
 <script src="/partials/mobile-menu.js"></script>
+<script src="/assets/js/hamburger-fix.js"></script>
 <script src="/pages/email-sms/js/sms.js"></script>
 
 

@@ -26,7 +26,7 @@ class SikayetOneriModel extends Model
             `reply_at` DATETIME NULL,
             `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            `deleted_at` DATETIME NULL,
+            `silinme_tarihi` DATETIME NULL,
             PRIMARY KEY (`id`),
             KEY `idx_kisi_id` (`kisi_id`),
             KEY `idx_site_id` (`site_id`),

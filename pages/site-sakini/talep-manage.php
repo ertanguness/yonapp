@@ -28,7 +28,7 @@ $talep = $Model->find($id);
     </div>
 </div>
 
-<div class="main-content">
+<div class="main-content mb-5">
     <div class="row g-4">
         <div class="col-12 col-xl-6">
             <div class="card rounded-3">
@@ -67,7 +67,7 @@ $talep = $Model->find($id);
             </div>
         </div>
 
-          <div class="col-12 col-xl-6">
+        <div class="col-12 col-xl-6 mb-5">
             <div class="card rounded-3">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Talep Durumları</h5>

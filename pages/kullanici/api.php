@@ -14,6 +14,7 @@ use Model\UserModel;
 
 $User = new UserModel();
 
+
 $logger = \getlogger();
 
 // if(!Helper::isAdmin()) {
@@ -142,4 +143,31 @@ if ($_POST["action"] == "kullanici-sil") {
         'status' => $status,
         'message' => $message
     ]);
+}
+
+
+
+
+
+/**Kullanıcı aktif/pasif yapma */
+if ($_POST["action"] == "changeUserStatus") {
+    $rawId = $_POST['id'] ?? '';
+    $decId = Security::decrypt($rawId);
+    $id = (is_numeric($decId) && (int)$decId > 0) ? (int)$decId : (int)$rawId;
+    $newStatus = isset($_POST['status']) ? (int)$_POST['status'] : 0;
+
+    try {
+        $User->updateSingle($id, [
+            'status' => $newStatus,
+        ]);
+        echo json_encode([
+            'success' => true,
+            'message' => 'Kullanıcı durumu başarıyla güncellendi.'
+        ]);
+    } catch (\Throwable $ex) {
+        echo json_encode([
+            'success' => false,
+            'message' => $ex->getMessage()
+        ]);
+    }
 }

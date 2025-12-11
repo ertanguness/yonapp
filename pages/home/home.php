@@ -148,6 +148,12 @@ $script = ob_get_clean();
             display: block;
         }
 
+        /** Mobilde quick-actions-card gizle */
+        @media (max-width: 568px) {
+            .quick-actions-card {
+                display: none;
+            }
+        }
       
         
     </style>

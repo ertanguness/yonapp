@@ -8,9 +8,10 @@ AuthController::checkAuthentication();
 $user = AuthController::user();
 $siteId = $_SESSION['site_id'] ?? null;
 $model = new SikayetOneriModel();
+$rows = $model->all();
 $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
 
-// Helper::dd($rows);
+ //Helper::dd($rows);
 ?>
 <div class="page-header">
     <div class="page-header-left d-flex align-items-center">
@@ -23,18 +24,34 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
         </ul>
     </div>
     <div class="page-header-right ms-auto">
-        <a href="/sakin/talep-ekle" class="btn btn-primary">
+        <a href="/sakin/talep-ekle" class="btn btn-primary d-none d-md-inline-flex">
             <i class="feather-plus me-2"></i> Yeni Talep Ekle
         </a>
     </div>
 </div>
 
-<script>
+<style>
+.fab-add { display: none; }
+@media (max-width: 768px) {
+  .fab-add {
+    position: fixed;
+    right: 16px;
+    bottom: 110px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1040;
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  }
+}
+</style>
 
-</script>
 <div class="main-content">
-    <div class="row">
-        <div class="container-xl">
+    <div class="row mb-5">
+        <div class="container-xl mb-5">
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
@@ -44,7 +61,7 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-hover table-vcenter datatables">
-                                    <thead class="table-light">
+                                    <thead >
                                         <tr>
                                             <th>#</th>
                                             <th>Başlık</th>
@@ -95,5 +112,9 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
         </div>
     </div>
 </div>
+
+<a href="/sakin/talep-ekle" class="btn btn-primary fab-add">
+    <i class="feather-plus"></i>
+</a>
 
 <script src="/pages/site-sakini/js/sikayet-oneri.js"></script>
