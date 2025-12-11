@@ -9,7 +9,7 @@ $user = AuthController::user();
 $siteId = $_SESSION['site_id'] ?? null;
 $model = new SikayetOneriModel();
 $rows = $model->all();
-$rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
+$rows = $model->listByUser((int)$user->kisi_id, $siteId ? (int)$siteId : null);
 
  //Helper::dd($rows);
 ?>
@@ -67,7 +67,7 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
                                     <thead >
                                         <tr>
                                             <th>#</th>
-                                            <th>Başlık</th>
+                                            <th class="all">Başlık</th>
                                             <th style="width: 40%;">İçerik</th>
                                             <th>Durum</th>
                                             <th>Oluşturulma</th>

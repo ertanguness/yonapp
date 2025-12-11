@@ -132,6 +132,7 @@ class AuthController
         }
 
         $selectedUser = $matched[0];
+        
         self::validateDemoPeriod($selectedUser);
         self::validateLoginEligibility($selectedUser);
         self::performLogin($selectedUser);
@@ -284,6 +285,13 @@ class AuthController
         $roleId = isset($user->roles) ? (int)$user->roles : null;
         $roleName = $user->role_name ?? '';
         $isResidentRole = ($roleId === 3) || (stripos((string)$roleName, 'sakin') !== false);
+
+        $statusValue = isset($user->status) ? (int)$user->status : null;
+        if ($statusValue === 0) {
+            FlashMessageService::add('error', 'Giriş Başarısız!', 'Hesabınız pasif olduğu için giriş yapamazsınız.', 'ikaz2.png');
+            header("Location: /sign-in");
+            exit();
+        }
 
         if ($isResidentRole) {
             if (!self::isResidentActive($user)) {
