@@ -89,7 +89,7 @@ $destekTalepleri = $DestekModel->all();
                                             <tr class="border-b">
                                                 <th>Konu</th>
                                                 <th>Açıklama</th>
-                                                <th class="text-end">İşlem</th>
+                                                <th class="text-center" style="width:7%">İşlem</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -107,7 +107,8 @@ $destekTalepleri = $DestekModel->all();
                                                         </a>
                                                     </div>
                                                 </td>
-                                                <td class="text-end">
+                                                <td><?= $talep->durum; ?></td>
+                                                <td class="text-center">
                                                     <div class="hstack gap-2">
                                                         <a href="/destek-talep-duzenle/<?= $encId; ?>" class="avatar-text avatar-md" title="Görüntüle"><i class="feather-message-square"></i></a>
                                                     </div>

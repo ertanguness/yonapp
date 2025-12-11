@@ -34,7 +34,6 @@ if ($action === 'createThread') {
             'konu'             => $post->subject ?? '',
             'aciklama'         => $post->message ?? '',
             'durum'            => 'Açık',
-            'olusturma_tarihi' => date('Y-m-d H:i:s'),
             'son_guncelleme'   => date('Y-m-d H:i:s'),
         ];
         $encId = $Threads->saveWithAttr($data);
@@ -43,9 +42,7 @@ if ($action === 'createThread') {
         $Messages->saveWithAttr([
             'id'           => 0,
             'talep_id'     => $newId,
-            'gonderen_tip' => 'musteri',
             'mesaj'        => $post->message ?? '',
-            'tarih'        => date('Y-m-d H:i:s'),
         ]);
 
         $db->commit();
