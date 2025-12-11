@@ -97,7 +97,7 @@ class Model extends SSPModel
     public function findWhere(array $conditions, string $orderBy = null, int $limit = null): array
     {
         // Temel SQL sorgusunu oluştur.
-        $sql = "SELECT * FROM {$this->table} WHERE 1=1 ";
+        $sql = "SELECT * FROM {$this->table} WHERE 1=1 and silinme_tarihi IS NULL ";
 
         // Koşul dizisindeki her bir eleman için WHERE ifadesini dinamik olarak oluştur.
         foreach ($conditions as $column => $value) {
