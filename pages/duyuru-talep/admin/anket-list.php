@@ -38,7 +38,7 @@
                     <div class="card">
                         <div class="card-body table-responsive" style="overflow: visible;">
                             <table class="table table-hover table-bordered datatables" id="surveyList">
-                                <thead class="table-light">
+                                <thead >
                                     <tr>
                                         <th>#</th>
                                         <th>Başlık</th>

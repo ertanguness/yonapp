@@ -97,7 +97,7 @@
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-hover table-bordered mb-0">
-                                    <thead class="table-light">
+                                    <thead >
                                         <tr>
                                             <th style="width: 40%;">Anket Başlığı</th>
                                             <th style="width: 30%;">Oylama Sonucu</th>

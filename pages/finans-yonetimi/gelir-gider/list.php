@@ -296,7 +296,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table id="gelirGiderTable" class="table table-hover table-bordered datatables no-footer">
-                            <thead class="table-light">
+                            <thead >
                                 <tr>
                                     <th data-filter="date">Tarih</th>
                                     <th data-filter="string">İşlem Türü</th>

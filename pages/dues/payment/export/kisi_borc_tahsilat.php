@@ -100,9 +100,9 @@ $headerRow = 10;
 
 // Başlık satırı
 $headers = [
-    'A' . $headerRow => 'ID',
+    'A' . $headerRow => 'Sıra',
     'B' . $headerRow => 'İşlem Tarihi',
-    'C' . $headerRow => 'İşlem Tipi',
+    'C' . $headerRow => 'Tahakkuk/ Tahsilat',
     'D' . $headerRow => 'Borç',
     'E' . $headerRow => 'Gecikme Zammı',
     'F' . $headerRow => 'Ödenen',
@@ -239,7 +239,7 @@ $sheet->getStyle('A10:' . $lastHeaderColumn . '10')->applyFromArray([
 // Veri satırlarını doldur
 $row = 11;
 foreach ($kisiHareketler as $hareket) {
-    $sheet->setCellValue('A' . $row, $hareket->islem_id); // 'islem_id' daha mantıklı olabilir
+    $sheet->setCellValue('A' . $row, $row - 10); // 'islem_id' daha mantıklı olabilir
     $sheet->setCellValue('B' . $row, date('d.m.Y H:i', strtotime($hareket->islem_tarihi ?? '')));
     $sheet->setCellValue('C' . $row, ucfirst($hareket->borc_adi));
     $sheet->setCellValue('D' . $row, number_format((float)$hareket->anapara, 2, ',', '.')); // Float'a çevirme
@@ -251,7 +251,10 @@ foreach ($kisiHareketler as $hareket) {
     $sheet->mergeCells('H' . $row . ':K' . $row);
     $sheet->setCellValue('H' . $row, $hareket->aciklama ?: '-');
 
+    $isDebt = ((float)$hareket->anapara > 0) || ((float)$hareket->gecikme_zammi > 0);
+    $isPayment = ((float)$hareket->odenen > 0);
 
+    
     // Satır rengini değiştir (çift satırlar açık gri)
     if ($row % 2 == 0) {
         $sheet->getStyle('A' . $row . ':' . $lastHeaderColumn . $row)->applyFromArray([
@@ -268,6 +271,20 @@ foreach ($kisiHareketler as $hareket) {
         $sheet->getStyle('A' . $row . ':' . $lastHeaderColumn . $row)->applyFromArray([
             'font' => [
                 'size' => 9,
+            ]
+        ]);
+    }
+
+    if ($isPayment) {
+        $sheet->getStyle('A' . $row . ':' . $lastHeaderColumn . $row)->applyFromArray([
+            'font' => [
+                'color' => ['rgb' => '3F7D58'],
+            ]
+        ]);
+    } elseif ($isDebt) {
+        $sheet->getStyle('A' . $row . ':' . $lastHeaderColumn . $row)->applyFromArray([
+            'font' => [
+                'color' => ['rgb' => 'C51605'],
             ]
         ]);
     }

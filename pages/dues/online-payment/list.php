@@ -309,7 +309,7 @@ $eslesmeyen_sayisi = $TahsilatHavuzu->getEslesmeyenSayisi($site_id);
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table id="bankaHareketleriTable" class="table table-hover table-bordered datatables">
-                            <thead class="table-light">
+                            <thead >
                                 <tr>
                                     <th>Tarih</th>
                                     <th>Referans No</th>

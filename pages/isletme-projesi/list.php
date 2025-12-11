@@ -47,7 +47,7 @@ $projeler = $Model->getProjectsBySite($siteId);
                 </div>
                 <div class="table-responsive">
                                 <table class="table table-hover table-bordered datatables" id="isletmeProjesiTable">
-                        <thead class="table-light">
+                        <thead >
                             <tr>
                                 <th>#</th>
                                 <th>Proje Adı</th>

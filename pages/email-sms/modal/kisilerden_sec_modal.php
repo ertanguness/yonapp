@@ -211,7 +211,7 @@ if ($kisiler) {
     <!-- Tablo -->
     <div class="kisiler-table-wrapper">
         <table id="kisilerTable" class="table table-hover mb-0">
-            <thead class="table-light">
+            <thead >
                 <tr>
                     <th style="width: 40px;"></th>
                     <th>Daire</th>

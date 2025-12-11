@@ -45,7 +45,7 @@ $model = new SikayetOneriModel();
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-hover table-vcenter card-table datatable" id="tableSikayetOneri">
-                                    <thead class="table-light">
+                                    <thead >
                                         <tr>
                                             <th>#</th>
                                             <th>Başlık</th>

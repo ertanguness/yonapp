@@ -81,7 +81,15 @@ class SitelerModel extends Model
     }
 
 
+  /**Kullanıcının site sayısını döndürür */
+    public function SiteSayisi()
+    {
+        $user = $_SESSION['user'];
   
+        $sql = $this->db->prepare("SELECT COUNT(*) FROM $this->table WHERE user_id = ? AND silinme_tarihi IS NULL");
+        $sql->execute([$user->id]);
+        return (int)$sql->fetchColumn();
+    }
 
     public function SiteBilgileri($id)
     {
