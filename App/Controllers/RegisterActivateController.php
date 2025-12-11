@@ -7,6 +7,7 @@ use App\Services\Gate;
 use App\Helper\Security;
 use App\Services\MailGonderService;
 use App\Services\FlashMessageService;
+use Model\KasaModel;
 
 class RegisterActivateController
 {
@@ -60,13 +61,47 @@ class RegisterActivateController
                 FlashMessageService::add('info', 'Bilgi', 'Kullanıcı zaten aktif');
             } else {
                 $User->ActivateUser($email);
-                FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!',"onay2.png");
-                
+
+
+
+
+                /**Varsayilan site oluştur */
+
+
+                /**Varsayılan olaak kasa oluştur */
+                // $KasaModel = new KasaModel();
+                // $data = [
+                //     "id" => 0,
+                //     "site_id" => ,
+                //     "kasa_adi" => "AİDAT KASASI",
+                //     "aktif_mi" => 1,
+                //     "kasa_turu" => "Nakit",
+                //     "varsayilan_mi" => 1,
+                // ];
+
+                // $KasaModel->saveWithAttr($data);
+
+
+
+
+
+
+
+
+                FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!', "onay2.png");
+
+
+
+
+
+
+
+
                 /**Site sakini ise mail metnine sakin ekle */
                 $sakin = $user->kisi_id > 0 ? " (Site Sakini)" : "";
-                
 
-                MailGonderService::gonder(["beyzade83@gmail.com","bilgekazaz@gmail.com","ertanguness@gmail.com"], $user->full_name, $user->full_name .  $sakin . " isimli kullanıcı hesabını aktifleştirdi.");
+
+                MailGonderService::gonder(["beyzade83@gmail.com", "bilgekazaz@gmail.com", "ertanguness@gmail.com"], $user->full_name, $user->full_name .  $sakin . " isimli kullanıcı hesabını aktifleştirdi.");
             }
         }
         return $token_renegate;

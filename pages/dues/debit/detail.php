@@ -20,6 +20,8 @@ $borc = $Borc->findWithDueName($id);
 $enc_id = Security::encrypt($id);
 $borc_detay = $BorcDetay->BorclandirmaDetay($id);
 
+// Helper::Dd($borc_detay);
+
 ?>
 
 

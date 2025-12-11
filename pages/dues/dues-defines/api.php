@@ -51,6 +51,9 @@ if ($_POST["action"] == "save_dues") {
         //Borçlandırılacak Kişileri json decode yap
         $duePendingList = json_decode($_POST["due_pending_list"], true);
         if (!empty($duePendingList)) {
+
+            //Önce eskilerini sil
+            $DueDetail->softDeleteByColumn("due_id",Security::decrypt($lastInsertId));
   
             //Sonra yenilerini ekle
             foreach ($duePendingList as $pending) {
