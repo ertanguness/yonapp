@@ -53,8 +53,12 @@ if ($_POST["action"] == "save_dues") {
         if (!empty($duePendingList)) {
 
             //Önce eskilerini sil
-            $DueDetail->softDeleteByColumn("due_id",Security::decrypt($lastInsertId));
-  
+            /**Eğer kayıt varsa */
+            $existingRecords = $DueDetail->findWhere(["due_id" => Security::decrypt($lastInsertId)]);
+            if (!empty($existingRecords)) {
+                $DueDetail->softDeleteByColumn("due_id",Security::decrypt($lastInsertId));
+            }
+
             //Sonra yenilerini ekle
             foreach ($duePendingList as $pending) {
 
