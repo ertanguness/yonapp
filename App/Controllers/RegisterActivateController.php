@@ -4,10 +4,12 @@ namespace App\Controllers;
 
 use Model\UserModel;
 use App\Services\Gate;
+use Model\DefinesModel;
 use App\Helper\Security;
 use App\Services\MailGonderService;
 use App\Services\FlashMessageService;
 use Model\KasaModel;
+use Model\SitelerModel;
 
 class RegisterActivateController
 {
@@ -59,28 +61,48 @@ class RegisterActivateController
                 FlashMessageService::add('error', 'Hata!', 'Email bilgisi boş');
             } elseif ($user->status == 1) {
                 FlashMessageService::add('info', 'Bilgi', 'Kullanıcı zaten aktif');
+            } elseif ($user->status == 0) {
+                FlashMessageService::add('error', 'Hata!', 'Kullanıcı durumunuz pasif.Lütfen yönetici ile görüşün ');
+            
             } else {
                 $User->ActivateUser($email);
 
-
-
-
                 /**Varsayilan site oluştur */
+                $SiteModel = new SitelerModel();
+                $lastSiteId = $SiteModel->saveWithAttr([
+                    "id" => 0,
+                    "user_id" => $user->id,
+                    "site_adi" => "ÖRNEK SİTE",
+                    "aktif_mi" => 1,
+                ]);
 
+                /**varsayılan olaak kasa oluştur */
+                $KasaModel = new kasamodel();
+                $data = [
+                    "id" => 0,
+                    "site_id" => $lastSiteId,
+                    "kasa_adi" => "Ai̇dat Kasasi",
+                    "aktif_mi" => 1,
+                    "kasa_turu" => "Banka",
+                    "varsayilan_mi" => 1,
+                ];
 
-                /**Varsayılan olaak kasa oluştur */
-                // $KasaModel = new KasaModel();
-                // $data = [
-                //     "id" => 0,
-                //     "site_id" => ,
-                //     "kasa_adi" => "AİDAT KASASI",
-                //     "aktif_mi" => 1,
-                //     "kasa_turu" => "Nakit",
-                //     "varsayilan_mi" => 1,
-                // ];
+                $KasaModel->saveWithAttr($data);
 
-                // $KasaModel->saveWithAttr($data);
+                /** Daire tipleri oluştur 3+1 , 2+1,1+1, İşyeri */
+                $DefinesModel = new DefinesModel();
 
+                $type = ["3+1","2+1","1+1","İsyeri"];
+                foreach ($type as $item) {
+                    $DefinesModel->saveWithAttr([
+                        "id" => 0,
+                        "site_id" => $lastSiteId,
+                        "define_name" => $item,
+                        "mulk_tipi" => $item == "İsyeri" ? "İşyeri" : "Konut",
+                        "description" => "İlk Kayıtta eklendi",
+                    ]);
+                }
+               
 
 
 

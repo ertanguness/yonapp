@@ -30,7 +30,7 @@ switch ($action) {
         try {
             $data = [
                 'id' => $id,
-                'kisi_id' => (int)$user->id,
+                'kisi_id' => (int)$user->kisi_id,
                 'site_id' => $siteId ? (int)$siteId : null,
                 'type' => $type,
                 'title' => $title,
