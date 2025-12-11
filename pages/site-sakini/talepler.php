@@ -47,6 +47,9 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
     box-shadow: 0 8px 24px rgba(0,0,0,.15);
   }
 }
+
+
+
 </style>
 
 <div class="main-content">
@@ -68,7 +71,7 @@ $rows = $model->listByUser((int)$user->id, $siteId ? (int)$siteId : null);
                                             <th style="width: 40%;">İçerik</th>
                                             <th>Durum</th>
                                             <th>Oluşturulma</th>
-                                            <th class="text-center" style="width: 10%;">İşlem</th>
+                                            <th class="all text-center" style="width: 10%;">İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
