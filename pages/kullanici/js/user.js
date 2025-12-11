@@ -159,7 +159,7 @@ $(document).on("click", ".kullanici-sil", function () {
 function changeUserStatus(userId, currentStatus) {
         Swal.fire({
             title: 'Uyarı!',
-            html: "Kullanıcı durumuu değiştirmek istiyor musunuz ?<br><br>Bu işlem geri alınamaz!",
+            html: "Kullanıcı durumunu değiştirmek istiyor musunuz ?<br><br>Bu işlem geri alınamaz!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
