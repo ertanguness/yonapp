@@ -373,6 +373,7 @@ echo '<script src="/assets/js/lock-screen.js"></script>';
 
 
 <script src="/partials/mobile-menu.js"></script>
+<!-- Fixes mobile hamburger menu toggle issues on some browsers -->
 <script src="/assets/js/hamburger-fix.js"></script>
 <script src="/pages/email-sms/js/sms.js"></script>
 
