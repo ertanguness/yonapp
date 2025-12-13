@@ -21,6 +21,9 @@
 
     /* Gelir/Gider Tipi Seçimi */
 
+ /** tutar rengi */
+ $tutar_rengi = ($tahsilat->tahsilat_tutari >= 0) ? 'text-success' : 'text-danger';
+
 
 
 
@@ -37,6 +40,7 @@
  <div class="modal-body">
 <form action="" id="kasayaAktarForm">
     <input type="hidden" name="id" class="form-control" value="<?php echo $enc_id; ?>">
+    <input type="hidden" name="type" id="type" class="form-control" value="<?php echo $type; ?>">
 
     <div class="row mb-4">
         <div class="col-lg-2 fw-medium">İşlem Tarihi</div>
@@ -69,7 +73,7 @@
                  <div class="avatar-text avatar-sm">
                      <i class="feather-dollar-sign"></i>
                  </div>
-                 <span><?php echo Helper::formattedMoney($tahsilat->tahsilat_tutari); ?></span>
+                 <span class="<?php echo $tutar_rengi; ?>"><?php echo Helper::formattedMoney($tahsilat->tahsilat_tutari); ?></span>
              </a>
          </div>
      </div>
@@ -84,6 +88,19 @@
              <?php echo $Tanimlamalar->getGelirGiderTipiSelect("gelir_gider_tipi", $type_code,2); ?>
          </div>
      </div>
+     <div class="row mb-4">
+         <div class="col-lg-2 fw-medium"><?php echo $type; ?> Kalemi</div>
+         <div class="col-lg-6 hstack gap-1">
+             <a href="javascript:void(0);" class="hstack gap-2">
+                 <div class="avatar-text avatar-sm">
+                     <i class="feather-briefcase"></i>
+                 </div>
+             </a>
+             <select name="gelir_gider_kalemi" id="gelir_gider_kalemi" class="form-select w-100 select2">
+                <option value="">Seçiniz</option>
+              </select>
+         </div>
+     </div>
 
     </form>
 
@@ -92,3 +109,4 @@
      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
      <button type="button" class="btn btn-primary" id="kasayaKaydetBtn">Kaydet</button>
  </div>
+

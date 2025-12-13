@@ -93,6 +93,23 @@ $model = new SikayetOneriModel();
                         </div>
                     </div>
 
+                    <div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Verilen Cevap</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="replyText" class="form-control-plaintext" style="white-space: pre-wrap;"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -108,14 +125,17 @@ $(function(){
     rows.forEach(r => {
       const typeBadge = r.type === 'Şikayet' ? 'danger' : (r.type === 'Öneri' ? 'info' : 'secondary');
       const statusBadge = r.status === 'Cevaplandı' ? 'success' : (r.status === 'İnceleniyor' ? 'warning' : 'secondary');
-      const replyAttr = (r.reply_message || '').replace(/"/g, '&quot;');
+      const replyAttr = encodeURIComponent(r.reply_message || '');
+      const statusHtml = r.status === 'Cevaplandı'
+        ? `<span class="badge bg-${statusBadge} view-reply" role="button" data-reply="${replyAttr}" title="Cevabı görüntüle">${r.status ?? '-'}</span>`
+        : `<span class="badge bg-${statusBadge}">${r.status ?? '-'}</span>`;
       const tr = `
         <tr>
           <td>${i++}</td>
           <td>${r.title ?? '-'}</td>
           <td>${r.kisi_id ?? '-'}</td>
           <td><span class="badge bg-${typeBadge}">${r.type ?? '-'}</span></td>
-          <td><span class="badge bg-${statusBadge}">${r.status ?? '-'}</span></td>
+          <td>${statusHtml}</td>
           <td>${r.created_at ?? '-'}</td>
           <td>
             <button class="btn btn-primary btn-sm do-update" data-id="${r.id || 0}" data-status="${r.status || ''}" data-reply="${replyAttr}">
@@ -145,11 +165,18 @@ $(function(){
   $(document).off('click','.do-update').on('click','.do-update', function(){
     const id = $(this).data('id');
     const status = $(this).data('status');
-    const reply = $(this).data('reply') || '';
+    const reply = decodeURIComponent($(this).data('reply') || '');
     $('#cmpId').val(id);
     $('#cmpStatus').val(status);
     $('#cmpReply').val(reply);
     const m = new bootstrap.Modal(document.getElementById('updateModal'));
+    m.show();
+  });
+  
+  $(document).off('click','.view-reply').on('click','.view-reply', function(){
+    const text = decodeURIComponent($(this).data('reply') || '');
+    $('#replyText').text(text || 'Cevap bulunamadı');
+    const m = new bootstrap.Modal(document.getElementById('replyModal'));
     m.show();
   });
 

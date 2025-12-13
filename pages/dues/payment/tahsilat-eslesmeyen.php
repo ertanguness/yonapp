@@ -561,6 +561,8 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                     $(".modal-content .select2").select2({
                         dropdownParent: $('#kasayaAktar')
                     });
+
+                    gelirgiderkalemleri();
                 });
 
 
@@ -568,7 +570,7 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
 
         /** Gelir Gider olarak kasaya Aktar */
         $(document).on('click', '#kasayaKaydetBtn', function() {
-            // var $this = $(this);
+             var $this = $(this);
             // var id = $this.data('id');
             // row = $this.closest('tr');
             var form = $("#kasayaAktarForm");
@@ -581,6 +583,13 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
             //     console.log(pair[0]+ ', ' + pair[1]); 
             // }
             // return;
+
+            /**butonu disabled yap */
+            $this.prop('disabled', true);
+
+            /**Kaydediliyor yaz */
+            $this.text('Kaydediliyor...');
+
 
             fetch(url, {
                     method: 'POST',
@@ -597,6 +606,11 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                                 // table.row(row).remove().draw(true);
                             });
                             $('#kasayaAktar').modal('hide');
+
+                            //butonu enabled yap
+                            $this.prop('disabled', false);
+                            //Kaydediliyor yazını sil
+                            $this.text('Kasaya Aktar');   
 
                             Toastify({
                                 text: "Tahsilat kasaya aktarıldı.",
@@ -626,10 +640,46 @@ $optionsForSelect = array_column($daireler, 'daire_kodu', 'id');
                         'İstek sırasında bir hata oluştu.',
                         'error'
                     );
+                    //butonu enabled yap
+                    $this.prop('disabled', false);
+                    //Kaydediliyor yazını sil
+                    $this.text('Kasaya Aktar');   
+
                 });
+                
 
         });
 
 
+    })
+
+    /**gelir_gider_tipi */
+    function gelirgiderkalemleri() {
+        var selected = $("#gelir_gider_tipi option:selected").text(); // kategori_id
+        var type = $("#type").val() == "Gelir" ? 6 : 7;
+        //console.log("type", type);
+
+        $.get(url, {
+            action: 'gelir_gider_kalemi_getir',
+            kategori_adi: selected,
+            kategori_tipi: type
+        }, function(res) {
+            var data = typeof res === 'string' ? JSON.parse(res) : res;
+            console.log("değişti", data);
+            if (data.status === 'success') {
+                $('#gelir_gider_kalemi').html(data.options).trigger('change');
+            } else {
+                console.error('Hata:', data.message || 'Bilinmeyen hata');
+            }
+        });
+
+    }
+    $(function() {
+
+        $(document).on('change', '#gelir_gider_tipi', function() {
+            gelirgiderkalemleri();
+        });
+
+      
     })
 </script>

@@ -89,10 +89,9 @@ $(document).on("click", "#guvenlikPersonel_kaydet", function () {
     });
 });
 
-$(document).on("change", ".select2", function () {
+$(document).on("change", ".select2:not(#mySite)", function () {
   $(this).valid(); // Trigger validation for the changed select2 element
 });
-
 
 
 $(document).on("click", ".sil-guvenlikPersonel", function () {

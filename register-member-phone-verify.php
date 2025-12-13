@@ -27,7 +27,7 @@ try {
   }
   $devCode = ($row->code ?? null);
 } catch (\Throwable $e) {}
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
 $resendKey = 'resend_count_' . ($userId ?? '0');
 $resendCount = $_SESSION[$resendKey] ?? 0;
 ?>

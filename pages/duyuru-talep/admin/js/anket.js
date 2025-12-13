@@ -167,36 +167,51 @@
         }
       }
 
-      // Dışarıdaki Kaydet butonunu form submit ile ilişkilendir
-      $('#saveSurvey').on('click', function(){
+      const saveBtn = document.getElementById('saveSurvey');
+      saveBtn.addEventListener('click', function(){
         const form = document.getElementById('pollForm');
-        if (form.requestSubmit) { form.requestSubmit(); } else { $('#pollForm').trigger('submit'); }
+        if (form.requestSubmit) { form.requestSubmit(); } else { form.dispatchEvent(new Event('submit', { cancelable: true })); }
       });
-
-      $('#pollForm').on('submit', async function(e){
+      const submitHandler = async function(e){
         e.preventDefault();
-        const title = $('#pollTitle').val().trim();
-        const description = $('#pollDescription').val();
-        const start_date = $('#pollStartDate').val();
-        const end_date = $('#pollEndDate').val();
-        const status = $('#pollStatus').val();
-        const options = Array.from(document.querySelectorAll('#optionsWrapper input[name="options[]"]')).map(i=> i.value.trim()).filter(Boolean);
-
+        const titleEl = document.getElementById('pollTitle');
+        const descEl = document.getElementById('pollDescription');
+        const startEl = document.getElementById('pollStartDate');
+        const endEl = document.getElementById('pollEndDate');
+        const statusEl = document.getElementById('pollStatus');
+        const title = (titleEl && titleEl.value || '').trim();
+        const description = descEl ? descEl.value : '';
+        const start_date = startEl ? startEl.value : '';
+        const end_date = endEl ? endEl.value : '';
+        const status = statusEl ? statusEl.value : 'Taslak';
+        const options = Array.from(document.querySelectorAll('#optionsWrapper input[name=\"options[]\"]')).map(i=> i.value.trim()).filter(Boolean);
         if (!title || options.length < 2){
-          swal.fire({ title:'Eksik Bilgi', text:'Başlık ve en az iki seçenek gerekli', icon:'warning' });
+          if (window.swal && swal.fire) { swal.fire({ title:'Eksik Bilgi', text:'Başlık ve en az iki seçenek gerekli', icon:'warning' }); }
+          else { alert('Başlık ve en az iki seçenek gerekli'); }
           return;
         }
-
         let res;
-        if (surveyId) {
-          res = await SurveyAPI.update(surveyId, { title, description, start_date, end_date, status, options });
-        } else {
-          res = await SurveyAPI.create({ title, description, start_date, end_date, status, options });
+        try {
+          if (surveyId) {
+            res = await SurveyAPI.update(surveyId, { title, description, start_date, end_date, status, options });
+          } else {
+            res = await SurveyAPI.create({ title, description, start_date, end_date, status, options });
+          }
+        } catch (err) {
+          if (window.swal && swal.fire) { await swal.fire({ title:'Hata', text:String(err), icon:'error' }); }
+          else { alert('Hata: ' + String(err)); }
+          return;
         }
         const titleSw = res.status === 'success' ? 'Başarılı' : 'Hata';
-        await swal.fire({ title: titleSw, text: res.message, icon: res.status });
-        if (res.status === 'success') { window.location = '/anket-listesi'; }
-      });
+        if (window.swal && swal.fire) { await swal.fire({ title: titleSw, text: res.message, icon: res.status }); }
+        else { alert(`${titleSw}: ${res.message}`); }
+        //if (res.status === 'success') { window.location = '/anket-listesi'; }
+      };
+      const formEl = document.getElementById('pollForm');
+      formEl.addEventListener('submit', submitHandler);
+      if (window.jQuery && $('#pollForm').on) {
+        $('#pollForm').off('submit').on('submit', submitHandler);
+      }
     }
   };
 

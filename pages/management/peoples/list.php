@@ -88,17 +88,17 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                 <table class="table table-hover datatables" id="peoplesList">
                                     <thead>
                                         <tr class="text-center">
-                                            <th>#</th>
-                                            <th>Blok Adı</th>
-                                            <th>Daire No</th>
-                                            <th>Adı Soyadı</th>
+                                            <th class="all">#</th>
+                                            <th class="all">Blok Adı</th>
+                                            <th class="all">Daire No</th>
+                                            <th class="all">Adı Soyadı</th>
                                             <th>Telefon</th>
                                             <th>Araç Plakası</th>
                                             <th>İkamet Türü</th>
                                             <th data-filter="date">Giriş Tarihi</thd>
                                             <th>Çıkış Tarihi</th>
                                             <th>Durumu</th>
-                                            <th>İşlem</th>
+                                            <th class="all">İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>

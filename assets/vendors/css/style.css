@@ -551,7 +551,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, tabl
 
 }
 
-.bi-arrows-move{
+.bi-arrows-move{  
   cursor: move;
 }
 

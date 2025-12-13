@@ -6,9 +6,8 @@ header('Content-Type: application/json; charset=utf-8');
 
 try {
     // Session'ı sıfırla (profil kilidini aç)
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    
+    require_once __DIR__ . '/../../configs/session-config.php';
 
     $_SESSION['profile_unlocked'] = false;
     $_SESSION['lock_attempts'] = 0;

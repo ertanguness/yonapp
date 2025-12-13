@@ -125,6 +125,7 @@ $router->get('sikayet-oneri--duzenle', fn() => require 'pages/duyuru-talep/admin
 $router->get('duyuru-listesi', fn() => require 'pages/duyuru-talep/admin/duyuru-list.php');
 //duyuru ekle
 $router->get('duyuru-ekle', fn() => require 'pages/duyuru-talep/admin/duyuru-manage.php');
+$router->get('duyuru-duzenle/{id}', fn($id) => require 'pages/duyuru-talep/admin/duyuru-manage.php');
 
 
 
