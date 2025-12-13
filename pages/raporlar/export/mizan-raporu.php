@@ -127,7 +127,7 @@ if (!$isPreview) { $sheet->getStyle('A4:F4')->getFill()->setFillType(Fill::FILL_
 $r = 5;
 
 foreach ($kasalar as $k) {
-    $sqlDevir = $db->prepare("SELECT SUM(tutar) AS toplam FROM kasa_hareketleri WHERE kasa_id = :kid AND site_id = :sid AND silinme_tarihi IS NULL AND islem_tarihi < :start");
+    $sqlDevir = $db->prepare("SELECT SUM(tutar) AS toplam FROM kasa_hareketleri WHERE kasa_id = :kid AND site_id = :sid AND silinme_tarihi IS NULL AND islem_tarihi < :start AND kategori != 'Kasa Transferi'");
     $sqlDevir->bindValue(':kid', (int)$k->id, \PDO::PARAM_INT);
     $sqlDevir->bindValue(':sid', (int)$site_id, \PDO::PARAM_INT);
     $sqlDevir->bindValue(':start', $start, \PDO::PARAM_STR);
@@ -141,6 +141,7 @@ foreach ($kasalar as $k) {
                                    AND k.site_id = :sid 
                                    AND kh.silinme_tarihi IS NULL 
                                    AND (kh.islem_tipi='Gelir' OR kh.islem_tipi='gelir') 
+                                   AND kh.kategori != 'Kasa Transferi'
                                    AND kh.islem_tarihi BETWEEN :start AND :end");
     $sqlGelenTop->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gelenTop = (float)($sqlGelenTop->fetchColumn() ?: 0);
@@ -152,6 +153,7 @@ foreach ($kasalar as $k) {
                                    AND k.site_id = :sid 
                                    AND kh.silinme_tarihi IS NULL 
                                    AND (kh.islem_tipi='Gider' OR kh.islem_tipi='gider') 
+                                   AND kh.kategori != 'Kasa Transferi'
                                    AND kh.islem_tarihi BETWEEN :start AND :end");
     $sqlGidenTop->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gidenTop = (float)($sqlGidenTop->fetchColumn() ?: 0);
@@ -184,6 +186,7 @@ foreach ($kasalar as $k) {
                                         WHERE kasa_id=:kid AND k.site_id=:sid 
                                         AND kh.silinme_tarihi IS NULL 
                                         AND (kh.islem_tipi='Gelir' OR kh.islem_tipi = 'gelir') 
+                                        AND kh.kategori != 'Kasa Transferi'
                                         AND kh.islem_tarihi BETWEEN :start AND :end 
                                         GROUP BY kh.kategori");
     $sqlGelirKat->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
@@ -215,6 +218,7 @@ foreach ($kasalar as $k) {
                                    AND k.site_id=:sid 
                                    AND kh.silinme_tarihi IS NULL 
                                    AND (kh.islem_tipi='Gider' OR kh.islem_tipi='gider') 
+                                   AND kh.kategori != 'Kasa Transferi'
                                    AND kh.islem_tarihi BETWEEN :start AND :end 
                                  GROUP BY kh.kategori");
     $sqlGiderKat->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
