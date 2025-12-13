@@ -118,6 +118,8 @@ $(document).on('click', '.gelirGiderGuncelle', function () {
 
         })
         $('.flatpickr-input').prop('readonly', false);
+        //Gelir/Gider Kalemleri Getir
+        gelirGiderKalemleriGetir();
     });
 
     // $.ajax({
