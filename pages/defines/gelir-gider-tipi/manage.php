@@ -71,7 +71,7 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
                                         <div class="col-lg-4">
                                             <div class="input-group flex-nowrap w-100">
                                                 <div class="input-group-text"><i class="feather-home"></i></div>
-                                                <?php echo Helper::getGelirGiderTipiSelect('gelir_gider_tipi', $gelirgidertipi->tip ?? null); ?>
+                                                <?php echo Helper::getGelirGiderTipiSelect('gelir_gider_tipi', $gelirgidertipi->type ?? null); ?>
                                             </div>
                                         </div>
                                     </div>

@@ -62,10 +62,12 @@ class AcilDurumKisileriModel extends Model
         </tr>';
     }
     
-    public function AcilDurumKisiVarmi($telefon)
+    public function AcilDurumKisiVarmi($telefon,$adi_soyadi, $kisi_id = 0): bool
     {
-        $query = $this->db->prepare("SELECT COUNT(*) FROM $this->table WHERE telefon = ?");
-        $query->execute([$telefon]);
+        $query = $this->db->prepare("SELECT COUNT(*) FROM $this->table 
+                                    WHERE telefon = ? AND adi_soyadi = ? AND kisi_id = ?
+                                    AND silinme_tarihi IS NULL");
+        $query->execute([$telefon, $adi_soyadi, $kisi_id]);
         return $query->fetchColumn() > 0;
     }
    

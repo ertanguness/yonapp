@@ -148,6 +148,7 @@ const isAllowedPage = () => {
 
 (async () => {
   if (!isAllowedPage()) { return; }
+  if (typeof window !== 'undefined' && window.ONBOARDING_COMPLETED === 1) { return; }
   const status = await fetchStatus();
   if (status && status.status === 'success') {
     if (status.should_show) { renderModal(status); }

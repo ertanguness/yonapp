@@ -60,7 +60,8 @@ if (
     $page == "arac-yonetimi" ||
     $page == "kullanici-ekle" || $page == "kullanici-duzenle" ||
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
-    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri"
+    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" ||
+    $page == "gecikmis-odemeler"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
@@ -214,6 +215,9 @@ if ($page == 'arac-yonetimi' || $page == 'arac-ekle' || $page == 'arac-duzenle')
 if ($page == 'management/peoples/upload-from-xls') {
     echo '<script src="/pages/management/peoples/js/upload-from-xls.js"></script>';
 }
+if ($page == 'kisileri-yukle') {
+    echo '<script src="/pages/management/peoples/js/upload-from-xls.js"></script>';
+}
 //*************PEOPLES BİTİŞ******************************** */
 
 //*************BAKIM ONARIM ARIZA BAŞLANGIÇ******************************** */
@@ -266,6 +270,7 @@ if ($page == 'daireleri-excelden-yukle') {
 }
 
 // Onboarding Checklist (global)
+echo '<script>window.ONBOARDING_COMPLETED=' . (!empty($_SESSION['onboarding_completed']) ? 1 : 0) . ';</script>';
 versionedScript('/assets/js/onboarding.js');
 //*************define APARTMENT TYPES******************************** */
 
