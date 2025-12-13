@@ -43,7 +43,7 @@ if ($_POST['action'] == 'gelir-gider-kaydet') {
             "islem_tarihi" => Date::YmdHis($_POST['islem_tarihi']),
             "islem_tipi" => $_POST['islem_tipi'],
             "kategori" => $_POST['kategori'],
-            "alt_tur" => $_POST['gelir_gider_kalemi'],
+            "alt_tur" => $_POST['gelir_gider_kalemi'] ?? '',
             "makbuz_no" => $_POST['makbuz_no'],
             "tutar" => ($tutar),
             "aciklama" => $_POST['aciklama'],
