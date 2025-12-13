@@ -39,7 +39,6 @@ class DefinesModel extends Model
                                             WHERE site_id = :site_id 
                                             AND type IN (:gelirTipi, :giderTipi)
                                             AND silinme_tarihi IS NULL 
-                                            GROUP BY define_name
                                             ORDER BY define_name ASC");
             $sql->execute([
                 ':site_id' => $site_id,
@@ -170,15 +169,19 @@ class DefinesModel extends Model
      * @param mixed $type
      * @return int|null
      */
-    public function getApartmentTypeIdByName($site_id, $type, $name)
+    public function getApartmentTypeIdByName($site_id, $type, $name,$mulk_tipi)
     {
         $sql = $this->db->prepare("SELECT id FROM defines 
-                                          WHERE site_id = ? AND type = ? AND define_name = ? 
+                                          WHERE site_id = ? 
+                                          AND type = ? 
+                                          AND define_name = ? 
+                                          AND mulk_tipi = ?
                                           LIMIT 1");
         $sql->execute([
             $site_id,
             $type,
-            $name
+            $name,
+            $mulk_tipi
         ]);
         $result = $sql->fetch(PDO::FETCH_OBJ);
 

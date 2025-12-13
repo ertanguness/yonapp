@@ -113,6 +113,7 @@ $(document).ready(function () {
     "mizanTable",
     "gelirGiderTable",
     "tahsilatTable",
+    "gecikmisTable",
     "notificationsList",
     "smsResidentsTable"
   ];

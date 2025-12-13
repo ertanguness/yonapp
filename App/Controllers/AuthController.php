@@ -395,6 +395,13 @@ class AuthController
         $userModel = new UserModel();
         $logger = \getLogger();
 
+        try {
+            $userModel->ensureOnboardingCompletedColumn();
+            $_SESSION['onboarding_completed'] = $userModel->getOnboardingCompleted((int)$user->id) === 1;
+        } catch (\Throwable $e) {
+            $_SESSION['onboarding_completed'] = false;
+        }
+
         // Loglama ve Token işlemleri
         $userModel->setToken($user->id, $_SESSION['csrf_token']);
 

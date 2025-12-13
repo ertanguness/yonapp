@@ -305,6 +305,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                                     <th data-filter="number">Tutar</th>
                                     <th data-filter="number">Bakiye</th>
                                     <th data-filter="string">Kategori</th>
+                                    <th data-filter="string">Alt Tür</th>
                                     <th data-filter="string">Makbuz No</th>
                                     <th data-filter="string">Açıklama</th>
                                     <th>İşlemler</th>

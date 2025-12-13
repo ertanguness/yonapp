@@ -32,6 +32,8 @@ $router->get('tahsilatlar', fn() => require 'pages/dues/collections/list.php');
 $router->get('tahsilat-detayi/{id}', fn($id) => require 'pages/dues/collections/detail.php');
 $router->get('tahsilat-detay-export/{id}', fn($id) => require 'pages/dues/collections/export/tahsilat_detay.php');
 
+$router->get('gecikmis-odemeler', fn() => require 'pages/dues/payment/gecikmis-odemeler.php');
+
 
 
 $router->get('onay-bekleyen-tahsilatlar', fn() => require 'pages/dues/payment/tahsilat-onay.php');
@@ -84,7 +86,7 @@ $router->get('daireleri-excelden-yukle', fn() => require 'pages/management/apart
 ---------------------------------------------------- */
 $router->get('daire-tipi-listesi', fn() => require 'pages/defines/apartment-type/list.php');
 $router->get('daire-turu-ekle', fn() => require 'pages/defines/apartment-type/manage.php');
-$router->get('daire-tipi-duzenle/{id}', fn($id) => require 'pages/defines/apartment-type/manage.php');
+$router->get('daire-turu-duzenle/{id}', fn($id) => require 'pages/defines/apartment-type/manage.php');
 
 /* ----------------------------------------------------
 |  SİTE SAKİNLERİ
@@ -93,6 +95,11 @@ $router->get('site-sakinleri', fn() => require 'pages/management/peoples/list.ph
 $router->get('site-sakini-ekle', fn() => require 'pages/management/peoples/manage.php');
 $router->get('site-sakini-duzenle/{id}', fn($id) => require 'pages/management/peoples/manage.php');
 $router->get('excelden-site-sakini-yukle', fn() => require 'pages/management/peoples/upload-from-xls.php');
+
+/**Kisileri yükle */
+$router->get('kisileri-yukle', fn() => require 'pages/management/peoples/kisileri-yukle.php');
+
+
 
 // Program Giriş Bilgileri (Aktif sakinler için toplu davet ve giriş logları)
 $router->get('program-giris-bilgileri', fn() => require 'pages/management/peoples/program-giris-bilgileri.php');

@@ -1,21 +1,36 @@
 <?php
 require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+use App\Services\Gate;
 use App\Helper\Security;
 use Model\AcilDurumKisileriModel;
 
 $Model = new AcilDurumKisileriModel();
 $db = getDbConnection();
 
-function columnExists($db, $table, $column){
+
+
+
+
+
+function columnExists($db, $table, $column)
+{
     $stmt = $db->prepare("SHOW COLUMNS FROM {$table} LIKE ?");
     $stmt->execute([$column]);
     return (bool)$stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function ensureEmergencyColumns($db){
-    try { if(!columnExists($db,'acil_durum_kisileri','notlar')){ $db->exec("ALTER TABLE acil_durum_kisileri ADD COLUMN notlar TEXT NULL"); } } catch(Throwable $e){}
+function ensureEmergencyColumns($db)
+{
+    try {
+        if (!columnExists($db, 'acil_durum_kisileri', 'notlar')) {
+            $db->exec("ALTER TABLE acil_durum_kisileri ADD COLUMN notlar TEXT NULL");
+        }
+    } catch (Throwable $e) {
+    }
 }
 
 $action = $_POST['action'] ?? '';
@@ -28,49 +43,74 @@ function normalizeId($raw)
     return (int)$dec;
 }
 
-if($action === 'save_em'){
+if ($action === 'save_em') {
     ensureEmergencyColumns($db);
 
     $id = normalizeId($_POST['id'] ?? 0);
+    $kisi_id = normalizeId($_POST['kisi_id'] ?? 0);
+    $adi_soyadi = trim((string)($_POST['adi_soyadi'] ?? ''));
+
     $isUpdate = $id > 0;
     $telefon = trim((string)($_POST['telefon'] ?? ''));
-    if(!$telefon){ echo json_encode([ 'status' => 'error', 'message' => 'Telefon zorunludur' ]); exit; }
-    if(!$isUpdate && $Model->AcilDurumKisiVarmi($telefon)){
-        echo json_encode([ 'status' => 'error', 'message' => $telefon . ' numarası zaten kayıtlı' ]);
+    if (!$telefon) {
+        echo json_encode(['status' => 'error', 'message' => 'Telefon zorunludur']);
+        exit;
+    }
+
+    /**Kişi id yoksa geri dön */
+    if ($kisi_id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Geçersiz kişi ID']);
+        exit;
+    }
+
+    /**Eğer aynı kişi için tekrar kayıt yapılmaya çalışılıyorsa */
+    if (!$isUpdate && $Model->AcilDurumKisiVarmi($telefon, $adi_soyadi, $kisi_id)) {
+        echo json_encode(['status' => 'error', 'message' => $telefon . ' numarası zaten kayıtlı']);
         exit;
     }
 
     $data = [
         'id' => $id,
-        'kisi_id' => (int)($_POST['kisi_id'] ?? 0),
-        'adi_soyadi' => trim((string)($_POST['adi_soyadi'] ?? '')),
+        'kisi_id' => $kisi_id,
+        'adi_soyadi' => $adi_soyadi,
         'telefon' => $telefon,
         'yakinlik' => trim((string)($_POST['yakinlik'] ?? '')),
         'notlar' => trim((string)($_POST['notlar'] ?? '')),
     ];
 
     $lastInsertId = $Model->saveWithAttr($data);
-    if(!$lastInsertId && $isUpdate){ $lastInsertId = $id; }
-    if(!$lastInsertId){ echo json_encode([ 'status' => 'error', 'message' => 'Kayıt başarısız' ]); exit; }
+    if (!$lastInsertId && $isUpdate) {
+        $lastInsertId = $id;
+    }
+    if (!$lastInsertId) {
+        echo json_encode(['status' => 'error', 'message' => 'Kayıt başarısız']);
+        exit;
+    }
 
-    echo json_encode([ 'status' => 'success', 'id' => $isUpdate ? $id : normalizeId($lastInsertId) ]);
+    echo json_encode(['status' => 'success', 'message' => 'Kayıt başarılı', 'id' => $isUpdate ? $id : normalizeId($lastInsertId)]);
     exit;
 }
 
-if($action === 'delete_em'){
+if ($action === 'delete_em') {
     $id = normalizeId($_POST['id'] ?? 0);
-    if($id <= 0){ echo json_encode(['status'=>'error','message'=>'Geçersiz ID']); exit; }
-    $Model->delete(\App\Helper\Security::encrypt($id));
-    echo json_encode([ 'status' => 'success' ]);
+    if ($id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
+        exit;
+    }
+    $Model->softDelete(($id));
+    echo json_encode(['status' => 'success', 'message' => 'Acil Durum kişisi silindi']);
     exit;
 }
 
-if($action === 'get_em'){
+if ($action === 'get_em') {
     $id = normalizeId($_POST['id'] ?? 0);
-    if($id <= 0){ echo json_encode(['status'=>'error','message'=>'Geçersiz ID']); exit; }
+    if ($id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
+        exit;
+    }
     $em = $Model->AcilDurumKisiBilgileri($id);
-    echo json_encode(['status'=>'success','data'=>$em]);
+    echo json_encode(['status' => 'success', 'data' => $em]);
     exit;
 }
 
-echo json_encode([ 'status' => 'error', 'message' => 'Geçersiz istek' ]);
+echo json_encode(['status' => 'error', 'message' => 'Geçersiz istek']);

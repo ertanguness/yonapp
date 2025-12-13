@@ -49,9 +49,10 @@ $map = [
     4 => 'tutar',
     5 => 'yuruyen_bakiye',
     6 => 'kategori',
-    7 => 'makbuz_no',
-    8 => 'aciklama',
-    9 => 'islem_tarihi'
+    7 => 'alt_tur',
+    8 => 'makbuz_no',
+    9 => 'aciklama',
+    10 => 'islem_tarihi'
 ];
 $orderColumn = $map[$orderColIndex] ?? 'islem_tarihi';
 
@@ -66,8 +67,9 @@ if (isset($_POST['columns']) && is_array($_POST['columns'])) {
         4 => 'tutar',
         5 => 'yuruyen_bakiye',
         6 => 'kategori',
-        7 => 'makbuz_no',
-        8 => 'aciklama'
+        7 => 'alt_tur',
+        8 => 'makbuz_no',
+        9 => 'aciklama'
     ];
     foreach ($_POST['columns'] as $idx => $col) {
         $raw = isset($col['search']['value']) ? trim((string)$col['search']['value']) : '';
@@ -109,6 +111,7 @@ foreach ($items as $hareket) {
         ? '<span class="text-success fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>'
         : '<span class="text-danger fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>';
     $kategori = htmlspecialchars($hareket->kategori ?? '-');
+    $altTur = htmlspecialchars($hareket->alt_tur);
     $makbuzNo = htmlspecialchars($hareket->makbuz_no ?? '-');
     $aciklama = htmlspecialchars($hareket->aciklama ?? '-');
     $gelirGiderGuncelle = ($hareket->guncellenebilir == 1) ? 'gelirGiderGuncelle' : 'GuncellemeYetkisiYok';
@@ -126,6 +129,7 @@ foreach ($items as $hareket) {
         $tutarHtml,
         $bakiyeHtml,
         $kategori,
+        $altTur,
         $makbuzNo,
         '<span style="display:inline-block;max-width:200px;white-space:wrap;">' . $aciklama . '</span>',
         $buttons
