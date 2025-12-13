@@ -57,16 +57,27 @@
                                     <button type="button" class="btn btn-outline-primary mt-2" id="addOption">+ Seçenek Ekle</button>
                                 </div>
 
-                                <!-- Bitiş Tarihi -->
-                                <div class="mb-4">
-                                    <label for="pollEndDate" class="form-label fw-semibold">Bitiş Tarihi</label>
-                                    <input type="date" class="form-control flatpickr" id="pollEndDate" name="end_date" required>
-                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
 
-                                <!-- Başlangıç Tarihi -->
-                                <div class="mb-4">
-                                    <label for="pollStartDate" class="form-label fw-semibold">Başlangıç Tarihi</label>
-                                    <input type="date" class="form-control flatpickr" id="pollStartDate" name="start_date">
+                                        <!-- Başlangıç Tarihi -->
+                                        <div class="mb-4">
+                                            <label for="pollStartDate" class="form-label fw-semibold">Başlangıç Tarihi</label>
+                                            <input type="date" class="form-control flatpickr"
+                                                autocomplete="off" id="pollStartDate" name="start_date">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+
+                                        <!-- Bitiş Tarihi -->
+                                        <div class="mb-4">
+                                            <label for="pollEndDate" class="form-label fw-semibold">Bitiş Tarihi</label>
+                                            <input type="date" class="form-control flatpickr"
+                                                autocomplete="off" id="pollEndDate" name="end_date" required>
+                                        </div>
+                                    </div>
+
+
                                 </div>
 
                                 <!-- Durum -->
@@ -80,7 +91,7 @@
                                 </div>
 
                                 <!-- Yayınla Butonu -->
-                               
+
                             </div>
                         </form>
                     </div>
@@ -92,5 +103,7 @@
 
 <script src="/pages/duyuru-talep/admin/js/anket.js"></script>
 <script>
-$(function(){ window.SurveyUI && window.SurveyUI.initManage(); });
+    $(function() {
+        window.SurveyUI && window.SurveyUI.initManage();
+    });
 </script>

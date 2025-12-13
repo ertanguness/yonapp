@@ -2,10 +2,11 @@
 require_once __DIR__ . '/../../../../configs/bootstrap.php';
 header('Content-Type: application/json; charset=utf-8');
 
-use App\Helper\Security;
-use App\Services\Gate;
+use App\Helper\Date;
 use Model\AnketModel;
+use App\Services\Gate;
 use Model\AnketOyModel;
+use App\Helper\Security;
 
 try {
     $skipAuth = defined('UNIT_TEST') && UNIT_TEST === true;
@@ -53,9 +54,9 @@ try {
     if ($method === 'POST' && in_array($action, ['survey_save','create'])) {
         $title = trim($_POST['title'] ?? '');
         $options = $_POST['options'] ?? [];
-        $end_date = $_POST['end_date'] ?? null;
+        $end_date = Date::Ymd($_POST['end_date'] ?? null);
         $description = $_POST['description'] ?? null;
-        $start_date = $_POST['start_date'] ?? null;
+        $start_date = Date::Ymd($_POST['start_date'] ?? null);
         $status = $_POST['status'] ?? 'Aktif';
 
         if ($title === '' || count(array_filter($options, fn($o)=>trim($o) !== '')) < 2) {
@@ -66,13 +67,13 @@ try {
 
         $options = array_values(array_unique(array_map(fn($o)=>trim($o), $options)));
 
-        $idEnc = $model->create([
+        $idEnc = $model->saveWithAttr([
             'title' => $title,
             'description' => $description,
             'start_date' => $start_date,
             'end_date' => $end_date,
             'status' => $status,
-            'options' => $options,
+            'options_json' => json_encode($options, JSON_UNESCAPED_UNICODE),
         ]);
 
         echo json_encode(['status'=>'success','message'=>'Anket oluşturuldu','id'=>$idEnc]);
@@ -80,32 +81,43 @@ try {
     }
 
     if ($method === 'POST' && in_array($action, ['update'])) {
-        $id = $_POST['id'] ?? null; // Normal ID beklenir
-        if (!$id) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID gerekli']); $exit(); }
+        $idRaw = $_POST['id'] ?? null; // Normal veya şifreli ID kabul edilir
+        if (!$idRaw) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID gerekli']); $exit(); }
+        $id = ctype_digit((string)$idRaw) ? (int)$idRaw : Security::decrypt($idRaw);
+        if (!$id) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'Geçersiz ID']); $exit(); }
 
         $payload = [];
-        foreach (['title','description','start_date','end_date','status'] as $f) {
+        foreach (['title','description','status'] as $f) {
             if (isset($_POST[$f])) { $payload[$f] = $_POST[$f]; }
         }
-        if (isset($_POST['options'])) { $payload['options'] = $_POST['options']; }
+        if (isset($_POST['start_date'])) { $payload['start_date'] = Date::Ymd($_POST['start_date']); }
+        if (isset($_POST['end_date'])) { $payload['end_date'] = Date::Ymd($_POST['end_date']); }
+        if (isset($_POST['options'])) { $payload['options_json'] = json_encode($_POST['options'], JSON_UNESCAPED_UNICODE); }
 
-        $model->updateById($id, $payload);
+        $model->saveWithAttr(array_merge(['id' => $id], $payload));
         echo json_encode(['status'=>'success','message'=>'Anket güncellendi']);
         $exit();
     }
 
     if ($method === 'POST' && $action === 'change_status') {
-        $id = $_POST['id'] ?? null; $status = $_POST['status'] ?? null;
-        if (!$id || !$status) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID ve durum gerekli']); $exit(); }
-        $model->updateById((int)$id, ['status' => $status]);
+        $idRaw = $_POST['id'] ?? null; $status = $_POST['status'] ?? null;
+        if (!$idRaw || !$status) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID ve durum gerekli']); $exit(); }
+        $id = ctype_digit((string)$idRaw) ? (int)$idRaw : Security::decrypt($idRaw);
+        if (!$id) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'Geçersiz ID']); $exit(); }
+        $model->saveWithAttr(['id' => $id, 'status' => $status]);
         echo json_encode(['status'=>'success','message'=>'Durum güncellendi']);
         $exit();
     }
 
     if (in_array($action, ['delete'])) {
-        $idEnc = $_POST['id'] ?? $_GET['id'] ?? null; // Şifreli ID beklenir
-        if (!$idEnc) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID gerekli']); $exit(); }
-        $model->delete($idEnc);
+        $idRaw = $_POST['id'] ?? $_GET['id'] ?? null;
+        if (!$idRaw) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'ID gerekli']); $exit(); }
+        if (ctype_digit((string)$idRaw)) {
+            $ok = $model->deleteByColumn('id', (int)$idRaw);
+            if ($ok !== true) { http_response_code(404); echo json_encode(['status'=>'error','message'=>'Kayıt bulunamadı']); $exit(); }
+        } else {
+            $model->delete($idRaw);
+        }
         echo json_encode(['status'=>'success','message'=>'Anket silindi']);
         $exit();
     }

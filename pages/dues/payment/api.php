@@ -25,6 +25,7 @@ use Model\KisiKredileriModel;
 use Model\TahsilatDetayModel;
 use App\Helper\FinansalHelper;
 use Model\TahsilatHavuzuModel;
+use Model\DefinesModel;
 
 
 use Model\BorclandirmaDetayModel;
@@ -48,6 +49,7 @@ $FinansalRapor = new FinansalRaporModel();
 $Kasa = new KasaModel();
 $KasaHareket = new KasaHareketModel();
 $KisiHelper = new KisiHelper();
+$Defines = new DefinesModel();
 
 
 Security::checkLogin();
@@ -55,10 +57,15 @@ Security::checkLogin();
 $logger = \getLogger();
 $db = Db::getInstance();
 
+// `action` parametresini güvenli şekilde al (önce POST, sonra GET).
+// Böylece `$_POST['action']` / `$_GET['action']` doğrudan okunmadığı için
+// "Undefined array key: action" uyarıları oluşmaz.
+$action = $_POST['action'] ?? $_GET['action'] ?? null;
+
 
 /* Excel dosyasından toplu ödeme yükleme işlemi */
 /**excelden-odeme-yukle */
-if ($_POST['action'] == 'payment_file_upload') {
+if ($action === 'payment_file_upload') {
     $file = $_FILES['payment_file'];
     $fileName = $file['name'];
     $fileTmpName = $file['tmp_name'];
@@ -326,7 +333,7 @@ if ($_POST['action'] == 'payment_file_upload') {
 }
 
 // Tahsilat onaylama işlemi
-if ($_POST['action'] == 'tahsilat_onayla') {
+if ($action === 'tahsilat_onayla') {
     $id = Security::decrypt($_POST['id']);
     $tutar = Helper::formattedMoneyToNumber($_POST['islenecek_tutar']);
     $tahsilat_turu = $_POST['tahsilat_turu']; // Tahsilat tipi varsayılan olarak Nakit
@@ -402,7 +409,7 @@ if ($_POST['action'] == 'tahsilat_onayla') {
 
 
 //onayli_tahsilat_sil
-if ($_POST['action'] == 'onayli_tahsilat_sil') {
+if ($action === 'onayli_tahsilat_sil') {
     $id = Security::decrypt($_POST['id']);
     try {
         $tahsilat = $Tahsilat->find($id);
@@ -438,7 +445,7 @@ if ($_POST['action'] == 'onayli_tahsilat_sil') {
 
 
 // Tahsilat Kaydet (TAHSİLAT GİR MODALINDAN KAYIT İŞLEMİ)
-if ($_POST['action'] == 'tahsilat-kaydet') {
+if ($action === 'tahsilat-kaydet') {
     // 1. Verileri Al (Bu kısım aynı kalabilir)
     $kisi_id = Security::decrypt($_POST['kisi_id']);
     $odenen_toplam_tutar = Helper::formattedMoneyToNumber($_POST['tutar']);
@@ -687,7 +694,7 @@ if ($_POST['action'] == 'tahsilat-kaydet') {
 
 
 //Tahsilat sil(modaldan)
-if ($_POST['action'] == 'tahsilat-sil') {
+if ($action === 'tahsilat-sil') {
     $id = ($_POST['id']);
     $decryptedId = Security::decrypt($id);
     $tableRow = [];
@@ -803,7 +810,7 @@ if ($_POST['action'] == 'tahsilat-sil') {
 
 
 //GElen id'lerin hesaplanmış tutarlarını getirir
-if (isset($_POST['action']) && $_POST['action'] == 'hesapla_toplam_tutar') {
+if ($action === 'hesapla_toplam_tutar') {
     header('Content-Type: application/json');
 
     $sifreliBorcIdleri = $_POST['borc_idler'] ?? [];
@@ -867,7 +874,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'hesapla_toplam_tutar') {
 
 
 // action: 'get_kisi_borclari'
-if ($_POST['action'] == 'get_kisi_borclari') {
+if ($action === 'get_kisi_borclari') {
 
     header('Content-Type: application/json');
 
@@ -921,7 +928,7 @@ if ($_POST['action'] == 'get_kisi_borclari') {
  * @return void
  */
 
-if ($_POST['action'] == 'get_daire_kisileri') {
+if ($action === 'get_daire_kisileri') {
     header('Content-Type: application/json');
 
     try {
@@ -948,7 +955,7 @@ if ($_POST['action'] == 'get_daire_kisileri') {
 
 //Yapılan borçlandırmayı detay modalindan sil butonu ile silmek için
 /** Tahsilat yapıldıysa yaılan tahsilat kredi olarak eklenir */
-if ($_POST['action'] == 'borc_sil') { {
+if ($action === 'borc_sil') { {
 
         $id = Security::decrypt($_POST['id']);
         Gate::can('borclandirma_ekle_sil');
@@ -1023,7 +1030,7 @@ if ($_POST['action'] == 'borc_sil') { {
 
 
 /**Eşleşmeyen havuzdan Eşleşen havuza gönderme işlemi*/
-if ($_POST['action'] == 'eslesen_havuza_gonder') {
+if ($action === 'eslesen_havuza_gonder') {
     $id = Security::decrypt($_POST['id']);
     $kisi_id = Security::decrypt($_POST['kisi_id']);
     $islenen_tutar = Helper::formattedMoneyToNumber($_POST['islenen_tutar'] ?? 0);
@@ -1100,7 +1107,7 @@ if ($_POST['action'] == 'eslesen_havuza_gonder') {
 }
 
 /*Eşleşmeyen tahsilat sayfasında tahsilatı silmek için */
-if ($_POST['action'] == 'eslesmeyen_odeme_sil') {
+if ($action === 'eslesmeyen_odeme_sil') {
     $id = Security::decrypt($_POST['id']);
 
     try {
@@ -1135,7 +1142,7 @@ if ($_POST['action'] == 'eslesmeyen_odeme_sil') {
 
 
 /* Yapılan ödemeyi kasaya aktarma işlemi Gelir veya Gider olarak */
-if ($_POST['action'] == 'kasaya_aktar') {
+if ($action === 'kasaya_aktar') {
     $id = Security::decrypt($_POST['id']);
     $kasa_id = $Kasa->varsayilanKasa()->id;
 
@@ -1162,6 +1169,7 @@ if ($_POST['action'] == 'kasaya_aktar') {
             'tutar' => $havuzKaydi->tahsilat_tutari,
             'islem_tarihi' => $havuzKaydi->islem_tarihi,
             'kategori' => $_POST['kategori'], // Özel kategori
+            'alt_tur' => $_POST['gelir_gider_kalemi'] ?? null, // Özel alt tür
             'islem_tipi' => $islem_tipi,
             'kaynak_tablo' => 'tahsilat_havuzu', // Kaynak tablo
             'kaynak_id' => $havuzKaydi->id, // Havuz kaydı ID'si
@@ -1198,7 +1206,7 @@ if ($_POST['action'] == 'kasaya_aktar') {
 }
 
 /** Eşleşmeyen tahsilat sayfasında tahsilatı eşleştirmek için kişi arama işlemi */
-if (isset($_POST['action']) && $_POST['action'] == 'kisi_ara') {
+if ($action === 'kisi_ara') {
     // Güvenlik kontrollerinizi burada yapın (oturum kontrolü vb.)
 
     // Select2 tarafından gönderilen arama terimini al
@@ -1226,7 +1234,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'kisi_ara') {
 
 
 /* Borc detay modalinden borç ekle modali açılarak borç ekleme işlemi */
-if ($_POST['action'] == 'borc_ekle') {
+if ($action === 'borc_ekle') {
     $id = Security::decrypt($_POST['borc_detay_id']);
     $kisi_id = Security::decrypt($_POST['kisi_id']);
     $borclandirma_id = $_POST['borclandirmalar'];
@@ -1284,4 +1292,32 @@ if ($_POST['action'] == 'borc_ekle') {
         'message' => $message
     ];
     echo json_encode($res);
+}
+
+
+/** Gelir/Gider Kalemi Seçimi */
+if($action === 'gelir_gider_kalemi_getir'){
+    header('Content-Type: application/json');
+    $kategori_id = $_GET['kategori_id'] ?? null;
+    $kategori_tipi = $_GET['kategori_tipi'] ?? null;
+    $kategori_adi = $_GET['kategori_adi'] ?? null;
+
+   
+    $kalemler = $Defines->getGelirGiderKalemleri($kategori_tipi, $kategori_adi);
+    $options = '<option value="">Lütfen Seçiniz</option>';
+    foreach($kalemler as $kalem){
+        $text = htmlspecialchars($kalem->alt_tur ?? '');
+        if ($text === '') {
+            continue;
+        }
+        $options .= '<option value="'.$text.'">'.$text.'</option>';
+    }
+
+    echo json_encode([
+        'status' => 'success',
+        'options' => $options,
+        "kategori_id" => $kategori_id,
+        "kategori_tipi" => $kategori_tipi,
+        "kategori_adi" => $kategori_adi
+    ]);
 }

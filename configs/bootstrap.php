@@ -1,8 +1,8 @@
 <?php
 ob_start();
-if(session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+
+require_once __DIR__ . '/session-config.php';
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 define("ROOT", __DIR__);

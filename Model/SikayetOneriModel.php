@@ -48,6 +48,27 @@ class SikayetOneriModel extends Model
         return $this->insert();
     }
 
+    /**Kullanıcı adı ile beraber listeyi döndürür */
+    public function findAllByUserName(?int $siteId = null): array
+    {
+        $query = "SELECT so.*, k.adi_soyadi 
+                FROM {$this->table} so
+                LEFT JOIN kisiler k ON so.kisi_id = k.id
+                WHERE so.site_id = :site_id";
+ 
+            $params[':site_id'] = $siteId;
+
+        $stmt = $this->db->prepare($query);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
+
+
+
+
     public function listAll(?int $siteId = null): array
     {
         $conds = [];

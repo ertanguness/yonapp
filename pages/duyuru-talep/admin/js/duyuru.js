@@ -79,10 +79,21 @@ function duyuruInit() {
   const $form = $("#announcementForm");
   if ($form.length) {
     const $title = $("#title");
+    const $id = $("#id");
     const $contentHidden = $("#content");
     var quill = null;
     if (window.Quill && document.querySelector('#contentEditor')) {
       quill = new Quill('#contentEditor', { theme: 'snow', placeholder: 'Duyuru içeriği' });
+      try {
+        var initialHtml = ($contentHidden.val() || "");
+        if (initialHtml) {
+          if (quill.clipboard && typeof quill.clipboard.dangerouslyPasteHTML === 'function') {
+            quill.clipboard.dangerouslyPasteHTML(initialHtml);
+          } else {
+            quill.root.innerHTML = initialHtml;
+          }
+        }
+      } catch(e){}
     }
     const $start = $("#start_date");
     const $end = $("#end_date");
@@ -155,6 +166,7 @@ function duyuruInit() {
         return;
       }
       const fd = new URLSearchParams();
+      const id = (($id.val()||"").trim());
       fd.append("title", title);
       $contentHidden.val(content);
       fd.append("content", content);
@@ -167,8 +179,10 @@ function duyuruInit() {
         var ids = ($kisiIds.val()||[]);
         if(ids.length){ fd.append('kisi_ids', ids.join(',')); }
       }
+      if (id) { fd.append("id", id); }
+      const method = id ? "PUT" : "POST";
       fetch(apiUrl, {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           ...(token ? { Authorization: "Bearer " + token } : {})
@@ -185,7 +199,7 @@ function duyuruInit() {
             confirmButtonText: "Tamam"
           }).then(function () {
             if (data.status === "success") {
-              window.location = 'index?p=duyuru-talep/admin/announcements-list';
+              window.location = 'duyuru-listesi';
             }
           });
         });

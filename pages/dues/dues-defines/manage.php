@@ -134,13 +134,19 @@ switch ($hedef_tipi) {
             
             <ul class="nav nav-tabs nav-tabs-custom-style" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#homeTab">Aidat Bilgileri</button>
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#homeTab">
+                      <i class="bi bi-card-list"></i>  
+                    Aidat Bilgileri</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#settingsTab">Aidat Ayarları</button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#settingsTab">
+                        <i class="bi bi-gear"></i>  
+                    Aidat Ayarları</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pendingTab">Borçlandırılacak Kişiler</button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pendingTab">
+                        <i class="bi bi-people"></i>  
+                    Borçlandırılacak Kişiler</button>
                 </li>
             </ul>
         </div>

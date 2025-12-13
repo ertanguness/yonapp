@@ -24,11 +24,12 @@ class DefinesModel extends Model
     /**Gelir Gider Tiplerini getirir
      * @return array
      */
-    public function getGelirGiderTipleri()
+    public function getGelirGiderTipleri(bool $groupByDefineName = false)
     {
             $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
             $gelirTipi = self::TYPE_GELIR_TIPI;
             $giderTipi = self::TYPE_GIDER_TIPI;
+            $groupSql = $groupByDefineName ? ' GROUP BY d.define_name ' : '';
             $sql = $this->db->prepare("SELECT d.*,
                                                 case 
                                                     when d.type = :gelirTipi then 'Gelir'
@@ -39,6 +40,7 @@ class DefinesModel extends Model
                                             WHERE site_id = :site_id 
                                             AND type IN (:gelirTipi, :giderTipi)
                                             AND silinme_tarihi IS NULL 
+                                            {$groupSql}
                                             ORDER BY define_name ASC");
             $sql->execute([
                 ':site_id' => $site_id,
@@ -53,13 +55,14 @@ class DefinesModel extends Model
      * @param mixed $type
      * @return array
      */
-    public function getGelirGiderKategorileri($type)
+    public function getGelirGiderKategorileri($type, bool $groupByDefineName = false)
     {
         $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
+        $groupSql = $groupByDefineName ? ' GROUP BY define_name ' : '';
         $sql = $this->db->prepare("SELECT * FROM $this->table 
                                           WHERE site_id = ? AND type = ? 
                                           AND silinme_tarihi IS NULL 
-                                          GROUP BY define_name
+                                          {$groupSql}
                                           ORDER BY define_name ASC");
         $sql->execute([
             $site_id,
@@ -86,7 +89,7 @@ class DefinesModel extends Model
      */
     public function getGelirGiderTipiSelect($name, $type, $selected)
     {
-        $tipler = $this->getGelirGiderTipleri();
+        $tipler = $this->getGelirGiderTipleri(true);
         $options = '';
         foreach ($tipler as $tip) {
             if ($tip->type == $type) {

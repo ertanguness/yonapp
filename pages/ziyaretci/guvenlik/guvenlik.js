@@ -46,7 +46,7 @@ $(document).on("click", "#guvenlik_kaydet", function () {
     });
 });
 
-$(document).on("change", ".select2", function () {
+$(document).on("change", ".select2:not(#mySite)", function () {
   $(this).valid(); // Trigger validation for the changed select2 element
 });
 
