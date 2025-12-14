@@ -100,9 +100,8 @@ $creators = $sitesModel->getCreatorsSummary();
   transition: none !important;
   transform: none !important;
 }
-</style>
-<style>
-#registeredSitesCard { margin-bottom: 5px; }
+
+#registeredSitesCard { margin-bottom: 5px; } 
 .container-xl { padding-bottom: 60px; }
 </style>
 
