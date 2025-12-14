@@ -122,10 +122,12 @@ $(document).on("click", ".gelir-gider-tipi-sil", function () {
             if (window.islem_type == 'Gider') {
                 $('.gider-grubu').removeClass('d-none');
                 $('.gelir-grubu').addClass('d-none');
+                $('.gelir-kalemi').removeClass('d-none');
             }
             if (window.islem_type == 'Gelir') {
                 $('.gelir-grubu').removeClass('d-none');
                 $('.gider-grubu').addClass('d-none');
+                $('.gelir-kalemi').addClass('d-none');
             }
 
 
