@@ -38,6 +38,15 @@ $url = $_GET['p'] ?? 'ana-sayfa';
 //if (empty($url)) $url = 'ana-sayfa';
 
 // URL'yi çözümle ve eşleşen rota bilgilerini al
+// Eğer $_GET['p'] boşsa ve REQUEST_URI doluysa, oradan çözümlemeyi dene
+if (empty($_GET['p']) && !empty($_SERVER['REQUEST_URI'])) {
+    $parsedPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $trimmedPath = trim($parsedPath, '/');
+    if (!empty($trimmedPath) && $trimmedPath !== 'index.php') {
+        $url = $trimmedPath;
+    }
+}
+
 $resolvedRoute = $router->resolve($url);
 
 // 3. SAYFA ADINI AL (SİHİR BURADA GERÇEKLEŞİYOR)

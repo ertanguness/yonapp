@@ -74,8 +74,9 @@ document.addEventListener('DOMContentLoaded', function(){
   function loadRepList(){
     var fd = new FormData();
     fd.append('action','rep_list');
-    fetch('/pages/panel/api.php', { method:'POST', body: fd })
-      .then(function(r){ return r.json(); })
+    fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
+      .then(function(r){ return r.text(); })
+      .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
       .then(function(j){
         if (!j || j.status !== 'success') {
           repListBody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Liste yüklenemedi</td></tr>';
@@ -162,16 +163,16 @@ document.addEventListener('DOMContentLoaded', function(){
               confirmButtonText: 'Evet, Sil',
               cancelButtonText: 'İptal'
             }).then(function(res){
-              if (res.isConfirmed) {
-                var fd = new FormData();
-                fd.append('action','rep_delete');
-                fd.append('rep_id', repId);
-                fetch('/pages/panel/api.php', { method:'POST', body: fd }).then(function(r){ return r.json(); }).then(function(jj){
-                  if (jj && jj.status === 'success') { loadRepList(); }
-                  else { Swal.fire('Hata', (jj && jj.message) ? jj.message : 'Silme başarısız', 'error'); }
-                });
-              }
+          if (res.isConfirmed) {
+            var fd = new FormData();
+            fd.append('action','rep_delete');
+            fd.append('rep_id', repId);
+            fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' }).then(function(r){ return r.text(); }).then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } }).then(function(jj){
+              if (jj && jj.status === 'success') { loadRepList(); }
+              else { Swal.fire('Hata', (jj && jj.message) ? jj.message : 'Silme başarısız', 'error'); }
             });
+          }
+        });
           });
         });
       })
@@ -184,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var fd = new FormData();
     fd.append('action','rep_manage');
     fd.append('rep_id', repId);
-    fetch('/pages/panel/api.php', { method:'POST', body: fd }).then(function(r){ return r.json(); }).then(function(j){
+    fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' }).then(function(r){ return r.text(); }).then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } }).then(function(j){
       if (!j || j.status !== 'success') { Swal.fire('Hata', 'Temsilci bilgileri yüklenemedi', 'error'); return; }
       var rep = j.data.rep || {};
       Swal.fire({
@@ -261,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function(){
           fd.append('phone', ph);
           fd.append('email', em);
           fd.append('iban', ib);
-          return fetch('/pages/panel/api.php', { method:'POST', body: fd }).then(function(r){ return r.json(); }).then(function(jj){
+          return fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' }).then(function(r){ return r.text(); }).then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } }).then(function(jj){
             if (!jj || jj.status !== 'success') { Swal.showValidationMessage((jj && jj.message) ? jj.message : 'Güncelleme başarısız'); return false; }
             return jj;
           });
@@ -278,11 +279,12 @@ document.addEventListener('DOMContentLoaded', function(){
     var fd = new FormData();
     fd.append('action', 'rep_manage');
     fd.append('rep_id', repId);
-    fetch('/pages/panel/api.php', { method:'POST', body: fd })
-      .then(function(r){ return r.json(); })
+    fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
+      .then(function(r){ return r.text(); })
+      .then(function(t){ try { return JSON.parse(t); } catch(e){ console.log(t); return {status:'error'}; } })
       .then(function(j){
         if (!j || j.status !== 'success') {
-          repContent.innerHTML = '<div class="text-danger">Detay yüklenemedi</div>';
+          repContent.innerHTML = '<div class="text-danger">Detay yüklenemedi. ' + (j.message || '') + '</div>';
           return;
         }
         var d = j.data;
@@ -469,15 +471,16 @@ document.addEventListener('DOMContentLoaded', function(){
             var rate = repContent.querySelector('#assignRate').value || '25';
             var fd2 = new FormData();
             fd2.append('action','rep_assign_site');
-            fd2.append('rep_id', rep.id);
-            fd2.append('site_id', siteId);
-            fd2.append('commission_rate', rate);
-            fetch('/pages/panel/api.php', { method:'POST', body: fd2 })
-              .then(function(r){ return r.json(); })
-              .then(function(jj){
-                if (jj && jj.status === 'success') { showRepManage(rep.id); }
-              });
-          });
+          fd2.append('rep_id', rep.id);
+          fd2.append('site_id', siteId);
+          fd2.append('commission_rate', rate);
+          fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd2, credentials: 'same-origin' })
+            .then(function(r){ return r.text(); })
+            .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
+            .then(function(jj){
+              if (jj && jj.status === 'success') { showRepManage(rep.id); }
+            });
+        });
         }
         repContent.querySelectorAll('.rep-unassign').forEach(function(btn){
           btn.addEventListener('click', function(){
@@ -485,14 +488,15 @@ document.addEventListener('DOMContentLoaded', function(){
             var siteId = this.getAttribute('data-site-id');
             var fd3 = new FormData();
             fd3.append('action','rep_unassign_site');
-            fd3.append('rep_id', repId);
-            fd3.append('site_id', siteId);
-            fetch('/pages/panel/api.php', { method:'POST', body: fd3 })
-              .then(function(r){ return r.json(); })
-              .then(function(jj){
-                if (jj && jj.status === 'success') { showRepManage(repId); }
-              });
-          });
+          fd3.append('rep_id', repId);
+          fd3.append('site_id', siteId);
+          fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd3, credentials: 'same-origin' })
+            .then(function(r){ return r.text(); })
+            .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
+            .then(function(jj){
+              if (jj && jj.status === 'success') { showRepManage(repId); }
+            });
+        });
         });
         repContent.querySelectorAll('.rep-rate-input').forEach(function(inp){
           inp.addEventListener('change', function(){
@@ -502,14 +506,15 @@ document.addEventListener('DOMContentLoaded', function(){
             var fd4 = new FormData();
             fd4.append('action','rep_update_rate');
             fd4.append('rep_id', repId);
-            fd4.append('site_id', siteId);
-            fd4.append('commission_rate', rate);
-            fetch('/pages/panel/api.php', { method:'POST', body: fd4 })
-              .then(function(r){ return r.json(); })
-              .then(function(jj){
-                if (jj && jj.status === 'success') { showRepManage(repId); }
-              });
-          });
+          fd4.append('site_id', siteId);
+          fd4.append('commission_rate', rate);
+          fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd4, credentials: 'same-origin' })
+            .then(function(r){ return r.text(); })
+            .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
+            .then(function(jj){
+              if (jj && jj.status === 'success') { showRepManage(repId); }
+            });
+        });
         });
         function recalcRepTotals() {
           var rows = [].slice.call(repContent.querySelectorAll('#schedTableBody tr'));
@@ -543,15 +548,16 @@ document.addEventListener('DOMContentLoaded', function(){
             fd5.append('action','rep_mark_paid');
             fd5.append('rep_id', repId);
             fd5.append('site_id', siteId);
-            fd5.append('period', period);
-            fd5.append('paid', String(next));
-            fd5.append('amount', amount);
-            fetch('/pages/panel/api.php', { method:'POST', body: fd5 })
-              .then(function(r){ return r.json(); })
-              .then(function(jj){
-                if (jj && jj.status === 'success') {
-                  var selfBtn = btn;
-                  selfBtn.setAttribute('data-paid', String(next));
+          fd5.append('period', period);
+          fd5.append('paid', String(next));
+          fd5.append('amount', amount);
+          fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd5, credentials: 'same-origin' })
+            .then(function(r){ return r.text(); })
+            .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
+            .then(function(jj){
+              if (jj && jj.status === 'success') {
+                var selfBtn = btn;
+                selfBtn.setAttribute('data-paid', String(next));
                   selfBtn.className = 'btn btn-sm btn-icon rep-paid-toggle ' + (next ? 'btn-success' : 'btn-outline-danger');
                   var ico = selfBtn.querySelector('i');
                   if (ico) { ico.className = 'feather-' + (next ? 'check-circle' : 'x-circle'); }
@@ -580,16 +586,17 @@ document.addEventListener('DOMContentLoaded', function(){
             if (!items.length) { return; }
             var fd = new FormData();
             fd.append('action','rep_bulk_mark');
-            fd.append('rep_id', rep.id);
-            fd.append('paid','1');
-            fd.append('items', JSON.stringify(items));
-            fetch('/pages/panel/api.php', { method:'POST', body: fd })
-              .then(function(r){ return r.json(); })
-              .then(function(jj){
-                if (jj && jj.status === 'success') {
-                  rows.forEach(function(tr){
-                    var btnEl = tr.querySelector('.rep-paid-toggle');
-                    if (btnEl) {
+          fd.append('rep_id', rep.id);
+          fd.append('paid','1');
+          fd.append('items', JSON.stringify(items));
+          fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
+            .then(function(r){ return r.text(); })
+            .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
+            .then(function(jj){
+              if (jj && jj.status === 'success') {
+                rows.forEach(function(tr){
+                  var btnEl = tr.querySelector('.rep-paid-toggle');
+                  if (btnEl) {
                       btnEl.setAttribute('data-paid','1');
                       btnEl.className = 'btn btn-sm btn-icon rep-paid-toggle btn-success';
                       var ico = btnEl.querySelector('i'); if (ico) { ico.className = 'feather-check-circle'; }
@@ -730,7 +737,7 @@ document.addEventListener('DOMContentLoaded', function(){
         fd.append('email', em);
         fd.append('iban', ib);
         if (pw) { fd.append('password', pw); }
-        return fetch('/pages/panel/api.php', { method:'POST', body: fd }).then(function(r){ return r.json(); }).then(function(jj){
+        return fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' }).then(function(r){ return r.text(); }).then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } }).then(function(jj){
           if (!jj || jj.status !== 'success') { Swal.showValidationMessage((jj && jj.message) ? jj.message : 'Kayıt başarısız'); return false; }
           return jj;
         });
