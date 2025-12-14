@@ -268,8 +268,6 @@ if ($page == 'daireleri-excelden-yukle') {
     echo '<script src="/pages/management/apartment/js/upload-from-xls.js"></script>';
 }
 
-// Onboarding Checklist (global)
-versionedScript('/assets/js/onboarding.js');
 //*************define APARTMENT TYPES******************************** */
 
 
