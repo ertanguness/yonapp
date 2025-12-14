@@ -115,7 +115,7 @@ $creators = $sitesModel->getCreatorsSummary();
             var fd = new FormData();
             fd.append('action', 'creator_sites');
             fd.append('user_id', userId);
-            fetch('/pages/panel/api.php', { method:'POST', body: fd })
+            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd })
                 .then(function(r){ return r.json(); })
                 .then(function(j){
                     if (!j || j.status !== 'success') {
@@ -344,7 +344,7 @@ $creators = $sitesModel->getCreatorsSummary();
                             fd2.append('start_date', startDate);
                             if (dueDay !== '') fd2.append('due_day', dueDay);
                             if (graceDays !== '') fd2.append('grace_days', graceDays);
-                            fetch('/pages/panel/api.php', { method:'POST', body: fd2 })
+                            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd2 })
                                .then(function(rr){ return rr.json(); })
                                .then(function(jj){
                                     if (jj && jj.status === 'success') {
@@ -379,7 +379,7 @@ $creators = $sitesModel->getCreatorsSummary();
                             var fdBulk = new FormData();
                             fdBulk.append('action','billing_bulk_mark');
                             fdBulk.append('items', JSON.stringify(items));
-                            fetch('/pages/panel/api.php', { method:'POST', body: fdBulk })
+                            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fdBulk })
                               .then(function(rr){ return rr.json(); })
                               .then(function(jj){
                                 if (jj && jj.status === 'success') {
@@ -419,7 +419,7 @@ $creators = $sitesModel->getCreatorsSummary();
                             fd3.append('paid', String(nextPaid));
                             fd3.append('amount', amount);
                             var self = this;
-                            fetch('/pages/panel/api.php', { method:'POST', body: fd3 })
+                            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd3 })
                               .then(function(rr){ return rr.json(); })
                               .then(function(jj){
                                 if (jj && jj.status === 'success') {
@@ -467,7 +467,7 @@ $creators = $sitesModel->getCreatorsSummary();
                             fd4.append('lock', String(nextLock));
                             fd4.append('reason', nextLock===1 ? 'Ödeme gecikmesi' : 'Kilit kaldırıldı');
                             var self = this;
-                            fetch('/pages/panel/api.php', { method:'POST', body: fd4 }).then(function(rr){ return rr.text(); }).then(function(txt){
+                            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd4 }).then(function(rr){ return rr.text(); }).then(function(txt){
                                 var jj = null; try { jj = JSON.parse(txt); } catch(e) { jj = null; }
                                 if (jj && jj.status === 'success') {
                                     self.setAttribute('data-locked', String(nextLock));

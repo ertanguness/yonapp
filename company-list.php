@@ -987,7 +987,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
                 fd.append('action','site_lock_status');
                 fd.append('user_id','<?= (int)$user_id ?>');
                 fd.append('site_id', siteId);
-                fetch('/pages/panel/api.php', { method:'POST', body: fd })
+                fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd })
                   .then(function(r){ return r.json(); })
                   .then(function(j){
                       if (j && j.status === 'success' && j.data) {
