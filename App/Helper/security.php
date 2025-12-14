@@ -159,6 +159,12 @@ public static function ensureSiteSelected($redirectUri = '/site-ekle')
             return;
         }
 
+        /** Süper Admin (10) ve Temsilci (15) ise site seçimi zorunlu değil */
+        $roleId = isset($_SESSION['user']->roles) ? (int)$_SESSION['user']->roles : 0;
+        if ($roleId === 10 || $roleId === 15) {
+            return;
+        }
+
         $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
         $normalizedCurrent = trim($currentPath, '/');
         $normalizedRedirect = trim($redirectUri, '/');

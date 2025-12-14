@@ -40,4 +40,15 @@ protected $table = "sites";
         $result = $query->fetch(PDO::FETCH_OBJ);
         return $result;
     }
+
+    public function getAllSitesWithOwners()
+    {
+        $sql = $this->db->prepare("
+            SELECT s.*, u.full_name as owner_name, u.phone as owner_phone, u.email as owner_email 
+            FROM sites s 
+            LEFT JOIN users u ON s.user_id = u.id
+        ");
+        $sql->execute();
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
 }

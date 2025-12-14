@@ -276,6 +276,11 @@ $router->get('unauthorize', fn() => require 'pages/authorize.php');
 /* ----------------------------------------------------
 |  ANA SAYFA & GENEL
 ---------------------------------------------------- */
+$router->get('superadmin', fn() => require 'pages/panel/home.php');
+$router->get('superadmin-ayarlar', fn() => require 'pages/panel/settings.php');
+$router->get('superadmin-temsilciler', fn() => require 'pages/panel/representatives.php');
+$router->get('temsilci-paneli', fn() => require 'pages/panel/representative_dashboard.php');
+
 $router->get('ana-sayfa', function () {
     if (Gate::isResident()) {
         require 'pages/site-sakini/home.php';
