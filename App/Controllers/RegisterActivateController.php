@@ -12,7 +12,7 @@ use App\Services\MailGonderService;
 use App\Services\FlashMessageService;
 use Model\KasaModel;
 use Model\SitelerModel;
-use App\Modules\Onboarding\Models\OnboardingTaskModel;
+use App\Modules\Onboarding\Models\UserOnboardingProgressModel;
 
 class RegisterActivateController
 {
@@ -74,7 +74,7 @@ class RegisterActivateController
                
                 $db = Db::getInstance();
                 $db->beginTransaction();
-                $OnBoardingTaskModel = new OnboardingTaskModel();
+                $OnBoardingProgressModel = new UserOnboardingProgressModel();
                 
                 $User->ActivateUser($email);
 
@@ -89,7 +89,7 @@ class RegisterActivateController
                 ]);
 
                 /**Site Ekleme Görevini tamamla(create_site) */
-                $OnBoardingTaskModel->saveWithAttr([
+                $OnBoardingProgressModel->saveWithAttr([
                     "id"            => 0,
                     "user_id"       => $user->id,
                     "site_id"       => Security::decrypt($lastSiteId),
@@ -115,7 +115,7 @@ class RegisterActivateController
                 $KasaModel->saveWithAttr($data);
 
                 /**Kasa ekleme görevini tamamla(create_default_cash_account) */
-                $OnBoardingTaskModel->saveWithAttr([
+                $OnBoardingProgressModel->saveWithAttr([
                     "id"            => 0,
                     "user_id"       => $user->id,
                     "site_id"       => Security::decrypt($lastSiteId),
@@ -126,7 +126,7 @@ class RegisterActivateController
                 ]);
 
                 /**Varsayılan kasa ayarlama görevini tamamla(set_default_cash_account) */
-                $OnBoardingTaskModel->saveWithAttr([
+                $OnBoardingProgressModel->saveWithAttr([
                     "id"            => 0,
                     "user_id"       => $user->id,
                     "site_id"       => Security::decrypt($lastSiteId),
@@ -153,7 +153,7 @@ class RegisterActivateController
                 }
                
                 /**Daire tipleri ekleme görevini tamamla(add_flat_types) */
-                $OnBoardingTaskModel->saveWithAttr([
+                $OnBoardingProgressModel->saveWithAttr([
                     "id"            => 0,
                     "user_id"       => $user->id,
                     "site_id"       => Security::decrypt($lastSiteId),
