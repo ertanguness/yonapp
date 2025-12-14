@@ -7,9 +7,13 @@ use Model\KisilerModel;
 use Model\AnketModel;
 use Model\AnketVoteModel;
 use Model\AnketOyModel;
+use Model\DuyuruModel;
 
-$UserPayment = new UserPaymentModel();
-$Rapor = new FinansalRaporModel();
+$UserPayment    = new UserPaymentModel();
+$Rapor          = new FinansalRaporModel();
+$DuyuruModel    = new DuyuruModel();
+
+
 $selectedApartmentId = (int)($_SESSION['selected_apartment_id'] ?? 0);
 $user_id = $_SESSION['user']->kisi_id ?? ($_SESSION['user']->id ?? 0);
 if ($selectedApartmentId > 0) {
@@ -40,19 +44,20 @@ usort($BorcTahsilatDetay, function($a,$b){
 });
 $sonHareketler = array_slice($BorcTahsilatDetay, 0, 5);
 
-$Kisiler = isset($Kisiler) ? $Kisiler : new KisilerModel();
-$kisi = $Kisiler->getKisiByDaireId($user_id);
-$site_id = (int) ($_SESSION['site_id'] ?? 0);
-$sessionEmail = trim((string) ($_SESSION['user']->email ?? ''));
-$sessionPhone = trim((string) ($_SESSION['user']->phone ?? ''));
-$sessionName  = trim((string) ($_SESSION['user']->full_name ?? ''));
-$currentUserId = (int) ($_SESSION['user']->id ?? 0);
-$tumKisiler = $Kisiler->SiteTumKisileri($site_id);
-$kisiAdaylari = array_values(array_filter($tumKisiler, function($k) use ($sessionEmail, $sessionPhone, $sessionName){
-    $e = trim((string) ($k->eposta ?? ''));
-    $p = trim((string) ($k->telefon ?? ''));
-    $n = trim((string) ($k->adi_soyadi ?? ''));
-    $nameMatch = ($sessionName && $n && mb_strtolower($sessionName) === mb_strtolower($n));
+$Kisiler        = isset($Kisiler) ? $Kisiler : new KisilerModel();
+$kisi           = $Kisiler->getKisiByDaireId($user_id);
+$site_id        = (int) ($_SESSION['site_id'] ?? 0);
+$sessionEmail   = trim((string) ($_SESSION['user']->email ?? ''));
+$sessionPhone   = trim((string) ($_SESSION['user']->phone ?? ''));
+$sessionName    = trim((string) ($_SESSION['user']->full_name ?? ''));
+$currentUserId  = (int) ($_SESSION['user']->id ?? 0);
+$kisi_id        = (int) ($_SESSION['user']->kisi_id ?? 0);
+$tumKisiler     = $Kisiler->SiteTumKisileri($site_id);
+$kisiAdaylari   = array_values(array_filter($tumKisiler, function($k) use ($sessionEmail, $sessionPhone, $sessionName){
+    $e          = trim((string) ($k->eposta ?? ''));
+    $p          = trim((string) ($k->telefon ?? ''));
+    $n          = trim((string) ($k->adi_soyadi ?? ''));
+    $nameMatch  = ($sessionName && $n && mb_strtolower($sessionName) === mb_strtolower($n));
     $emailMatch = ($sessionEmail && $e && strcasecmp($sessionEmail, $e) === 0);
     $phoneMatch = ($sessionPhone && $p && $sessionPhone === $p);
     return $nameMatch || $emailMatch || $phoneMatch;
@@ -125,6 +130,10 @@ if ($aktifAnket) {
         $isActiveHeader = (($aktifAnket->status ?? '') === 'Aktif');
     }
 }
+
+$duyurular = $DuyuruModel->sakinDuyurulari($kisi_id);
+
+
 ?>
 
 <div class="main-content" style="margin-bottom: 50px;">
@@ -246,9 +255,45 @@ if ($aktifAnket) {
                 </div>
                 <div class="card-body">
                     <div class="row g-3" id="duyuruPreview">
-                        <div class="col-12">
-                            <div class="alert alert-info mb-0">Henüz duyuru yok.</div>
-                        </div>
+                     <ul class="list-unstyled mb-0 activity-feed-1">
+                                    
+                     <?php foreach ($duyurular as $duyuru) { 
+                        $duyuru_tipi = $duyuru->target_type == "all" ? "Tüm Site" : ($duyuru->target_type == "block" ? "Blok" : "Kişi");
+                        $olusturulma_tarihi = Date::dmy($duyuru->olusturulma_tarihi);
+                        ?>
+                     <li class="feed-item feed-item-primary">
+                                        <div class="d-flex gap-4 justify-content-between">
+                                            <div>
+                                                <div class="text-truncate-1-line"><a href="javascript:void(0)" class="fw-semibold text-dark">
+                                                    <?php echo $duyuru->baslik; ?>
+                                                </a></div>
+                                                <p class="fs-12 text-muted mb-3 p-0">
+                                                    <?php echo strip_tags($duyuru->icerik); ?>
+                                                </p>
+                                                <div>
+                                                    <a href="javascript:void(0)" class="badge text-warning border border-dashed border-gray-500">
+                                                        <?php echo $duyuru_tipi; ?>
+                                                    </a>
+                                                    <a href="javascript:void(0)" class="badge text-success border border-dashed border-gray-500">
+                                                        <?php echo $duyuru->durum; ?>
+                                                    </a>
+                                                    <a href="javascript:void(0)" class="badge text-teal border border-dashed border-gray-500">
+                                                        <?php echo $duyuru->baslangic_tarihi; ?>
+                                                    </a>
+                                                    <a href="javascript:void(0)" class="badge text-danger border border-dashed border-gray-500">
+                                                        <?php echo $duyuru->bitis_tarihi; ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="fs-10 fw-medium text-uppercase text-muted text-nowrap">
+                                                <?php echo $olusturulma_tarihi; ?>
+                                            </div>
+                                        </div>
+                                    </li>
+                                 
+                    <?php } ?>
+                                 
+                                </ul>
                     </div>
                 </div>
             </div>
@@ -324,88 +369,3 @@ if ($aktifAnket) {
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    var container = document.getElementById('duyuruPreview');
-    if (!container) return;
-    function statusClass(s){
-        if (!s) return 'bg-soft-secondary text-secondary';
-        var v = String(s).toLowerCase();
-        if (v === 'published' || v === 'yayinda' || v === 'aktif') return 'bg-soft-success text-success';
-        if (v === 'archived' || v === 'arsivlendi' || v === 'pasif') return 'bg-soft-dark text-dark';
-        return 'bg-soft-secondary text-secondary';
-    }
-    function formatDate(s){
-        if (!s) return '-';
-        var parts = String(s).split('-');
-        if (parts.length === 3) return parts[2] + '.' + parts[1] + '.' + parts[0];
-        return s;
-    }
-    fetch('/pages/duyuru-talep/admin/api/APIDuyuru.php')
-        .then(function(r){ return r.ok ? r.json() : null; })
-        .then(function(json){
-            if (!json) return;
-            var rows = [];
-            if (Array.isArray(json.data)) {
-                if (json.data.length > 0 && !Array.isArray(json.data[0])) {
-                    rows = json.data;
-                } else {
-                    rows = json.data.map(function(row){
-                        return {
-                            id: row[0],
-                            baslik: row[1],
-                            icerik: row[2],
-                            baslangic_tarihi: row[3],
-                            bitis_tarihi: row[4],
-                            durum: row[5]
-                        };
-                    });
-                }
-            }
-            if (!rows.length) return;
-            container.innerHTML = '';
-            rows.slice(0,3).forEach(function(item){
-                var col = document.createElement('div');
-                col.className = 'col-12';
-                var card = document.createElement('div');
-                card.className = 'border rounded-3 p-3 hstack gap-3';
-                var icon = document.createElement('div');
-                icon.className = 'avatar-text avatar-md bg-soft-primary text-primary border-soft-primary rounded';
-                icon.innerHTML = '<i class="feather-speaker"></i>';
-                var body = document.createElement('div');
-                body.className = 'flex-fill';
-                var header = document.createElement('div');
-                header.className = 'd-flex align-items-center justify-content-between';
-                var title = document.createElement('div');
-                title.className = 'fw-semibold text-dark';
-                title.textContent = item.baslik || 'Duyuru';
-                var status = document.createElement('span');
-                status.className = 'badge ' + statusClass(item.durum || '');
-                status.textContent = item.durum || '';
-                header.appendChild(title);
-                header.appendChild(status);
-                var summary = document.createElement('div');
-                summary.className = 'fs-12 text-muted';
-                var plain = String(item.icerik || '').replace(/<[^>]*>/g, '');
-                summary.textContent = plain.substring(0,120);
-                var dates = document.createElement('div');
-                dates.className = 'fs-12 text-muted';
-                var start = formatDate(item.baslangic_tarihi || '');
-                var end = formatDate(item.bitis_tarihi || '');
-                dates.textContent = 'Başlangıç: ' + start + ' · Bitiş: ' + end;
-                body.appendChild(header);
-                body.appendChild(summary);
-                body.appendChild(dates);
-                var right = document.createElement('div');
-                right.className = 'text-end';
-                right.innerHTML = '<a href="/sakin/duyurular" class="btn btn-light btn-sm">Detay</a>';
-                card.appendChild(icon);
-                card.appendChild(body);
-                card.appendChild(right);
-                col.appendChild(card);
-                container.appendChild(col);
-            });
-        })
-        .catch(function(){});
-});
-</script>

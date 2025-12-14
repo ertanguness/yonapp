@@ -14,7 +14,7 @@
             <a href="/anket-listesi" class="btn btn-outline-secondary route-link me-2">
                 <i class="feather-arrow-left me-2"></i> Listeye Dön
             </a>
-            <button type="submit" class="btn btn-primary" id="saveSurvey">
+            <button type="button" class="btn btn-primary" id="saveSurvey">
                 <i class="feather-send me-2"></i> Kaydet
             </button>
         </div>

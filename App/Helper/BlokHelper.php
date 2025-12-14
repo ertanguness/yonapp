@@ -16,17 +16,17 @@ class BlokHelper
     /* Sitenin bloklarını select olarak döndürür 
     * return: string
     */
-    public function BlokSelect($id = "bloklar",$all = true,$selected = null)
+    public function BlokSelect($id = "bloklar",$all = true,$selectedids = null,$multiple=false)
     {
         $site_id = $_SESSION["site_id"];
         $bloklar = $this->model->SiteBloklari($site_id);
-        $select = '<select name="' . $id . '" class="form-select select2" id="' . $id . '" style="width:100%">';
+        $select = '<select name="' . $id . '" class="form-select select2" id="' . $id . '" style="width:100%" ' . ($multiple ? 'multiple' : '') . '>'; 
         
         if ($all) { // Eğer tüm site seçeneği eklenmek isteniyorsa
             $select .= '<option value="all">Tüm Site</option>'; // Tüm bloklar seçeneği
         }
         foreach ($bloklar as $blok) { // 
-            $selected_attr = $selected == $blok->id ? 'selected' : '';
+            $selected_attr = $selectedids && in_array($blok->id, $selectedids) ? 'selected' : '';
             $select .= '<option value="' . $blok->id . '" ' . $selected_attr . '>' . $blok->blok_adi . '</option>'; //  
         }
         $select .= '</select>';
