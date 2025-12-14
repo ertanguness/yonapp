@@ -39,10 +39,12 @@ if ($_POST["action"] == "gelir-gider-tipi-kaydet") {
             exit;
         }
 
+        $tip = $_POST['gelir_gider_tipi'] ?? '';
+        $tip_adi = $tip == 6 ? $_POST['gelir_tipi_name'] : $_POST['gider_tipi_name'] ;
         $data =  [
             "id" => $id,
-            "define_name" => $_POST['gelir_gider_tipi_name'] ?? '',
-            "type" => $_POST['gelir_gider_tipi'] ?? '' ,// 6 gelir - 7 gider,
+            "define_name" => $tip_adi,
+            "type" => $tip ,// 6 gelir - 7 gider,
             "islem_kodu" => $_POST['islem_kodu'] ?? null,
             'alt_tur' => $_POST['alt_tur'] ?? '',
             "description" => $_POST['description'] ?? '',

@@ -63,9 +63,9 @@ $(document).on("click", "#save_debit", function (e) {
         console.log(data);
         swal.fire({
           title: title,
-          text: data.message,
+          html: data.message,
           icon: data.status,
-          confirmButtonText: "Tamam",
+          confirmButtonText: "Tamams",
         });
       }).catch((error) => {
         console.error("Fetch error:", error);

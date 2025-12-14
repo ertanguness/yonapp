@@ -10,6 +10,8 @@ $enc_id = $id ?? 0;
 $id = Security::decrypt($id ?? 0);
 
 $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
+$type = $gelirgidertipi->type ?? 6;
+
 
 
 //echo "<pre>"; print_r($gelirgidertipi); echo "</pre>"; exit;
@@ -90,7 +92,7 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-4 align-items-center gelir-grubu">
+                                    <div class="row mb-4 align-items-center gelir-grubu <?php echo $type ==  7 ? 'd-none' : ''; ?>">
 
                                         <div class="col-lg-2">
                                             <label for="" class="fw-semibold" id="gelir_grubu_label">Gelir Grubu: </label>
@@ -100,11 +102,11 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
                                                 <div class="input-group-text"><i class="feather-briefcase"></i></div>
                                                 <input type="text" class="form-control"
                                                     placeholder="Örn: AİDAT,DEMİRBAŞ..."
-                                                    id="gelir_gider_tipi_name" name="gelir_gider_tipi_name" value="<?php echo $gelirgidertipi->define_name ?? ''; ?>">
+                                                    id="gelir_tipi_name" name="gelir_tipi_name" value="<?php echo $gelirgidertipi->define_name ?? ''; ?>">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-4 align-items-center gider-grubu d-none">
+                                    <div class="row mb-4 align-items-center gider-grubu <?php echo $type == 6 ? 'd-none' : ''; ?>">
 
                                         <div class="col-lg-2">
                                             <label for="" class="fw-semibold" id="gelir_grubu_label">Gider Grubu: </label>
@@ -112,12 +114,12 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
                                         <div class="col-lg-4">
                                             <div class="input-group flex-nowrap w-100">
                                                 <div class="input-group-text"><i class="feather-briefcase"></i></div>
-                                                <?php echo $Tanimlamalar->getGelirGrubuSelect('gelir_gider_tipi_name', $gelirgidertipi->define_name ?? ''); ?>
+                                                <?php echo $Tanimlamalar->getGelirGrubuSelect('gider_tipi_name', $gelirgidertipi->define_name ?? ''); ?>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="row mb-4 align-items-center">
+                                    <div class="row mb-4 align-items-center gelir-kalemi <?php echo $type == 6 ? 'd-none' : ''; ?>">
 
                                         <div class="col-lg-2">
                                             <label for="" class="fw-semibold" id="gelir_kalemi_label">Gelir Kalemi: </label>
