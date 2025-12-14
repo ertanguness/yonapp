@@ -90,7 +90,7 @@ class RegisterActivateController
                 $KasaModel = new kasamodel();
                 $data = [
                     "id" => 0,
-                    "site_id" => $lastSiteId,
+                    "site_id" => Security::decrypt($lastSiteId),
                     "kasa_adi" => "Ai̇dat Kasasi",
                     "aktif_mi" => 1,
                     "kasa_tipi" => "Banka",
@@ -106,7 +106,8 @@ class RegisterActivateController
                 foreach ($type as $item) {
                     $DefinesModel->saveWithAttr([
                         "id" => 0,
-                        "site_id" => $lastSiteId,
+                        "site_id" => Security::decrypt($lastSiteId),
+                        "type" => 3,
                         "define_name" => $item,
                         "mulk_tipi" => $item == "İsyeri" ? "İşyeri" : "Konut",
                         "description" => "İlk Kayıtta eklendi",
