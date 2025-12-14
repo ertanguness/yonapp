@@ -78,6 +78,11 @@ class AuthController
             exit();
         }
         $accounts = $this->userModel->getAccountsByEmailOrPhone($searchEmail, $searchPhone);
+        
+        // LOGGING START
+        $this->logger->info("Login attempt", ['email' => $email, 'accounts_found' => count($accounts)]);
+        // LOGGING END
+
         if (empty($accounts)) {
             FlashMessageService::add('error', 'Giriş Başarısız!', 'Kullanıcı bulunamadı.', 'ikaz2.png');
             $_SESSION['old_form_input'] = ['email' => $email];
@@ -92,6 +97,10 @@ class AuthController
             }
         }
 
+        // LOGGING START
+        $this->logger->info("Password verify", ['matched_count' => count($matched)]);
+        // LOGGING END
+
         if (count($matched) === 0) {
             FlashMessageService::add('error', 'Giriş Başarısız!', 'Hatalı şifre girdiniz.', 'ikaz2.png');
             $this->logger->error("Başarısız giriş denemesi.", ['identifier' => $email, 'ip' => $_SERVER['REMOTE_ADDR']]);
@@ -102,6 +111,11 @@ class AuthController
 
         if (count($matched) > 1) {
             $eligible = array_values(array_filter($matched, function($u){ return self::canLoginForRole($u); }));
+            
+            // LOGGING START
+            $this->logger->info("Multiple match eligible check", ['eligible_count' => count($eligible)]);
+            // LOGGING END
+
             if (count($eligible) === 0) {
                 FlashMessageService::add('error', 'Giriş Başarısız!', 'Uygun rol bulunamadı.', 'ikaz2.png');
                 $_SESSION['old_form_input'] = ['email' => $email];
@@ -127,8 +141,42 @@ class AuthController
             if ($returnUrl) {
                 $_SESSION['role_select_returnUrl'] = $returnUrl;
             }
+            
+            $this->logger->info("Redirecting to role select (multiple match)", ['count' => count($eligible)]);
+            
             header("Location: sign-in.php?chooseRole=1");
             exit();
+        }
+        
+        // Eğer tek hesap şifre ile eşleşti ama kullanıcıya ait birden fazla yetkili hesap varsa seçim ekranını yine göster
+        if (count($matched) === 1) {
+            $eligibleAll = array_values(array_filter($accounts, function($u){ return self::canLoginForRole($u); }));
+            
+            // LOGGING START
+            $this->logger->info("Single match eligible check", ['eligible_all_count' => count($eligibleAll)]);
+            // LOGGING END
+
+            if (count($eligibleAll) > 1) {
+                $_SESSION['role_select_candidates'] = array_map(function ($a) {
+                    return [
+                        'id' => (int)$a->id,
+                        'role_id' => (int)$a->roles,
+                        'role_name' => $a->role_name ?? null,
+                        'full_name' => $a->full_name ?? null
+                    ];
+                }, $eligibleAll);
+                $_SESSION['role_select_csrf'] = bin2hex(random_bytes(16));
+                $_SESSION['old_form_input'] = ['email' => $email];
+                $returnUrl = !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : null;
+                if ($returnUrl) {
+                    $_SESSION['role_select_returnUrl'] = $returnUrl;
+                }
+                
+                $this->logger->info("Redirecting to role select (single match, multiple accounts)", ['count' => count($eligibleAll)]);
+
+                header("Location: sign-in.php?chooseRole=1");
+                exit();
+            }
         }
 
         $selectedUser = $matched[0];
@@ -176,7 +224,7 @@ class AuthController
             return;
         }
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
-
+        
         $logger = \getLogger();
            
         // 1. Adım: Kullanıcı giriş yapmış mı?
@@ -281,6 +329,15 @@ class AuthController
 
     private static function validateLoginEligibility(object $user): void
     {
+        try {
+            $lockModel = new \Model\UserAccessLockModel();
+            $locked = $lockModel->getLockStatusByUser((int)$user->id);
+            if ($locked === 1) {
+                \App\Services\FlashMessageService::add('error', 'Giriş Başarısız!', 'Ödemeniz geciktiği için erişim kilitli.', 'ikaz2.png');
+                header("Location: /sign-in");
+                exit();
+            }
+        } catch (\Throwable $e) {}
         $roleId = isset($user->roles) ? (int)$user->roles : null;
         $roleName = $user->role_name ?? '';
         $isResidentRole = ($roleId === 3) || (stripos((string)$roleName, 'sakin') !== false);
@@ -398,6 +455,19 @@ class AuthController
 
         // E-posta gönderme (bu da statik bir metoda taşınabilir)
         self::sendLoginNotificationEmail($user);
+
+        // SÜPER ADMIN KONTROLÜ
+         if ((int)$user->roles === 10) {
+              header("Location: /superadmin");
+              exit();
+         }
+        
+         // TEMSİLCİ KONTROLÜ (Role ID 15 veya rol adında 'Temsilci' geçiyorsa)
+         $roleName = $user->role_name ?? '';
+         if ((int)$user->roles === 15 || stripos($roleName, 'Temsilci') !== false) {
+             header("Location: /temsilci-paneli");
+             exit();
+         }
 
         //eğer site_id oturumda yoksa, siteyi seçmesi için company-list.php sayfasına yönlendir
         if (!isset($_SESSION['site_id'])) {

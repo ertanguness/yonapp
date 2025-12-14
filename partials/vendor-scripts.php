@@ -60,7 +60,8 @@ if (
     $page == "arac-yonetimi" ||
     $page == "kullanici-ekle" || 
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
-    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri"
+    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" || $page == "superadmin" ||
+     $page == "superadmin-temsilciler" 
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
@@ -266,7 +267,7 @@ if ($page == 'daireleri-excelden-yukle') {
 }
 
 // Onboarding Checklist (global)
-versionedScript('/assets/js/onboarding.js');
+if ($page !== 'superadmin' && $page !== 'superadmin-ayarlar' && $page !== 'superadmin-temsilciler') { versionedScript('/assets/js/onboarding.js'); }
 //*************define APARTMENT TYPES******************************** */
 
 

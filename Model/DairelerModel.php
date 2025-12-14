@@ -67,6 +67,13 @@ class DairelerModel extends Model
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
 
+    public function countBySiteId(int $siteID): int
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM {$this->table} WHERE site_id = ?");
+        $stmt->execute([$siteID]);
+        return (int)$stmt->fetchColumn();
+    }
+
     // *************************************************************************************** */
     public function DaireVarmi($site_id, $block_id, $daire_no)
     {

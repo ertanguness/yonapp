@@ -103,10 +103,90 @@ class SitelerModel extends Model
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
+    public function getAllWithOwners()
+    {
+        $sql = $this->db->prepare("
+            SELECT s.*, u.full_name AS owner_name, u.phone AS owner_phone, u.email AS owner_email
+            FROM $this->table s
+            LEFT JOIN users u ON s.yonetici_id = u.id
+            WHERE s.silinme_tarihi IS NULL
+            ORDER BY s.favori_mi DESC, s.click_count DESC, s.aktif_mi DESC, s.site_adi ASC
+        ");
+        $sql->execute();
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function getAllWithCreatorsAndCounts()
+    {
+        $sql = $this->db->prepare("
+            SELECT s.*,
+                   CASE WHEN cu.full_name IS NULL OR cu.full_name = '' THEN cu.email ELSE cu.full_name END AS creator_name,
+                   cu.phone AS creator_phone,
+                   cu.email AS creator_email,
+                   (
+                     SELECT COUNT(*) 
+                     FROM {$this->table} sc 
+                     WHERE COALESCE(NULLIF(sc.olusturan_kullanici,0), sc.user_id) = COALESCE(NULLIF(s.olusturan_kullanici,0), s.user_id)
+                       AND sc.silinme_tarihi IS NULL
+                       AND sc.aktif_mi = 1
+                   ) AS creator_site_count
+            FROM {$this->table} s
+            LEFT JOIN users cu ON cu.id = s.user_id
+            WHERE s.silinme_tarihi IS NULL
+            ORDER BY s.favori_mi DESC, s.click_count DESC, s.aktif_mi DESC, s.site_adi ASC
+        ");
+        $sql->execute();
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
     public function incrementClickCount($id)
     {
         $stmt = $this->db->prepare("UPDATE $this->table SET click_count = click_count + 1 WHERE id = ?");
         return $stmt->execute([$id]);
+    }
+
+    public function getCreatorSitesWithApartmentCount(int $creatorId): array
+    {
+        $sql = $this->db->prepare("
+            SELECT s.id,
+                   s.site_adi,
+                   s.il,
+                   s.ilce,
+                   s.telefon,
+                   s.eposta,
+                   s.tam_adres,
+                   s.kayit_tarihi,
+                   s.aktif_mi,
+                   (SELECT COUNT(*) FROM daireler d WHERE d.site_id = s.id) AS apartment_count
+            FROM {$this->table} s
+            WHERE s.user_id = ?
+              AND s.silinme_tarihi IS NULL
+              AND s.aktif_mi = 1
+            ORDER BY s.kayit_tarihi DESC, s.site_adi ASC
+        ");
+        $sql->execute([$creatorId]);
+        return $sql->fetchAll(PDO::FETCH_OBJ) ?: [];
+    }
+
+    public function getCreatorsSummary(): array
+    {
+        $sql = $this->db->prepare("
+            SELECT 
+                u.id AS user_id,
+                CASE WHEN u.full_name IS NULL OR u.full_name = '' THEN u.email ELSE u.full_name END AS creator_name,
+                u.phone AS creator_phone,
+                u.email AS creator_email,
+                COUNT(s.id) AS site_count
+            FROM users u
+            JOIN {$this->table} s 
+              ON s.user_id = u.id 
+             AND s.silinme_tarihi IS NULL 
+             AND s.aktif_mi = 1
+            GROUP BY u.id, u.full_name, u.email, u.phone
+            ORDER BY site_count DESC, creator_name ASC
+        ");
+        $sql->execute();
+        return $sql->fetchAll(PDO::FETCH_OBJ) ?: [];
     }
 
     public function setFavorite($id, $isFavorite)
