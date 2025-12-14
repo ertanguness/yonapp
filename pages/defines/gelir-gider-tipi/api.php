@@ -57,7 +57,7 @@ if ($_POST["action"] == "gelir-gider-tipi-kaydet") {
         $type = $_POST["gelir_gider_tipi"] == 6 ? "Gelir" : "Gider";
 
         $status = "success";
-        $message = "$tip tipi başarıyla kaydedildi.";
+        $message = "$type tipi başarıyla kaydedildi.";
         $db->commit();
     } catch (PDOException $ex) {
         $db->rollBack();
