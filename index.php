@@ -43,7 +43,20 @@ $resolvedRoute = $router->resolve($url);
 // 3. SAYFA ADINI AL (SİHİR BURADA GERÇEKLEŞİYOR)
 // Router artık hangi desenin eşleştiğini biliyor ve bize temiz halini veriyor.
 $page = $router->getPageName() ?? '';
-$skipPagesForSiteCheck = ['site-ekle','siteler','site-duzenle','sign-in','kayit-ol','logout','forgot-password','reset-password'];
+$skipPagesForSiteCheck = [
+    'site-ekle',
+    'siteler',
+    'site-duzenle',
+    'sign-in',
+    'kayit-ol',
+    'logout',
+    'forgot-password',
+    'reset-password',
+    'superadmin',
+    'superadmin-ayarlar',
+    'superadmin-temsilciler',
+    'temsilci-paneli'
+];
 if (!in_array($page, $skipPagesForSiteCheck, true)) {
      Security::ensureSiteSelected('/site-ekle');
  }
@@ -104,8 +117,6 @@ if (preg_match('/-pdf$/', $page)) {
         </div>
         <?php include './partials/footer.php'; ?>
     </main>
-
-    <div id="onboarding-checklist-root"></div>
 
     <div class="modal fade-scale" id="composeMail" tabindex="-1" aria-labelledby="composeMail" aria-hidden="true" data-bs-dismiss="ou">
         <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
