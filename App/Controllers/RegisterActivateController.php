@@ -12,6 +12,7 @@ use App\Services\MailGonderService;
 use App\Services\FlashMessageService;
 use Model\KasaModel;
 use Model\SitelerModel;
+use App\Modules\Onboarding\Models\OnboardingTaskModel;
 
 class RegisterActivateController
 {
@@ -73,6 +74,7 @@ class RegisterActivateController
                
                 $db = Db::getInstance();
                 $db->beginTransaction();
+                $OnBoardingTaskModel = new OnboardingTaskModel();
                 
                 $User->ActivateUser($email);
 
@@ -85,6 +87,19 @@ class RegisterActivateController
                     "site_adi" => "ÖRNEK SİTE",
                     "aktif_mi" => 1,
                 ]);
+
+                /**Site Ekleme Görevini tamamla(create_site) */
+                $OnBoardingTaskModel->saveWithAttr([
+                    "id"            => 0,
+                    "user_id"       => $user->id,
+                    "site_id"       => Security::decrypt($lastSiteId),
+                    "task_key"      => "create_site",
+                    "is_completed"  => 1,
+                    "completed_at"  => date('Y-m-d H:i:s'),
+                    "source"        => "system"
+                ]);
+
+
 
                 /**varsayılan olaak kasa oluştur */
                 $KasaModel = new kasamodel();
@@ -99,6 +114,29 @@ class RegisterActivateController
 
                 $KasaModel->saveWithAttr($data);
 
+                /**Kasa ekleme görevini tamamla(create_default_cash_account) */
+                $OnBoardingTaskModel->saveWithAttr([
+                    "id"            => 0,
+                    "user_id"       => $user->id,
+                    "site_id"       => Security::decrypt($lastSiteId),
+                    "task_key"      => "create_default_cash_account",
+                    "is_completed"  => 1,
+                    "completed_at"  => date('Y-m-d H:i:s'),
+                    "source"        => "system"
+                ]);
+
+                /**Varsayılan kasa ayarlama görevini tamamla(set_default_cash_account) */
+                $OnBoardingTaskModel->saveWithAttr([
+                    "id"            => 0,
+                    "user_id"       => $user->id,
+                    "site_id"       => Security::decrypt($lastSiteId),
+                    "task_key"      => "set_default_cash_account",
+                    "is_completed"  => 1,
+                    "completed_at"  => date('Y-m-d H:i:s'),
+                    "source"        => "system"
+                ]);
+
+                
                 /** Daire tipleri oluştur 3+1 , 2+1,1+1, İşyeri */
                 $DefinesModel = new DefinesModel();
 
@@ -114,9 +152,18 @@ class RegisterActivateController
                     ]);
                 }
                
-                
-                
-                
+                /**Daire tipleri ekleme görevini tamamla(add_flat_types) */
+                $OnBoardingTaskModel->saveWithAttr([
+                    "id"            => 0,
+                    "user_id"       => $user->id,
+                    "site_id"       => Security::decrypt($lastSiteId),
+                    "task_key"      => "add_flat_types",
+                    "is_completed"  => 1,
+                    "completed_at"  => date('Y-m-d H:i:s'),
+                    "source"        => "system"
+                ]);
+
+
                 /**Site sakini ise mail metnine sakin ekle */
                 $sakin = $user->kisi_id > 0 ? " (Site Sakini)" : "";
                 MailGonderService::gonder(["beyzade83@gmail.com", "bilgekazaz@gmail.com", "ertanguness@gmail.com"], $user->full_name, $user->full_name .  $sakin . " isimli kullanıcı hesabını aktifleştirdi.");
