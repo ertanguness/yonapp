@@ -162,7 +162,7 @@ if ($page == 'gelir-gider-tipi-listesi' ||
     $page == 'gelir-gider-tipi-ekle' || 
     $page == 'gelir-gider-tipi-duzenle'
 ) {
-    echo '<script src="/pages/defines/gelir-gider-tipi/js/gelir-gider-tipi.js"></script>';
+    echo '<script src="/pages/defines/gelir-gider-tipi/js/gelir-gider-tipi.js?v=' . filemtime('pages/defines/gelir-gider-tipi/js/gelir-gider-tipi.js') . '"></script>';
 }
 
 //Tahsilat Detay Sayfası

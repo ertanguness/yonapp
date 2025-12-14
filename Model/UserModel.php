@@ -19,7 +19,7 @@ class UserModel extends Model
 
     public function getUserByEmail($email)
     {
-        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email = ?");
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE LOWER(email) = LOWER(?)");
         $sql->execute(array($email));
         return $sql->fetch(PDO::FETCH_OBJ) ?? null;
     }
@@ -29,12 +29,12 @@ class UserModel extends Model
      * @param int $kisi_id Kullanıcı ID'si(opsiyonel, varsayılan olarak 0)
      * @param int $roles Kullanıcı rolü(varsayılan olarak 3=>site sakini)
      * @return object|null
-    */
-    public function getUserByEmailWithID($email, $kisi_id= 0, $roles = 3)
+     */
+    public function getUserByEmailWithID($email, $kisi_id = 0, $roles = 3)
     {
         $sql = $this->db->prepare("SELECT * FROM $this->table 
                                           WHERE email = ? AND kisi_id = ? and roles = ?");
-        $sql->execute(array($email, $kisi_id, $roles)); 
+        $sql->execute(array($email, $kisi_id, $roles));
         return $sql->fetch(PDO::FETCH_OBJ) ?? null;
     }
 
@@ -59,9 +59,9 @@ class UserModel extends Model
             // Normalize to common Turkish representations
             // Use the last 10 digits as base mobile number, and compare flexible variants
             $last10 = strlen($digits) >= 10 ? substr($digits, -10) : $digits;
-            $cand0  = '0' . $last10;
+            $cand0 = '0' . $last10;
             $cand90 = '90' . $last10;
-            $candp  = '+90' . $last10;
+            $candp = '+90' . $last10;
             $params['p_exact'] = $digits;
             $params['p_last10'] = $last10;
             $params['p_cand0'] = $cand0;
@@ -77,7 +77,9 @@ class UserModel extends Model
                 OR $normalizedDbPhone = :p_candp
             )";
         }
-        if (empty($clauses)) { return []; }
+        if (empty($clauses)) {
+            return [];
+        }
         $sql = 'SELECT u.*, r.role_name 
                 FROM ' . $this->table . ' u 
                 LEFT JOIN user_roles r ON u.roles = r.id 
@@ -85,7 +87,9 @@ class UserModel extends Model
                   AND (u.status = 1 OR u.roles = 3)
                 ORDER BY IFNULL(u.login_favorite,0) DESC, IFNULL(u.login_usage_count,0) DESC, u.is_main_user DESC, u.id ASC';
         $stmt = $this->db->prepare($sql);
-        foreach ($params as $k => $v) { $stmt->bindValue(':' . $k, $v); }
+        foreach ($params as $k => $v) {
+            $stmt->bindValue(':' . $k, $v);
+        }
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ) ?? [];
     }
@@ -125,7 +129,7 @@ class UserModel extends Model
         $stmt = $this->db->prepare("SELECT IFNULL(onboarding_completed,0) AS oc FROM $this->table WHERE id = :id");
         $stmt->execute(['id' => $userId]);
         $row = $stmt->fetch(PDO::FETCH_OBJ);
-        return (int)($row->oc ?? 0);
+        return (int) ($row->oc ?? 0);
     }
 
     public function setOnboardingCompleted(int $userId, int $val = 1): bool
@@ -148,14 +152,16 @@ class UserModel extends Model
 
     public function getLoginPreferenceStatus(array $ids): array
     {
-        if (empty($ids)) { return []; }
+        if (empty($ids)) {
+            return [];
+        }
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
         $stmt = $this->db->prepare("SELECT id, IFNULL(login_favorite,0) AS fav, IFNULL(login_usage_count,0) AS cnt FROM $this->table WHERE id IN ($placeholders)");
         $stmt->execute($ids);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
         $out = [];
         foreach ($rows as $r) {
-            $out[(int)$r['id']] = ['fav' => (int)$r['fav'], 'cnt' => (int)$r['cnt']];
+            $out[(int) $r['id']] = ['fav' => (int) $r['fav'], 'cnt' => (int) $r['cnt']];
         }
         return $out;
     }
@@ -174,7 +180,7 @@ class UserModel extends Model
      * Kayıt esnasında oluşturulan ana kullanıcı listelenmez
      * @param int $owner_id Verinin sahibi ID'si(Session ID'si gibi)
      * @return array
-    */
+     */
     public function getUsers($type = null): array
     {
         $ownerID = $_SESSION["owner_id"];
@@ -218,14 +224,14 @@ class UserModel extends Model
         $result = $sql->fetch(PDO::FETCH_OBJ);
 
         if ($result) {
-            return (int)$result->roles;
+            return (int) $result->roles;
         }
 
         return null; // Kullanıcı rolü bulunamadıysa null döner
     }
 
 
-    
+
     //Kullanıcı girişinde bir token oluştur ve kullanıcıya kaydet
     public function setToken($id, $token)
     {
@@ -254,9 +260,9 @@ class UserModel extends Model
         $sql = $this->db->prepare("SELECT * FROM user_roles WHERE id = ?");
         $sql->execute(array($id));
         $result = $sql->fetch(PDO::FETCH_OBJ);
-        return $result->role_name ;
+        return $result->role_name;
     }
-    
+
     public function isEmailExists($email)
     {
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE email = ?");
@@ -287,8 +293,10 @@ class UserModel extends Model
 
     public function updateUserPassword($email, $password)
     {
-        $sql = $this->db->prepare("UPDATE $this->table SET password = ? WHERE email = ?");
+        // Email karşılaştırması büyük/küçük harf duyarsız yapıldı
+        $sql = $this->db->prepare("UPDATE $this->table SET password = ? WHERE LOWER(email) = LOWER(?)");
         $sql->execute([$password, $email]);
+        return $sql->rowCount(); // Kaç satır güncellendi
     }
 
     //Activate Token kaydetme
@@ -325,67 +333,70 @@ class UserModel extends Model
 
 
     /**
- * Belirtilen ID'ye sahip kullanıcıyı HTML tablo satırı olarak döndürür.
- *
- * @param int $id Kullanıcı ID'si
- * @return string HTML <tr> satırı
- */public function renderUserTableRow(int $id, $isNew = false): string
-{
-    $user = $this->find($id);
+     * Belirtilen ID'ye sahip kullanıcıyı HTML tablo satırı olarak döndürür.
+     *
+     * @param int $id Kullanıcı ID'si
+     * @return string HTML <tr> satırı
+     */
+    public function renderUserTableRow(int $id, $isNew = false): string
+    {
+        $user = $this->find($id);
 
-    if (!$user) {
-        return '';
-    }
+        if (!$user) {
+            return '';
+        }
 
-    // Güvenli veri
-    $enc_id    = htmlspecialchars(Security::encrypt($user->id), ENT_QUOTES, 'UTF-8');
-    $userName  = htmlspecialchars($user->user_name, ENT_QUOTES, 'UTF-8');
-    $fullName  = htmlspecialchars($user->adi_soyadi, ENT_QUOTES, 'UTF-8');
-    $title     = htmlspecialchars($user->unvani, ENT_QUOTES, 'UTF-8');
-    $email     = htmlspecialchars($user->email_adresi, ENT_QUOTES, 'UTF-8');
-    $phone     = htmlspecialchars($user->telefon, ENT_QUOTES, 'UTF-8');
-    $createdAt = htmlspecialchars($user->created_at, ENT_QUOTES, 'UTF-8');
+        // Güvenli veri
+        $enc_id = htmlspecialchars(Security::encrypt($user->id), ENT_QUOTES, 'UTF-8');
+        $userName = htmlspecialchars($user->user_name, ENT_QUOTES, 'UTF-8');
+        $fullName = htmlspecialchars($user->adi_soyadi, ENT_QUOTES, 'UTF-8');
+        $title = htmlspecialchars($user->unvani, ENT_QUOTES, 'UTF-8');
+        $email = htmlspecialchars($user->email_adresi, ENT_QUOTES, 'UTF-8');
+        $phone = htmlspecialchars($user->telefon, ENT_QUOTES, 'UTF-8');
+        $createdAt = htmlspecialchars($user->created_at, ENT_QUOTES, 'UTF-8');
 
-    ob_start(); // 🔁 Output Buffer başlat
-    ?>
-    <?php if ($isNew ): ?>
-    <tr data-id="<?= $enc_id ?>">
-    <?php endif; ?>
-        <td class="text-center">1</td>
-        <td><?= $userName ?></td>
-        <td><?= $fullName ?></td>
-        <td class="text-center"><?= $title ?></td>
-        <td class="text-center"><?= $email ?></td>
-        <td class="text-center"><?= $phone ?></td>
-        <td><?= $createdAt ?></td>
-        <td class="text-center" style="width:5%">
-            <div class="flex-shrink-0">
-                <div class="dropdown align-self-start icon-demo-content">
-                    <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-list-ul font-size-24 text-dark"></i>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="javascript:void(0)" class="dropdown-item kullanici-duzenle" data-id="<?= $enc_id ?>">
-                            <span class="mdi mdi-account-edit font-size-18"></span> Düzenle
+        ob_start(); // 🔁 Output Buffer başlat
+        ?>
+        <?php if ($isNew): ?>
+            <tr data-id="<?= $enc_id ?>">
+            <?php endif; ?>
+            <td class="text-center">1</td>
+            <td><?= $userName ?></td>
+            <td><?= $fullName ?></td>
+            <td class="text-center"><?= $title ?></td>
+            <td class="text-center"><?= $email ?></td>
+            <td class="text-center"><?= $phone ?></td>
+            <td><?= $createdAt ?></td>
+            <td class="text-center" style="width:5%">
+                <div class="flex-shrink-0">
+                    <div class="dropdown align-self-start icon-demo-content">
+                        <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            <i class="bx bx-list-ul font-size-24 text-dark"></i>
                         </a>
-                        <a href="#" class="dropdown-item kullanici-sil" data-id="<?= $enc_id ?>" data-name="<?= $fullName ?>">
-                            <span class="mdi mdi-delete font-size-18"></span> Sil
-                        </a>
+                        <div class="dropdown-menu">
+                            <a href="javascript:void(0)" class="dropdown-item kullanici-duzenle" data-id="<?= $enc_id ?>">
+                                <span class="mdi mdi-account-edit font-size-18"></span> Düzenle
+                            </a>
+                            <a href="#" class="dropdown-item kullanici-sil" data-id="<?= $enc_id ?>"
+                                data-name="<?= $fullName ?>">
+                                <span class="mdi mdi-delete font-size-18"></span> Sil
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </td>
-    <?php if ($isNew): ?>
-    </tr>
-    <?php endif; ?>
-    <?php
-    return ob_get_clean(); // 🔚 HTML'yi döndür
-}
+            </td>
+            <?php if ($isNew): ?>
+            </tr>
+        <?php endif; ?>
+        <?php
+        return ob_get_clean(); // 🔚 HTML'yi döndür
+    }
 
-public function getUser($id)
-{
-    $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
-    $sql->execute(array($id));
-    return $sql->fetch(PDO::FETCH_OBJ);
-}
+    public function getUser($id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id = ?");
+        $sql->execute(array($id));
+        return $sql->fetch(PDO::FETCH_OBJ);
+    }
 }
