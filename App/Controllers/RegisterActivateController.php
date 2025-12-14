@@ -82,7 +82,7 @@ class RegisterActivateController
                     "site_id" => $lastSiteId,
                     "kasa_adi" => "Ai̇dat Kasasi",
                     "aktif_mi" => 1,
-                    "kasa_turu" => "Banka",
+                    "kasa_tipi" => "Banka",
                     "varsayilan_mi" => 1,
                 ];
 
