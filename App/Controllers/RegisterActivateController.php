@@ -61,8 +61,7 @@ class RegisterActivateController
                 FlashMessageService::add('error', 'Hata!', 'Email bilgisi boş');
             } elseif ($user->status == 1) {
                 FlashMessageService::add('info', 'Bilgi', 'Kullanıcı zaten aktif');
-            } elseif ($user->status == 0) {
-                FlashMessageService::add('error', 'Hata!', 'Kullanıcı durumunuz pasif.Lütfen yönetici ile görüşün ');
+            
             
             } else {
                 $User->ActivateUser($email);
@@ -105,18 +104,7 @@ class RegisterActivateController
                
 
 
-
-
-
-
-
                 FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!', "onay2.png");
-
-
-
-
-
-
 
 
                 /**Site sakini ise mail metnine sakin ekle */

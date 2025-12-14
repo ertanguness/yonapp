@@ -30,7 +30,7 @@ class DuyuruModel extends Model
                                     JOIN kisiler k ON k.id = ?
                                     WHERE d.site_id = k.site_id
                                     AND d.silinme_tarihi IS NULL
-
+                                    AND d.durum = 'published'
                                     AND d.baslangic_tarihi <= CURDATE()
                                     AND (
                                             d.bitis_tarihi = '0000-00-00'
