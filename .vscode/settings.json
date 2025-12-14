@@ -1,3 +1,20 @@
 {
-    "php.version": "8.2"
+    "php.version": "8.2",
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "yonapp",
+            "database": "mbeyazil_yonapp",
+            "username": "root",
+            "password": ""
+        }
+    ]
 }

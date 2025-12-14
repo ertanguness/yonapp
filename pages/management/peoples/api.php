@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__ ,levels: 3). '/configs/bootstrap.php';
+require_once dirname(__DIR__, levels: 3) . '/configs/bootstrap.php';
 
 
 $site_id = $_SESSION["site_id"];
@@ -13,14 +13,17 @@ use App\Helper\Security;
 use App\Services\ExcelHelper;
 use App\Services\FlashMessageService;
 use App\Helper\Date as Date;
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Helper\DefinesHelper;
+use App\Modules\Onboarding\Models\UserOnboardingProgressModel;
 
 
 $kisilerModel = new KisilerModel();
+$OnBoardingProgressModel = new UserOnboardingProgressModel();
 
 
-
+$logger = \getLogger();
 
 //Excelden Yükleme işlemi (Onboarding çözümleyici)
 if ($_POST["action"] == "excel_upload_peoples_resolve") {
@@ -87,25 +90,25 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
                 continue;
             }
 
-            $siteAdi        = trim($rowData['Site Adı*'] ?? $rowData['Site Adı'] ?? '');
-            $blokAdi        = trim($rowData['Blok Adı*'] ?? $rowData['Blok Adı'] ?? '');
-            $daireKodu      = trim($rowData['Daire Kodu*'] ?? $rowData['Daire Kodu'] ?? '');
-            $daireNo        = trim($rowData['Daire No*'] ?? $rowData['Daire No'] ?? '');
-            $adiSoyadi      = trim($rowData['Adı Soyadı*'] ?? $rowData['Adı Soyadı'] ?? '');
-            $telefon        = trim($rowData['Telefon*'] ?? $rowData['Telefon'] ?? '');
-            $kimlikNo       = trim($rowData['Kimlik No*'] ?? $rowData['Kimlik No'] ?? '');
-            $dogumTarihi    = trim(Date::convertExcelDate($rowData['Doğum Tarihi (gg.aa.yyyy)'] ?? $rowData['Doğum Tarihi'] ?? null) ?? '');
-            $cinsiyetRaw    = trim($rowData['Cinsiyet (Erkek/Kadın)'] ?? $rowData['Cinsiyet (E/K)'] ?? $rowData['Cinsiyet'] ?? '');
-            $uyelikTipi     = trim($rowData['Uyeliği (Kat Maliki/Kiracı)'] ?? $rowData['Uyelik Turu'] ?? $rowData['Uyelik Türü'] ?? 'Kat Maliki');
-            $eposta         = $rowData['Eposta'] ?? $rowData['E-posta'] ?? null;
-            $adres          = trim($rowData['Adres'] ?? '');
-            $notlar         = trim($rowData['Notlar'] ?? '');
-            $satinalma      = trim(Date::convertExcelDate($rowData['Satin Alma Tarihi'] ?? $rowData['Satın Alma Tarihi'] ?? null) ?? '');
-            $girisTarihi    = trim(Date::convertExcelDate($rowData['Giriş Tarihi'] ?? null) ?? '');
-            $cikisTarihi    = trim(Date::convertExcelDate($rowData['Çıkış Tarihi'] ?? $rowData['Cikis Tarihi'] ?? null) ?? '');
-            $aktifMiRaw     = trim($rowData['Aktiflik Durumu'] ?? '1');
-            $mulkTipiName   = trim(($rowData['Mülk Tipi'] ?? $rowData['Mülk Tipi*'] ?? $rowData['MulkTipi'] ?? $rowData['Mülk tipi'] ?? $rowData['Mülk Tipi (Konut/İşyeri)'] ?? 'Konut'));
-            $daireTipiName  = trim(($rowData['Daire Tipi'] ?? $rowData['Daire Tipi*'] ?? $rowData['DaireTipi'] ?? $rowData['Daire tipi'] ?? $rowData['Daire Tipi (Konut/İşyeri)'] ?? '3+1'));
+            $siteAdi = trim($rowData['Site Adı*'] ?? $rowData['Site Adı'] ?? '');
+            $blokAdi = trim($rowData['Blok Adı*'] ?? $rowData['Blok Adı'] ?? '');
+            $daireKodu = trim($rowData['Daire Kodu*'] ?? $rowData['Daire Kodu'] ?? '');
+            $daireNo = trim($rowData['Daire No*'] ?? $rowData['Daire No'] ?? '');
+            $adiSoyadi = trim($rowData['Adı Soyadı*'] ?? $rowData['Adı Soyadı'] ?? '');
+            $telefon = trim($rowData['Telefon*'] ?? $rowData['Telefon'] ?? '');
+            $kimlikNo = trim($rowData['Kimlik No*'] ?? $rowData['Kimlik No'] ?? '');
+            $dogumTarihi = trim(Date::convertExcelDate($rowData['Doğum Tarihi (gg.aa.yyyy)'] ?? $rowData['Doğum Tarihi'] ?? null) ?? '');
+            $cinsiyetRaw = trim($rowData['Cinsiyet (Erkek/Kadın)'] ?? $rowData['Cinsiyet (E/K)'] ?? $rowData['Cinsiyet'] ?? '');
+            $uyelikTipi = trim($rowData['Uyeliği (Kat Maliki/Kiracı)'] ?? $rowData['Uyelik Turu'] ?? $rowData['Uyelik Türü'] ?? 'Kat Maliki');
+            $eposta = $rowData['Eposta'] ?? $rowData['E-posta'] ?? null;
+            $adres = trim($rowData['Adres'] ?? '');
+            $notlar = trim($rowData['Notlar'] ?? '');
+            $satinalma = trim(Date::convertExcelDate($rowData['Satin Alma Tarihi'] ?? $rowData['Satın Alma Tarihi'] ?? null) ?? '');
+            $girisTarihi = trim(Date::convertExcelDate($rowData['Giriş Tarihi'] ?? null) ?? '');
+            $cikisTarihi = trim(Date::convertExcelDate($rowData['Çıkış Tarihi'] ?? $rowData['Cikis Tarihi'] ?? null) ?? '');
+            $aktifMiRaw = trim($rowData['Aktiflik Durumu'] ?? '1');
+            $mulkTipiName = trim(($rowData['Mülk Tipi'] ?? $rowData['Mülk Tipi*'] ?? $rowData['MulkTipi'] ?? $rowData['Mülk tipi'] ?? $rowData['Mülk Tipi (Konut/İşyeri)'] ?? 'Konut'));
+            $daireTipiName = trim(($rowData['Daire Tipi'] ?? $rowData['Daire Tipi*'] ?? $rowData['DaireTipi'] ?? $rowData['Daire tipi'] ?? $rowData['Daire Tipi (Konut/İşyeri)'] ?? '3+1'));
 
             if (empty($siteAdi) || empty($blokAdi) || (empty($daireKodu) && empty($daireNo)) || empty($adiSoyadi)) {
                 $errorRows[] = [
@@ -120,15 +123,20 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
             $cinsiyet = '';
             if ($cinsiyetRaw !== '') {
                 $lc = mb_strtolower($cinsiyetRaw, 'UTF-8');
-                if (in_array($lc, ['erkek','e','male'])) $cinsiyet = 'E';
-                else if (in_array($lc, ['kadın','k','female','kadin'])) $cinsiyet = 'K';
-                else $cinsiyet = $cinsiyetRaw;
+                if (in_array($lc, ['erkek', 'e', 'male']))
+                    $cinsiyet = 'E';
+                else if (in_array($lc, ['kadın', 'k', 'female', 'kadin']))
+                    $cinsiyet = 'K';
+                else
+                    $cinsiyet = $cinsiyetRaw;
             }
 
             $aktifMi = 1;
             $lcAktif = mb_strtolower($aktifMiRaw, 'UTF-8');
-            if (in_array($lcAktif, ['0','hayır','pasif','false'])) $aktifMi = 0;
-            if (in_array($lcAktif, ['1','evet','aktif','true'])) $aktifMi = 1;
+            if (in_array($lcAktif, ['0', 'hayır', 'pasif', 'false']))
+                $aktifMi = 0;
+            if (in_array($lcAktif, ['1', 'evet', 'aktif', 'true']))
+                $aktifMi = 1;
 
             $siteRow = null;
             $stmtSite = $db->prepare("SELECT id FROM siteler WHERE user_id = ? AND site_adi = ? AND silinme_tarihi IS NULL LIMIT 1");
@@ -137,19 +145,51 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
             if (!$siteRow) {
                 $sitelerModel->saveWithAttr(['site_adi' => $siteAdi, 'user_id' => $ownerId, 'aktif_mi' => 1]);
                 $createdSites++;
-                $siteIdResolved = (int)$db->lastInsertId();
+                $siteIdResolved = (int) $db->lastInsertId();
+
+
             } else {
-                $siteIdResolved = (int)$siteRow->id;
+                $siteIdResolved = (int) $siteRow->id;
             }
 
+            /** Eğer yoksa site ekleme görevini tamamla(create_site) */
+            if (!$OnBoardingProgressModel->findByComposite($ownerId, $siteIdResolved, 'create_site')) {
+                $OnBoardingProgressModel->saveWithAttr([
+                    "id" => 0,
+                    "user_id" => $ownerId,
+                    "site_id" => $siteIdResolved,
+                    "task_key" => "create_site",
+                    "is_completed" => 1,
+                    "completed_at" => date('Y-m-d H:i:s'),
+                    "source" => "system"
+                ]);
+            }
+
+
             $blok = $bloklarModel->findBlokBySiteAndName($siteIdResolved, $blokAdi);
-            $blokIdResolved = $blok ? (int)$blok->id : 0;
+            $blokIdResolved = $blok ? (int) $blok->id : 0;
             if (!$blok) {
                 $bloklarModel->saveWithAttr(['site_id' => $siteIdResolved, 'blok_adi' => $blokAdi, 'aktif_mi' => 1]);
                 $createdBlocks++;
-                $blokIdResolved = (int)$db->lastInsertId();
+                $blokIdResolved = (int) $db->lastInsertId();
+
+
             }
 
+            /** Eğer yoksa blok ekleme görevini tamamla(add_blocks) */
+            if (!$OnBoardingProgressModel->findByComposite($ownerId, $siteIdResolved, 'add_blocks')) {
+                $OnBoardingProgressModel->saveWithAttr([
+                    "id" => 0,
+                    "user_id" => $ownerId,
+                    "site_id" => $siteIdResolved,
+                    "task_key" => "add_blocks",
+                    "is_completed" => 1,
+                    "completed_at" => date('Y-m-d H:i:s'),
+                    "source" => "system"
+                ]); 
+            }
+
+            // Daire işlemleri - hem yeni hem de mevcut bloklar için çalışır
             if ($daireKodu !== '' && preg_match('/^\d+$/', $daireKodu)) {
                 $daireKodu = '';
             }
@@ -174,18 +214,19 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
             $definesModel = new DefinesModel();
             $resolvedDaireTipiName = $daireTipiName !== '' ? $daireTipiName : 'Konut';
             $nameLc = mb_strtolower($resolvedDaireTipiName, 'UTF-8');
-            if (in_array($nameLc, ['konut','daire'])) {
+            if (in_array($nameLc, ['konut', 'daire'])) {
                 $resolvedDaireTipiName = 'Konut';
-            } elseif (in_array($nameLc, ['isyeri','işyeri'])) {
+            } elseif (in_array($nameLc, ['isyeri', 'işyeri'])) {
                 $resolvedDaireTipiName = 'İşyeri';
             }
 
             /**Daire Tipi ID'sini alır. Eğer yoksa oluşturur. */
             $daireTipiId = $definesModel->getApartmentTypeIdByName(
-                                $siteIdResolved,
-                                   DefinesHelper::TYPE_APARTMENT, 
-                                   $resolvedDaireTipiName,
-                              $mulkTipiName);
+                $siteIdResolved,
+                DefinesHelper::TYPE_APARTMENT,
+                $resolvedDaireTipiName,
+                $mulkTipiName
+            );
             if (!$daireTipiId) {
                 $definesModel->saveWithAttr([
                     'site_id' => $siteIdResolved,
@@ -193,8 +234,23 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
                     'type' => DefinesModel::TYPE_DAIRE_TIPI,
                     'define_name' => $resolvedDaireTipiName
                 ]);
-                $daireTipiId = (int)$db->lastInsertId();
+                $daireTipiId = (int) $db->lastInsertId();
+
             }
+
+            
+                /** Eğer yoksa daire tipi ekleme görevini tamamla(add_flat_types) */
+                if (!$OnBoardingProgressModel->findByComposite($ownerId, $siteIdResolved, 'add_flat_types')) {
+                    $OnBoardingProgressModel->saveWithAttr([
+                        "id" => 0,
+                        "user_id" => $ownerId,
+                        "site_id" => $siteIdResolved,
+                        "task_key" => "add_flat_types",
+                        "is_completed" => 1,
+                        "completed_at" => date('Y-m-d H:i:s'),
+                        "source" => "system"
+                    ]);
+                }
 
             if (!$aptRow) {
                 $dairelerModel->saveWithAttr([
@@ -206,9 +262,10 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
                     'aktif_mi' => 1
                 ]);
                 $createdApartments++;
-                $daireIdResolved = (int)$db->lastInsertId();
+                $daireIdResolved = (int) $db->lastInsertId();
+
             } else {
-                $daireIdResolved = (int)$aptRow->id;
+                $daireIdResolved = (int) $aptRow->id;
                 $stmtCurrCode = $db->prepare("SELECT daire_kodu, daire_tipi FROM daireler WHERE id = ? LIMIT 1");
                 $stmtCurrCode->execute([$daireIdResolved]);
                 $currRow = $stmtCurrCode->fetch(\PDO::FETCH_ASSOC);
@@ -217,9 +274,22 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
                 if ($currCode && preg_match('/^\d+$/', $currCode)) {
                     $dairelerModel->updateWhere('id', $daireIdResolved, ['daire_kodu' => $codeToUse]);
                 }
-                if ($daireTipiId && (empty($currType) || (int)$currType === 0)) {
+                if ($daireTipiId && (empty($currType) || (int) $currType === 0)) {
                     $dairelerModel->updateWhere('id', $daireIdResolved, ['daire_tipi' => $daireTipiId]);
                 }
+            }
+
+            /** Eğer yoksa daire ekleme görevini tamamla(add_apartments) */
+            if (!$OnBoardingProgressModel->findByComposite($ownerId, $siteIdResolved, 'add_apartments')) {
+                $OnBoardingProgressModel->saveWithAttr([
+                    "id" => 0,
+                    "user_id" => $ownerId,
+                    "site_id" => $siteIdResolved,
+                    "task_key" => "add_apartments",
+                    "is_completed" => 1,
+                    "completed_at" => date('Y-m-d H:i:s'),
+                    "source" => "system"
+                ]);
             }
 
             if (!isset($rowsToInsert)) {
@@ -238,10 +308,21 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
             if (isset($compositeSeen[$compositeKey])) {
                 $skippedCount++;
             } else {
-                $stmtExist = $db->prepare("SELECT id FROM kisiler WHERE site_id = ? AND blok_id = ? AND daire_id = ? AND adi_soyadi = ? AND COALESCE(kimlik_no,'') = COALESCE(?, '') AND COALESCE(telefon,'') = COALESCE(?, '') AND COALESCE(giris_tarihi,'') = COALESCE(?, '') AND silinme_tarihi IS NULL LIMIT 1");
+                $stmtExist = $db->prepare("SELECT id FROM kisiler 
+                                            WHERE site_id = ? 
+                                                AND blok_id = ? 
+                                                AND daire_id = ? 
+                                                AND adi_soyadi = ? 
+                                                AND COALESCE(kimlik_no,'') = COALESCE(?, '') 
+                                                AND COALESCE(telefon,'') = COALESCE(?, '') 
+                                                AND COALESCE(giris_tarihi,'') = COALESCE(?, '') 
+                                                AND silinme_tarihi IS NULL 
+                                                LIMIT 1");
                 $stmtExist->execute([$siteIdResolved, $blokIdResolved, $daireIdResolved, $adiSoyadi, $kimlikNo, $telefon, $girisTarihi]);
                 $existsRow = $stmtExist->fetch(\PDO::FETCH_OBJ);
                 if ($existsRow) {
+                    $logger->info("Kisi zaten mevcut: Adı Soyadı " . $adiSoyadi);
+
                     $skippedCount++;
                 } else {
                     $rowsToInsert[] = [
@@ -273,6 +354,19 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
         if (!empty($rowsToInsert)) {
             $kisilerModel->bulkInsert($rowsToInsert);
             $processedCount += count($rowsToInsert);
+
+            /** Eğer yoksa kişi ekleme görevini tamamla(add_people) */
+            if (!$OnBoardingProgressModel->findByComposite($ownerId, $siteIdResolved, 'add_people')) {
+                $OnBoardingProgressModel->saveWithAttr([
+                    "id" => 0,
+                    "user_id" => $ownerId,
+                    "site_id" => $siteIdResolved,
+                    "task_key" => "add_people",
+                    "is_completed" => 1,
+                    "completed_at" => date('Y-m-d H:i:s'),
+                    "source" => "system"
+                ]);
+            }
         }
         $db->commit();
 
@@ -322,18 +416,18 @@ if ($_POST["action"] == "excel_upload_peoples") {
     }
 
     $result = $kisilerModel->excelUpload($file['tmp_name'], $site_id);
-  
+
 
     $errorFileUrl = null;
-    
+
     if (!empty($result['data']['error_rows'])) {
         try {
             $excelHelper = new ExcelHelper();
             $originalHeader = $excelHelper->getHeaders($file['tmp_name']);
             $errorFileUrl = $excelHelper->createErrorFile($result['data']['error_rows'], $originalHeader);
-            FlashMessageService::add("error","Bilgi","Hatalı kayıtlar için bir Excel dosyası oluşturuldu. <a href='{$errorFileUrl}' target='_blank'>Dosyayı İndir</a>");
+            FlashMessageService::add("error", "Bilgi", "Hatalı kayıtlar için bir Excel dosyası oluşturuldu. <a href='{$errorFileUrl}' target='_blank'>Dosyayı İndir</a>");
         } catch (\Exception $e) {
-             error_log("Controller: Hata Excel'i işlenirken bir sorun oluştu: " . $e->getMessage());
+            error_log("Controller: Hata Excel'i işlenirken bir sorun oluştu: " . $e->getMessage());
         }
     }
 

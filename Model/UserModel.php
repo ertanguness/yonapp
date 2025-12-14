@@ -48,23 +48,44 @@ class UserModel extends Model
     public function getAccountsByEmailOrPhone(?string $email, ?string $phone): array
     {
         $params = [];
-        $where = [];
+        $clauses = [];
         if ($email) {
-            $where[] = 'u.email = :email';
+            $clauses[] = 'LOWER(u.email) = LOWER(:email)';
             $params['email'] = $email;
         }
         if ($phone) {
-            $where[] = 'u.phone = :phone';
-            $params['phone'] = $phone;
+            $digits = preg_replace('/\D+/', '', $phone);
+            $digits = $digits ?? '';
+            // Normalize to common Turkish representations
+            // Use the last 10 digits as base mobile number, and compare flexible variants
+            $last10 = strlen($digits) >= 10 ? substr($digits, -10) : $digits;
+            $cand0  = '0' . $last10;
+            $cand90 = '90' . $last10;
+            $candp  = '+90' . $last10;
+            $params['p_exact'] = $digits;
+            $params['p_last10'] = $last10;
+            $params['p_cand0'] = $cand0;
+            $params['p_cand90'] = $cand90;
+            $params['p_candp'] = $candp;
+            // Strip non-digits from DB phone and compare on multiple flexible options
+            $normalizedDbPhone = "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(u.phone,' ',''),'(',''),')',''),'-',''),'+',''),'.','')";
+            $clauses[] = "(
+                $normalizedDbPhone = :p_exact
+                OR RIGHT($normalizedDbPhone, 10) = :p_last10
+                OR $normalizedDbPhone = :p_cand0
+                OR $normalizedDbPhone = :p_cand90
+                OR $normalizedDbPhone = :p_candp
+            )";
         }
-        if (empty($where)) {
-            return [];
-        }
-        $sql = 'SELECT u.*, r.role_name FROM ' . $this->table . ' u LEFT JOIN user_roles r ON u.roles = r.id WHERE (' . implode(' OR ', $where) . ') AND (u.status = 1 OR u.roles = 3) ORDER BY IFNULL(u.login_favorite,0) DESC, IFNULL(u.login_usage_count,0) DESC, u.is_main_user DESC, u.id ASC';
+        if (empty($clauses)) { return []; }
+        $sql = 'SELECT u.*, r.role_name 
+                FROM ' . $this->table . ' u 
+                LEFT JOIN user_roles r ON u.roles = r.id 
+                WHERE (' . implode(' OR ', $clauses) . ')
+                  AND (u.status = 1 OR u.roles = 3)
+                ORDER BY IFNULL(u.login_favorite,0) DESC, IFNULL(u.login_usage_count,0) DESC, u.is_main_user DESC, u.id ASC';
         $stmt = $this->db->prepare($sql);
-        foreach ($params as $k => $v) {
-            $stmt->bindValue(':' . $k, $v);
-        }
+        foreach ($params as $k => $v) { $stmt->bindValue(':' . $k, $v); }
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ) ?? [];
     }

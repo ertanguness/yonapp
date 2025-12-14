@@ -90,8 +90,18 @@ if (count($mySites) == 1) {
 
 // Seçim sonrası yönlendirme
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
-    $_SESSION['site_id'] = $_POST['site_id'];
-    $Site->incrementClickCount($_POST['site_id']);
+    $selSiteId = (int)$_POST['site_id'];
+    try {
+        $LockModel = new \Model\UserSiteLockModel();
+        $isLocked = $LockModel->isLocked((int)$user_id, $selSiteId);
+        if ($isLocked) {
+            \App\Services\FlashMessageService::add('error', 'Site Kilitli', 'Bu site için ödeme gecikmesi bulunduğu için seçim engellendi.', 'ikaz2.png');
+            header("Location: company-list.php");
+            exit();
+        }
+    } catch (\Throwable $e) {}
+    $_SESSION['site_id'] = $selSiteId;
+    $Site->incrementClickCount($selSiteId);
     $redirectUri = isset($_GET['returnUrl']) && !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'ana-sayfa';
     header("Location: $redirectUri");
     exit();
@@ -946,6 +956,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
 
 
     <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./assets/js/jquery.3.7.1.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -968,9 +979,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_id'])) {
                 $content.toggleClass('active');
             });
 
-            // Firma kartına tıklayınca form submit (delegated)
+            // Firma kartına tıklayınca önce kilit ve borç kontrolü
             $(document).on('click', '.list-item', function() {
-                $(this).closest('form').submit();
+                var $form = $(this).closest('form');
+                var siteId = $form.find('input[name=\"site_id\"]').val();
+                var fd = new FormData();
+                fd.append('action','site_lock_status');
+                fd.append('user_id','<?= (int)$user_id ?>');
+                fd.append('site_id', siteId);
+                fetch('/pages/panel/api.php', { method:'POST', body: fd })
+                  .then(function(r){ return r.json(); })
+                  .then(function(j){
+                      if (j && j.status === 'success' && j.data) {
+                          if (parseInt(j.data.locked||0,10) === 1) {
+                              var months = j.data.unpaid_months||[];
+                              var rowsHtml = '';
+                              if (months.length > 0) {
+                                  rowsHtml = months.map(function(m){
+                                      return '<tr><td class="text-start text-secondary">'+m.period+'</td><td class="text-end fw-bold text-dark">'+(m.amount||0)+' TL</td></tr>';
+                                  }).join('');
+                              } else {
+                                  rowsHtml = '<tr><td colspan="2" class="text-center text-muted">Detay bulunamadı</td></tr>';
+                              }
+
+                              Swal.fire({
+                                  title: '',
+                                  html: `
+                                    <div class="text-center">
+                                        <div class="mb-3">
+                                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 80px; height: 80px; background-color: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                            </span>
+                                        </div>
+                                        <h3 class="mb-2 text-dark fw-bold">Erişim Engellendi!</h3>
+                                        <p class="text-muted mb-4">Bu siteye giriş kısıtlanmıştır.</p>
+                                        
+                                        <div class="bg-light rounded-3 p-3 mb-3 text-start border">
+                                            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                                <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">Site Adı</span>
+                                                <span class="fw-bold text-dark">${j.data.site_name||''}</span>
+                                            </div>
+                                            
+                                            <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.75rem;">Ödenmemiş Dönemler</h6>
+                                            <div style="max-height: 150px; overflow-y: auto;">
+                                                <table class="table table-sm table-borderless mb-0">
+                                                    <tbody>
+                                                        ${rowsHtml}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="border-top mt-2 pt-3 d-flex justify-content-between align-items-center">
+                                                <span class="fw-bold text-dark">Toplam Borç</span>
+                                                <span class="fw-bold text-danger fs-4">${j.data.total_debt||0} TL</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <p class="small text-muted mb-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info" style="vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                            Lütfen ödeme yapmak için yönetim ile iletişime geçiniz.
+                                        </p>
+                                    </div>
+                                  `,
+                                  showConfirmButton: true,
+                                  confirmButtonText: 'Tamam, Anlaşıldı',
+                                  confirmButtonColor: '#dc3545',
+                                  buttonsStyling: true,
+                                  customClass: {
+                                      popup: 'rounded-4 shadow-lg p-4',
+                                      confirmButton: 'btn btn-danger btn-lg px-5 rounded-3 mt-2'
+                                  },
+                                  width: '450px'
+                              });
+                          } else {
+                              $form.submit();
+                          }
+                      } else {
+                          $form.submit();
+                      }
+                  })
+                  .catch(function(){ $form.submit(); });
             });
 
             // Favori toggle butonu tıklandığında kartın submit'ini engelle
