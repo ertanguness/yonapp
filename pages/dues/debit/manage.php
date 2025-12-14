@@ -674,7 +674,7 @@ switch ($hedef_tipi) {
                 let title = data.status === 'success' ? 'Başarılı!' : 'Hata!';
                 swal.fire({
                     title: title,
-                    text: data.message,
+                    html: data.message,
                     icon: data.status,
                 })
 

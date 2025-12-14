@@ -185,10 +185,7 @@ $dueCache = [];
                                                         class="avatar-text avatar-md" title="Görüntüle">
                                                         <i class="feather-eye"></i>
                                                     </a>
-                                                    <a href="borclandirma-duzenle/<?php echo $enc_id; ?>"
-                                                        class="avatar-text avatar-md" title="Düzenle">
-                                                        <i class="feather-edit"></i>
-                                                    </a>
+                                                  
                                                     <a href="javascript:void(0);"
                                                         class="avatar-text avatar-md delete-debit" title="Sil"
                                                         data-id="<?php echo $enc_id; ?>"

@@ -151,6 +151,8 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
                     // Güvenlik kontrolü: Eğer bir dairede ev sahibi yoksa (veri tutarsızlığı), bu daireyi atla.
                     if (!$evSahibi) {
                         $logger->info("Daire ID {$daire_id} için ev sahibi bulunamadı, atlanıyor.");
+                        /**Kullanıcıya bilgi için bir atlanan daireleri değişkene ata */
+                        $atlananDaireler[] = $daire->daire_no;
                         continue;
                     }
 
@@ -335,6 +337,10 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
         $logger->info("Borçlandırma işlemi tamamlandı.");
         $status = "success";
         $message = "Tanımlı borçlandırma işlemi başarılı.";
+        $atlananDaireler = json_encode($atlananDaireler);
+        /** Atlanan daire varsa mesaj ile birleştir */
+        $message .= "<br> Ev Sahibi olmadığı için atlanan daireler numaraları : " . $atlananDaireler;
+
     } catch (Exception $e) {
         $db->rollBack();
         $logger->error("Borçlandırma işlemi sırasında hata: " . $e->getMessage());
