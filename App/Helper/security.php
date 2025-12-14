@@ -8,9 +8,19 @@ use Model\SitelerModel;
 class Security
 {
     public static function escape($data)
-    {
-        return htmlspecialchars ($data, ENT_QUOTES, 'UTF-8');
+{
+    if ($data === null) {
+        return '';
     }
+
+    return htmlspecialchars(
+        (string)$data,
+        ENT_QUOTES | ENT_SUBSTITUTE,
+        'UTF-8',
+        false // ÇOK ÖNEMLİ → double encode kapalı
+    );
+}
+
 
     // CSRF Token
     public static function csrf()
