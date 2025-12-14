@@ -15,7 +15,7 @@ use Model\UserModel;
         <div class="card-header d-flex align-items-center justify-content-between">
           <h3 class="card-title">Temsilci Listesi</h3>
           <button class="btn btn-primary btn-sm" id="repAddBtn">
-            <i class="feather-plus"></i> Yeni Temsilci
+            <i class="feather-plus"></i> Yeni Temsilci tsst
           </button>
         </div>
         <div class="table-responsive">
