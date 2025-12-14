@@ -130,7 +130,7 @@
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered text-center datatables">
-                            <thead class="table-light">
+                            <thead >
                                 <tr>
                                     <th>Sıra</th>
                                     <th>Tarih</th>

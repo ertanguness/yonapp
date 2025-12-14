@@ -60,28 +60,54 @@ $giderler_raw = $KasaHareketModel->getKasaHareketleriByDateRange($selected_kasa_
 // print_r($gelirler_raw);
 // print_r($giderler_raw);
 // exit;
-// --- Verileri İstenen Formata Gruplama ---
-// Resimdeki gibi kategorilere göre harcamaları topluyoruz.
-$gelirler = [];
+// --- Verileri İstenen Formata Hazırla ---
+// Alt türlere göre gruplama: 1. sütun kategori, 2. sütun alt_tur, 3. sütun toplam tutar
 $toplam_gelir = 0;
+$gelir_grouped = [];
 foreach ($gelirler_raw as $veri) {
-    $kategori = $veri->kategori ?? 'Diğer Gelirler';
-    if (!isset($gelirler[$kategori])) {
-        $gelirler[$kategori] = 0;
+    $kategori = trim((string)($veri->kategori ?? ''));
+    $alt_tur = trim((string)($veri->alt_tur ?? ''));
+    $tutar = floatval($veri->tutar ?? 0);
+    $toplam_gelir += $tutar;
+    if (!isset($gelir_grouped[$kategori])) {
+        $gelir_grouped[$kategori] = [];
     }
-    $gelirler[$kategori] += floatval($veri->tutar);
-    $toplam_gelir += floatval($veri->tutar);
+    if (!isset($gelir_grouped[$kategori][$alt_tur])) {
+        $gelir_grouped[$kategori][$alt_tur] = 0.0;
+    }
+    $gelir_grouped[$kategori][$alt_tur] += $tutar;
 }
 
-$giderler = [];
 $toplam_gider = 0;
+$gider_grouped = [];
 foreach ($giderler_raw as $veri) {
-    $kategori = $veri->kategori ?? 'Diğer Giderler';
-    if (!isset($giderler[$kategori])) {
-        $giderler[$kategori] = 0;
+    $kategori = trim((string)($veri->kategori ?? ''));
+    $alt_tur = trim((string)($veri->alt_tur ?? ''));
+    $tutar = floatval($veri->tutar ?? 0);
+    $toplam_gider += $tutar;
+    if (!isset($gider_grouped[$kategori])) {
+        $gider_grouped[$kategori] = [];
     }
-    $giderler[$kategori] += floatval($veri->tutar);
-    $toplam_gider += floatval($veri->tutar);
+    if (!isset($gider_grouped[$kategori][$alt_tur])) {
+        $gider_grouped[$kategori][$alt_tur] = 0.0;
+    }
+    $gider_grouped[$kategori][$alt_tur] += $tutar;
+}
+
+// Düz listeye çevir
+$gelir_rows = [];
+foreach ($gelir_grouped as $kategori => $alts) {
+    ksort($alts);
+    foreach ($alts as $alt_tur => $sum) {
+        $gelir_rows[] = [$kategori, $alt_tur, $sum];
+    }
+}
+$gider_rows = [];
+foreach ($gider_grouped as $kategori => $alts) {
+    ksort($alts);
+    foreach ($alts as $alt_tur => $sum) {
+        $gider_rows[] = [$kategori, $alt_tur, $sum];
+    }
 }
 
 
@@ -126,11 +152,12 @@ $ss->getDefaultStyle()->getFont()->setSize(11);
 $sheet->setTitle('Eylül 2025 Gelir Gider Raporu');
 
 // Kolon Genişlikleri
-$sheet->getColumnDimension('A')->setWidth(25);
-$sheet->getColumnDimension('B')->setWidth(18);
-$sheet->getColumnDimension('C')->setWidth(5); // Ayırıcı sütun
-$sheet->getColumnDimension('D')->setWidth(25);
-$sheet->getColumnDimension('E')->setWidth(18);
+$sheet->getColumnDimension('A')->setWidth(25); // Kategori (Gelir)
+$sheet->getColumnDimension('B')->setWidth(25); // Alt Tür (Gelir)
+$sheet->getColumnDimension('C')->setWidth(18); // Tutar (Gelir)
+$sheet->getColumnDimension('D')->setWidth(25); // Kategori (Gider)
+$sheet->getColumnDimension('E')->setWidth(25); // Alt Tür (Gider)
+$sheet->getColumnDimension('F')->setWidth(18); // Tutar (Gider)
 
 // --- Başlıklar ---
 // Ana Başlık
@@ -147,14 +174,14 @@ $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENT
 $sheet->getRowDimension(2)->setRowHeight(20);
 
 // --- Gelir ve Gider Başlıkları ---
-$sheet->mergeCells('A4:B4');
+$sheet->mergeCells('A4:C4');
 $sheet->setCellValue('A4', 'GELİR');
 $sheet->getStyle('A4')->getFont()->setBold(true)->setSize(14);
 $sheet->getStyle('A4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 $sheet->getStyle('A4:B4')->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
 
 
-$sheet->mergeCells('D4:E4');
+$sheet->mergeCells('D4:F4');
 $sheet->setCellValue('D4', 'GİDER');
 $sheet->getStyle('D4')->getFont()->setBold(true)->setSize(14);
 $sheet->getStyle('D4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -162,27 +189,24 @@ $sheet->getStyle('D4:E4')->getBorders()->getBottom()->setBorderStyle(Border::BOR
 
 // --- Veri Satırlarını Yazdırma ---
 $row = 5;
-$gelir_keys = array_keys($gelirler);
-$gider_keys = array_keys($giderler);
-$max_rows = max(count($gelirler), count($giderler));
+$max_rows = max(count($gelir_rows), count($gider_rows));
 
 for ($i = 0; $i < $max_rows; $i++) {
     // Gelirleri yaz
-    if (isset($gelir_keys[$i])) {
-        $kategori = $gelir_keys[$i];
-        $tutar = $gelirler[$kategori];
-        $sheet->setCellValue('A' . $row, $kategori);
-        $sheet->setCellValue('B' . $row, number_format($tutar, 2, ',', '.'));
-        $sheet->getStyle('B' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+    if (isset($gelir_rows[$i])) {
+        [$kategori, $alt_tur, $tutar] = $gelir_rows[$i];
+        $sheet->setCellValue('A' . $row, (string)$kategori);
+        $sheet->setCellValue('B' . $row, (string)$alt_tur);
+        $sheet->setCellValue('C' . $row, number_format((float)$tutar, 2, ',', '.'));
+        $sheet->getStyle('C' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
     }
-    
     // Giderleri yaz
-    if (isset($gider_keys[$i])) {
-        $kategori = $gider_keys[$i];
-        $tutar = $giderler[$kategori];
-        $sheet->setCellValue('D' . $row, $kategori);
-        $sheet->setCellValue('E' . $row, number_format($tutar, 2, ',', '.'));
-        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+    if (isset($gider_rows[$i])) {
+        [$kategori, $alt_tur, $tutar] = $gider_rows[$i];
+        $sheet->setCellValue('D' . $row, (string)$kategori);
+        $sheet->setCellValue('E' . $row, (string)$alt_tur);
+        $sheet->setCellValue('F' . $row, number_format((float)$tutar, 2, ',', '.'));
+        $sheet->getStyle('F' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
     }
 
     // Hücrelere alt çizgi stili ekle
@@ -191,8 +215,8 @@ for ($i = 0; $i < $max_rows; $i++) {
             'bottom' => ['borderStyle' => Border::BORDER_DOTTED],
         ],
     ];
-    $sheet->getStyle('A'.$row.':B'.$row)->applyFromArray($styleArray);
-    $sheet->getStyle('D'.$row.':E'.$row)->applyFromArray($styleArray);
+    $sheet->getStyle('A'.$row.':C'.$row)->applyFromArray($styleArray);
+    $sheet->getStyle('D'.$row.':F'.$row)->applyFromArray($styleArray);
 
     $row++;
 }
@@ -203,24 +227,24 @@ $total_row = $row + 1; // Boşluk bırak
 
 // GELİR TOPLAM
 $sheet->setCellValue('A' . $total_row, 'GELİR');
-$sheet->setCellValue('B' . $total_row, number_format($toplam_gelir, 2, ',', '.'));
+$sheet->setCellValue('C' . $total_row, number_format($toplam_gelir, 2, ',', '.'));
 $style_gelir_total = [
     'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'ADD8E6']], // Açık mavi
     'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT],
 ];
-$sheet->getStyle('A' . $total_row . ':B' . $total_row)->applyFromArray($style_gelir_total);
+$sheet->getStyle('A' . $total_row . ':C' . $total_row)->applyFromArray($style_gelir_total);
 $sheet->getStyle('A' . $total_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT); // Gelir yazısını sola al
 
 // GİDER TOPLAM
 $sheet->setCellValue('D' . $total_row, 'GİDER');
-$sheet->setCellValue('E' . $total_row, number_format($toplam_gider, 2, ',', '.'));
+$sheet->setCellValue('F' . $total_row, number_format($toplam_gider, 2, ',', '.'));
 $style_gider_total = [
     'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFDAB9']], // Açık turuncu/şeftali
     'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT],
 ];
-$sheet->getStyle('D' . $total_row . ':E' . $total_row)->applyFromArray($style_gider_total);
+$sheet->getStyle('D' . $total_row . ':F' . $total_row)->applyFromArray($style_gider_total);
 $sheet->getStyle('D' . $total_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT); // Gider yazısını sola al
 
 

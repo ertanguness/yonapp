@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/configs/session-config.php';
 
 require_once 'vendor/autoload.php';
 

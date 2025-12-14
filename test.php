@@ -1,10 +1,12 @@
 <?php
 
 require_once  'configs/bootstrap.php';
-$_SESSION['site_id'] = '13';
+$_SESSION['site_id'] = '1';
 
 
 use Model\KisilerModel;
+use Model\DefinesModel;
+use Model\DuyuruModel;
 // use App\Services\SmsGonderService;
 
 // echo SmsGonderService::gonder(
@@ -13,13 +15,10 @@ use Model\KisilerModel;
 //     gondericiBaslik: 'USKUPEVLSIT'
 // ) ? 'SMS başarıyla gönderildi.' : 'SMS gönderilemedi.'; 
 $KisiModel = new KisilerModel();
+$DefinesModel = new DefinesModel();
+$DuyuruModel = new DuyuruModel();
 
-$kisiler = $KisiModel->BorclandirilacakAktifKisileriGetir(
-    site_id: 24,
-    borcBaslangicTarihi: '2025-11-01',
-    borcBitisTarihi: '2025-11-30'
-);
-
+$duyuru = $DuyuruModel->sakinDuyurulari(171);
 echo '<pre>';
-print_r($kisiler);
+print_r($duyuru);
 echo '</pre>';

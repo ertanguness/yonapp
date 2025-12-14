@@ -96,7 +96,7 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
             <img src="/assets/images/logo/logo.svg" alt="" class="logo logo-sm" />
         </div>
         <div class="navbar-content">
-            <ul class="nxl-navbar " id="side-menu">
+            <ul class="nxl-navbar mb-5" id="side-menu">
                 <?php
                 // SUPERADMIN MENU HACK
                 $userRole = (int)($_SESSION['user_role'] ?? 0);
@@ -140,7 +140,6 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
                         // YARDIMCI FONKSİYONU YENİ PARAMETRE İLE ÇAĞIR
                         renderMenuItems($items, $activeMenuInfo);
                     }
-                    
                 } else {
                 }
                 ?>

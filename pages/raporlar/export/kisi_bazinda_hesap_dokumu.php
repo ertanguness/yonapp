@@ -106,7 +106,7 @@ foreach ($kisiler as $index => $kisi) {
     }
 
     $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
-    $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+    $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
     $sheet->getPageSetup()->setFitToWidth(1);
     $sheet->getPageSetup()->setFitToHeight(0);
     $sheet->getDefaultRowDimension()->setRowHeight(18);
@@ -212,12 +212,19 @@ foreach ($kisiler as $index => $kisi) {
         $sheet->setCellValue('C' . $currentRow, $sonOdemeFmt ?: '-');
         $sheet->setCellValue('D' . $currentRow, $anapara);
         $sheet->setCellValue('E' . $currentRow, $odenen);
+
+        if ($anapara > 0) {
+            $sheet->getStyle('A' . $currentRow . ':I' . $currentRow)->getFont()->getColor()->setRGB('C51605');
+        }
+        if ($odenen > 0) {
+            $sheet->getStyle('A' . $currentRow . ':I' . $currentRow)->getFont()->getColor()->setRGB('3F7D58');
+        }
         $sheet->setCellValue('F' . $currentRow, $h->gecikme_oran ?? '');
         $sheet->setCellValue('G' . $currentRow, $gecikme);
         $sheet->setCellValue('H' . $currentRow, $bakiye);
         $sheet->setCellValue('I' . $currentRow, $aciklama);
         if ($gecikme > 0) {
-            $sheet->getStyle('G' . $currentRow)->getFont()->getColor()->setRGB('D90429');
+            $sheet->getStyle('G' . $currentRow)->getFont()->getColor()->setRGB('C51605');
         }
         $currentRow++;
     }
@@ -308,14 +315,14 @@ try {
                 @ob_end_clean();
             }
             $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
-            $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
             $sheet->getPageSetup()->setFitToWidth(1);
             $sheet->getPageSetup()->setFitToHeight(0);
             $sheetCount = $spreadsheet->getSheetCount();
             if ($sheetCount > 1) {
                 $mpdf = new \Mpdf\Mpdf([
                     'mode' => 'utf-8',
-                    'format' => 'A4-L',
+                    'format' => 'A4',
                     'tempDir' => sys_get_temp_dir(),
                     'margin_header' => 0,
                     'margin_footer' => 0

@@ -826,6 +826,67 @@ $site_adi = $site->site_adi ?? 'Site';
                             </div>
                         </div>
 
+                        <!-- Gecikmiş Ödemeler Raporu -->
+                        <div class="accordion-item border border-dashed border-gray-300 mb-3">
+                            <h2 class="accordion-header" id="headingGecikenOdemeler">
+                                <button class="accordion-button collapsed bg-light" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapseGecikenOdemeler"
+                                    aria-expanded="false" aria-controls="collapseGecikenOdemeler">
+                                    <div class="d-flex align-items-center w-100">
+                                        <div class="avatar-text avatar-lg bg-soft-danger text-danger border-soft-danger rounded me-3">
+                                            <i class="feather-alert-circle fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold d-block">Gecikmiş Ödemeler</span>
+                                            <small class="text-muted">Seçilen tarihten önceki gecikmiş borçların detaylı listesi</small>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapseGecikenOdemeler" class="accordion-collapse collapse"
+                                aria-labelledby="headingGecikenOdemeler" data-bs-parent="#raporlarAccordion">
+                                <div class="accordion-body bg-white">
+                                    <form id="formGecikenOdemeler" class="row g-3">
+                                        <div class="col-12">
+                                            <div class="alert alert-light border-0 mb-3">
+                                                <i class="feather-info me-2"></i>
+                                                <small>Belirttiğiniz bitiş tarihinden önceki, ödemesi eksik kalmış borçlar kişi bazında detaylı olarak listelenir.</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="geciken_bitis" class="form-label">
+                                                <i class="feather-calendar me-1"></i>Bitiş Tarihi
+                                            </label>
+                                            <input type="text" class="form-control flatpickr" id="geciken_bitis"
+                                                name="geciken_bitis" placeholder="gg.aa.yyyy"
+                                                value="<?php echo date('d.m.Y'); ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="geciken_format" class="form-label">
+                                                <i class="feather-download me-1"></i>İndirme Formatı
+                                            </label>
+                                            <select class="form-select select2" id="geciken_format" name="geciken_format">
+                                                <option value="pdf">PDF Belgesi</option>
+                                                <option value="xlsx">Excel (XLSX)</option>
+                                                <option value="csv">CSV Dosyası</option>
+                                                <option value="html">HTML Sayfası</option>
+                                            </select>
+                                        </div>
+                                        <hr class="my-4">
+                                        <div class="col-12 d-flex gap-2">
+                                            <button type="button" class="btn btn-outline-secondary btn-rapor-onizle"
+                                                data-rapor="geciken-odemeler">
+                                                <i class="feather-eye me-2"></i>Önizle
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-rapor-indir"
+                                                data-rapor="geciken-odemeler">
+                                                <i class="feather-download me-2"></i>Raporu İndir
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1041,6 +1102,12 @@ $site_adi = $site->site_adi ?? 'Site';
                     const kisiParam = encodeURIComponent(kisiSecimler.join(','));
                     url = `pages/raporlar/export/kisi_bazinda_hesap_dokumu.php?kisi_ids=${kisiParam}&format=${kisiFormat}`;
                     break;
+                case 'geciken-odemeler':
+                    const gecikenBitis = document.getElementById('geciken_bitis').value;
+                    const gecikenFormat = document.getElementById('geciken_format').value;
+                    const gecikenEndISO = toIsoFromDMY(gecikenBitis);
+                    url = `pages/raporlar/export/geciken-odemeler.php?end=${encodeURIComponent(gecikenEndISO)}&format=${gecikenFormat}`;
+                    break;
             }
 
             if (url) {
@@ -1127,6 +1194,11 @@ $site_adi = $site->site_adi ?? 'Site';
                     if (!kisiSecimler2.length) { alert('Lütfen en az bir kişi seçiniz.'); return; }
                     const kisiParam2 = encodeURIComponent(kisiSecimler2.join(','));
                     url = `pages/raporlar/export/kisi_bazinda_hesap_dokumu.php?kisi_ids=${kisiParam2}&format=html`;
+                    break;
+                case 'geciken-odemeler':
+                    const gecikenBitis2 = document.getElementById('geciken_bitis').value;
+                    const gecikenEndISO2 = toIsoFromDMY(gecikenBitis2);
+                    url = `pages/raporlar/export/geciken-odemeler.php?end=${encodeURIComponent(gecikenEndISO2)}&format=html`;
                     break;
             }
 

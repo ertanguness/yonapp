@@ -145,7 +145,7 @@ try {
                     <?php if (Gate::isResident()) {
                         $currentSite = (new Site())->getCurrentSite();
                         if ($currentSite) {
-                            echo '<span class="text-nowrap site-select" style="color: #333;">' . htmlspecialchars($currentSite->site_adi ?? 'Site Adı Yok', ENT_QUOTES, 'UTF-8') . '</span>';
+                            echo '<span class="card-title ms-2 text-nowrap">' . htmlspecialchars($currentSite->site_adi ?? 'Site Adı Yok', ENT_QUOTES, 'UTF-8') . '</span>';
                         }
                     } else { ?>
                         <div class="input-group flex-nowrap w-100 p-0 site-select ps-3" style="min-width: 260px;">
@@ -166,7 +166,7 @@ try {
                         <?php if (Gate::allows('yonetici_aidat_odeme')) { ?>
                             <div class="d-flex align-items-center" id="globalHeaderSearchWrap">
                                 <a href="javascript:void(0);" class="nxl-head-link me-0" id="globalHeaderSearchToggle"><i class="feather-search"></i></a>
-                                <div class="d-none ms-2 position-relative" id="globalHeaderSearchBox" style="width: 180px;">
+                                <div class="d-none ms-2 position-relative" id="globalHeaderSearchBox" style="width: 240px;">
                                     <input type="text" class="form-control"
                                         autocomplete="off"
                                         id="globalHeaderSearch" placeholder="Daire kodu veya ad soyad">

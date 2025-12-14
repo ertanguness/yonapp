@@ -22,7 +22,17 @@ class SettingsHelper extends SettingsModel
         return $select;
     }
 
-
+    /** sitenin mesaj başlıklarının sayısı döndürür */
+    public function getMessageSubjectsCount()
+    {   
+        $site_id = $_SESSION['site_id'] ?? null;
+        $query = $this->db->query("SELECT COUNT(*) AS count 
+                                          FROM {$this->table} 
+                                          WHERE set_name = 'sms_baslik' 
+                                          AND site_id = {$site_id}");
+        $result = $query->fetch();
+        return $result->count;
+    }
 
 }
 

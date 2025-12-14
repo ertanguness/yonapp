@@ -58,10 +58,9 @@ if (
     $page == "sakin/taleplerim" || $page == "talep-duzenle" ||
     $page == "anket-listesi" || $page == "duyuru-listesi" ||
     $page == "arac-yonetimi" ||
-    $page == "kullanici-ekle" || 
+    $page == "kullanici-ekle" || $page == "kullanici-duzenle" ||
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
-    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" || $page == "superadmin" ||
-     $page == "superadmin-temsilciler" 
+    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
@@ -215,6 +214,9 @@ if ($page == 'arac-yonetimi' || $page == 'arac-ekle' || $page == 'arac-duzenle')
 if ($page == 'management/peoples/upload-from-xls') {
     echo '<script src="/pages/management/peoples/js/upload-from-xls.js"></script>';
 }
+if ($page == 'kisileri-yukle') {
+    echo '<script src="/pages/management/peoples/js/upload-from-xls.js"></script>';
+}
 //*************PEOPLES BİTİŞ******************************** */
 
 //*************BAKIM ONARIM ARIZA BAŞLANGIÇ******************************** */
@@ -267,7 +269,7 @@ if ($page == 'daireleri-excelden-yukle') {
 }
 
 // Onboarding Checklist (global)
-if ($page !== 'superadmin' && $page !== 'superadmin-ayarlar' && $page !== 'superadmin-temsilciler') { versionedScript('/assets/js/onboarding.js'); }
+versionedScript('/assets/js/onboarding.js');
 //*************define APARTMENT TYPES******************************** */
 
 
@@ -374,6 +376,8 @@ echo '<script src="/assets/js/lock-screen.js"></script>';
 
 
 <script src="/partials/mobile-menu.js"></script>
+<!-- Fixes mobile hamburger menu toggle issues on some browsers -->
+<script src="/assets/js/hamburger-fix.js"></script>
 <script src="/pages/email-sms/js/sms.js"></script>
 
 

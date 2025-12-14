@@ -38,7 +38,7 @@
                     <div class="card">
                         <div class="card-body table-responsive" style="overflow: visible;">
                             <table class="table table-hover table-bordered datatables" id="surveyList">
-                                <thead class="table-light">
+                                <thead >
                                     <tr>
                                         <th>#</th>
                                         <th>Başlık</th>
@@ -46,7 +46,7 @@
                                         <th>Bitiş</th>
                                         <th>Durum</th>
                                         <th>Oy</th>
-                                        <th>İşlemler</th>
+                                        <th style="width:15%" class="text-center">İşlemler</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -60,7 +60,7 @@
                                             <td><?= htmlspecialchars($r->end_date ?? '') ?></td>
                                             <td><span class="badge bg-<?= $statusBadge ?>"><?= htmlspecialchars($r->status ?? '') ?></span></td>
                                             <td><?= htmlspecialchars($r->total_votes ?? 0) ?></td>
-                                            <td>
+                                            <td class="text-center">
                                                 <div class="btn-group align-items-baseline">
                                                     <a href="/anket-ekle?survey_id=<?= (int)$r->id ?>" class="btn btn-outline-primary btn-sm route-link"><i class="feather-edit-2"></i> Düzenle</a>
                                                     <button class="btn btn-outline-danger btn-sm btn-del" data-id="<?= $idEnc ?>"><i class="feather-trash-2"></i> Sil</button>
@@ -88,3 +88,8 @@
 </div>
 
 <script src="/pages/duyuru-talep/admin/js/anket.js"></script>
+<script>
+    $(function(){
+        window.SurveyUI && window.SurveyUI.initListServerRendered();
+    });
+</script>

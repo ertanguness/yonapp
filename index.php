@@ -43,7 +43,7 @@ $resolvedRoute = $router->resolve($url);
 // 3. SAYFA ADINI AL (SİHİR BURADA GERÇEKLEŞİYOR)
 // Router artık hangi desenin eşleştiğini biliyor ve bize temiz halini veriyor.
 $page = $router->getPageName() ?? '';
-$skipPagesForSiteCheck = ['temsilci-paneli','superadmin','superadmin-ayarlar','superadmin-temsilciler','site-ekle','siteler','site-duzenle','sign-in','kayit-ol','logout','forgot-password','reset-password'];
+$skipPagesForSiteCheck = ['site-ekle','siteler','site-duzenle','sign-in','kayit-ol','logout','forgot-password','reset-password'];
 if (!in_array($page, $skipPagesForSiteCheck, true)) {
      Security::ensureSiteSelected('/site-ekle');
  }
@@ -72,14 +72,6 @@ if (preg_match('/-pdf$/', $page)) {
 }
 
 
-// // Görünüm (View) için gerekli değişkenleri hazırla
-// $page = preg_replace('/[^a-zA-Z0-9\/\-]/', '', $page); // Güvenlik!
-// $pagePath = __DIR__ . "/pages/{$page}.php";
-// $viewToInclude = file_exists($pagePath) ? $pagePath : __DIR__ . "/pages/404.php";
-// echo "Yüklenen sayfa: " . ($page); // Debug için
-// if (!file_exists($pagePath)) {
-//     http_response_code(404);
-// }
 
 // ------------------- ARTIK HTML BAŞLAYABİLİR -------------------
 ?>

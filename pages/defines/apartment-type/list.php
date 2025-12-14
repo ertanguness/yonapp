@@ -55,11 +55,12 @@
                                 <table class="table table-hover datatables" id="apartmentTypesList">
                                     <thead>
                                         <tr class="text-center">
-                                            <th>Sıra</th>
+                                            <th style="width: 7%;">Sıra</th>
+                                            <th>Mül Tipi</th>
                                             <th>Daire Tipi</th>
                                             <th>Açıklama</th>
-                                            <th>Eklenme Tarihi</th>
-                                            <th>İşlem</th>
+                                            <th style="width: 100px;">Eklenme Tarihi</th>
+                                            <th style="width: 10%;">İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -70,6 +71,7 @@
                                         ?>
                                             <tr class="text-center">
                                                 <td><?= $i ?></td>
+                                                <td><?= $type->mulk_tipi ?></td>
                                                 <td><?= $type->define_name ?></td>
                                                 <td><?= $type->description ?></td>
                                                 <td><?= $type->created_at ?></td>

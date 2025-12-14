@@ -4,9 +4,14 @@ require_once dirname(__DIR__, levels: 1) . '/configs/bootstrap.php';
 use App\Helper\Helper;
 use Model\KisiKredileriModel;
 use Model\BorclandirmaDetayModel;
+use Model\DefinesModel;
+
 
 $KisiKredileri = new KisiKredileriModel();
 $BorclandirmaDetay = new BorclandirmaDetayModel();
+$Defines = new DefinesModel();
 
 
-echo Helper::extractApartmentInfo("YASİN TÜFEKCİ*0015*Üsküp evleri C2 blok 6 numara yasin Tüfekci Şubat aidatı*1597989044*FAST");
+$kalemler = $Defines->getGelirGiderKalemleri(6, "AİDAT");
+
+Helper::dd($kalemler);

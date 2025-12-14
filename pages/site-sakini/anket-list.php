@@ -19,7 +19,7 @@
                     <div class="card">
                         <div class="card-body table-responsive">
                             <table class="table table-hover table-bordered align-middle datatables" id="userSurveyList">
-                                <thead class="table-light">
+                                <thead >
                                     <tr>
                                         <th>#</th>
                                         <th>Başlık</th>

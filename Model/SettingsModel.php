@@ -19,10 +19,10 @@ class SettingsModel extends Model
      * Sitenin tüm ayarlarını anahtar-değer çifti olarak döner
      * @return array|null
      */
-    public function getAllSettingsAsKeyValue()
+    public function getAllSettingsAsKeyValue($site_id = null)
     {
 
-        $siteId = isset($_SESSION['site_id']) ? (int) $_SESSION['site_id'] : 0;
+        $siteId = $site_id ?? (isset($_SESSION['site_id']) ? (int) $_SESSION['site_id'] : 0);
         if ($siteId === 0) {
             return null;
         }

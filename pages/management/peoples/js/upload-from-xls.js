@@ -76,7 +76,9 @@ $(document).on("click", "#upload_peoples_file", function (e) {
   }
 
   const formData = new FormData();
-  formData.append("action", "excel_upload_peoples");
+  const customActionEl = document.getElementById("upload_action");
+  const actionName = customActionEl && customActionEl.value ? customActionEl.value : "excel_upload_peoples";
+  formData.append("action", actionName);
   formData.append("excelFile", fileInput.files[0]);
 
   loadingOverlay.style.display = "flex"; // CSS'te flex kullandığımız için 'flex' yapıyoruz

@@ -38,6 +38,10 @@ form.validate({
         text: data.message,
         icon: data.status,
         confirmButtonText: "Tamam",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          location.reload();
+        }
       });
     });
 }); 
@@ -105,3 +109,28 @@ $(document).on("click", ".gelir-gider-tipi-sil", function () {
   });
 });
 
+  $(document).ready(function() {
+        $('#gelir_gider_tipi').on('select2:select', function(e) {
+
+
+            let $gelirGrubu = $('#gelir_grubu_label');
+            let $gelirKalemi = $('#gelir_kalemi_label');
+            window.islem_type = e.params.data.text;
+
+            console.log(window.islem_type);
+         
+            if (window.islem_type == 'Gider') {
+                $('.gider-grubu').removeClass('d-none');
+                $('.gelir-grubu').addClass('d-none');
+            }
+            if (window.islem_type == 'Gelir') {
+                $('.gelir-grubu').removeClass('d-none');
+                $('.gider-grubu').addClass('d-none');
+            }
+
+
+
+            $gelirGrubu.text(e.params.data.text + ' Grubu');
+            $gelirKalemi.text(e.params.data.text + ' Kalemi');
+        });
+    });

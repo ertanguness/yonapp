@@ -19,7 +19,7 @@ switch ($action) {
         Gate::can('announcements_admin_page');
         $siteId = $_SESSION['site_id'] ?? null;
         $model = new SikayetOneriModel();
-        $rows = $model->listAll($siteId ? (int)$siteId : null);
+        $rows = $model->findAllByUserName($siteId);
         echo json_encode(['status' => 'success', 'data' => $rows]);
         break;
 

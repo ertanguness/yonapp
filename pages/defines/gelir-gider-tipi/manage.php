@@ -6,10 +6,11 @@ use Model\DefinesModel;
 
 $Tanimlamalar = new DefinesModel();
 
-$enc_id = $id ?? 0;  
+$enc_id = $id ?? 0;
 $id = Security::decrypt($id ?? 0);
 
 $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
+
 
 //echo "<pre>"; print_r($gelirgidertipi); echo "</pre>"; exit;
 
@@ -22,8 +23,8 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
             <h5 class="m-b-10">Tanımlamalar</h5>
         </div>
         <ul class="breadcrumb"></ul>
-            <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
-            <li class="breadcrumb-item">Gelir-Gider Tipi Tanımlama</li>
+        <li class="breadcrumb-item"><a href="index?p=home">Ana Sayfa</a></li>
+        <li class="breadcrumb-item">Gelir-Gider Tipi Tanımlama</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
@@ -62,51 +63,87 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body personal-info">
                                     <div class="row mb-4 align-items-center">
-                                    <input type="hidden"  class="form-control "
-                                    name="gelir_gider_tipi_id" id="gelir_gider_tipi_id" value="<?php echo $enc_id   ; ?>">
+                                        <input type="hidden" class="form-control "
+                                            name="gelir_gider_tipi_id" id="gelir_gider_tipi_id" value="<?php echo $enc_id; ?>">
 
                                         <div class="col-lg-2">
-                                            <label for="" class="fw-semibold">Gelir Gider Tipi Adı: </label>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <div class="input-group-text"><i class="feather-briefcase"></i></div>
-                                                <input type="text" class="form-control" id="gelir_gider_tipi_name" name="gelir_gider_tipi_name" value="<?php echo $gelirgidertipi->define_name ?? ''; ?>">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <label for="" class="fw-semibold">Tipi(Gelir/Gider): </label>
+                                            <label for="" class="fw-semibold">Tipi: </label>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="input-group flex-nowrap w-100">
                                                 <div class="input-group-text"><i class="feather-home"></i></div>
-                                            <?php echo Helper::getGelirGiderTipiSelect('gelir_gider_tipi', $gelirgidertipi->tip ?? null); ?>
+                                                <?php echo Helper::getGelirGiderTipiSelect('gelir_gider_tipi', $gelirgidertipi->type ?? null); ?>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row mb-4 align-items-center">
+
                                         <div class="col-lg-2">
                                             <label for="islem_kodu" class="fw-semibold">İşlem Kodu: </label>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-code"></i></div>
-                                                <input type="text" class="form-control" id="islem_kodu" name="islem_kodu" value="<?php echo $gelirgidertipi->islem_kodu ?? ''; ?>">
+                                                <input type="text" class="form-control"
+                                                    placeholder="Örn: 770.01.01"
+                                                    id="islem_kodu" name="islem_kodu" value="<?php echo $gelirgidertipi->islem_kodu ?? ''; ?>">
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="row mb-4 align-items-center gelir-grubu">
+
+                                        <div class="col-lg-2">
+                                            <label for="" class="fw-semibold" id="gelir_grubu_label">Gelir Grubu: </label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-briefcase"></i></div>
+                                                <input type="text" class="form-control"
+                                                    placeholder="Örn: AİDAT,DEMİRBAŞ..."
+                                                    id="gelir_gider_tipi_name" name="gelir_gider_tipi_name" value="<?php echo $gelirgidertipi->define_name ?? ''; ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4 align-items-center gider-grubu d-none">
+
+                                        <div class="col-lg-2">
+                                            <label for="" class="fw-semibold" id="gelir_grubu_label">Gider Grubu: </label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group flex-nowrap w-100">
+                                                <div class="input-group-text"><i class="feather-briefcase"></i></div>
+                                                <?php echo $Tanimlamalar->getGelirGrubuSelect('gelir_gider_tipi_name', $gelirgidertipi->define_name ?? ''); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-4 align-items-center">
+
+                                        <div class="col-lg-2">
+                                            <label for="" class="fw-semibold" id="gelir_kalemi_label">Gelir Kalemi: </label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="feather-briefcase"></i></div>
+                                                <input type="text" class="form-control"
+                                                    placeholder="Örn: Aidat,Demirbaş, Fatura"
+                                                    id="alt_tur" name="alt_tur" value="<?php echo $gelirgidertipi->alt_tur ?? ''; ?>">
+                                            </div>
+                                        </div>
+
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-2">
                                             <label for="description" class="fw-semibold">Açıklama: </label>
                                         </div>
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-4">
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="feather-type"></i></div>
                                                 <textarea class="form-control" id="description" name="description" cols="30" rows="3"><?php echo $gelirgidertipi->description ?? ''; ?></textarea>
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </form>
@@ -116,3 +153,7 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
         </div>
     </div>
 </div>
+
+<script>
+  
+</script>

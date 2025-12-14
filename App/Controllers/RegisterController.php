@@ -37,13 +37,13 @@ class RegisterController
         try {
             $db->beginTransaction();
             $data = [
-                'id' => 0,
-                'full_name' => Security::escape($post['full_name']),
-                'email' => Security::escape($post['email']),
-                'status' => 0,
-                'roles' => 1,
-                'is_main_user' => 1,
-                'password' => password_hash($post['password'], PASSWORD_DEFAULT),
+                'id'            => 0,
+                'full_name'     => Security::escape($post['full_name']),
+                'email'         => Security::escape($post['email']),
+                'status'        => 0,
+                'roles'         => 1,
+                'is_main_user'  => 1,
+                'password'      => password_hash($post['password'], PASSWORD_DEFAULT),
             ];
             $lastInsertUserId = $User->saveWithAttr($data);
             $token = (Security::encrypt(time() + 3600));

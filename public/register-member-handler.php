@@ -6,6 +6,7 @@ use App\Services\FlashMessageService;
 use App\Services\MailGonderService;
 use App\Services\SmsGonderService;
 use Model\UserModel;
+use Model\KisilerModel;
 use Database\Db;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -23,6 +24,17 @@ $fullName = trim($_POST['full_name'] ?? '');
 $pass     = $_POST['password'] ?? '';
 $pass2    = $_POST['password2'] ?? '';
 $kisiEnc  = $_POST['kisi'] ?? '';
+
+$KisiModel = new KisilerModel();
+
+$kisi = $KisiModel->find($kisiEnc,true);
+
+
+if (!$kisi) {
+    FlashMessageService::add('error', 'Hata!', 'Kişi bulunamadı.');
+    header('Location: /register-member.php?kisi=' . urlencode($kisiEnc));
+    exit;
+}
 
 if ($fullName === '' || $pass === '' || $pass2 === '') {
     FlashMessageService::add('error', 'Hata!', 'Lütfen tüm alanları doldurunuz.');
@@ -139,6 +151,9 @@ try {
         $stmt->execute([0, (int)Security::decrypt($kisiEnc), $normalizedCode, $fullPhone, $code, $expiresAt,$fullName, password_hash($pass, PASSWORD_DEFAULT), $pseudoEmail]);
 
         $verifyId = $pdo->lastInsertId();
+
+        /** Kişinin site id'sini Session'a ata */
+        $_SESSION['site_id'] = $kisi->site_id;
 
         $sent = SmsGonderService::gonder([$fullPhone], 'YONAPP doğrulama kodunuz: ' . $code);
 

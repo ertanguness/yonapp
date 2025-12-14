@@ -26,7 +26,7 @@ class SikayetOneriModel extends Model
             `reply_at` DATETIME NULL,
             `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            `deleted_at` DATETIME NULL,
+            `silinme_tarihi` DATETIME NULL,
             PRIMARY KEY (`id`),
             KEY `idx_kisi_id` (`kisi_id`),
             KEY `idx_site_id` (`site_id`),
@@ -47,6 +47,27 @@ class SikayetOneriModel extends Model
         ];
         return $this->insert();
     }
+
+    /**Kullanıcı adı ile beraber listeyi döndürür */
+    public function findAllByUserName(?int $siteId = null): array
+    {
+        $query = "SELECT so.*, k.adi_soyadi 
+                FROM {$this->table} so
+                LEFT JOIN kisiler k ON so.kisi_id = k.id
+                WHERE so.site_id = :site_id";
+ 
+            $params[':site_id'] = $siteId;
+
+        $stmt = $this->db->prepare($query);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
+
+
+
 
     public function listAll(?int $siteId = null): array
     {

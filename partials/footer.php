@@ -1,5 +1,9 @@
-<?php 
+<?php
+
 use App\Services\Gate;
+use Model\SitelerModel;
+
+$SiteModel = new SitelerModel();
 ?>
 
 
@@ -18,7 +22,7 @@ use App\Services\Gate;
         z-index: 1060;
         padding: 6px 8px 10px 8px;
         border-radius: 16px 16px 0 0;
-        box-shadow: 0 -6px 20px rgba(0,0,0,0.12);
+        box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12);
         border-top: 1px solid #eaeaea;
         backdrop-filter: saturate(180%) blur(6px);
     }
@@ -41,7 +45,10 @@ use App\Services\Gate;
         align-items: center;
     }
 
-    .mobile-actions-spacer { width: 56px; height: 1px; }
+    .mobile-actions-spacer {
+        width: 56px;
+        height: 1px;
+    }
 
     .mobile-quick-actions-item {
         display: flex;
@@ -130,7 +137,7 @@ use App\Services\Gate;
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 22px 16px;
+        padding: 16px 16px;
         color: #555;
         text-decoration: none;
         border-bottom: 1px solid #f0f0f0;
@@ -171,8 +178,28 @@ use App\Services\Gate;
         cursor: pointer;
         z-index: 1002;
     }
-    .mobile-fab-sakin{
+
+    .mobile-fab-sakin {
         background: linear-gradient(135deg, #34c38f, #28a745);
+        box-shadow: 0 10px 20px rgba(52, 195, 143, 0.35);
+    }
+
+    .mobile-quick-actions.resident .mobile-quick-actions-item.active {
+        color: #34c38f;
+        background: rgba(52, 195, 143, 0.12);
+    }
+
+    .mobile-quick-actions.resident .mobile-quick-actions-item.active::after {
+        background: #34c38f;
+    }
+
+    .mobile-quick-actions.resident .mobile-quick-actions-item:hover {
+        color: #34c38f;
+        background: rgba(52, 195, 143, 0.08);
+    }
+
+    .mobile-quick-actions.resident .mobile-dropdown-menu a:hover {
+        color: #34c38f;
     }
 
     .mobile-fab-spacer {
@@ -200,13 +227,13 @@ use App\Services\Gate;
     html.app-skin-dark .mobile-quick-actions {
         background: #1f2231;
         border-color: #2a2e40;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
     }
 
     html.app-skin-dark .mobile-dropdown-menu {
         background: #1f2231;
         border-color: #2a2e40;
-        box-shadow: 0 -10px 20px rgba(0,0,0,0.6);
+        box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.6);
     }
 
     html.app-skin-dark .mobile-quick-actions-item {
@@ -230,38 +257,46 @@ use App\Services\Gate;
 
         footer {
             display: none !important;
-           
+
         }
-    
+
     }
 </style>
 
 <!-- Mobile Hızlı İşlemler Bottom Navigation -->
-<div class="mobile-quick-actions">
+<div class="mobile-quick-actions<?php echo Gate::isResident() ? ' resident' : ''; ?>">
     <div class="mobile-quick-actions-wrapper">
-        
-        
+
+
         <div class="mobile-actions-left">
             <a href="/ana-sayfa" class="mobile-quick-actions-item" title="Ana Sayfa">
                 <i class="bi bi-house-fill"></i>
                 <p>Ana Sayfa</p>
             </a>
-            <?php if(!Gate::isResident()){ ?>
-            <a href="company-list.php" class="mobile-quick-actions-item" title="Site Seçimi">
-                <i class="bi bi-diagram-3"></i>
-                <p>Site Seçimi</p>
-            </a>
-            <?php }else{ ?>
-            <a href="/sakin/finans" class="mobile-quick-actions-item" title="Aidat Ödeme">
-                <i class="bi bi-wallet"></i>
-                <p>Fins.İşl.</p>
-            </a>
-           <?php } ?>
+            <?php if (!Gate::isResident()) { ?>
+                <!-- Kişinin site sayısı 1'den fazla ise burayı göster  -->
+                <?php if ($SiteModel->SiteSayisi() > 1) { ?>
+                    <a href="/company-list.php" class="mobile-quick-actions-item" title="Site Seçimi">
+                        <i class="bi bi-diagram-3"></i>
+                        <p>Site Seçimi <?php echo $SiteModel->SiteSayisi()?></p>
+                    </a>
+                <?php } else { ?>
+                     <a href="/gelir-gider-islemleri" class="mobile-quick-actions-item" title="Finansal Hareketler">
+                       <i class="bi bi-wallet2"></i>
+                        <p>Fins. Hare.</p>
+                    </a>
+                <?php } ?> 
+            <?php } else { ?>
+                <a href="/sakin/finans" class="mobile-quick-actions-item" title="Aidat Ödeme">
+                    <i class="bi bi-wallet"></i>
+                    <p>Fins.İşl.</p>
+                </a>
+            <?php } ?>
         </div>
 
         <div class="mobile-actions-spacer" aria-hidden="true"></div>
-        
-        <?php if(!Gate::isResident()){ ?>
+
+        <?php if (!Gate::isResident()) { ?>
             <button class="mobile-fab" id="mobileMoreBtn" title="Daha Fazla">
                 <i class="bi bi-list"></i>
             </button>
@@ -272,25 +307,25 @@ use App\Services\Gate;
         <?php } ?>
 
         <div class="mobile-actions-right">
-            <?php if(!Gate::isResident()){ ?>
-            <a href="/yonetici-aidat-odeme" class="mobile-quick-actions-item" title="Aidat Ödeme">
-                <i class="bi bi-credit-card"></i>
-                <p>Aidat Öde</p>
-            </a>
-            <a href="/borclandirma-yap" class="mobile-quick-actions-item" title="Borçlandırma">
-                <i class="bi bi-clipboard-plus"></i>
-                <p>Borçlandır</p>
-            </a>
+            <?php if (!Gate::isResident()) { ?>
+                <a href="/yonetici-aidat-odeme" class="mobile-quick-actions-item" title="Aidat Ödeme">
+                    <i class="bi bi-credit-card"></i>
+                    <p>Aidat Öde</p>
+                </a>
+                <a href="/borclandirma-yap" class="mobile-quick-actions-item" title="Borçlandırma">
+                    <i class="bi bi-clipboard-plus"></i>
+                    <p>Borçlandır</p>
+                </a>
             <?php } else { ?>
-    
-            <a href="/sakin/taleplerim" class="mobile-quick-actions-item" title="Taleplerim">
-                <i class="bi bi-wallet"></i>
-                <p>Talepler.</p>
-            </a>
-            <a href="/sakin/daire" class="mobile-quick-actions-item" title="Daireler">
-                <i class="bi bi-clipboard-plus"></i>
-                <p>Daireler</p>
-            </a>
+
+                <a href="/sakin/taleplerim" class="mobile-quick-actions-item" title="Taleplerim">
+                    <i class="bi bi-wallet"></i>
+                    <p>Talepler.</p>
+                </a>
+                <a href="/sakin/daire" class="mobile-quick-actions-item" title="Daireler">
+                    <i class="bi bi-clipboard-plus"></i>
+                    <p>Daireler</p>
+                </a>
             <?php } ?>
         </div>
 
@@ -298,76 +333,76 @@ use App\Services\Gate;
     </div>
 
     <div class="mobile-dropdown-backdrop" id="mobileDropdownBackdrop"></div>
-    <?php if(!Gate::isResident()){ ?>
-    <div class="mobile-dropdown-menu" id="mobileDropdownMenu">
-        <a href="site-ekle">
-            <i class="bi bi-plus-circle"></i>
-            <span>Site Ekle</span>
-        </a>
-        <a href="blok-ekle">
-            <i class="bi bi-building"></i>
-            <span>Blok Ekle</span>
-        </a>
-        <a href="daire-ekle">
-            <i class="bi bi-textarea"></i>
-            <span>Daire Ekle</span>
-        </a>
-        <a href="/site-sakini-ekle">
-            <i class="feather-user-plus"></i>
-            <span>Kişi Ekle</span>
-        </a>
-        <a href="#" class="gelir-ekle">
-            <i class="bi bi-credit-card"></i>
-            <span>Gelir Ekle</span>
-        </a>
-        <a href="#" class="gider-ekle">
-            <i class="bi bi-credit-card-2-back"></i>
-            <span>Gider Ekle</span>
-        </a>
-        <a href="/gelir-gider-islemleri">
-            <i class="bi bi-wallet2"></i>
-            <span>Finansal İşlemler</span>
-        </a>
-        <a href="/aidat-turu-tanimlama">
-            <i class="bi bi-folder-plus"></i>
-            <span>Aidat Tanımla</span>
-        </a>
-        <a href="#" class="mail-gonder">
-            <i class="bi bi-envelope"></i>
-            <span>Email Gönder</span>
-        </a>
-        <a href="javascript:void(0);" class="sms-gonder">
-            <i class="bi bi-send-plus"></i>
-            <span>SMS Gönder</span>
-        </a>
-        <a href="/raporlar">
-            <i class="bi bi-card-checklist"></i>
-            <span>Raporlar</span>
-        </a>
-        <a href="/logout">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Çıkış Yap</span>
-        </a>
-    </div>
+    <?php if (!Gate::isResident()) { ?>
+        <div class="mobile-dropdown-menu" id="mobileDropdownMenu">
+            <a href="site-ekle">
+                <i class="bi bi-plus-circle"></i>
+                <span>Site Ekle</span>
+            </a>
+            <a href="blok-ekle">
+                <i class="bi bi-building"></i>
+                <span>Blok Ekle</span>
+            </a>
+            <a href="daire-ekle">
+                <i class="bi bi-textarea"></i>
+                <span>Daire Ekle</span>
+            </a>
+            <a href="/site-sakini-ekle">
+                <i class="feather-user-plus"></i>
+                <span>Kişi Ekle</span>
+            </a>
+            <a href="#" class="gelir-ekle">
+                <i class="bi bi-credit-card"></i>
+                <span>Gelir Ekle</span>
+            </a>
+            <a href="#" class="gider-ekle">
+                <i class="bi bi-credit-card-2-back"></i>
+                <span>Gider Ekle</span>
+            </a>
+            <a href="/gelir-gider-islemleri">
+                <i class="bi bi-wallet2"></i>
+                <span>Finansal İşlemler</span>
+            </a>
+            <a href="/aidat-turu-tanimlama">
+                <i class="bi bi-folder-plus"></i>
+                <span>Aidat Tanımla</span>
+            </a>
+            <a href="#" class="mail-gonder">
+                <i class="bi bi-envelope"></i>
+                <span>Email Gönder</span>
+            </a>
+            <a href="javascript:void(0);" class="sms-gonder">
+                <i class="bi bi-send-plus"></i>
+                <span>SMS Gönder</span>
+            </a>
+            <a href="/raporlar">
+                <i class="bi bi-card-checklist"></i>
+                <span>Raporlar</span>
+            </a>
+            <a href="/logout">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Çıkış Yap</span>
+            </a>
+        </div>
     <?php } else { ?>
-    <div class="mobile-dropdown-menu" id="mobileDropdownMenuSakin">
-        <a href="/site-sakini/anket-listesi">
-            <i class="bi bi-clipboard"></i>
-            <span>Anketler</span>
-        </a>
-        <a href="#">
-            <i class="bi bi-people-fill"></i>
-            <span>Ziyaretçi Kaydı</span>
-        </a>
-        <a href="/sakin/talep-ekle">
-            <i class="bi bi-person-vcard"></i>
-            <span>Talep Ekle</span>
-        </a>
-        <a href="/logout">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Çıkış Yap</span>
-        </a>
-    </div>
+        <div class="mobile-dropdown-menu" id="mobileDropdownMenuSakin">
+            <a href="/site-sakini/anket-listesi">
+                <i class="bi bi-clipboard"></i>
+                <span>Anketler</span>
+            </a>
+            <a href="#">
+                <i class="bi bi-people-fill"></i>
+                <span>Ziyaretçi Kaydı</span>
+            </a>
+            <a href="/sakin/talep-ekle">
+                <i class="bi bi-person-vcard"></i>
+                <span>Talep Ekle</span>
+            </a>
+            <a href="/logout">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Çıkış Yap</span>
+            </a>
+        </div>
     <?php } ?>
 </div>
 
@@ -375,39 +410,53 @@ use App\Services\Gate;
 <script>
     $(document).ready(function() {
         var dropdownOpenMenu = null;
-        function positionMenu($menu){
+
+        function positionMenu($menu) {
             var navH = $('.mobile-quick-actions').outerHeight();
-            var avail = Math.max(160, window.innerHeight - navH - 12);
-            $menu.css({ bottom: navH + 'px', maxHeight: avail + 'px', height: 'auto' });
+            var half = Math.round(window.innerHeight * 0.5);
+            $menu.css({
+                bottom: navH + 'px',
+                maxHeight: half + 'px',
+                height: 'auto'
+            });
         }
-        function openMenu($menu){
+
+        function openMenu($menu) {
             positionMenu($menu);
             $menu.addClass('active');
             $('#mobileDropdownBackdrop').show();
             dropdownOpenMenu = $menu.attr('id');
         }
-        function closeMenu(){
+
+        function closeMenu() {
             $('.mobile-dropdown-menu').removeClass('active');
             $('#mobileDropdownBackdrop').hide();
             dropdownOpenMenu = null;
         }
-        $('#mobileMoreBtn, #mobileMoreBtnSakin').on('click', function(e){
+        $('#mobileMoreBtn, #mobileMoreBtnSakin').on('click', function(e) {
             e.preventDefault();
             var targetMenu = $(this).is('#mobileMoreBtnSakin') ? '#mobileDropdownMenuSakin' : '#mobileDropdownMenu';
             var $menu = $(targetMenu);
-            if ($menu.hasClass('active')) { closeMenu(); } else { closeMenu(); openMenu($menu); }
+            if ($menu.hasClass('active')) {
+                closeMenu();
+            } else {
+                closeMenu();
+                openMenu($menu);
+            }
         });
-        $(document).on('click', function(e){
+        $(document).on('click', function(e) {
             if (!$(e.target).closest('#mobileMoreBtn, #mobileMoreBtnSakin, #mobileDropdownMenu, #mobileDropdownMenuSakin').length) {
                 closeMenu();
             }
         });
-        $('.mobile-dropdown-menu a').on('click', function(){
+        $('.mobile-dropdown-menu a').on('click', function() {
             closeMenu();
         });
-        $(window).on('resize', function(){
+        $(window).on('resize', function() {
             var $active = $('.mobile-dropdown-menu.active');
-            if($active.length){ positionMenu($active); }
+            if ($active.length) {
+                positionMenu($active);
+            }
         });
         var currentPath = window.location.pathname.replace(/\/+$/, '');
         $(".mobile-quick-actions a.mobile-quick-actions-item").each(function() {

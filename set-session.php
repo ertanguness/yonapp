@@ -3,7 +3,8 @@ require_once "App/Helper/Security.php";
 
 use App\Helper\Security;
 
-session_start();
+require_once __DIR__ . '/configs/session-config.php';
+
 $page = $_GET["p"];
 
 

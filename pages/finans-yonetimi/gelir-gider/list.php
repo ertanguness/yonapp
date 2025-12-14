@@ -30,7 +30,7 @@ if (!$Kasa->varsayilanKasa()) {
 //1. Önce session'dan kontrol et
 if (isset($_SESSION["kasa_id"]) && !empty($_SESSION["kasa_id"])) {
     $kasa_id = $_SESSION["kasa_id"];
-      //  Helper::dd(["1-kasa_id" => $kasa_id]);
+    //  Helper::dd(["1-kasa_id" => $kasa_id]);
 
 }
 
@@ -86,7 +86,7 @@ $endDateIn   = $_GET['endDate'] ?? null;   // d.m.Y
 $incExpType  = $_GET['incExpType'] ?? 'all'; // all|income|expense
 
 // d.m.Y -> Y-m-d dönüşümü
-$toYmd = function($val) {
+$toYmd = function ($val) {
     if (!$val) return null;
     $dt = DateTime::createFromFormat('d.m.Y', $val);
     return $dt ? $dt->format('Y-m-d') : null;
@@ -98,8 +98,11 @@ $endYmd   = $toYmd($endDateIn);
 // Eski yapıya dön: hareketleri modelden al ve sunucu tarafında render et
 if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) {
     $yon = '';
-    if ($incExpType === 'income') { $yon = 'Gelir'; }
-    elseif ($incExpType === 'expense') { $yon = 'Gider'; }
+    if ($incExpType === 'income') {
+        $yon = 'Gelir';
+    } elseif ($incExpType === 'expense') {
+        $yon = 'Gider';
+    }
     // Tarihler yoksa ay için mantıklı varsayılan atayalım
     $startYmd = $startYmd ?: date('Y-m-01');
     $endYmd   = $endYmd   ?: date('Y-m-t');
@@ -135,7 +138,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                     <?php echo FinansalHelper::KasaSelect("kasalar", $kasa_id) ?>
                 </form>
             </div>
-            
+
             <div class="dropdown" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtre Uygula">
                 <a href="javascript:void(0);" class="btn btn-icon btn-light-brand" id="filterBtn">
                     <i class="feather-filter"></i>
@@ -180,7 +183,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                     </a>
                 </div>
             </div>
-            
+
             <a href="/excelden-gelir-gider-yukle" class="btn btn-icon btn-light-brand" id="excelImportBtn"
                 data-bs-toggle="tooltip" data-bs-placement="top" title="Excel'den Gider Yükle">
                 <i class="feather-upload"></i>
@@ -248,40 +251,40 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
 
     <!-- [Filtreleme] start -->
     <div class="row ">
-            <div id="collapseOne" class="accordion-collapse collapse page-header-collapse">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Raporları Filtrele</h5>
-                        <form id="filterForm">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <label for="startDate" class="form-label">Başlangıç Tarihi</label>
-                                    <input type="text" id="startDate" name="startDate" class="form-control flatpickr"
+        <div id="collapseOne" class="accordion-collapse collapse page-header-collapse">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Raporları Filtrele</h5>
+                    <form id="filterForm">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="startDate" class="form-label">Başlangıç Tarihi</label>
+                                <input type="text" id="startDate" name="startDate" class="form-control flatpickr"
                                     value="<?php echo htmlspecialchars($_GET['startDate'] ?? date("01.m.Y")); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="endDate" class="form-label">Bitiş Tarihi</label>
-                                    <input type="text" id="endDate" name="endDate" class="form-control flatpickr"
-                                    value="<?php echo htmlspecialchars($_GET['endDate'] ?? date("t.m.Y")); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="incExpType" class="form-label">Gelir/Gider Türü</label>
-                                    <select id="incExpType" name="incExpType" class="form-control select2">
-                                        <?php $selType = $_GET['incExpType'] ?? 'all'; ?>
-                                        <option value="all" <?php echo ($selType==='all')?'selected':''; ?>>Tümü</option>
-                                        <option value="income" <?php echo ($selType==='income')?'selected':''; ?>>Gelir</option>
-                                        <option value="expense" <?php echo ($selType==='expense')?'selected':''; ?>>Gider</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="ara" class="form-label">Ara</label>
-                                    <button type="submit" class="btn btn-primary">Filtrele</button>
-                                </div>
                             </div>
-                        </form>
-                    </div>
-                    
+                            <div class="col-md-3">
+                                <label for="endDate" class="form-label">Bitiş Tarihi</label>
+                                <input type="text" id="endDate" name="endDate" class="form-control flatpickr"
+                                    value="<?php echo htmlspecialchars($_GET['endDate'] ?? date("t.m.Y")); ?>">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="incExpType" class="form-label">Gelir/Gider Türü</label>
+                                <select id="incExpType" name="incExpType" class="form-control select2">
+                                    <?php $selType = $_GET['incExpType'] ?? 'all'; ?>
+                                    <option value="all" <?php echo ($selType === 'all') ? 'selected' : ''; ?>>Tümü</option>
+                                    <option value="income" <?php echo ($selType === 'income') ? 'selected' : ''; ?>>Gelir</option>
+                                    <option value="expense" <?php echo ($selType === 'expense') ? 'selected' : ''; ?>>Gider</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="ara" class="form-label">Ara</label>
+                                <button type="submit" class="btn btn-primary">Filtrele</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+
+            </div>
         </div>
     </div>
     <!-- [Filtreleme] bitiş -->
@@ -293,7 +296,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table id="gelirGiderTable" class="table table-hover table-bordered datatables no-footer">
-                            <thead class="table-light">
+                            <thead >
                                 <tr>
                                     <th data-filter="date">Tarih</th>
                                     <th data-filter="string">İşlem Türü</th>
@@ -302,13 +305,14 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                                     <th data-filter="number">Tutar</th>
                                     <th data-filter="number">Bakiye</th>
                                     <th data-filter="string">Kategori</th>
+                                    <th data-filter="string">Alt Tür</th>
                                     <th data-filter="string">Makbuz No</th>
                                     <th data-filter="string">Açıklama</th>
                                     <th>İşlemler</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
                             </tbody>
                         </table>
                     </div>
@@ -379,7 +383,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
 
 <!-- Gelir Gider Modal -->
 <div class="modal fade" id="gelirGiderModal" tabindex="-1" aria-labelledby="gelirGiderModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content gelir-gider-modal-content">
             <div class="text-center my-5">
                 <div class="spinner-border text-primary" role="status">
@@ -394,8 +398,8 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
 <!-- JavaScript için ek kod -->
 <script>
     $(function() {
-    // Re-entrancy guard for export double-click issues
-    let __export_in_flight = false;
+        // Re-entrancy guard for export double-click issues
+        let __export_in_flight = false;
 
 
 
@@ -415,7 +419,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                     minuteIncrement: 1,
                     allowInput: true
                 })
-                
+                gelirGiderKalemleriGetir();
             });
         });
 
@@ -454,7 +458,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
         });
 
         // Filtre formunu şifreli (token) GET ile gönder (double-bind önleme)
-        $('#filterForm').off('submit.filter').on('submit.filter', async function(e){
+        $('#filterForm').off('submit.filter').on('submit.filter', async function(e) {
             e.preventDefault();
             const payload = {
                 startDate: $('#startDate').val(),
@@ -464,7 +468,9 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
             try {
                 const res = await fetch('/pages/finans-yonetimi/gelir-gider/token.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
@@ -472,7 +478,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                     window.location.href = '/gelir-gider-islemleri?token=' + encodeURIComponent(data.token);
                     return;
                 }
-            } catch(err) {
+            } catch (err) {
                 // düşerse normal GET'e geri dön
             }
             const qs = new URLSearchParams(payload).toString();
@@ -483,7 +489,9 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
         $(document).off('click.export').on('click.export', '.export', async function(e) {
             e.preventDefault();
             e.stopPropagation();
-            if (__export_in_flight) { return false; }
+            if (__export_in_flight) {
+                return false;
+            }
             __export_in_flight = true;
             const format = $(this).data('format') || 'xlsx';
             const sd = ($('#startDate').val() || '').trim();
@@ -503,31 +511,40 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                 type: typeSel
             };
             // Header aramaları
-            const headerMap = ['q_date','q_islem','q_daire','q_hesap','q_tutar','q_bakiye','q_kategori','q_makbuz','q_aciklama'];
+            const headerMap = ['q_date', 'q_islem', 'q_daire', 'q_hesap', 'q_tutar', 'q_bakiye', 'q_kategori', 'q_makbuz', 'q_aciklama'];
             const headerInputs = $('#gelirGiderTable thead').find('input, select');
-            headerInputs.each(function(idx){
+            headerInputs.each(function(idx) {
                 const v = ($(this).val() || '').toString().trim();
                 if (v && headerMap[idx]) payload[headerMap[idx]] = v;
             });
             try {
                 const res = await fetch('/pages/finans-yonetimi/gelir-gider/token.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
                 if (data && data.ok) {
                     const url = '/pages/finans-yonetimi/gelir-gider/export.php?format=' + encodeURIComponent(format) + '&token=' + encodeURIComponent(data.token);
                     window.location.href = url;
-                    setTimeout(() => { __export_in_flight = false; }, 2000);
+                    setTimeout(() => {
+                        __export_in_flight = false;
+                    }, 2000);
                     return false;
                 }
-            } catch(err) {
+            } catch (err) {
                 // yoksa plain GET ile devam
             }
-            const params = new URLSearchParams({ format, ...payload });
+            const params = new URLSearchParams({
+                format,
+                ...payload
+            });
             window.location.href = '/pages/finans-yonetimi/gelir-gider/export.php?' + params.toString();
-            setTimeout(() => { __export_in_flight = false; }, 2000);
+            setTimeout(() => {
+                __export_in_flight = false;
+            }, 2000);
             return false;
         });
 
@@ -540,52 +557,65 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
         color: #495057;
         background-color: #f8f9fa;
     }
-    #gelirGiderTable { width: 100% !important; }
+
+    #gelirGiderTable {
+        width: 100% !important;
+    }
 </style>
 <script>
-    (function(){
-        const nav = performance.getEntriesByType('navigation')[0];
-        const metrics = { LCP: 0, CLS: 0, FID: 0, TTFB: nav ? nav.responseStart : 0 };
-        let lcp = 0; let cls = 0; let fidSet = false;
-        try {
-            new PerformanceObserver(function(list){
-                const entries = list.getEntries();
-                for (let i=0;i<entries.length;i++) {
-                    const e = entries[i];
-                    lcp = Math.max(lcp, (e.renderTime || e.loadTime || 0));
-                }
-                metrics.LCP = lcp;
-            }).observe({ type:'largest-contentful-paint', buffered:true });
-        } catch(e) {}
-        try {
-            new PerformanceObserver(function(list){
-                const entries = list.getEntries();
-                for (let i=0;i<entries.length;i++) {
-                    const e = entries[i];
-                    if (!e.hadRecentInput) { cls += e.value; }
-                }
-                metrics.CLS = Math.round(cls*1000)/1000;
-            }).observe({ type:'layout-shift', buffered:true });
-        } catch(e) {}
-        try {
-            new PerformanceObserver(function(list){
-                const e = list.getEntries()[0];
-                if (e && !fidSet) { metrics.FID = e.processingStart - e.startTime; fidSet = true; }
-            }).observe({ type:'first-input', buffered:true });
-        } catch(e) {}
-        function flush(){
-            const data = {
-                page: window.location.pathname,
-                ts: Date.now(),
-                LCP: metrics.LCP,
-                FID: metrics.FID,
-                CLS: metrics.CLS,
-                TTFB: metrics.TTFB
-            };
-            try { localStorage.setItem('yonapp_web_vitals', JSON.stringify(data)); } catch(e) {}
-            console.log('WebVitals', data);
-        }
-        addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') flush(); }, { once:false });
-        addEventListener('load', function(){ setTimeout(flush, 0); });
-    })();
+    // (function(){
+    //     const nav = performance.getEntriesByType('navigation')[0];
+    //     const metrics = { LCP: 0, CLS: 0, FID: 0, TTFB: nav ? nav.responseStart : 0 };
+    //     let lcp = 0; let cls = 0; let fidSet = false;
+    //     try {
+    //         new PerformanceObserver(function(list){
+    //             const entries = list.getEntries();
+    //             for (let i=0;i<entries.length;i++) {
+    //                 const e = entries[i];
+    //                 lcp = Math.max(lcp, (e.renderTime || e.loadTime || 0));
+    //             }
+    //             metrics.LCP = lcp;
+    //         }).observe({ type:'largest-contentful-paint', buffered:true });
+    //     } catch(e) {}
+    //     try {
+    //         new PerformanceObserver(function(list){
+    //             const entries = list.getEntries();
+    //             for (let i=0;i<entries.length;i++) {
+    //                 const e = entries[i];
+    //                 if (!e.hadRecentInput) { cls += e.value; }
+    //             }
+    //             metrics.CLS = Math.round(cls*1000)/1000;
+    //         }).observe({ type:'layout-shift', buffered:true });
+    //     } catch(e) {}
+    //     try {
+    //         new PerformanceObserver(function(list){
+    //             const e = list.getEntries()[0];
+    //             if (e && !fidSet) { metrics.FID = e.processingStart - e.startTime; fidSet = true; }
+    //         }).observe({ type:'first-input', buffered:true });
+    //     } catch(e) {}
+    //     function flush(){
+    //         const data = {
+    //             page: window.location.pathname,
+    //             ts: Date.now(),
+    //             LCP: metrics.LCP,
+    //             FID: metrics.FID,
+    //             CLS: metrics.CLS,
+    //             TTFB: metrics.TTFB
+    //         };
+    //         try { localStorage.setItem('yonapp_web_vitals', JSON.stringify(data)); } catch(e) {}
+    //         console.log('WebVitals', data);
+    //     }
+    //     addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') flush(); }, { once:false });
+    //     addEventListener('load', function(){ setTimeout(flush, 0); });
+    // })();
+
+
+
+    $(document).ready(function() {
+
+let url = '/pages/finans-yonetimi/gelir-gider/api.php';
+
+       
+
+    });
 </script>

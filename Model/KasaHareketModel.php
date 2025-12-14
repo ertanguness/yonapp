@@ -221,7 +221,7 @@ class KasaHareketModel extends Model
         array $columnFilters = []
     ): array {
         // Güvenlik: Sadece izin verilen kolonlara sıralama
-        $allowedColumns = ['islem_tarihi', 'islem_tipi', 'tutar', 'kategori', 'adi_soyadi', 'daire_kodu', 'makbuz_no'];
+        $allowedColumns = ['islem_tarihi', 'islem_tipi', 'tutar', 'kategori', 'alt_tur', 'adi_soyadi', 'daire_kodu', 'makbuz_no'];
         if (!in_array($orderColumn, $allowedColumns)) {
             $orderColumn = 'islem_tarihi';
         }
@@ -257,6 +257,7 @@ class KasaHareketModel extends Model
                 "kh.aciklama LIKE :search",
                 "kh.islem_tipi LIKE :search",
                 "kh.kategori LIKE :search",
+                "kh.alt_tur LIKE :search",
                 "kh.makbuz_no LIKE :search"
             ];
             if ($searchNum !== null) {
@@ -298,22 +299,26 @@ class KasaHareketModel extends Model
                 $f = $columnFilters['daire_kodu'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND d.daire_kodu LIKE :f_daire"; $bindings[':f_daire'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND d.daire_kodu LIKE :f_daire"; $bindings[':f_daire'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND d.daire_kodu LIKE :f_daire"; $bindings[':f_daire'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND d.daire_kodu = :f_daire"; $bindings[':f_daire'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND d.daire_kodu <> :f_daire"; $bindings[':f_daire'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND d.daire_kodu NOT LIKE :f_daire"; $bindings[':f_daire'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (d.daire_kodu <> :f_daire OR d.daire_kodu IS NULL OR d.daire_kodu = '')"; $bindings[':f_daire'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (d.daire_kodu NOT LIKE :f_daire OR d.daire_kodu IS NULL OR d.daire_kodu = '')"; $bindings[':f_daire'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (d.daire_kodu IS NULL OR d.daire_kodu = '')"; }
                 else { $query .= " AND d.daire_kodu LIKE :f_daire"; $bindings[':f_daire'] = '%' . $val . '%'; }
             }
             if (!empty($columnFilters['adi_soyadi'])) {
                 $f = $columnFilters['adi_soyadi'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND k.adi_soyadi LIKE :f_hesap"; $bindings[':f_hesap'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND k.adi_soyadi LIKE :f_hesap"; $bindings[':f_hesap'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND k.adi_soyadi LIKE :f_hesap"; $bindings[':f_hesap'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND k.adi_soyadi = :f_hesap"; $bindings[':f_hesap'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND k.adi_soyadi <> :f_hesap"; $bindings[':f_hesap'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND k.adi_soyadi NOT LIKE :f_hesap"; $bindings[':f_hesap'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (k.adi_soyadi <> :f_hesap OR k.adi_soyadi IS NULL OR k.adi_soyadi = '')"; $bindings[':f_hesap'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (k.adi_soyadi NOT LIKE :f_hesap OR k.adi_soyadi IS NULL OR k.adi_soyadi = '')"; $bindings[':f_hesap'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (k.adi_soyadi IS NULL OR k.adi_soyadi = '')"; }
                 else { $query .= " AND k.adi_soyadi LIKE :f_hesap"; $bindings[':f_hesap'] = '%' . $val . '%'; }
             }
             if (!empty($columnFilters['tutar'])) {
@@ -322,8 +327,8 @@ class KasaHareketModel extends Model
                 $val = preg_replace('/[^0-9.,-]/', '', (string)$raw);
                 $val = str_replace('.', '', $val);
                 $val = str_replace(',', '.', $val);
-                if ($val !== '') {
-                    $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
+                $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
+                if ($val !== '' && $op !== 'none' && $op !== 'yok') {
                     $cmp = '=';
                     if ($op === 'gt') $cmp = '>';
                     elseif ($op === 'gte') $cmp = '>=';
@@ -340,8 +345,8 @@ class KasaHareketModel extends Model
                 $valb = preg_replace('/[^0-9.,-]/', '', (string)$raw);
                 $valb = str_replace('.', '', $valb);
                 $valb = str_replace(',', '.', $valb);
-                if ($valb !== '') {
-                    $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
+                $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
+                if ($valb !== '' && $op !== 'none' && $op !== 'yok') {
                     $cmp = '=';
                     if ($op === 'gt') $cmp = '>';
                     elseif ($op === 'gte') $cmp = '>=';
@@ -356,33 +361,52 @@ class KasaHareketModel extends Model
                 $f = $columnFilters['kategori'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND kh.kategori LIKE :f_kategori"; $bindings[':f_kategori'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND kh.kategori LIKE :f_kategori"; $bindings[':f_kategori'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND kh.kategori LIKE :f_kategori"; $bindings[':f_kategori'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND kh.kategori = :f_kategori"; $bindings[':f_kategori'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND kh.kategori <> :f_kategori"; $bindings[':f_kategori'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND kh.kategori NOT LIKE :f_kategori"; $bindings[':f_kategori'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (kh.kategori <> :f_kategori OR kh.kategori IS NULL OR kh.kategori = '')"; $bindings[':f_kategori'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (kh.kategori NOT LIKE :f_kategori OR kh.kategori IS NULL OR kh.kategori = '')"; $bindings[':f_kategori'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (kh.kategori IS NULL OR kh.kategori = '')"; }
                 else { $query .= " AND kh.kategori LIKE :f_kategori"; $bindings[':f_kategori'] = '%' . $val . '%'; }
+            }
+            if (!empty($columnFilters['alt_tur'])) {
+                $f = $columnFilters['alt_tur'];
+                $val = is_array($f) ? ($f['val'] ?? '') : $f;
+                $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND kh.alt_tur LIKE :f_alt_tur"; $bindings[':f_alt_tur'] = $val . '%'; }
+                elseif ($op === 'ends') { $query .= " AND kh.alt_tur LIKE :f_alt_tur"; $bindings[':f_alt_tur'] = '%' . $val; }
+                elseif ($op === 'equals') { $query .= " AND kh.alt_tur = :f_alt_tur"; $bindings[':f_alt_tur'] = $val; }
+                elseif ($op === 'not_equals') { $query .= " AND (kh.alt_tur <> :f_alt_tur OR kh.alt_tur IS NULL OR kh.alt_tur = '')"; $bindings[':f_alt_tur'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (kh.alt_tur NOT LIKE :f_alt_tur OR kh.alt_tur IS NULL OR kh.alt_tur = '')"; $bindings[':f_alt_tur'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (kh.alt_tur IS NULL OR kh.alt_tur = '')"; }
+                else { $query .= " AND kh.alt_tur LIKE :f_alt_tur"; $bindings[':f_alt_tur'] = '%' . $val . '%'; }
             }
             if (!empty($columnFilters['makbuz_no'])) {
                 $f = $columnFilters['makbuz_no'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND kh.makbuz_no LIKE :f_makbuz"; $bindings[':f_makbuz'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND kh.makbuz_no LIKE :f_makbuz"; $bindings[':f_makbuz'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND kh.makbuz_no LIKE :f_makbuz"; $bindings[':f_makbuz'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND kh.makbuz_no = :f_makbuz"; $bindings[':f_makbuz'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND kh.makbuz_no <> :f_makbuz"; $bindings[':f_makbuz'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND kh.makbuz_no NOT LIKE :f_makbuz"; $bindings[':f_makbuz'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (kh.makbuz_no <> :f_makbuz OR kh.makbuz_no IS NULL OR kh.makbuz_no = '')"; $bindings[':f_makbuz'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (kh.makbuz_no NOT LIKE :f_makbuz OR kh.makbuz_no IS NULL OR kh.makbuz_no = '')"; $bindings[':f_makbuz'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (kh.makbuz_no IS NULL OR kh.makbuz_no = '')"; }
                 else { $query .= " AND kh.makbuz_no LIKE :f_makbuz"; $bindings[':f_makbuz'] = '%' . $val . '%'; }
             }
             if (!empty($columnFilters['aciklama'])) {
                 $f = $columnFilters['aciklama'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND kh.aciklama LIKE :f_aciklama"; $bindings[':f_aciklama'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND kh.aciklama LIKE :f_aciklama"; $bindings[':f_aciklama'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND kh.aciklama LIKE :f_aciklama"; $bindings[':f_aciklama'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND kh.aciklama = :f_aciklama"; $bindings[':f_aciklama'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND kh.aciklama <> :f_aciklama"; $bindings[':f_aciklama'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND kh.aciklama NOT LIKE :f_aciklama"; $bindings[':f_aciklama'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (kh.aciklama <> :f_aciklama OR kh.aciklama IS NULL OR kh.aciklama = '')"; $bindings[':f_aciklama'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (kh.aciklama NOT LIKE :f_aciklama OR kh.aciklama IS NULL OR kh.aciklama = '')"; $bindings[':f_aciklama'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (kh.aciklama IS NULL OR kh.aciklama = '')"; }
                 else { $query .= " AND kh.aciklama LIKE :f_aciklama"; $bindings[':f_aciklama'] = '%' . $val . '%'; }
             }
         }
@@ -443,6 +467,7 @@ class KasaHareketModel extends Model
                 "kh.aciklama LIKE :search",
                 "kh.islem_tipi LIKE :search",
                 "kh.kategori LIKE :search",
+                "kh.alt_tur LIKE :search",
                 "kh.makbuz_no LIKE :search"
             ];
             if ($searchNumC !== null) { $ors[] = "kh.tutar = :searchNum"; $ors[] = "kh.yuruyen_bakiye = :searchNum"; }
@@ -479,22 +504,26 @@ class KasaHareketModel extends Model
                 $f = $columnFilters['daire_kodu'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND d.daire_kodu LIKE :f_daire"; $bindings[':f_daire'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND d.daire_kodu LIKE :f_daire"; $bindings[':f_daire'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND d.daire_kodu LIKE :f_daire"; $bindings[':f_daire'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND d.daire_kodu = :f_daire"; $bindings[':f_daire'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND d.daire_kodu <> :f_daire"; $bindings[':f_daire'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND d.daire_kodu NOT LIKE :f_daire"; $bindings[':f_daire'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (d.daire_kodu <> :f_daire OR d.daire_kodu IS NULL OR d.daire_kodu = '')"; $bindings[':f_daire'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (d.daire_kodu NOT LIKE :f_daire OR d.daire_kodu IS NULL OR d.daire_kodu = '')"; $bindings[':f_daire'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (d.daire_kodu IS NULL OR d.daire_kodu = '')"; }
                 else { $query .= " AND d.daire_kodu LIKE :f_daire"; $bindings[':f_daire'] = '%' . $val . '%'; }
             }
             if (!empty($columnFilters['adi_soyadi'])) {
                 $f = $columnFilters['adi_soyadi'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND k.adi_soyadi LIKE :f_hesap"; $bindings[':f_hesap'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND k.adi_soyadi LIKE :f_hesap"; $bindings[':f_hesap'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND k.adi_soyadi LIKE :f_hesap"; $bindings[':f_hesap'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND k.adi_soyadi = :f_hesap"; $bindings[':f_hesap'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND k.adi_soyadi <> :f_hesap"; $bindings[':f_hesap'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND k.adi_soyadi NOT LIKE :f_hesap"; $bindings[':f_hesap'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (k.adi_soyadi <> :f_hesap OR k.adi_soyadi IS NULL OR k.adi_soyadi = '')"; $bindings[':f_hesap'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (k.adi_soyadi NOT LIKE :f_hesap OR k.adi_soyadi IS NULL OR k.adi_soyadi = '')"; $bindings[':f_hesap'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (k.adi_soyadi IS NULL OR k.adi_soyadi = '')"; }
                 else { $query .= " AND k.adi_soyadi LIKE :f_hesap"; $bindings[':f_hesap'] = '%' . $val . '%'; }
             }
             if (!empty($columnFilters['tutar'])) {
@@ -503,8 +532,8 @@ class KasaHareketModel extends Model
                 $val = preg_replace('/[^0-9.,-]/', '', (string)$raw);
                 $val = str_replace('.', '', $val);
                 $val = str_replace(',', '.', $val);
-                if ($val !== '') {
-                    $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
+                $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
+                if ($val !== '' && $op !== 'none' && $op !== 'yok') {
                     $cmp = '=';
                     if ($op === 'gt') $cmp = '>';
                     elseif ($op === 'gte') $cmp = '>=';
@@ -521,8 +550,8 @@ class KasaHareketModel extends Model
                 $valb = preg_replace('/[^0-9.,-]/', '', (string)$raw);
                 $valb = str_replace('.', '', $valb);
                 $valb = str_replace(',', '.', $valb);
-                if ($valb !== '') {
-                    $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
+                $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
+                if ($valb !== '' && $op !== 'none' && $op !== 'yok') {
                     $cmp = '=';
                     if ($op === 'gt') $cmp = '>';
                     elseif ($op === 'gte') $cmp = '>=';
@@ -537,33 +566,52 @@ class KasaHareketModel extends Model
                 $f = $columnFilters['kategori'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND kh.kategori LIKE :f_kategori"; $bindings[':f_kategori'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND kh.kategori LIKE :f_kategori"; $bindings[':f_kategori'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND kh.kategori LIKE :f_kategori"; $bindings[':f_kategori'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND kh.kategori = :f_kategori"; $bindings[':f_kategori'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND kh.kategori <> :f_kategori"; $bindings[':f_kategori'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND kh.kategori NOT LIKE :f_kategori"; $bindings[':f_kategori'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (kh.kategori <> :f_kategori OR kh.kategori IS NULL OR kh.kategori = '')"; $bindings[':f_kategori'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (kh.kategori NOT LIKE :f_kategori OR kh.kategori IS NULL OR kh.kategori = '')"; $bindings[':f_kategori'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (kh.kategori IS NULL OR kh.kategori = '')"; }
                 else { $query .= " AND kh.kategori LIKE :f_kategori"; $bindings[':f_kategori'] = '%' . $val . '%'; }
+            }
+            if (!empty($columnFilters['alt_tur'])) {
+                $f = $columnFilters['alt_tur'];
+                $val = is_array($f) ? ($f['val'] ?? '') : $f;
+                $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND kh.alt_tur LIKE :f_alt_tur"; $bindings[':f_alt_tur'] = $val . '%'; }
+                elseif ($op === 'ends') { $query .= " AND kh.alt_tur LIKE :f_alt_tur"; $bindings[':f_alt_tur'] = '%' . $val; }
+                elseif ($op === 'equals') { $query .= " AND kh.alt_tur = :f_alt_tur"; $bindings[':f_alt_tur'] = $val; }
+                elseif ($op === 'not_equals') { $query .= " AND (kh.alt_tur <> :f_alt_tur OR kh.alt_tur IS NULL OR kh.alt_tur = '')"; $bindings[':f_alt_tur'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (kh.alt_tur NOT LIKE :f_alt_tur OR kh.alt_tur IS NULL OR kh.alt_tur = '')"; $bindings[':f_alt_tur'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (kh.alt_tur IS NULL OR kh.alt_tur = '')"; }
+                else { $query .= " AND kh.alt_tur LIKE :f_alt_tur"; $bindings[':f_alt_tur'] = '%' . $val . '%'; }
             }
             if (!empty($columnFilters['makbuz_no'])) {
                 $f = $columnFilters['makbuz_no'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND kh.makbuz_no LIKE :f_makbuz"; $bindings[':f_makbuz'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND kh.makbuz_no LIKE :f_makbuz"; $bindings[':f_makbuz'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND kh.makbuz_no LIKE :f_makbuz"; $bindings[':f_makbuz'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND kh.makbuz_no = :f_makbuz"; $bindings[':f_makbuz'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND kh.makbuz_no <> :f_makbuz"; $bindings[':f_makbuz'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND kh.makbuz_no NOT LIKE :f_makbuz"; $bindings[':f_makbuz'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (kh.makbuz_no <> :f_makbuz OR kh.makbuz_no IS NULL OR kh.makbuz_no = '')"; $bindings[':f_makbuz'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (kh.makbuz_no NOT LIKE :f_makbuz OR kh.makbuz_no IS NULL OR kh.makbuz_no = '')"; $bindings[':f_makbuz'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (kh.makbuz_no IS NULL OR kh.makbuz_no = '')"; }
                 else { $query .= " AND kh.makbuz_no LIKE :f_makbuz"; $bindings[':f_makbuz'] = '%' . $val . '%'; }
             }
             if (!empty($columnFilters['aciklama'])) {
                 $f = $columnFilters['aciklama'];
                 $val = is_array($f) ? ($f['val'] ?? '') : $f;
                 $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
-                if ($op === 'starts') { $query .= " AND kh.aciklama LIKE :f_aciklama"; $bindings[':f_aciklama'] = $val . '%'; }
+                if ($op === 'none' || $op === 'yok') { }
+                elseif ($op === 'starts') { $query .= " AND kh.aciklama LIKE :f_aciklama"; $bindings[':f_aciklama'] = $val . '%'; }
                 elseif ($op === 'ends') { $query .= " AND kh.aciklama LIKE :f_aciklama"; $bindings[':f_aciklama'] = '%' . $val; }
                 elseif ($op === 'equals') { $query .= " AND kh.aciklama = :f_aciklama"; $bindings[':f_aciklama'] = $val; }
-                elseif ($op === 'not_equals') { $query .= " AND kh.aciklama <> :f_aciklama"; $bindings[':f_aciklama'] = $val; }
-                elseif ($op === 'not_contains') { $query .= " AND kh.aciklama NOT LIKE :f_aciklama"; $bindings[':f_aciklama'] = '%' . $val . '%'; }
+                elseif ($op === 'not_equals') { $query .= " AND (kh.aciklama <> :f_aciklama OR kh.aciklama IS NULL OR kh.aciklama = '')"; $bindings[':f_aciklama'] = $val; }
+                elseif ($op === 'not_contains') { $query .= " AND (kh.aciklama NOT LIKE :f_aciklama OR kh.aciklama IS NULL OR kh.aciklama = '')"; $bindings[':f_aciklama'] = '%' . $val . '%'; }
+                elseif ($op === 'empty' || $op === 'is_empty') { $query .= " AND (kh.aciklama IS NULL OR kh.aciklama = '')"; }
                 else { $query .= " AND kh.aciklama LIKE :f_aciklama"; $bindings[':f_aciklama'] = '%' . $val . '%'; }
             }
         }

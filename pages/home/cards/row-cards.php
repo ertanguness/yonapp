@@ -8,20 +8,20 @@ use App\Helper\Helper;
 .card-wrapper[data-card="row-cards"] .card { overflow: hidden; }
 .card-wrapper[data-card="row-cards"] .card-body .hstack,
 .card-wrapper[data-card="row-cards"] .card-footer .hstack { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-width: 0; }
-.card-wrapper[data-card="row-cards"] .hstack > div:first-child { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: .25rem; }
+.card-wrapper[data-card="row-cards"] .hstack > div:first-child { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .5rem; }
 .card-wrapper[data-card="row-cards"] .hstack > .text-end { flex: 0 0 auto; min-width: 2.25rem; }
-.card-wrapper[data-card="row-cards"] .card-body h4 { margin: 0; white-space: nowrap; font-size: 1.125rem; line-height: 1.25; text-align: center; display: block; width: 100%; }
-.card-wrapper[data-card="row-cards"] .card-body .text-muted { margin: 0; white-space: normal; overflow: visible; text-overflow: clip; word-break: break-word; overflow-wrap: anywhere; }
-.card-wrapper[data-card="row-cards"] .metric-inline { display: flex; align-items: baseline; gap: .25rem; flex-wrap: wrap; min-width: 0; margin-left: -1.25rem; }
-.card-wrapper[data-card="row-cards"] .metric-inline .text-muted { flex: 1 1 auto; min-width: 12ch; }
+.card-wrapper[data-card="row-cards"] .card-body h4 { margin: 0; white-space: nowrap; font-size: 1.25rem; line-height: 1.3; text-align: center; display: block; width: 100%; font-weight: 700; }
+.card-wrapper[data-card="row-cards"] .card-body .text-muted { margin: 0; white-space: normal; overflow: visible; text-overflow: clip; word-break: break-word; overflow-wrap: anywhere; text-align: center; }
+.card-wrapper[data-card="row-cards"] .metric-inline { display: flex; flex-direction: column; align-items: center; gap: .25rem; flex-wrap: nowrap; min-width: 0; margin: 0; }
+.card-wrapper[data-card="row-cards"] .metric-inline .text-muted { flex: 0 0 auto; min-width: 0; }
 .card-wrapper[data-card="row-cards"] .metric-inline h4 { flex: 0 0 auto; }
-.card-wrapper[data-card="row-cards"] .metric-icon { display: block; align-self: center; }
+.card-wrapper[data-card="row-cards"] .metric-icon { display: block; align-self: center; margin-bottom: .25rem; opacity: .8; }
 .card-wrapper[data-card="row-cards"] .late-count-center { width: 100%; display: flex; justify-content: center; }
 .card-wrapper[data-card="row-cards"] .late-count-center h4 { text-align: center; }
 .card-wrapper[data-card="row-cards"] .amount-center { width: 100%; display: flex; justify-content: center; flex: 0 0 100%; }
 .card-wrapper[data-card="row-cards"] .amount-center h4 { text-align: center; display: block; width: 100%; }
-.card-wrapper[data-card="row-cards"] .card-footer { min-height: 72px; height: auto; display: flex; align-items: flex-start; }
-.card-wrapper[data-card="row-cards"] .card-footer .hstack { width: 100%; gap: .5rem; align-items: flex-start; }
+.card-wrapper[data-card="row-cards"] .card-footer { min-height: 64px; height: auto; display: flex; align-items: center; }
+.card-wrapper[data-card="row-cards"] .card-footer .hstack { width: 100%; gap: .5rem; align-items: center; }
 .card-wrapper[data-card="row-cards"] .card-footer p { margin: 0; white-space: normal; overflow: visible; text-overflow: clip; }
 .card-wrapper[data-card="row-cards"] .card-footer .text-end { flex: 0 0 auto; min-width: 2rem; }
 </style>
@@ -64,6 +64,9 @@ use App\Helper\Helper;
                         <div class="metric-inline">
                             <div class="amount-center"><h4 class="text-danger"><?php echo Helper::formattedMoney($geciken_odeme_tutari); ?></h4></div>
                             <div class="text-muted">Gecikmiş Ödemeler</div>
+                            <a href="/gecikmis-odemeler" class="link-primary small">Borçları Gör</a>
+
+
                         </div>
                     </div>
                 </div>

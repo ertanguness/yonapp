@@ -154,3 +154,52 @@ $(document).on("click", ".kullanici-sil", function () {
       }
     });
 });
+
+
+function changeUserStatus(userId, currentStatus) {
+        Swal.fire({
+            title: 'Uyarı!',
+            html: "Kullanıcı durumunu değiştirmek istiyor musunuz ?<br><br>Bu işlem geri alınamaz!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, değiştir!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {
+                        id: userId,
+                        status: currentStatus == 1 ? 0 : 1,
+                        action: 'changeUserStatus'
+                    },
+                    success: function(response) {
+                        if (typeof response === 'string') {
+                            try { response = JSON.parse(response); } catch (e) {}
+                        }
+                        if (response.success == true ) {
+                            Swal.fire(
+                                'Başarılı!',
+                                'Kullanıcı durumu başarıyla değiştirildi.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Hata!',
+                                'Kullanıcı durumu değiştirilemedi.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Hata!', 'Sunucudan geçerli yanıt alınamadı.', 'error');
+                    }
+                });
+            }
+        });
+    }

@@ -88,6 +88,9 @@ $User = new UserModel();
                                         $i = 1;
                                         foreach ($users as $user):
                                             $id = Security::encrypt($user->id);
+                                            $durumBadge = $user->status == 1 
+                                                            ? 'success' 
+                                                            : 'danger';
                                         ?>
                                             <tr>
                                                 <td class="text-center"><?php echo $i; ?></td>
@@ -103,7 +106,10 @@ $User = new UserModel();
 
                                                     ?>
                                                 </td>
-                                                <td><?php echo $user->status; ?></td>
+                                                <td class="text-center cursor-pointer"
+                                                    onclick="changeUserStatus(<?php echo $user->id; ?>, <?php echo $user->status; ?>)">
+                                                    <span class="badge text-<?php echo $durumBadge; ?> border border-dashed border-gray-500 "><?php echo $user->status == 1 ? 'Aktif' : 'Pasif'; ?></span>
+                                                </td>
                                                 <td>
                                                     <div class="hstack gap-2 ">
                                                         <a href="kullanici-duzenle?id=<?php echo $id ?>"
@@ -133,3 +139,9 @@ $User = new UserModel();
         </div>
     </div>
 </div>
+
+<script>
+    
+
+
+</script>

@@ -47,7 +47,7 @@ $kasalar = $Kasa->SiteKasaListesiFinansOzet($_SESSION['site_id'] ?? 0);
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered datatables">
-                        <thead class="table-light">
+                        <thead >
                             <tr>
                                 <th>#</th>
                                 <th>Kasa Adı</th>

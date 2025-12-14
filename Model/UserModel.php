@@ -108,6 +108,32 @@ class UserModel extends Model
         }
     }
 
+    public function ensureOnboardingCompletedColumn(): void
+    {
+        try {
+            $chk = $this->db->query("SHOW COLUMNS FROM $this->table LIKE 'onboarding_completed'");
+            $has = $chk && $chk->fetch(PDO::FETCH_ASSOC);
+            if (!$has) {
+                $this->db->exec("ALTER TABLE $this->table ADD COLUMN onboarding_completed TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Exception $e) {
+        }
+    }
+
+    public function getOnboardingCompleted(int $userId): int
+    {
+        $stmt = $this->db->prepare("SELECT IFNULL(onboarding_completed,0) AS oc FROM $this->table WHERE id = :id");
+        $stmt->execute(['id' => $userId]);
+        $row = $stmt->fetch(PDO::FETCH_OBJ);
+        return (int)($row->oc ?? 0);
+    }
+
+    public function setOnboardingCompleted(int $userId, int $val = 1): bool
+    {
+        $stmt = $this->db->prepare("UPDATE $this->table SET onboarding_completed = :v WHERE id = :id");
+        return $stmt->execute(['v' => $val, 'id' => $userId]);
+    }
+
     public function setLoginFavorite(int $userId, int $favorite): bool
     {
         $stmt = $this->db->prepare("UPDATE $this->table SET login_favorite = :fav WHERE id = :id");

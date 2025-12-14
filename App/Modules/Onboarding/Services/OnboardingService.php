@@ -4,6 +4,7 @@ namespace App\Modules\Onboarding\Services;
 use App\Modules\Onboarding\Models\OnboardingTaskModel;
 use App\Modules\Onboarding\Models\UserOnboardingProgressModel;
 use App\Services\Gate;
+use Model\UserModel;
 use PDO;
 
 class OnboardingService
@@ -98,6 +99,7 @@ class OnboardingService
     {
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
         if (Gate::isResident()) { return false; }
+        if (!empty($_SESSION['onboarding_completed'])) { return false; }
         $ownerId = $_SESSION['user']->owner_id ?? ($_SESSION['owner_id'] ?? null);
         if ((int)$ownerId !== 0) { return false; }
         if (!empty($_SESSION['onboarding_shown_this_login'])) { return false; }
@@ -131,6 +133,7 @@ class OnboardingService
             'source' => $source,
             'is_dismissed' => 0,
         ]);
+        $this->updateCompletionFlagIfAllDone($userId, $siteId);
     }
 
     public function getStatus(int $userId, ?int $siteId): array
@@ -153,6 +156,13 @@ class OnboardingService
         }
         $total = max(count($tasks), 1);
         $progress = (int)floor(($completed / $total) * 100);
+        if ($completed >= $total) {
+            try {
+                (new UserModel())->setOnboardingCompleted($userId, 1);
+                if (session_status() === PHP_SESSION_NONE) { session_start(); }
+                $_SESSION['onboarding_completed'] = true;
+            } catch (\Throwable $e) {}
+        }
         return [
             'tasks' => $list,
             'progress' => $progress,
@@ -160,5 +170,23 @@ class OnboardingService
             'total_count' => $total,
             'should_show' => $this->shouldShowChecklist($userId, $siteId),
         ];
+    }
+
+    private function updateCompletionFlagIfAllDone(int $userId, ?int $siteId): void
+    {
+        $tasks = $this->getTasks();
+        $map = $this->getUserProgress($userId, $siteId);
+        $completed = 0;
+        foreach ($tasks as $t) {
+            $p = $map[$t->task_key] ?? null;
+            if ($p && (int)$p->is_completed === 1) { $completed++; }
+        }
+        if ($completed >= max(count($tasks),1)) {
+            try {
+                (new UserModel())->setOnboardingCompleted($userId, 1);
+                if (session_status() === PHP_SESSION_NONE) { session_start(); }
+                $_SESSION['onboarding_completed'] = true;
+            } catch (\Throwable $e) {}
+        }
     }
 }

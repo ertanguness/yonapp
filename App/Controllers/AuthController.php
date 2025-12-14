@@ -180,6 +180,7 @@ class AuthController
         }
 
         $selectedUser = $matched[0];
+        
         self::validateDemoPeriod($selectedUser);
         self::validateLoginEligibility($selectedUser);
         self::performLogin($selectedUser);
@@ -342,6 +343,13 @@ class AuthController
         $roleName = $user->role_name ?? '';
         $isResidentRole = ($roleId === 3) || (stripos((string)$roleName, 'sakin') !== false);
 
+        $statusValue = isset($user->status) ? (int)$user->status : null;
+        if ($statusValue === 0) {
+            FlashMessageService::add('error', 'Giriş Başarısız!', 'Hesabınız pasif olduğu için giriş yapamazsınız.', 'ikaz2.png');
+            header("Location: /sign-in");
+            exit();
+        }
+
         if ($isResidentRole) {
             if (!self::isResidentActive($user)) {
                 FlashMessageService::add('error', 'Giriş Başarısız!', 'Çıkış tarihi dolu olduğu için giriş yapamazsınız.', 'ikaz2.png');
@@ -443,6 +451,13 @@ class AuthController
         // Model ve Servisler
         $userModel = new UserModel();
         $logger = \getLogger();
+
+        try {
+            $userModel->ensureOnboardingCompletedColumn();
+            $_SESSION['onboarding_completed'] = $userModel->getOnboardingCompleted((int)$user->id) === 1;
+        } catch (\Throwable $e) {
+            $_SESSION['onboarding_completed'] = false;
+        }
 
         // Loglama ve Token işlemleri
         $userModel->setToken($user->id, $_SESSION['csrf_token']);

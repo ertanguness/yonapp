@@ -127,7 +127,7 @@ if (!$isPreview) { $sheet->getStyle('A4:F4')->getFill()->setFillType(Fill::FILL_
 $r = 5;
 
 foreach ($kasalar as $k) {
-    $sqlDevir = $db->prepare("SELECT SUM(tutar) AS toplam FROM kasa_hareketleri WHERE kasa_id = :kid AND site_id = :sid AND silinme_tarihi IS NULL AND islem_tarihi < :start");
+    $sqlDevir = $db->prepare("SELECT SUM(tutar) AS toplam FROM kasa_hareketleri WHERE kasa_id = :kid AND site_id = :sid AND silinme_tarihi IS NULL AND islem_tarihi < :start AND alt_tur != 'Kasa Transferi'");
     $sqlDevir->bindValue(':kid', (int)$k->id, \PDO::PARAM_INT);
     $sqlDevir->bindValue(':sid', (int)$site_id, \PDO::PARAM_INT);
     $sqlDevir->bindValue(':start', $start, \PDO::PARAM_STR);
@@ -141,6 +141,7 @@ foreach ($kasalar as $k) {
                                    AND k.site_id = :sid 
                                    AND kh.silinme_tarihi IS NULL 
                                    AND (kh.islem_tipi='Gelir' OR kh.islem_tipi='gelir') 
+                                   AND kh.alt_tur    != 'Kasa Transferi'
                                    AND kh.islem_tarihi BETWEEN :start AND :end");
     $sqlGelenTop->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gelenTop = (float)($sqlGelenTop->fetchColumn() ?: 0);
@@ -152,6 +153,7 @@ foreach ($kasalar as $k) {
                                    AND k.site_id = :sid 
                                    AND kh.silinme_tarihi IS NULL 
                                    AND (kh.islem_tipi='Gider' OR kh.islem_tipi='gider') 
+                                   AND kh.alt_tur != 'Kasa Transferi'
                                    AND kh.islem_tarihi BETWEEN :start AND :end");
     $sqlGidenTop->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gidenTop = (float)($sqlGidenTop->fetchColumn() ?: 0);
@@ -178,14 +180,15 @@ foreach ($kasalar as $k) {
     $sheet->setCellValue('F' . $r, '');
     $r++;
 
-    $sqlGelirKat = $db->prepare("SELECT COALESCE(kh.kategori,'Diğer Gelir') AS kategori, SUM(kh.tutar) AS toplam 
+    $sqlGelirKat = $db->prepare("SELECT COALESCE(kh.alt_tur,'Diğer Gelir') AS alt_tur, SUM(kh.tutar) AS toplam 
                                         FROM kasa_hareketleri kh
                                         LEFT JOIN kasa k on k.id =kh.kasa_id
                                         WHERE kasa_id=:kid AND k.site_id=:sid 
                                         AND kh.silinme_tarihi IS NULL 
                                         AND (kh.islem_tipi='Gelir' OR kh.islem_tipi = 'gelir') 
+                                        AND kh.alt_tur != 'Kasa Transferi'
                                         AND kh.islem_tarihi BETWEEN :start AND :end 
-                                        GROUP BY kh.kategori");
+                                        GROUP BY kh.alt_tur");
     $sqlGelirKat->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gelirAgg = [];
     $normalize = function($s) {
@@ -195,7 +198,7 @@ foreach ($kasalar as $k) {
         return $x;
     };
     foreach ($sqlGelirKat->fetchAll(\PDO::FETCH_OBJ) as $row) {
-        $key = $normalize($row->kategori ?? 'Diğer Gelir');
+        $key = $normalize($row->alt_tur ?? 'Diğer Gelir');
         $gelirAgg[$key] = ($gelirAgg[$key] ?? 0) + (float)($row->toplam ?? 0);
     }
     foreach ($gelirAgg as $kat => $top) {
@@ -208,15 +211,16 @@ foreach ($kasalar as $k) {
         $r++;
     }
 
-    $sqlGiderKat = $db->prepare("SELECT COALESCE(kh.kategori,'Ödeme') AS kategori, SUM(ABS(kh.tutar)) AS toplam 
+    $sqlGiderKat = $db->prepare("SELECT COALESCE(kh.alt_tur,'Ödeme') AS alt_tur, SUM(ABS(kh.tutar)) AS toplam 
                                  FROM kasa_hareketleri kh 
                                  LEFT JOIN kasa k ON k.id = kh.kasa_id 
                                  WHERE kh.kasa_id=:kid 
                                    AND k.site_id=:sid 
                                    AND kh.silinme_tarihi IS NULL 
                                    AND (kh.islem_tipi='Gider' OR kh.islem_tipi='gider') 
+                                   AND kh.alt_tur != 'Kasa Transferi'
                                    AND kh.islem_tarihi BETWEEN :start AND :end 
-                                 GROUP BY kh.kategori");
+                                 GROUP BY kh.alt_tur");
     $sqlGiderKat->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $giderAgg = [];
     $normalizeG = function($s) {
@@ -226,7 +230,7 @@ foreach ($kasalar as $k) {
         return $x;
     };
     foreach ($sqlGiderKat->fetchAll(\PDO::FETCH_OBJ) as $row) {
-        $key = $normalizeG($row->kategori ?? 'Ödeme');
+        $key = $normalizeG($row->alt_tur ?? 'Ödeme');
         $giderAgg[$key] = ($giderAgg[$key] ?? 0) + (float)($row->toplam ?? 0);
     }
     foreach ($giderAgg as $kat => $top) {
@@ -286,7 +290,7 @@ try {
     foreach ($accRowsTry as $a) {
         $kid = (int)$a->kisi_id;
         $accTotalMap[$kid] = ($accTotalMap[$kid] ?? 0) + (float)($a->toplam_tahakkuk ?? 0);
-        $kat = mb_strtoupper(trim((string)$a->kategori), 'UTF-8');
+        $kat = mb_strtoupper(trim((string)$a->alt_tur), 'UTF-8');
         $kat = preg_replace('/\s+/u', ' ', $kat);
         if (preg_match('/A[Iİ]DAT/u', $kat)) { $kat = 'AİDAT TAHAKKUK'; }
         $accCatMap[$kid][$kat] = ($accCatMap[$kid][$kat] ?? 0) + (float)($a->toplam_tahakkuk ?? 0);
@@ -309,12 +313,12 @@ try {
         $qPayRange->execute([':sid'=>$site_id, ':start'=>$start, ':end'=>$end]);
         foreach ($qPayRange->fetchAll(\PDO::FETCH_OBJ) as $r2) { $payMap[(int)$r2->kisi_id] = (float)($r2->toplam ?? 0); }
 
-        $qAccRange = $db->prepare("SELECT kisi_id, COALESCE(borc_adi, aciklama, 'Diğer') AS kategori, SUM(COALESCE(tutar,0)) AS toplam FROM view_borclandirma_detay_raporu WHERE site_id=:sid AND baslangic_tarihi BETWEEN :start AND :end GROUP BY kisi_id, kategori");
+        $qAccRange = $db->prepare("SELECT kisi_id, COALESCE(borc_adi, aciklama, 'Diğer') AS alt_tur, SUM(COALESCE(tutar,0)) AS toplam FROM view_borclandirma_detay_raporu WHERE site_id=:sid AND baslangic_tarihi BETWEEN :start AND :end GROUP BY kisi_id, alt_tur");
         $qAccRange->execute([':sid'=>$site_id, ':start'=>$startDateOnly, ':end'=>$endDateOnly]);
         foreach ($qAccRange->fetchAll(\PDO::FETCH_OBJ) as $r3) {
             $kid = (int)$r3->kisi_id;
             $accTotalMap[$kid] = ($accTotalMap[$kid] ?? 0) + (float)($r3->toplam ?? 0);
-            $kat = mb_strtoupper(trim((string)$r3->kategori), 'UTF-8');
+            $kat = mb_strtoupper(trim((string)$r3->alt_tur), 'UTF-8');
             $kat = preg_replace('/\s+/u', ' ', $kat);
             if (preg_match('/A[Iİ]DAT/u', $kat)) { $kat = 'AİDAT TAHAKKUK'; }
             $accCatMap[$kid][$kat] = ($accCatMap[$kid][$kat] ?? 0) + (float)($r3->toplam ?? 0);
