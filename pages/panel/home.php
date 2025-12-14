@@ -115,8 +115,9 @@ $creators = $sitesModel->getCreatorsSummary();
             var fd = new FormData();
             fd.append('action', 'creator_sites');
             fd.append('user_id', userId);
-            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd })
-                .then(function(r){ return r.json(); })
+            fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
+                .then(function(r){ return r.text(); })
+                .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error', message: 'Parse error', raw: t}; } })
                 .then(function(j){
                     if (!j || j.status !== 'success') {
                         siteDetailContent.innerHTML = '<div class="text-danger">Detay yüklenemedi.</div>';
@@ -344,8 +345,9 @@ $creators = $sitesModel->getCreatorsSummary();
                             fd2.append('start_date', startDate);
                             if (dueDay !== '') fd2.append('due_day', dueDay);
                             if (graceDays !== '') fd2.append('grace_days', graceDays);
-                            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd2 })
-                               .then(function(rr){ return rr.json(); })
+                            fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd2, credentials: 'same-origin' })
+                               .then(function(rr){ return rr.text(); })
+                               .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
                                .then(function(jj){
                                     if (jj && jj.status === 'success') {
                                         var apt = 0;
@@ -379,8 +381,9 @@ $creators = $sitesModel->getCreatorsSummary();
                             var fdBulk = new FormData();
                             fdBulk.append('action','billing_bulk_mark');
                             fdBulk.append('items', JSON.stringify(items));
-                            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fdBulk })
-                              .then(function(rr){ return rr.json(); })
+                            fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fdBulk, credentials: 'same-origin' })
+                              .then(function(rr){ return rr.text(); })
+                              .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
                               .then(function(jj){
                                 if (jj && jj.status === 'success') {
                                     siteDetailContent.querySelectorAll('.toggle-paid').forEach(function(btn){
@@ -419,8 +422,9 @@ $creators = $sitesModel->getCreatorsSummary();
                             fd3.append('paid', String(nextPaid));
                             fd3.append('amount', amount);
                             var self = this;
-                            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd3 })
-                              .then(function(rr){ return rr.json(); })
+                            fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd3, credentials: 'same-origin' })
+                              .then(function(rr){ return rr.text(); })
+                              .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
                               .then(function(jj){
                                 if (jj && jj.status === 'success') {
                                     self.setAttribute('data-paid', String(nextPaid));
@@ -467,7 +471,7 @@ $creators = $sitesModel->getCreatorsSummary();
                             fd4.append('lock', String(nextLock));
                             fd4.append('reason', nextLock===1 ? 'Ödeme gecikmesi' : 'Kilit kaldırıldı');
                             var self = this;
-                            fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd4 }).then(function(rr){ return rr.text(); }).then(function(txt){
+                            fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd4, credentials: 'same-origin' }).then(function(rr){ return rr.text(); }).then(function(txt){
                                 var jj = null; try { jj = JSON.parse(txt); } catch(e) { jj = null; }
                                 if (jj && jj.status === 'success') {
                                     self.setAttribute('data-locked', String(nextLock));

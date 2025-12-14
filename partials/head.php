@@ -51,7 +51,8 @@ $page = isset($page) ? $page : 'ana-sayfa';
             return out;
           })();
           window.APP_BASE_PATH = base;
-        } catch(e){ window.APP_BASE_PATH = ''; }
+          window.API_BASE = (window.location.origin || '') + (base || '');
+        } catch(e){ window.APP_BASE_PATH = ''; window.API_BASE = window.location.origin || ''; }
       })();
     </script>
     <!--! BEGIN: Favicon-->

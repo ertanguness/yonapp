@@ -54,7 +54,7 @@ document.getElementById('saveSettingsBtn').addEventListener('click', function(){
     var form = document.getElementById('superadminSettingsForm');
     var fd = new FormData(form);
     fd.append('action','settings_set_pairs');
-    fetch((window.APP_BASE_PATH||'') + '/pages/panel/api.php', { method:'POST', body: fd })
+    fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
       .then(r=>r.json()).then(j=>{ if (j && j.status==='success') { alert('Kaydedildi'); } else { alert('Kaydetme hatası'); } });
 });
 </script>
