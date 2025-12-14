@@ -279,11 +279,12 @@ document.addEventListener('DOMContentLoaded', function(){
     var fd = new FormData();
     fd.append('action', 'rep_manage');
     fd.append('rep_id', repId);
-    fetch('/pages/panel/api.php', { method:'POST', body: fd })
-      .then(function(r){ return r.json(); })
+    fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
+      .then(function(r){ return r.text(); })
+      .then(function(t){ try { return JSON.parse(t); } catch(e){ console.log(t); return {status:'error'}; } })
       .then(function(j){
         if (!j || j.status !== 'success') {
-          repContent.innerHTML = '<div class="text-danger">Detay yüklenemedi</div>';
+          repContent.innerHTML = '<div class="text-danger">Detay yüklenemedi. ' + (j.message || '') + '</div>';
           return;
         }
         var d = j.data;

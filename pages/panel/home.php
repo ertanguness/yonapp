@@ -117,10 +117,10 @@ $creators = $sitesModel->getCreatorsSummary();
             fd.append('user_id', userId);
             fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
                 .then(function(r){ return r.text(); })
-                .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error', message: 'Parse error', raw: t}; } })
+                .then(function(t){ try { return JSON.parse(t); } catch(e){ console.log(t); return {status:'error', message: 'Parse error', raw: t}; } })
                 .then(function(j){
                     if (!j || j.status !== 'success') {
-                        siteDetailContent.innerHTML = '<div class="text-danger">Detay yüklenemedi.</div>';
+                        siteDetailContent.innerHTML = '<div class="text-danger">Detay yüklenemedi. ' + (j.message || '') + '</div>';
                         return;
                     }
                     var d = j.data;
