@@ -115,6 +115,7 @@ $creators = $sitesModel->getCreatorsSummary();
             var fd = new FormData();
             fd.append('action', 'creator_sites');
             fd.append('user_id', userId);
+
             fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
                 .then(function(r){ return r.text(); })
                 .then(function(t){ try { return JSON.parse(t); } catch(e){ console.log(t); return {status:'error', message: 'Parse error', raw: t}; } })
