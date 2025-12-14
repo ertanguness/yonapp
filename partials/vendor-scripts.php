@@ -60,8 +60,10 @@ if (
     $page == "arac-yonetimi" ||
     $page == "kullanici-ekle" || $page == "kullanici-duzenle" ||
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
-    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri"
-) { ?>
+    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" ||
+    $page == "superadmin"
+) { 
+    ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
 <!-- <script src="https://cdn.datatables.net/v/bs5/dt-2.3.4/r-3.0.7/datatables.min.js" integrity="sha384-O4V7rOTTcSRflQBTMk8URAYWhGGEMgmmLFrqu3e83FQtze3vmndvrH3GcRdrfXRu" crossorigin="anonymous"></script> -->

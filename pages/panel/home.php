@@ -17,12 +17,12 @@ $creators = $sitesModel->getCreatorsSummary();
     
     <div class="row row-deck row-cards">
         <div class="col-12">
-            <div class="card">
+            <div class="card" id="registeredSitesCard">
                 <div class="card-header">
                     <h3 class="card-title">Kayıtlı Siteler</h3>
                 </div>
                 <div class="table-responsive">
-                      <table class="table table-hover datatables" id="panelList">
+                      <table class="table table-hover" id="panelList">
                         <thead>
                             <tr>
                                 <th class="w-1">No.</th>
@@ -33,7 +33,7 @@ $creators = $sitesModel->getCreatorsSummary();
                                 <th class="w-1">Detay</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="text-center">
                             <?php foreach ($creators as $index => $creator): ?>
                             <tr>
                                 <td><span class="text-muted"><?php echo $index + 1; ?></span></td>
@@ -49,13 +49,15 @@ $creators = $sitesModel->getCreatorsSummary();
                                 <td>
                                     <?php echo htmlspecialchars($creator->creator_email ?? '-'); ?>
                                 </td>
-                                <td>
-                                    <button 
-                                        class="btn btn-sm btn-outline-primary show-site-detail" 
-                                        data-user-id="<?php echo (int)$creator->user_id; ?>" 
-                                        data-user-name="<?php echo htmlspecialchars($creator->creator_name ?? ''); ?>">
-                                        Detay
-                                    </button>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center">
+                                        <button 
+                                            class="btn btn-sm btn-outline-primary show-site-detail" 
+                                            data-user-id="<?php echo (int)$creator->user_id; ?>" 
+                                            data-user-name="<?php echo htmlspecialchars($creator->creator_name ?? ''); ?>">
+                                            Detay
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -99,6 +101,10 @@ $creators = $sitesModel->getCreatorsSummary();
   transform: none !important;
 }
 </style>
+<style>
+#registeredSitesCard { margin-bottom: 5px; }
+.container-xl { padding-bottom: 60px; }
+</style>
 
  <script>
  document.addEventListener('DOMContentLoaded', function(){
@@ -106,6 +112,38 @@ $creators = $sitesModel->getCreatorsSummary();
     var siteDetailContent = document.getElementById('siteDetailContent');
     var bsModal;
     if (modalEl) { bsModal = new bootstrap.Modal(modalEl); }
+    try {
+        if (window.jQuery && $.fn.DataTable) {
+            var dt;
+            if ($.fn.dataTable.isDataTable('#panelList')) {
+                dt = $('#panelList').DataTable();
+            } else {
+                dt = $('#panelList').DataTable({
+                    responsive: true,
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50, 100],
+                    language: {
+                        sEmptyTable: "Tabloda herhangi bir veri mevcut değil",
+                        sInfo: "_TOTAL_ kayıttan _START_ - _END_ arasındaki kayıtlar gösteriliyor",
+                        sInfoEmpty: "Kayıt yok",
+                        sInfoFiltered: "(_MAX_ kayıt içerisinden bulunan)",
+                        sLengthMenu: "Sayfada _MENU_ kayıt göster",
+                        sLoadingRecords: "Yükleniyor...",
+                        sProcessing: "İşleniyor...",
+                        sSearch: "Ara:",
+                        sZeroRecords: "Eşleşen kayıt bulunamadı",
+                        oPaginate: {
+                            sFirst: "İlk",
+                            sLast: "Son",
+                            sNext: "Sonraki",
+                            sPrevious: "Önceki"
+                        }
+                    }
+                });
+            }
+            if (dt) { dt.page.len(10).draw(); }
+        }
+    } catch(e){}
     document.addEventListener('click', function(e){
         var btn = e.target.closest('.show-site-detail');
         if (!btn) return;
