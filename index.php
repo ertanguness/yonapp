@@ -43,7 +43,20 @@ $resolvedRoute = $router->resolve($url);
 // 3. SAYFA ADINI AL (SİHİR BURADA GERÇEKLEŞİYOR)
 // Router artık hangi desenin eşleştiğini biliyor ve bize temiz halini veriyor.
 $page = $router->getPageName() ?? '';
-$skipPagesForSiteCheck = ['site-ekle','siteler','site-duzenle','sign-in','kayit-ol','logout','forgot-password','reset-password'];
+$skipPagesForSiteCheck = [
+    'site-ekle',
+    'siteler',
+    'site-duzenle',
+    'sign-in',
+    'kayit-ol',
+    'logout',
+    'forgot-password',
+    'reset-password',
+    'superadmin',
+    'superadmin-ayarlar',
+    'superadmin-temsilciler',
+    'temsilci-paneli'
+];
 if (!in_array($page, $skipPagesForSiteCheck, true)) {
      Security::ensureSiteSelected('/site-ekle');
  }
