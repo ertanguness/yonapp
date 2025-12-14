@@ -28,7 +28,7 @@ class KisiHelper
 
 
 
-    public  function KisiSelect($name = 'kisi', $id = null, $disabled = false,$zeroOption = false,$multiple = false)
+    public  function KisiSelect($name = 'kisi', $ids = null, $disabled = false,$zeroOption = false,$multiple = false)
     {
         $site_id = $_SESSION['site_id'] ?? 0; // Kullanıcının site_id'sini al, eğer yoksa 0 olarak ayarla
         $query = $this->db->prepare("SELECT 
@@ -48,7 +48,7 @@ class KisiHelper
             $select .= '<option value="">Kişi Seçiniz</option>';
         }
         foreach ($results as $row) {  // $results üzerinde döngü
-            $selected = $id == $row->id ? ' selected' : '';  // Eğer id varsa seçili yap
+            $selected = $ids && in_array($row->id, $ids) ? ' selected' : '';  // Eğer id varsa seçili yap
             $select .= '<option value="' . Security::encrypt($row->id) . '"' . $selected . '>' . $row->daire_kodu . ' | ' . $row->adi_soyadi . '</option>';  // $row->title yerine $row->name kullanıldı
         }
         $select .= '</select>';

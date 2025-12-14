@@ -16,7 +16,9 @@ Gate::authorizeOrDie('announcements_admin_page');
 $id = $id ?? 0;
 
 $duyuru = $DuyuruModel->find($id,true);
-//Helper::dd($duyuru);
+$hedef_kisiler = json_decode($duyuru->target_ids);
+$hedef_bloklar = json_decode($duyuru->target_ids);
+//Helper::dd($hedef_bloklar);
 
 
 ?>
@@ -35,7 +37,7 @@ $duyuru = $DuyuruModel->find($id,true);
             <a href="/duyuru-listesi" type="button" class="btn btn-outline-secondary me-2" data-page="">
                 <i class="feather-arrow-left me-2"></i> Listeye Dön
             </a>
-            <button type="submit" class="btn btn-primary" id="saveAnnouncement">
+            <button type="button" class="btn btn-primary" id="saveAnnouncement">
                 <i class="feather-send me-2"></i> Kaydet
             </button>
         </div>
@@ -54,9 +56,10 @@ $duyuru = $DuyuruModel->find($id,true);
                 <div class="col-12">
                     <div class="card">
                         <form id="announcementForm">
+                            <input type="hidden" class="form-control" name="id" id="id" value="<?php echo $id ?? 0; ?>">
+                            
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body">
-                                    <input type="hidden" name="id" id="id" value="<?php echo (int)($duyuru->id ?? 0); ?>">
 
                                     <!-- Başlık -->
                                     <div class="row mb-4 align-items-center">
@@ -67,7 +70,7 @@ $duyuru = $DuyuruModel->find($id,true);
                                             <div class="input-group flex-nowrap">
                                                 <span class="input-group-text"><i class="feather-tag"></i></span>
                                                 <input type="text" 
-                                                    value="<?php echo $duyuru->baslik; ?>"
+                                                    value="<?php echo $duyuru->baslik ?? ''; ?>"
                                                 name="title" id="title" class="form-control" placeholder="Başlık" required>
                                             </div>
                                         </div>
@@ -81,10 +84,14 @@ $duyuru = $DuyuruModel->find($id,true);
                                         <div class="col-lg-10">
                                             <div id="contentEditor" class="form-control" style="min-height: 200px;"></div>
                                             <input type="hidden" name="content" id="content" 
-                                                value="<?php echo $duyuru->icerik; ?>"
+                                                value="<?php echo $duyuru->icerik ?? ''; ?>"
                                             >
                                         </div>
                                     </div>
+
+                                    <?php 
+                                        $hedef = $duyuru->target_type ?? '';
+                                    ?>
 
                                     <!-- Hedef ve Tarihler -->
                                     <div class="row mb-4 align-items-center">
@@ -95,9 +102,9 @@ $duyuru = $DuyuruModel->find($id,true);
                                             <div class="input-group flex-nowrap">
                                                 <span class="input-group-text"><i class="feather-users"></i></span>
                                                 <select name="target_type" id="target_type" class="form-select select2" required>
-                                                    <option value="all">Tüm Site</option>
-                                                    <option value="block">Blok</option>
-                                                    <option value="kisi">Kişi</option>
+                                                    <option value="all"  <?php echo $hedef == 'all' ? 'selected' : ''; ?>>Tüm Site</option>
+                                                    <option value="block" <?php echo $hedef == 'block' ? 'selected' : ''; ?>>Blok</option>
+                                                    <option value="kisi" <?php echo $hedef == 'kisi' ? 'selected' : ''; ?>>Kişi</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -111,7 +118,7 @@ $duyuru = $DuyuruModel->find($id,true);
                                         <div class="col-lg-4">
                                             <div class="input-group flex-nowrap">
                                                 <span class="input-group-text"><i class="feather-home"></i></span>
-                                                <?php echo $BlokHelper->BlokSelect("block_id", false); ?>
+                                                <?php echo $BlokHelper->BlokSelect("block_id",true, $hedef_bloklar,true); ?>
                                             </div>
                                         </div>
                                     </div>
@@ -123,7 +130,7 @@ $duyuru = $DuyuruModel->find($id,true);
                                         </div>
                                         <div class="col-lg-10">
                                             <div class="form-text mb-2">Bir veya birden fazla kişi seçebilirsiniz.</div>
-                                            <?php echo $KisiHelper->KisiSelect("kisi_ids", null, false, true, true); ?>
+                                            <?php echo $KisiHelper->KisiSelect("kisi_ids", $hedef_kisiler, false, true, true); ?>
                                         </div>
                                     </div>
 
@@ -132,25 +139,26 @@ $duyuru = $DuyuruModel->find($id,true);
                                             <label class="fw-semibold">Yayın Başlangıcı:</label>
                                         </div>
                                         <div class="col-lg-4">
-                                            <input type="date" autocomplete="off" value="<?php echo Date::Ymd($duyuru->baslangic_tarihi); ?>" name="start_date" id="start_date" class="form-control flatpickr">
+                                            <input type="text" autocomplete="off" value="<?php echo Date::dmY($duyuru->baslangic_tarihi ?? ''); ?>" name="start_date" id="start_date" class="form-control flatpickr">
                                         </div>
                                         <div class="col-lg-2">
                                             <label class="fw-semibold">Yayın Bitişi:</label>
                                         </div>
                                         <div class="col-lg-4">
-                                            <input type="date" autocomplete="off" value="<?php echo Date::Ymd($duyuru->bitis_tarihi); ?>" name="end_date" id="end_date" class="form-control flatpickr">
+                                            <input type="text" autocomplete="off" value="<?php echo Date::dmY($duyuru->bitis_tarihi ?? ''); ?>" name="end_date" id="end_date" class="form-control flatpickr">
                                         </div>
                                     </div>
 
+                                    <?php $durum = $duyuru->durum ?? ''; ?>
                                     <div class="row mb-4 align-items-center">
                                         <div class="col-lg-2">
                                             <label class="fw-semibold">Durum:</label>
                                         </div>
                                         <div class="col-lg-4">
                                             <select name="status" id="status" class="form-select">
-                                                <option value="draft">Taslak</option>
-                                                <option value="published">Yayınlandı</option>
-                                                <option value="archived">Arşivlendi</option>
+                                                <option value="draft" <?php echo $durum == 'draft' ? 'selected' : ''; ?>>Taslak</option>
+                                                <option value="published" <?php echo $durum == 'published' ? 'selected' : ''; ?>>Yayınlandı</option>
+                                                <option value="archived" <?php echo $durum == 'archived' ? 'selected' : ''; ?>>Arşivlendi</option>
                                             </select>
                                         </div>
                                     </div>
