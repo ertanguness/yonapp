@@ -137,7 +137,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                                 : '-';
                                         ?>
                                             <tr class="text-center">
-                                                <td><?php echo $row->id; ?></td>
+                                                <td><?php echo $i; ?></td>
                                                 <td><?php echo $blok->blok_adi; ?></td>
                                                 <td><?php echo $daire_no; ?></td>
                                                 <td><?php echo $adi_soyadi; ?></td>

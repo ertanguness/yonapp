@@ -62,7 +62,10 @@ class DairelerModel extends Model
     // *************************************************************************************** */
     public function SitedekiDaireler($siteID)
     {
-        $query = $this->db->prepare("SELECT * FROM {$this->table} WHERE site_id = ? ORDER BY blok_id ASC, CAST(daire_no AS UNSIGNED) ASC");
+        $query = $this->db->prepare("SELECT * FROM {$this->table} 
+                                     WHERE site_id = ? 
+                                     AND silinme_tarihi IS NULL
+                                     ORDER BY blok_id ASC, CAST(daire_no AS UNSIGNED) ASC");
         $query->execute([$siteID]);
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
@@ -245,6 +248,7 @@ class DairelerModel extends Model
                 $blokAdi            = trim($rowData['Blok Adı*'] ?? '');
                 $daireNo            = trim($rowData['Daire No*'] ?? '');
                 $daireKoduBenzersiz = trim($rowData['Daire Kodu*'] ?? '');
+                $mulkTipi           = trim($rowData['Mülk Tipi'] ?? '');
                 $daireTipi          = trim($rowData['Daire Tipi'] ?? '');
                 $kat                = trim($rowData['Kat'] ?? '');
                 $brutAlan           = trim($rowData['Brüt Alan*'] ?? '');
@@ -303,7 +307,7 @@ class DairelerModel extends Model
                     }
     
                     // Daire tipi ID'sini bul
-                    $daireTipiId = $definesModel->getApartmentTypeIdByName($siteId, DefinesHelper::TYPE_APARTMENT, $daireTipi);
+                    $daireTipiId = $definesModel->getApartmentTypeIdByName($siteId, DefinesHelper::TYPE_APARTMENT, $daireTipi,$mulkTipi);
                     if (!$daireTipiId && !empty($daireTipi)) { // Sadece daire tipi belirtilmişse hata ver
                         $errorRows[] = [
                             'row_index' => $row->getRowIndex(),
