@@ -176,7 +176,7 @@ $siteSilebilir = $egsYetkiVarmi == true ? "delete-Siteler" : "yetki-yok";
                 const id = target.getAttribute('data-id');
                 Pace.restart?.();
 
-                fetch('pages/management/sites/content/siteDetay.php?id=' + id)
+                fetch((window.API_BASE||'') + '/pages/management/sites/content/siteDetay.php?id=' + id, { credentials: 'same-origin' })
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('siteDetay').innerHTML = html;

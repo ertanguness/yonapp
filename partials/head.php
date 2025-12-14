@@ -40,6 +40,21 @@ $page = isset($page) ? $page : 'ana-sayfa';
     <!--! BEGIN: Apps Title-->
     <title>YonApp / Site Yönetim</title>
     <!--! END:  Apps Title-->
+    <script>
+      (function(){
+        try {
+          var base = (function(){
+            var p = (<?php echo json_encode($_SERVER['SCRIPT_NAME'] ?? ''); ?>) || '';
+            var d = p.replace(/\\/g,'/').split('/'); d.pop();
+            var out = d.join('/');
+            if (out === '/') return '';
+            return out;
+          })();
+          window.APP_BASE_PATH = base;
+          window.API_BASE = (window.location.origin || '') + (base || '');
+        } catch(e){ window.APP_BASE_PATH = ''; window.API_BASE = window.location.origin || ''; }
+      })();
+    </script>
     <!--! BEGIN: Favicon-->
     <link rel="shortcut icon" type="image/x-icon" href="/assets/images/logo/favicon.svg" />
     <!--! END: Favicon-->
