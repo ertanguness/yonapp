@@ -6,7 +6,7 @@ $(document).on("click", "#saveGelirGiderTipi", function () {
   let id = $("#gelir_gider_tipi_id");
   let form = $("#gelirGiderTipiForm");
 
-form.validate({
+  form.validate({
     rules: {
       gelir_gider_tipi_name: { required: true },
     },
@@ -44,12 +44,12 @@ form.validate({
         }
       });
     });
-}); 
+});
 
 $(document).on("click", ".gelir-gider-tipi-sil", function () {
   const id = $(this).data("id");
   row = $(this).closest("tr");
-  
+
   Swal.fire({
     title: 'Emin misiniz?',
     text: "Bu gelir-gider tipini silmek istediğinizden emin misiniz?",
@@ -68,11 +68,11 @@ $(document).on("click", ".gelir-gider-tipi-sil", function () {
           action: 'gelir-gider-tipi-sil',
           id: id
         },
-        success: function(response) {
+        success: function (response) {
           try {
             const data = JSON.parse(response);
             console.log(data);
-            
+
             if (data.status == 'success') {
               Swal.fire(
                 'Silindi!',
@@ -97,7 +97,7 @@ $(document).on("click", ".gelir-gider-tipi-sil", function () {
             console.error(e);
           }
         },
-        error: function() {
+        error: function () {
           Swal.fire(
             'Hata!',
             'Sunucu ile iletişim kurulamadı.',
@@ -109,30 +109,50 @@ $(document).on("click", ".gelir-gider-tipi-sil", function () {
   });
 });
 
-  $(document).ready(function() {
-        $('#gelir_gider_tipi').on('select2:select', function(e) {
+$(document).ready(function () {
+  $('#gelir_gider_tipi').on('select2:select', function (e) {
 
 
-            let $gelirGrubu = $('#gelir_grubu_label');
-            let $gelirKalemi = $('#gelir_kalemi_label');
-            window.islem_type = e.params.data.text;
+    let $gelirGrubu = $('#gelir_grubu_label');
+    let $gelirKalemi = $('#gelir_kalemi_label');
 
-            console.log(window.islem_type);
-         
-            if (window.islem_type == 'Gider') {
-                $('.gider-grubu').removeClass('d-none');
-                $('.gelir-grubu').addClass('d-none');
-                $('.gelir-kalemi').removeClass('d-none');
-            }
-            if (window.islem_type == 'Gelir') {
-                $('.gelir-grubu').removeClass('d-none');
-                $('.gider-grubu').addClass('d-none');
-                $('.gelir-kalemi').addClass('d-none');
-            }
+    window.islem_type = e.params.data.text;
+
+    console.log(window.islem_type);
+
+    if (window.islem_type == 'Gider') {
+      $('.gider-grubu').removeClass('d-none');
+      $('.gelir-grubu').addClass('d-none');
+      $('.gelir-kalemi').removeClass('d-none');
+    }
+    if (window.islem_type == 'Gelir') {
+      $('.gelir-grubu').removeClass('d-none');
+      $('.gider-grubu').addClass('d-none');
+      $('.gelir-kalemi').addClass('d-none');
+    }
 
 
 
-            $gelirGrubu.text(e.params.data.text + ' Grubu');
-            $gelirKalemi.text(e.params.data.text + ' Kalemi');
-        });
-    });
+    $gelirGrubu.text(e.params.data.text + ' Grubu');
+    $gelirKalemi.text(e.params.data.text + ' Kalemi');
+    getIslemKodu();
+  });
+
+  $("#gider_tipi_name").on('select2:select', function (e) {
+    getIslemKodu();
+  });
+
+  function getIslemKodu() {
+
+    let islemKodu = $("#gider_tipi_name option:selected").data('islem-kodu');
+    console.log("Seçilen İşlem Kodu: " + islemKodu);
+
+    window.islem_kodu = islemKodu;
+    $("#islem_kodu").val(islemKodu);
+
+  };
+});
+
+
+
+

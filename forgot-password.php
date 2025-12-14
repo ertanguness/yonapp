@@ -1,25 +1,24 @@
 <?php
-ob_start();
-
-$page = 'forgot-password';
-
-define('ROOT', $_SERVER['DOCUMENT_ROOT']);
-require_once ROOT . '/Database/require.php';
-require_once ROOT . '/Model/UserModel.php';
-require_once ROOT . '/Model/PasswordModel.php';
 
 require_once __DIR__ . '/configs/bootstrap.php';
 
+use App\Helper\Helper;
+use Model\UserModel;
+use Model\PasswordModel;
 use App\Services\FlashMessageService;
+use App\Services\MailGonderService;
 
 $PasswordModel = new PasswordModel();
 $Users = new UserModel();
 
+$page = 'forgot-password';
 $email = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim((string)($_POST['email'] ?? ''));
     $user = $email !== '' ? $Users->getUserByEmail($email) : null;
+
+//Helper::dd($user);
 
     if ($email === '') {
         FlashMessageService::add('error', 'Hata!', 'E-posta adresi boş bırakılamaz.', 'ikaz2.png');
@@ -29,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         FlashMessageService::add('error', 'Hata!', 'Bu e-posta adresi ile kayıtlı bir hesap bulunamadı.', 'ikaz2.png');
     } else {
         // 1 saat geçerli token
+        try {
         $token = bin2hex(random_bytes(32));
 
         // (Not: Link domain'i ortamınıza göre değişebilir; mevcut akışı bozmamak için aynı dosyayı hedefliyoruz.)
@@ -39,41 +39,152 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Token ve e-posta adresini veritabanına kaydetme
         $PasswordModel->setPasswordReset($email, $token);
 
-        ob_start();
-        include 'forgot-password-email.php';
-        $content = ob_get_clean();
 
-        try {
-            require_once 'mail-settings.php';
+$mailBody = '
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Şifre Sıfırlama</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:30px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;">
+                    
+                    <!-- HEADER -->
+                    <tr>
+                        <td style="background:#2563eb;color:#ffffff;padding:20px 30px;">
+                            <h2 style="margin:0;font-size:22px;">Şifre Sıfırlama Talebi</h2>
+                        </td>
+                    </tr>
 
-            // Alıcılar
-            $mail->setFrom('sifre@puantor.com.tr', 'Puantor.com.tr');
-            $mail->addAddress($email);
-            $mail->isHTML(true);
+                    <!-- CONTENT -->
+                    <tr>
+                        <td style="padding:30px;color:#374151;font-size:14px;line-height:1.6;">
+                            <p>Merhaba,</p>
 
-            $mail->Subject = 'Şifre Sıfırlama';
-            $mail->Body = $content;
-            $mail->AltBody = strip_tags($content);
-            $mail->CharSet = 'UTF-8';
+                            <p>
+                                Hesabınız için bir <strong>şifre sıfırlama talebi</strong> oluşturuldu.
+                                Aşağıdaki butona tıklayarak yeni şifrenizi belirleyebilirsiniz.
+                            </p>
 
-            // PNG dosyasını e-postaya ekleyin
-            $mail->AddEmbeddedImage('static/png/lock.png', 'lock-icon');
+                            <p style="text-align:center;margin:30px 0;">
+                                <a href="'.$resetLink.'" 
+                                   style="background:#2563eb;color:#ffffff;
+                                          padding:12px 26px;text-decoration:none;
+                                          border-radius:6px;font-weight:bold;
+                                          display:inline-block;">
+                                    Şifremi Sıfırla
+                                </a>
+                            </p>
 
-            $mail->send();
-            FlashMessageService::add('success', 'Başarılı!', 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.', 'ikaz2.png');
+                            <p>
+                                Bu bağlantı <strong>güvenlik nedeniyle sınırlı süre</strong> için geçerlidir.
+                                Eğer bu işlemi siz başlatmadıysanız, bu e-postayı dikkate almayınız.
+                            </p>
+
+                            <hr style="border:none;border-top:1px solid #e5e7eb;margin:25px 0;">
+
+                            <p style="font-size:12px;color:#6b7280;">
+                                Buton çalışmazsa aşağıdaki bağlantıyı tarayıcınıza yapıştırabilirsiniz:
+                            </p>
+                            <p style="font-size:12px;word-break:break-all;color:#2563eb;">
+                                '.$resetLink.'
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td style="background:#f9fafb;padding:15px 30px;
+                                   font-size:12px;color:#6b7280;text-align:center;">
+                            © '.date('Y').' YonApp | Tüm hakları saklıdır
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+';
+
+
+
+
+
+
+            if(MailGonderService::gonder([$email], 'Şifre Sıfırlama', $mailBody)) {
+                FlashMessageService::add('success', 'Başarılı!', 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.', 'onay2.png');
+                header('Location: /sign-in.php');
+                exit;
+            }
         } catch (Exception $e) {
             FlashMessageService::add('error', 'Hata!', 'E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.', 'ikaz2.png');
         }
     }
 }
 
-include __DIR__ . '/partials/head.php';
-?>
+include __DIR__ . '/partials/head.php'; ?>
+
 <!DOCTYPE html>
 <html lang="tr">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<style>
+.auth-hero-side {
+        position: relative;
+        /* ... */
+    }
 
+    /* Swiper Konteyneri */
+    .testimonial-swiper {
+        position: absolute;
+        bottom: 8%;
+        left: 10%;
+        right: 10%;
+        z-index: 10;
+        text-align: center;
+        color: #334155;
+        padding-bottom: 30px;
+    }
+
+    .testimonial-swiper .quote-icon {
+        font-size: 4rem;
+        font-family: 'Source Sans Pro', serif;
+        color: #4f46e5;
+        line-height: 1;
+        opacity: 0.3;
+    }
+
+    .testimonial-swiper h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: -1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .testimonial-swiper p {
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    /* Swiper pagination noktalarını özelleştirme */
+    .swiper-pagination-bullet {
+        background-color: rgba(79, 70, 229, 0.5);
+        opacity: 1;
+    }
+
+    .swiper-pagination-bullet-active {
+        background-color: #4f46e5;
+    }
+
+</style>
 <body>
     <main class="auth-cover-wrapper">
         <div class="auth-cover-content-inner">
@@ -169,4 +280,3 @@ include __DIR__ . '/partials/head.php';
 </body>
 
 </html>
-<?php ob_end_flush(); ?>

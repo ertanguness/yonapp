@@ -87,7 +87,7 @@ class DefinesModel extends Model
     public function getGelirGrubuSelect($name, $selected){
 
         $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
-        $sql = $this->db->prepare("SELECT id, define_name FROM $this->table 
+        $sql = $this->db->prepare("SELECT id, define_name, islem_kodu FROM $this->table 
                                     WHERE type = :type 
                                     AND site_id = :site_id 
                                     AND silinme_tarihi IS NULL");
@@ -98,7 +98,11 @@ class DefinesModel extends Model
         $options = '';
 
         while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
-            $options .= "<option value=\"{$row['define_name']}\" " . ($selected == $row['define_name'] ? 'selected' : '') . ">{$row['define_name']}</option>";
+            $defineName = htmlspecialchars((string)($row['define_name'] ?? ''), ENT_QUOTES, 'UTF-8');
+            $islemKodu = htmlspecialchars((string)($row['islem_kodu'] ?? ''), ENT_QUOTES, 'UTF-8');
+            $isSelected = ((string)$selected === (string)($row['define_name'] ?? '')) ? 'selected' : '';
+
+            $options .= "<option data-islem-kodu=\"{$islemKodu}\" value=\"{$defineName}\" {$isSelected}>{$defineName}</option>";
         }
         return "<select name=\"{$name}\" id=\"{$name}\" class=\"form-select select2\">{$options}</select>";
     }
