@@ -11,6 +11,7 @@ $id = Security::decrypt($id ?? 0);
 
 $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
 
+
 //echo "<pre>"; print_r($gelirgidertipi); echo "</pre>"; exit;
 
 
@@ -89,7 +90,7 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-4 align-items-center">
+                                    <div class="row mb-4 align-items-center gelir-grubu">
 
                                         <div class="col-lg-2">
                                             <label for="" class="fw-semibold" id="gelir_grubu_label">Gelir Grubu: </label>
@@ -100,6 +101,18 @@ $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
                                                 <input type="text" class="form-control"
                                                     placeholder="Örn: AİDAT,DEMİRBAŞ..."
                                                     id="gelir_gider_tipi_name" name="gelir_gider_tipi_name" value="<?php echo $gelirgidertipi->define_name ?? ''; ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4 align-items-center gider-grubu d-none">
+
+                                        <div class="col-lg-2">
+                                            <label for="" class="fw-semibold" id="gelir_grubu_label">Gider Grubu: </label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="input-group flex-nowrap w-100">
+                                                <div class="input-group-text"><i class="feather-briefcase"></i></div>
+                                                <?php echo $Tanimlamalar->getGelirGrubuSelect('gelir_gider_tipi_name', $gelirgidertipi->define_name ?? ''); ?>
                                             </div>
                                         </div>
                                     </div>

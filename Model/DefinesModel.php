@@ -83,6 +83,30 @@ class DefinesModel extends Model
         return $sql->fetch(PDO::FETCH_OBJ); // sadece bir satır bekleniyorsa
     }
 
+    /**sitenin gelir grublarını select olarak al */
+    public function getGelirGrubuSelect($name, $selected){
+
+        $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
+        $sql = $this->db->prepare("SELECT id, define_name FROM $this->table 
+                                    WHERE type = :type 
+                                    AND site_id = :site_id 
+                                    AND silinme_tarihi IS NULL");
+        $sql->execute([
+            ':type' => self::TYPE_GELIR_TIPI,
+            ':site_id' => $site_id
+        ]);
+        $options = '';
+
+        while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
+            $options .= "<option value=\"{$row['define_name']}\" " . ($selected == $row['define_name'] ? 'selected' : '') . ">{$row['define_name']}</option>";
+        }
+        return "<select name=\"{$name}\" id=\"{$name}\" class=\"form-select select2\">{$options}</select>";
+    }
+
+
+
+
+
     /** Gelir veya gider tiplerini select için getirir
      * @param mixed $type
      * @return string

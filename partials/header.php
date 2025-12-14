@@ -145,7 +145,7 @@ try {
                     <?php if (Gate::isResident()) {
                         $currentSite = (new Site())->getCurrentSite();
                         if ($currentSite) {
-                            echo '<span class="ms-2 text-nowrap" style="color: #333;">' . htmlspecialchars($currentSite->site_adi ?? 'Site Adı Yok', ENT_QUOTES, 'UTF-8') . '</span>';
+                            echo '<span class="card-title ms-2 text-nowrap">' . htmlspecialchars($currentSite->site_adi ?? 'Site Adı Yok', ENT_QUOTES, 'UTF-8') . '</span>';
                         }
                     } else { ?>
                         <div class="input-group flex-nowrap w-100 p-0 site-select ps-3" style="min-width: 260px;">

@@ -87,25 +87,25 @@ if ($_POST["action"] == "excel_upload_peoples_resolve") {
                 continue;
             }
 
-            $siteAdi    = trim($rowData['Site Adı*'] ?? $rowData['Site Adı'] ?? '');
-            $blokAdi    = trim($rowData['Blok Adı*'] ?? $rowData['Blok Adı'] ?? '');
-            $daireKodu  = trim($rowData['Daire Kodu*'] ?? $rowData['Daire Kodu'] ?? '');
-            $daireNo    = trim($rowData['Daire No*'] ?? $rowData['Daire No'] ?? '');
-            $adiSoyadi  = trim($rowData['Adı Soyadı*'] ?? $rowData['Adı Soyadı'] ?? '');
-            $telefon    = trim($rowData['Telefon*'] ?? $rowData['Telefon'] ?? '');
-            $kimlikNo   = trim($rowData['Kimlik No*'] ?? $rowData['Kimlik No'] ?? '');
-            $dogumTarihi= trim(Date::convertExcelDate($rowData['Doğum Tarihi (gg.aa.yyyy)'] ?? $rowData['Doğum Tarihi'] ?? null) ?? '');
-            $cinsiyetRaw= trim($rowData['Cinsiyet (Erkek/Kadın)'] ?? $rowData['Cinsiyet (E/K)'] ?? $rowData['Cinsiyet'] ?? '');
-            $uyelikTipi = trim($rowData['Uyeliği (Kat Maliki/Kiracı)'] ?? $rowData['Uyelik Turu'] ?? $rowData['Uyelik Türü'] ?? 'Kat Maliki');
-            $eposta     = $rowData['Eposta'] ?? $rowData['E-posta'] ?? null;
-            $adres      = trim($rowData['Adres'] ?? '');
-            $notlar     = trim($rowData['Notlar'] ?? '');
-            $satinalma  = trim(Date::convertExcelDate($rowData['Satin Alma Tarihi'] ?? $rowData['Satın Alma Tarihi'] ?? null) ?? '');
-            $girisTarihi= trim(Date::convertExcelDate($rowData['Giriş Tarihi'] ?? null) ?? '');
-            $cikisTarihi= trim(Date::convertExcelDate($rowData['Çıkış Tarihi'] ?? $rowData['Cikis Tarihi'] ?? null) ?? '');
-            $aktifMiRaw = trim($rowData['Aktiflik Durumu'] ?? '1');
-            $mulkTipiName = trim(($rowData['Mülk Tipi'] ?? $rowData['Mülk Tipi*'] ?? $rowData['MulkTipi'] ?? $rowData['Mülk tipi'] ?? $rowData['Mülk Tipi (Konut/İşyeri)'] ?? 'Konut'));
-            $daireTipiName = trim(($rowData['Daire Tipi'] ?? $rowData['Daire Tipi*'] ?? $rowData['DaireTipi'] ?? $rowData['Daire tipi'] ?? $rowData['Daire Tipi (Konut/İşyeri)'] ?? '3+1'));
+            $siteAdi        = trim($rowData['Site Adı*'] ?? $rowData['Site Adı'] ?? '');
+            $blokAdi        = trim($rowData['Blok Adı*'] ?? $rowData['Blok Adı'] ?? '');
+            $daireKodu      = trim($rowData['Daire Kodu*'] ?? $rowData['Daire Kodu'] ?? '');
+            $daireNo        = trim($rowData['Daire No*'] ?? $rowData['Daire No'] ?? '');
+            $adiSoyadi      = trim($rowData['Adı Soyadı*'] ?? $rowData['Adı Soyadı'] ?? '');
+            $telefon        = trim($rowData['Telefon*'] ?? $rowData['Telefon'] ?? '');
+            $kimlikNo       = trim($rowData['Kimlik No*'] ?? $rowData['Kimlik No'] ?? '');
+            $dogumTarihi    = trim(Date::convertExcelDate($rowData['Doğum Tarihi (gg.aa.yyyy)'] ?? $rowData['Doğum Tarihi'] ?? null) ?? '');
+            $cinsiyetRaw    = trim($rowData['Cinsiyet (Erkek/Kadın)'] ?? $rowData['Cinsiyet (E/K)'] ?? $rowData['Cinsiyet'] ?? '');
+            $uyelikTipi     = trim($rowData['Uyeliği (Kat Maliki/Kiracı)'] ?? $rowData['Uyelik Turu'] ?? $rowData['Uyelik Türü'] ?? 'Kat Maliki');
+            $eposta         = $rowData['Eposta'] ?? $rowData['E-posta'] ?? null;
+            $adres          = trim($rowData['Adres'] ?? '');
+            $notlar         = trim($rowData['Notlar'] ?? '');
+            $satinalma      = trim(Date::convertExcelDate($rowData['Satin Alma Tarihi'] ?? $rowData['Satın Alma Tarihi'] ?? null) ?? '');
+            $girisTarihi    = trim(Date::convertExcelDate($rowData['Giriş Tarihi'] ?? null) ?? '');
+            $cikisTarihi    = trim(Date::convertExcelDate($rowData['Çıkış Tarihi'] ?? $rowData['Cikis Tarihi'] ?? null) ?? '');
+            $aktifMiRaw     = trim($rowData['Aktiflik Durumu'] ?? '1');
+            $mulkTipiName   = trim(($rowData['Mülk Tipi'] ?? $rowData['Mülk Tipi*'] ?? $rowData['MulkTipi'] ?? $rowData['Mülk tipi'] ?? $rowData['Mülk Tipi (Konut/İşyeri)'] ?? 'Konut'));
+            $daireTipiName  = trim(($rowData['Daire Tipi'] ?? $rowData['Daire Tipi*'] ?? $rowData['DaireTipi'] ?? $rowData['Daire tipi'] ?? $rowData['Daire Tipi (Konut/İşyeri)'] ?? '3+1'));
 
             if (empty($siteAdi) || empty($blokAdi) || (empty($daireKodu) && empty($daireNo)) || empty($adiSoyadi)) {
                 $errorRows[] = [
