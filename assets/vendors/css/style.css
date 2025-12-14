@@ -216,7 +216,9 @@ table thead tr:first-child th {
 html.app-skin-dark table thead tr:first-child th{
     background-color: #121a2d !important;
 }
-
+html.app-skin-dark .apexcharts-yaxis,.apexcharts-xaxis{
+    color: #fff !important;
+}
 
 #gelirGiderTable_wrapper .dataTables_filter {
   display: none !important;

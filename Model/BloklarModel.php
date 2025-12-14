@@ -45,7 +45,14 @@ class BloklarModel extends Model
     }
     public function SitedekiDaireSayisi($site_id)
     {
-        $sql = $this->db->prepare("SELECT daire_sayisi FROM $this->table WHERE site_id = ?");
+        $sql = $this->db->prepare("SELECT 
+                                        b.id,
+                                        COALESCE(NULLIF(b.daire_sayisi, 0), COUNT(d.id)) AS daire_sayisi
+                                    FROM bloklar b
+                                    LEFT JOIN daireler d ON d.blok_id = b.id
+                                    WHERE b.site_id = ?
+                                    GROUP BY b.id;
+                                    ");
         $sql->execute([$site_id]);
         $results = $sql->fetchAll(PDO::FETCH_OBJ);
         $total = 0;

@@ -58,11 +58,17 @@ class SitelerModel extends Model
 
                 if (!empty($siteIds)) {
                     $placeholders = implode(',', array_fill(0, count($siteIds), '?'));
-                    $sql = $this->db->prepare("SELECT * FROM $this->table 
-                                                WHERE user_id = ?
-                                                  AND silinme_tarihi IS NULL
-                                                  AND id IN ($placeholders)
-                                                ORDER BY favori_mi DESC, click_count DESC, aktif_mi DESC, site_adi ASC");
+                    $sql = $this->db->prepare("SELECT s.*,
+                                                COALESCE(
+                                                    b.daire_sayisi,
+                                                    (SELECT COUNT(d.id) FROM daireler d WHERE d.blok_id = b.id)
+                                                ) AS daire_sayisi
+                                                FROM $this->table s 
+                                                LEFT JOIN bloklar b ON s.id = b.site_id
+                                                WHERE s.user_id = ?
+                                                  AND s.silinme_tarihi IS NULL
+                                                  AND s.id IN ($placeholders)
+                                                ORDER BY s.favori_mi DESC, s.click_count DESC, s.aktif_mi DESC, s.site_adi ASC");
 
                     $params = array_merge([$ownerId], $siteIds);
                     $sql->execute($params);
