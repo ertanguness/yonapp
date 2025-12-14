@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use Model\UserModel;
+use Database\Db;
+use PDOException;
 use App\Services\Gate;
 use Model\DefinesModel;
 use App\Helper\Security;
@@ -64,7 +66,16 @@ class RegisterActivateController
             
             
             } else {
+                
+                /**transaction başlat */
+                try {
+                    
+               
+                $db = Db::getInstance();
+                $db->beginTransaction();
+                
                 $User->ActivateUser($email);
+
 
                 /**Varsayilan site oluştur */
                 $SiteModel = new SitelerModel();
@@ -79,7 +90,7 @@ class RegisterActivateController
                 $KasaModel = new kasamodel();
                 $data = [
                     "id" => 0,
-                    "site_id" => $lastSiteId,
+                    "site_id" => Security::decrypt($lastSiteId),
                     "kasa_adi" => "Ai̇dat Kasasi",
                     "aktif_mi" => 1,
                     "kasa_tipi" => "Banka",
@@ -95,23 +106,30 @@ class RegisterActivateController
                 foreach ($type as $item) {
                     $DefinesModel->saveWithAttr([
                         "id" => 0,
-                        "site_id" => $lastSiteId,
+                        "site_id" => Security::decrypt($lastSiteId),
+                        "type" => 3,
                         "define_name" => $item,
                         "mulk_tipi" => $item == "İsyeri" ? "İşyeri" : "Konut",
                         "description" => "İlk Kayıtta eklendi",
                     ]);
                 }
                
-
-
-                FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!', "onay2.png");
-
-
+                
+                
+                
                 /**Site sakini ise mail metnine sakin ekle */
                 $sakin = $user->kisi_id > 0 ? " (Site Sakini)" : "";
-
-
                 MailGonderService::gonder(["beyzade83@gmail.com", "bilgekazaz@gmail.com", "ertanguness@gmail.com"], $user->full_name, $user->full_name .  $sakin . " isimli kullanıcı hesabını aktifleştirdi.");
+                
+                FlashMessageService::add('success', 'Başarılı!', 'Hesabınız başarı ile aktifleştirildi!', "onay2.png");
+                $db->commit();
+                
+             } catch (PDOException $ex) {
+                $db->rollBack();
+                FlashMessageService::add('error', 'Hata!', 'Kullanıcı aktifleştirilirken bir hata oluştu: ' . $ex->getMessage());
+            
+            }
+
             }
         }
         return $token_renegate;
