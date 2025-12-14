@@ -16,8 +16,8 @@ Gate::authorizeOrDie('announcements_admin_page');
 $id = $id ?? 0;
 
 $duyuru = $DuyuruModel->find($id,true);
-$hedef_kisiler = json_decode($duyuru->target_ids);
-$hedef_bloklar = json_decode($duyuru->target_ids);
+$hedef_kisiler = json_decode($duyuru->target_ids ?? '');
+$hedef_bloklar = json_decode($duyuru->target_ids ?? '');
 //Helper::dd($hedef_bloklar);
 
 
