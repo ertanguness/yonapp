@@ -11,7 +11,7 @@ $id = Security::decrypt($id ?? 0);
 
 $gelirgidertipi = $Tanimlamalar->getGelirGiderTipi($id);
 $type = $gelirgidertipi->type ?? 6;
-
+$islem_tipi = $type == 7 ? 'Gider' : 'Gelir';
 
 
 //echo "<pre>"; print_r($gelirgidertipi); echo "</pre>"; exit;
@@ -81,7 +81,7 @@ $type = $gelirgidertipi->type ?? 6;
                                     <div class="row mb-4 align-items-center">
 
                                         <div class="col-lg-2">
-                                            <label for="islem_kodu" class="fw-semibold">İşlem Kodu: </label>
+                                            <label for="islem_kodu" class="fw-semibold islem-kodu"><?php echo $islem_tipi ?> Kodu: </label>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="input-group">

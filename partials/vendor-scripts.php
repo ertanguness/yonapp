@@ -18,8 +18,6 @@ if (
     $page == 'dues/dues-defines/list' ||
     $page == 'offers/list' ||
     $page == 'reports/list' ||
-    $page == 'superadmin' ||
-    $page == 'superadmin-ayarlar' ||
     $page == 'kullanici/list' ||
     $page == 'kullanici-gruplari' ||
     $page == 'bakim-ariza-takip' || $page == 'periyodik-bakim' ||  $page == 'maliyet-faturalandirma' ||

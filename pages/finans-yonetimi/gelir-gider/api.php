@@ -208,7 +208,7 @@ if ($_POST['action'] == 'kategori-getir') {
 
     try {
 
-        $kategoriler = $Tanımlamalar->getGelirGiderKategorileri($type);
+        $kategoriler = $Tanımlamalar->getGelirGiderKategorileri($type,true);
 
         $status = "success";
         $message = "Kayıt bulundu.";
