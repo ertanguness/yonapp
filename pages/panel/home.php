@@ -17,12 +17,12 @@ $creators = $sitesModel->getCreatorsSummary();
     
     <div class="row row-deck row-cards">
         <div class="col-12">
-            <div class="card">
+            <div class="card" id="registeredSitesCard">
                 <div class="card-header">
                     <h3 class="card-title">Kayıtlı Siteler</h3>
                 </div>
                 <div class="table-responsive">
-                      <table class="table table-hover datatables" id="panelList">
+                      <table class="table table-hover datatables">
                         <thead>
                             <tr>
                                 <th class="w-1">No.</th>
@@ -33,7 +33,7 @@ $creators = $sitesModel->getCreatorsSummary();
                                 <th class="w-1">Detay</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="text-center">
                             <?php foreach ($creators as $index => $creator): ?>
                             <tr>
                                 <td><span class="text-muted"><?php echo $index + 1; ?></span></td>
@@ -49,13 +49,15 @@ $creators = $sitesModel->getCreatorsSummary();
                                 <td>
                                     <?php echo htmlspecialchars($creator->creator_email ?? '-'); ?>
                                 </td>
-                                <td>
-                                    <button 
-                                        class="btn btn-sm btn-outline-primary show-site-detail" 
-                                        data-user-id="<?php echo (int)$creator->user_id; ?>" 
-                                        data-user-name="<?php echo htmlspecialchars($creator->creator_name ?? ''); ?>">
-                                        Detay
-                                    </button>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center">
+                                        <button 
+                                            class="btn btn-sm btn-outline-primary show-site-detail" 
+                                            data-user-id="<?php echo (int)$creator->user_id; ?>" 
+                                            data-user-name="<?php echo htmlspecialchars($creator->creator_name ?? ''); ?>">
+                                            Detay
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -98,6 +100,9 @@ $creators = $sitesModel->getCreatorsSummary();
   transition: none !important;
   transform: none !important;
 }
+
+#registeredSitesCard { margin-bottom: 5px; } 
+.container-xl { padding-bottom: 60px; }
 </style>
 
  <script>
