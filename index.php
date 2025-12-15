@@ -68,8 +68,9 @@ $skipPagesForSiteCheck = [
     'superadmin-temsilciler',
     'temsilci-paneli'
 ];
+
 if (!in_array($page, $skipPagesForSiteCheck, true)) {
-     Security::ensureSiteSelected('/site-ekle');
+    // Security::ensureSiteSelected('/site-ekle');
  }
 
 // Seçim bağlamını header'dan önce güncelle
