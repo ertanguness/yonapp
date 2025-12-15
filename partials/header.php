@@ -147,7 +147,11 @@ try {
                         if ($currentSite) {
                             echo '<span class="card-title ms-2 text-nowrap">' . htmlspecialchars($currentSite->site_adi ?? 'Site Adı Yok', ENT_QUOTES, 'UTF-8') . '</span>';
                         }
-                    } else { ?>
+                    } else { 
+                        // Superadmin (10) veya Temsilci (15) ise site seçim kutusunu gösterme
+                        $currentUserRole = (int)($_SESSION['user_role'] ?? 0);
+                        if ($currentUserRole !== 10 && $currentUserRole !== 15) {
+                    ?>
                         <div class="input-group flex-nowrap w-100 p-0 site-select ps-3" style="min-width: 260px;">
                             <div class="input-group-text"><i class="feather-grid"></i></div>
                             <?php
@@ -159,7 +163,10 @@ try {
                             ?>
                         </div>
 
-                    <?php        }           ?>
+                    <?php        
+                        }
+                    }           
+                    ?>
 
                     <!-- Arama Kutusu -->
                     <?php if (!Gate::isResident()) { ?>
@@ -232,6 +239,11 @@ try {
                     </a>
                 </div>
 
+                <?php 
+                $currentUserRole = (int)($_SESSION['user_role'] ?? 0);
+                // Süper admin (10) ise profil dropdown'u GİZLE (İstek üzerine)
+                if ($currentUserRole !== 10) {
+                ?>
                 <div class="dropdown nxl-h-item">
                     <a href="javascript:void(0);" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
                         <img src="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>" alt="user-image" class="rounded-circle user-avtar me-0" />
@@ -401,6 +413,20 @@ try {
                         </a>
                     </div>
                 </div>
+                <?php 
+                } else {
+                    // SÜPER ADMIN İÇİN SADECE ÇIKIŞ BUTONU (veya hiçbir şey isteniyorsa boş bırakılır)
+                    // "sağ üstten girilen profil alanı çıkmasın onu ordan kaldır" dendiği için
+                    // tamamen kaldırıyoruz. Ancak çıkış yapabilmesi için bir buton eklemek mantıklı olur.
+                    // Eğer kesinlikle hiçbir şey istenmiyorsa aşağıdaki bloğu silebilirsiniz.
+                    // Şimdilik sadece bir "Çıkış" ikonu koyuyorum ki sistemde mahsur kalmasınlar.
+                ?>
+                    <div class="nxl-h-item">
+                        <a href="/logout" class="nxl-head-link me-0" title="Çıkış Yap">
+                            <i class="feather-log-out"></i>
+                        </a>
+                    </div>
+                <?php } ?>
             </div>
         </div>
         <!--! [End] Header Right !-->
