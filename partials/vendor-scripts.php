@@ -60,7 +60,8 @@ if (
     $page == "arac-yonetimi" ||
     $page == "kullanici-ekle" || $page == "kullanici-duzenle" ||
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
-    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri"
+    $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" ||
+    $page == "gecikmis-odemeler"
 ) { ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
  
@@ -289,7 +290,7 @@ if ($page == 'finans-yonetimi/kasa/duzenle' || $page == 'finans-yonetimi/kasa/li
 
 //************GELİR GİDER KAYDET************************************ */
 if ($page == 'gelir-gider-islemleri') {
-    echo '<script src="/pages/finans-yonetimi/gelir-gider/js/gelir-gider.js"></script>';
+    echo '<script src="/pages/finans-yonetimi/gelir-gider/js/gelir-gider.js?v=' . filemtime('pages/finans-yonetimi/gelir-gider/js/gelir-gider.js') . '"></script>';
 }
 
 //Payment upload from excel
