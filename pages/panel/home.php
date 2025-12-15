@@ -22,7 +22,7 @@ $creators = $sitesModel->getCreatorsSummary();
                     <h3 class="card-title">Kayıtlı Siteler</h3>
                 </div>
                 <div class="table-responsive">
-                      <table class="table table-hover" id="panelList">
+                      <table class="table table-hover datatables">
                         <thead>
                             <tr>
                                 <th class="w-1">No.</th>
@@ -111,52 +111,6 @@ $creators = $sitesModel->getCreatorsSummary();
     var siteDetailContent = document.getElementById('siteDetailContent');
     var bsModal;
     if (modalEl) { bsModal = new bootstrap.Modal(modalEl); }
-    function initDT(){
-        if (!(window.jQuery && $.fn.DataTable)) return;
-        var dt;
-        if ($.fn.dataTable.isDataTable('#panelList')) {
-            dt = $('#panelList').DataTable();
-        } else {
-            dt = $('#panelList').DataTable({
-                responsive: true,
-                pageLength: 10,
-                lengthMenu: [10, 25, 50, 100],
-                language: {
-                    sEmptyTable: "Tabloda herhangi bir veri mevcut değil",
-                    sInfo: "_TOTAL_ kayıttan _START_ - _END_ arasındaki kayıtlar gösteriliyor",
-                    sInfoEmpty: "Kayıt yok",
-                    sInfoFiltered: "(_MAX_ kayıt içerisinden bulunan)",
-                    sLengthMenu: "Sayfada _MENU_ kayıt göster",
-                    sLoadingRecords: "Yükleniyor...",
-                    sProcessing: "İşleniyor...",
-                    sSearch: "Ara:",
-                    sZeroRecords: "Eşleşen kayıt bulunamadı",
-                    oPaginate: {
-                        sFirst: "İlk",
-                        sLast: "Son",
-                        sNext: "Sonraki",
-                        sPrevious: "Önceki"
-                    }
-                }
-            });
-        }
-        if (dt) { dt.page.len(10).draw(); }
-    }
-    function ensureDT(){
-        return new Promise(function(resolve){
-            if (window.jQuery && $.fn.DataTable) { resolve(); return; }
-            var css = document.createElement('link');
-            css.rel = 'stylesheet';
-            css.href = 'https://cdn.datatables.net/v/bs5/dt-2.3.4/r-3.0.7/datatables.min.css';
-            document.head.appendChild(css);
-            var s = document.createElement('script');
-            s.src = 'https://cdn.datatables.net/v/bs5/dt-2.3.4/r-3.0.7/datatables.min.js';
-            s.onload = function(){ resolve(); };
-            s.onerror = function(){ resolve(); };
-            document.head.appendChild(s);
-        });
-    }
-    ensureDT().then(function(){ initDT(); });
     document.addEventListener('click', function(e){
         var btn = e.target.closest('.show-site-detail');
         if (!btn) return;
