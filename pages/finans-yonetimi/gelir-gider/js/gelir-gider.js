@@ -242,6 +242,13 @@ $(document).on('change', 'input[name="islem_tipi"]', function () {
     $('.islem-tipi-grup').text(label + ' Grubu');
     $('.islem-tipi-kalem').text(label + ' Kalemi');
 
+    /**İşlem tipi gelir ise gilze */
+    if (islemTipi === 'gelir') {
+        $('.islem-kalemi').addClass('d-none');
+    } else {
+        $('.islem-kalemi').removeClass('d-none');
+    }
+
     fetch(url, {
         method: 'POST',
         headers: {

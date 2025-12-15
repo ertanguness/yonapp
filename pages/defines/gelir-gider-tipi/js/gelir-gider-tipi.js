@@ -124,11 +124,13 @@ $(document).ready(function () {
       $('.gider-grubu').removeClass('d-none');
       $('.gelir-grubu').addClass('d-none');
       $('.gelir-kalemi').removeClass('d-none');
+      $('.islem-kodu').text('Gider Kodu');
     }
     if (window.islem_type == 'Gelir') {
       $('.gelir-grubu').removeClass('d-none');
       $('.gider-grubu').addClass('d-none');
       $('.gelir-kalemi').addClass('d-none');
+      $('.islem-kodu').text('Gelir Kodu');
     }
 
 

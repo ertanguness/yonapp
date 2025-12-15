@@ -124,7 +124,7 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
             <?php echo $Tanimlamalar->getGelirGiderTipiSelect("gelir_gider_grubu", $type_code, $kasaHareket->kategori ?? ''); ?>
         </div>
         <!-- Kategori -->
-        <div class="mb-3">
+        <div class="mb-3 islem-kalemi">
             <label for="kategori" class="form-label islem-tipi-kalem"><?= ucfirst($gelirGiderTipi); ?> Kalemi </label>
             <select name="gelir_gider_kalemi" id="gelir_gider_kalemi" class="form-select select2">
             </select>
