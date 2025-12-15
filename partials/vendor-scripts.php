@@ -383,6 +383,18 @@ echo '<script src="/assets/js/lock-screen.js"></script>';
 <!-- Fixes mobile hamburger menu toggle issues on some browsers -->
 <script src="/assets/js/hamburger-fix.js"></script>
 <script src="/pages/email-sms/js/sms.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations()
+        .then(regs => regs.forEach(reg => reg.unregister()));
+}
+</script>
+
+<script>
+if ('caches' in window) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+}
+</script>
 
 
 <!--<< All JS Plugins >>-->
