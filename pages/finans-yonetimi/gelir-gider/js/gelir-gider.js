@@ -56,32 +56,7 @@ $(document).on('click', '#gelirGiderKaydet', function () {
             swal.fire(title, text, data.status).then(() => {
 
                 if (data.status === "success") {
-                    // var islem_id = $('#islem_id').val();
-                    // if (islem_id == '' || islem_id == '0') {
-                    //     //Yeni eklenen işlemse tabloya ekle
-                    //     let rowArr = [
-                    //         data.rowData.islem_tarihi,
-                    //         data.rowData.islem_tipi,
-                    //         data.rowData.daire_kodu,
-                    //         data.rowData.hesap_adi,
-                    //         data.rowData.tutar,
-                    //         data.rowData.yuruyen_bakiye,
-                    //         data.rowData.kategori,
-                    //         data.rowData.makbuz_no,
-                    //         data.rowData.aciklama,
-                    //         data.rowData.islem_buttons
-                    //     ];
-                    //     let table = $('#gelirGiderTable').DataTable();
-                    //     let newRow = table.row.add(rowArr).draw(false).node();
-                    //     // Satırı en üste taşı
-                    //     $(newRow).prependTo(table.table().body());
-                    // } else {
-                    //     //Güncellenen işlemse tabloyu güncelle
-                    //     let rowData = data.rowData;
-                    //     let islemId = rowData.id;
-                    // }
-
-                    location.reload(); // Sayfayı yenile
+                table.ajax.reload();
                 }
             });
 
@@ -276,7 +251,7 @@ $(document).on('change', 'input[name="islem_tipi"]', function () {
                     gelirGiderKalemleriGetir();
                 }
 
-                // Select2'yi güncelle
+                //// Select2'yi güncelle
                 kategoriSelect.trigger('change');
             } else {
                 swal.fire("Hata!", data.message, "error");
@@ -294,11 +269,14 @@ $(document).on('change', '#gelir_gider_grubu', function (e) {
 function gelirGiderKalemleriGetir() {
     var type = $("input[name='islem_tipi']:checked").val() == "gider" ? 7 : 6;
     var $selected = $('#gelir_gider_grubu').find('option:selected');
+   
+
 
     // Kategori seçilmediyse fonksiyondan çık
     if ($selected.length === 0 || !$selected.val()) {
         return;
     }
+
 
     // define_name'i data-name attribute'undan al; yoksa text'i kullan
     var category = $selected.data('name') || $selected.text();

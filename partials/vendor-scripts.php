@@ -18,8 +18,6 @@ if (
     $page == 'dues/dues-defines/list' ||
     $page == 'offers/list' ||
     $page == 'reports/list' ||
-    $page == 'superadmin' ||
-    $page == 'superadmin-ayarlar' ||
     $page == 'kullanici/list' ||
     $page == 'kullanici-gruplari' ||
     $page == 'bakim-ariza-takip' || $page == 'periyodik-bakim' ||  $page == 'maliyet-faturalandirma' ||
@@ -63,9 +61,7 @@ if (
     $page == "kullanici-ekle" || $page == "kullanici-duzenle" ||
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
     $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" ||
-    $page == "gecikmis-odemeler"
-    ||
-    $page == "superadmin"
+    $page == "superadmin-anasayfa" || $page == "superadmin-panel" || $page == "superadmin-temsilciler" || $page == "superadmin"
 ) { 
     ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -75,6 +71,61 @@ if (
     <script src="/assets/vendors/js/dataTables.bs5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    <script>
+        (function(){
+            function initDtIn(root){
+                if (!root || !window.jQuery) return;
+                $(root).find('.datatables').each(function(){
+                    if (!$.fn.DataTable) return;
+                    if ($.fn.DataTable.isDataTable(this)) return;
+                    try {
+                        if (typeof window.initDataTable === 'function') {
+                            window.initDataTable(this, {
+                                responsive: true,
+                                order: [[1, 'desc']],
+                                pageLength: 12,
+                                language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
+                            });
+                        } else {
+                            $(this).DataTable({
+                                responsive: true,
+                                order: [[1, 'desc']],
+                                pageLength: 12,
+                                language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
+                            });
+                        }
+                    } catch(e){ console.warn('DataTables init error', e); }
+                });
+            }
+            function initObserver(){
+                var target = document.getElementById('siteDetailContent');
+                if (!target) return;
+                initDtIn(target);
+                var observer = new MutationObserver(function(muts){
+                    muts.forEach(function(m){
+                        if (m.addedNodes && m.addedNodes.length) {
+                            initDtIn(target);
+                        }
+                    });
+                });
+                observer.observe(target, { childList: true, subtree: true });
+            }
+            function onReady(){
+                initObserver();
+                var modalEl = document.getElementById('siteDetailModal');
+                if (modalEl) {
+                    modalEl.addEventListener('shown.bs.modal', function(){
+                        initDtIn(document.getElementById('siteDetailContent'));
+                    });
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', onReady);
+            } else {
+                onReady();
+            }
+        })();
+    </script>
 <?php  }
 
 //*************USERS********************************* */
@@ -295,7 +346,7 @@ if ($page == 'finans-yonetimi/kasa/duzenle' || $page == 'finans-yonetimi/kasa/li
 
 //************GELİR GİDER KAYDET************************************ */
 if ($page == 'gelir-gider-islemleri') {
-    echo '<script src="/pages/finans-yonetimi/gelir-gider/js/gelir-gider.js?v=' . filemtime('pages/finans-yonetimi/gelir-gider/js/gelir-gider.js') . '"></script>';
+    echo '<script src="/pages/finans-yonetimi/gelir-gider/js/gelir-gider.js"></script>';
 }
 
 //Payment upload from excel

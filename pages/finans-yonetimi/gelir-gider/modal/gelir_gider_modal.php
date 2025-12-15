@@ -26,6 +26,9 @@ $checked_gelir = ($gelirGiderTipi == 'gelir') ? 'checked' : '';
 $checked_gider = ($gelirGiderTipi == 'gider') ? 'checked' : '';
 $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
 
+
+
+
 ?>
 <style>
     #islem_tipi_gider.card-input-element:checked+.card {
@@ -121,7 +124,13 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
         <!-- Kategori -->
         <div class="mb-3">
             <label for="kategori" class="form-label islem-tipi-grup"><?= ucfirst($gelirGiderTipi); ?> Grubu *</label>
-            <?php echo $Tanimlamalar->getGelirGiderTipiSelect("gelir_gider_grubu", $type_code, $kasaHareket->kategori ?? ''); ?>
+
+
+
+            <?php echo $Tanimlamalar->getGelirGiderTipiSelect(
+                                        "gelir_gider_grubu", 
+                                        $type_code, 
+                                        $kasaHareket->kategori ?? ''); ?>
         </div>
         <!-- Kategori -->
         <div class="mb-3 islem-kalemi">

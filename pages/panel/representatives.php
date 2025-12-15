@@ -1,6 +1,22 @@
 <?php
 use Model\SitelerModel;
 use Model\UserModel;
+
+$db = \getDbConnection();
+
+// Temsilcileri Çek
+$ownerId = (int)($_SESSION['owner_id'] ?? 0);
+$stmt = $db->prepare("
+    SELECT u.id, u.full_name, u.phone, u.email, u.rep_iban AS iban, u.created_at,
+           (SELECT COUNT(*) FROM representative_site_assignments a WHERE a.representative_id = u.id) AS assigned_count
+    FROM users u
+    LEFT JOIN user_roles r ON u.roles = r.id
+    WHERE r.role_name = 'Temsilci' AND (r.owner_id = :owner OR r.owner_id IS NULL)
+    ORDER BY u.full_name ASC
+");
+$stmt->execute(['owner' => $ownerId]);
+$representatives = $stmt->fetchAll(PDO::FETCH_OBJ);
+
 ?>
 <div class="container-xl">
   <?php
@@ -19,7 +35,7 @@ use Model\UserModel;
           </button>
         </div>
         <div class="table-responsive">
-          <table class="table table-hover " id="repList">
+          <table class="table table-hover datatables w-100" id="repList">
             <thead>
               <tr>
                 <th class="w-1">No.</th>
@@ -31,11 +47,27 @@ use Model\UserModel;
                 <th class="w-1">İşlem</th>
               </tr>
             </thead>
-            <tbody id="repListBody">
-              <tr>
-                <td class="text-center text-muted">Yükleniyor...</td>
-                <td></td><td></td><td></td><td></td><td></td><td></td>
+            <tbody>
+              <?php foreach($representatives as $index => $rep): 
+                  $kt = $rep->created_at ? date('d.m.Y', strtotime($rep->created_at)) : '-';
+                  $ktSort = $rep->created_at ? strtotime($rep->created_at) : 0;
+              ?>
+              <tr class="text-center">
+                <td><span class="text-muted"><?php echo $index + 1; ?></span></td>
+                <td><?php echo htmlspecialchars($rep->full_name ?? '-'); ?></td>
+                <td><?php echo htmlspecialchars($rep->phone ?? '-'); ?></td>
+                <td><?php echo htmlspecialchars($rep->email ?? '-'); ?></td>
+                <td><?php echo htmlspecialchars($rep->iban ?? '-'); ?></td>
+                <td data-order="<?php echo $ktSort; ?>"><?php echo $kt; ?></td>
+                <td>
+                  <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-outline-primary rep-detail" data-rep-id="<?php echo $rep->id; ?>" title="Detay"><i class="feather-info"></i></button>
+                    <button class="btn btn-outline-secondary rep-edit" data-rep-id="<?php echo $rep->id; ?>" title="Düzenle"><i class="feather-edit-2"></i></button>
+                    <button class="btn btn-outline-danger rep-delete" data-rep-id="<?php echo $rep->id; ?>" title="Sil"><i class="feather-trash-2"></i></button>
+                  </div>
+                </td>
               </tr>
+              <?php endforeach; ?>
             </tbody>
           </table>
         </div>
@@ -69,117 +101,50 @@ document.addEventListener('DOMContentLoaded', function(){
   var repModalEl = document.getElementById('repManageModal');
   var repModal = repModalEl ? new bootstrap.Modal(repModalEl) : null;
   var repContent = document.getElementById('repManageContent');
-  var repListBody = document.getElementById('repListBody');
 
-  function loadRepList(){
-    var fd = new FormData();
-    fd.append('action','rep_list');
-    fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
-      .then(function(r){ return r.text(); })
-      .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
-      .then(function(j){
-        if (!j || j.status !== 'success') {
-          repListBody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Liste yüklenemedi</td></tr>';
-          return;
-        }
-        var list = j.data || [];
-        if (!list.length) {
-          repListBody.innerHTML = '<tr><td class="text-center text-muted">Temsilci bulunamadı</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
-          return;
-        }
-        repListBody.innerHTML = list.map(function(x, idx){
-          var kt = (function(){
-            try { return x.created_at ? new Date(x.created_at).toLocaleDateString('tr-TR') : '-'; } catch(e){ return x.created_at || '-'; }
-          })();
-          var ktOrder = (function(){
-            try { return x.created_at ? new Date(x.created_at).getTime() : 0; } catch(e){ return 0; }
-          })();
-          return `
-            <tr class="text-center">
-              <td><span class="text-muted">${idx+1}</span></td>
-              <td>${x.full_name || '-'}</td>
-              <td>${x.phone || '-'}</td>
-              <td>${x.email || '-'}</td>
-              <td>${x.iban || '-'}</td>
-              <td data-order="${ktOrder}" data-search="${x.created_at||''}">${kt}</td>
-              <td>
-                <div class="btn-group btn-group-sm" role="group">
-                  <button class="btn btn-outline-primary rep-detail" data-rep-id="${x.id}" title="Detay"><i class="feather-info"></i></button>
-                  <button class="btn btn-outline-secondary rep-edit" data-rep-id="${x.id}" title="Düzenle"><i class="feather-edit-2"></i></button>
-                  <button class="btn btn-outline-danger rep-delete" data-rep-id="${x.id}" title="Sil"><i class="feather-trash-2"></i></button>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
-        try {
-          if (list.length > 0) {
-            if ($.fn.DataTable.isDataTable('#repList')) {
-              $('#repList').DataTable().destroy();
+  // Event Delegation for buttons (since DataTables might re-render rows)
+  document.addEventListener('click', function(e){
+    // Detail Button
+    if(e.target.closest('.rep-detail')){
+        var btn = e.target.closest('.rep-detail');
+        var repId = btn.getAttribute('data-rep-id');
+        showRepManage(repId);
+    }
+    // Edit Button
+    if(e.target.closest('.rep-edit')){
+        var btn = e.target.closest('.rep-edit');
+        var repId = btn.getAttribute('data-rep-id');
+        openRepEdit(repId);
+    }
+    // Delete Button
+    if(e.target.closest('.rep-delete')){
+        var btn = e.target.closest('.rep-delete');
+        var repId = btn.getAttribute('data-rep-id');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Temsilciyi Sil',
+            text: 'Bu işlem temsilciyi ve ilişkili kayıtları siler. Emin misiniz?',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, Sil',
+            cancelButtonText: 'İptal'
+        }).then(function(res){
+            if (res.isConfirmed) {
+                var fd = new FormData();
+                fd.append('action','rep_delete');
+                fd.append('rep_id', repId);
+                fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' })
+                .then(function(r){ return r.text(); })
+                .then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } })
+                .then(function(jj){
+                    if (jj && jj.status === 'success') { 
+                        location.reload(); // Basitçe sayfayı yenile
+                    }
+                    else { Swal.fire('Hata', (jj && jj.message) ? jj.message : 'Silme başarısız', 'error'); }
+                });
             }
-            $('#repList').DataTable({
-              responsive: true,
-              order: [[5, 'desc']],
-              language: {
-                sEmptyTable: "Tabloda herhangi bir veri mevcut değil",
-                sInfo: "_TOTAL_ kayıttan _START_ - _END_ arasındaki kayıtlar gösteriliyor",
-                sInfoEmpty: "Kayıt yok",
-                sInfoFiltered: "(_MAX_ kayıt içerisinden bulunan)",
-                sLengthMenu: "Sayfada _MENU_ kayıt göster",
-                sLoadingRecords: "Yükleniyor...",
-                sProcessing: "İşleniyor...",
-                sSearch: "Ara:",
-                sZeroRecords: "Eşleşen kayıt bulunamadı",
-                oPaginate: {
-                  sFirst: "İlk",
-                  sLast: "Son",
-                  sNext: "Sonraki",
-                  sPrevious: "Önceki"
-                }
-              }
-            });
-          }
-        } catch(e) { console.warn('DataTable init error', e); }
-        document.querySelectorAll('.rep-detail').forEach(function(btn){
-          btn.addEventListener('click', function(){
-            var repId = this.getAttribute('data-rep-id');
-            showRepManage(repId);
-          });
         });
-        document.querySelectorAll('.rep-edit').forEach(function(btn){
-          btn.addEventListener('click', function(){
-            var repId = this.getAttribute('data-rep-id');
-            openRepEdit(repId);
-          });
-        });
-        document.querySelectorAll('.rep-delete').forEach(function(btn){
-          btn.addEventListener('click', function(){
-            var repId = this.getAttribute('data-rep-id');
-            Swal.fire({
-              icon: 'warning',
-              title: 'Temsilciyi Sil',
-              text: 'Bu işlem temsilciyi ve ilişkili kayıtları siler. Emin misiniz?',
-              showCancelButton: true,
-              confirmButtonText: 'Evet, Sil',
-              cancelButtonText: 'İptal'
-            }).then(function(res){
-          if (res.isConfirmed) {
-            var fd = new FormData();
-            fd.append('action','rep_delete');
-            fd.append('rep_id', repId);
-            fetch((window.API_BASE||'') + '/pages/panel/api.php', { method:'POST', body: fd, credentials: 'same-origin' }).then(function(r){ return r.text(); }).then(function(t){ try { return JSON.parse(t); } catch(e){ return {status:'error'}; } }).then(function(jj){
-              if (jj && jj.status === 'success') { loadRepList(); }
-              else { Swal.fire('Hata', (jj && jj.message) ? jj.message : 'Silme başarısız', 'error'); }
-            });
-          }
-        });
-          });
-        });
-      })
-      .catch(function(){
-        repListBody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">İstek hatası</td></tr>';
-      });
-  }
+    }
+  });
 
   function openRepEdit(repId){
     var fd = new FormData();
@@ -268,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function(){
           });
         }
       }).then(function(res){
-        if (res.value && res.value.status === 'success') { loadRepList(); }
+        if (res.value && res.value.status === 'success') { location.reload(); }
       });
     });
   }
@@ -312,21 +277,47 @@ document.addEventListener('DOMContentLoaded', function(){
           `;
         }).join('');
         var schedRows = schedule.map(function(row){
+          var parts = row.period.split('-');
+          var pY = parseInt(parts[0], 10);
+          var pM = parseInt(parts[1], 10);
+          var now = new Date();
+          var curY = now.getFullYear();
+          var curM = now.getMonth() + 1;
+          
+          var siteStatusHtml = '';
+          if (row.site_paid) {
+            siteStatusHtml = '<span class="badge bg-success">Ödendi</span>';
+          } else {
+             if (pY > curY || (pY === curY && pM > curM)) {
+                 siteStatusHtml = '<span class="badge bg-secondary">Vadesi Gelmemiş</span>';
+             } else if (pY === curY && pM === curM) {
+                 siteStatusHtml = '<span class="badge bg-warning">Ödeme Bekliyor</span>';
+             } else {
+                 siteStatusHtml = '<span class="badge bg-danger">Ödenmedi</span>';
+             }
+          }
+
           var ico = row.paid ? 'check-circle' : 'x-circle';
           var cls = row.paid ? 'btn-success' : 'btn-outline-danger';
+          var isDisabled = !row.site_paid;
+          var btnTitle = isDisabled ? 'Site ödemesi yapılmadığı için işlem yapılamaz' : (row.paid ? 'Ödenmedi olarak işaretle' : 'Ödendi olarak işaretle');
+
           return `
             <tr>
               <td>${row.site_name || ''}</td>
               <td>${row.period}</td>
-              <td>${row.site_paid ? '<span class="badge bg-success">Site Ödendi</span>' : '<span class="badge bg-warning">Site Beklemede</span>'}</td>
+              <td>${siteStatusHtml}</td>
               <td>${row.amount.toFixed ? row.amount.toFixed(2) : row.amount}</td>
               <td>${row.paid_at || '-'}</td>
               <td class="text-end">
-                <button class="btn btn-sm btn-icon rep-paid-toggle ${cls}" 
-                        data-rep-id="${rep.id}" data-site-id="${row.site_id}" data-period="${row.period}" 
-                        data-paid="${row.paid?1:0}" data-amount="${row.amount}">
-                  <i class="feather-${ico}"></i>
-                </button>
+                <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="${btnTitle}">
+                    <button class="btn btn-sm btn-icon rep-paid-toggle ${cls}" 
+                            data-rep-id="${rep.id}" data-site-id="${row.site_id}" data-period="${row.period}" 
+                            data-paid="${row.paid?1:0}" data-amount="${row.amount}"
+                            ${isDisabled ? 'disabled style="pointer-events: none;"' : ''}>
+                      <i class="feather-${ico}"></i>
+                    </button>
+                </span>
               </td>
             </tr>
           `;
@@ -462,6 +453,13 @@ document.addEventListener('DOMContentLoaded', function(){
             });
           });
         }
+        
+        // Initialize tooltips
+        (function(){
+            var tEls = [].slice.call(repContent.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tEls.forEach(function(el){ try { new bootstrap.Tooltip(el); } catch(e){} });
+        })();
+
         // initialize select2 for site select in modal
         try { $('#assignSiteSel').select2({ theme: 'bootstrap-5', width: '100%', placeholder: 'Site seç' }); } catch(e){}
         var assignBtn = repContent.querySelector('#assignAddBtn');
@@ -678,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function(){
             $('#repPhone').mask('0(000) 000 00 00');
             $('#repIban').mask('TR00 0000 0000 0000 0000 0000 00');
           } else {
-            // Basit fallback: giriş uzunluğunu sınırlama ve otomatik biçimlendirme
+            // Basit fallback
             var p = document.getElementById('repPhone');
             if (p) {
               p.addEventListener('input', function(){
@@ -743,10 +741,8 @@ document.addEventListener('DOMContentLoaded', function(){
         });
       }
     }).then(function(res){
-      if (res.value && res.value.status === 'success') { loadRepList(); }
+      if (res.value && res.value.status === 'success') { location.reload(); }
     });
   });
-
-  loadRepList();
 }); 
 </script>

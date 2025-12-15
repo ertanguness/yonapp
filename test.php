@@ -1,12 +1,13 @@
 <?php
 
 require_once  'configs/bootstrap.php';
-$_SESSION['site_id'] = '1';
+$_SESSION['site_id'] = '39';
 
 
 use Model\KisilerModel;
 use Model\DefinesModel;
 use Model\DuyuruModel;
+
 // use App\Services\SmsGonderService;
 
 // echo SmsGonderService::gonder(
@@ -18,7 +19,9 @@ $KisiModel = new KisilerModel();
 $DefinesModel = new DefinesModel();
 $DuyuruModel = new DuyuruModel();
 
-$duyuru = $DuyuruModel->sakinDuyurulari(171);
+//$duyuru = $DuyuruModel->sakinDuyurulari(171);
+
+$gelirGiderTipiSelect = $DefinesModel->getGelirGiderTipiSelect("gelir_gider_grubu", 6, "");
 echo '<pre>';
-print_r($duyuru);
+print_r($gelirGiderTipiSelect);
 echo '</pre>';

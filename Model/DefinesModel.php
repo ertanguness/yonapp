@@ -2,7 +2,7 @@
 
 namespace Model;
 
-
+use App\Helper\Helper;
 use Model\Model;
 use PDO;
 
@@ -29,7 +29,7 @@ class DefinesModel extends Model
             $site_id = $_SESSION['site_id']; // aktif site ID’sini alıyoruz
             $gelirTipi = self::TYPE_GELIR_TIPI;
             $giderTipi = self::TYPE_GIDER_TIPI;
-            $groupSql = $groupByDefineName ? ' GROUP BY d.define_name ' : '';
+            $groupSql = $groupByDefineName ? ' GROUP BY d.define_name,type ' : '';
             $sql = $this->db->prepare("SELECT d.*,
                                                 case 
                                                     when d.type = :gelirTipi then 'Gelir'
@@ -115,16 +115,19 @@ class DefinesModel extends Model
      * @param mixed $type
      * @return string
      */
-    public function getGelirGiderTipiSelect($name, $type, $selected)
+    public function getGelirGiderTipiSelect($name, int $type, $selected)
     {
         $tipler = $this->getGelirGiderTipleri(true);
         $options = '';
+      
         foreach ($tipler as $tip) {
             if ($tip->type == $type) {
                 $isSelected = ($tip->define_name == $selected) ? 'selected' : '';
                 $options .= "<option value=\"{$tip->id}\" {$isSelected}>{$tip->define_name}</option>";
             }
+     
         }
+        
         return "<select name=\"{$name}\" id=\"{$name}\" class=\"form-select select2\">{$options}</select>";
     }
 

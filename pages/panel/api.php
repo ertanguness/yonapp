@@ -45,10 +45,14 @@ if ($action === 'creator_sites') {
             try {
                 $start = new \DateTime($startDate);
                 $cur = new \DateTime();
-                $periods = new \DatePeriod($start, new \DateInterval('P1M'), $cur->modify('first day of next month'));
-                $cnt = 0;
+                $cur->modify('first day of next month'); // Gelecek ayın ilk gününe kadar
+                
+                // Başlangıç tarihinden bugüne kadar olan ayları al
+                $periods = new \DatePeriod($start, new \DateInterval('P1M'), $cur);
+                
+                $now = new \DateTime();
+                
                 foreach ($periods as $p) {
-                    if ($cnt >= 12) break;
                     $ym = $p->format('Y-m');
                     $paid = false;
                     try {
@@ -56,9 +60,51 @@ if ($action === 'creator_sites') {
                     } catch (\Throwable $e) {
                         $paid = false;
                     }
-                    $schedule[] = ['period' => $ym, 'amount' => round($monthlyTotal,2), 'paid' => $paid ? 1 : 0];
-                    $cnt++;
+                    
+                    // Ödeme Durumu Belirleme
+                    $statusText = '';
+                    $statusClass = '';
+                    
+                    if ($paid) {
+                        $statusText = 'Ödendi';
+                        $statusClass = 'success';
+                    } else {
+                        // Vade günü kontrolü: Son ödeme tarihi BİR SONRAKİ AYIN due_day'ine göre
+                        $year = (int)$p->format('Y');
+                        $month = (int)$p->format('m');
+                        $nextMonth = $month + 1;
+                        $nextYear = $year;
+                        if ($nextMonth > 12) { $nextMonth = 1; $nextYear++; }
+                        $lastDayOfNextMonth = (int)(new \DateTime(sprintf('%04d-%02d-01', $nextYear, $nextMonth)))->format('t');
+                        $startDay = (int)(new \DateTime($startDate))->format('d');
+                        $checkDay = min($startDay, $lastDayOfNextMonth);
+                        $dueDate = new \DateTime(sprintf('%04d-%02d-%02d', $nextYear, $nextMonth, $checkDay));
+                        $dueDate->setTime(23, 59, 59);
+                        
+                        if ($now > $dueDate) {
+                            $statusText = 'Geçmiş';
+                            $statusClass = 'danger';
+                        } elseif ($now->format('Y-m-d') == $dueDate->format('Y-m-d')) {
+                            $statusText = 'Ödeme Günü';
+                            $statusClass = 'warning';
+                        } else {
+                            $statusText = 'Gelmemiş';
+                            $statusClass = 'secondary';
+                        }
+                    }
+
+                    $schedule[] = [
+                        'period' => $ym, 
+                        'amount' => round($monthlyTotal,2), 
+                        'paid' => $paid ? 1 : 0,
+                        'status_text' => $statusText,
+                        'status_class' => $statusClass,
+                        'due_date' => isset($dueDate) ? $dueDate->format('Y-m-d') : null,
+                        'display_year' => (int)$p->format('Y')
+                    ];
                 }
+                // Sıralamayı ters çevir (en yeni en üstte)
+                $schedule = array_reverse($schedule);
             } catch (\Throwable $e) {
                 $schedule = [];
             }
