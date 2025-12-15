@@ -63,7 +63,7 @@ if (
     $page == "kullanici-ekle" || $page == "kullanici-duzenle" ||
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
     $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" ||
-    $page == "superadmin"
+    $page == "superadmin-anasayfa" || $page == "superadmin-panel" || $page == "superadmin-temsilciler" || $page == "superadmin"
 ) { 
     ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -73,6 +73,61 @@ if (
     <script src="/assets/vendors/js/dataTables.bs5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    <script>
+        (function(){
+            function initDtIn(root){
+                if (!root || !window.jQuery) return;
+                $(root).find('.datatables').each(function(){
+                    if (!$.fn.DataTable) return;
+                    if ($.fn.DataTable.isDataTable(this)) return;
+                    try {
+                        if (typeof window.initDataTable === 'function') {
+                            window.initDataTable(this, {
+                                responsive: true,
+                                order: [[1, 'desc']],
+                                pageLength: 12,
+                                language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
+                            });
+                        } else {
+                            $(this).DataTable({
+                                responsive: true,
+                                order: [[1, 'desc']],
+                                pageLength: 12,
+                                language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
+                            });
+                        }
+                    } catch(e){ console.warn('DataTables init error', e); }
+                });
+            }
+            function initObserver(){
+                var target = document.getElementById('siteDetailContent');
+                if (!target) return;
+                initDtIn(target);
+                var observer = new MutationObserver(function(muts){
+                    muts.forEach(function(m){
+                        if (m.addedNodes && m.addedNodes.length) {
+                            initDtIn(target);
+                        }
+                    });
+                });
+                observer.observe(target, { childList: true, subtree: true });
+            }
+            function onReady(){
+                initObserver();
+                var modalEl = document.getElementById('siteDetailModal');
+                if (modalEl) {
+                    modalEl.addEventListener('shown.bs.modal', function(){
+                        initDtIn(document.getElementById('siteDetailContent'));
+                    });
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', onReady);
+            } else {
+                onReady();
+            }
+        })();
+    </script>
 <?php  }
 
 //*************USERS********************************* */
