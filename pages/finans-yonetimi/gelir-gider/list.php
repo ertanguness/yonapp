@@ -419,6 +419,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
                     minuteIncrement: 1,
                     allowInput: true
                 })
+            }).done(function() {
                 gelirGiderKalemleriGetir();
             });
         });
