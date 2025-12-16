@@ -14,6 +14,7 @@ require_once __DIR__ . '/configs/bootstrap.php';
 use App\Controllers\AuthController;
 use App\Helper\Security;
 use Random\Engine\Secure;
+use Model\UserModel;
 
 $authController = new AuthController();
 
@@ -61,16 +62,16 @@ $skipPagesForSiteCheck = [
     'logout',
     'forgot-password',
     'reset-password',   
-    'superadmin',
-    'superadmin-anasayfa',
-    'superadmin-panel',
-    'superadmin-ayarlar',
-    'superadmin-temsilciler',
     'temsilci-paneli'
 ];
 
+$UserModel = new UserModel();
+
 if (!in_array($page, $skipPagesForSiteCheck, true)) {
-     Security::ensureSiteSelected('/site-ekle');
+
+    if(!$UserModel::isSuperAdmin()){
+        Security::ensureSiteSelected('/site-ekle');
+    }
  }
 
 // Seçim bağlamını header'dan önce güncelle
