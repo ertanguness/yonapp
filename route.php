@@ -282,6 +282,9 @@ $router->get('superadmin-panel',            fn() => require 'pages/panel/superad
 $router->get('superadmin-ayarlar',          fn() => require 'pages/panel/settings.php');
 $router->get('superadmin-yetki-gruplari',   fn() => require 'pages/kullanici-gruplari/list.php');
 $router->get('superadmin-temsilciler',      fn() => require 'pages/panel/representatives.php');
+$router->get('superadmin-kullanici-duzenle/{id}', fn($id) => require 'pages/panel/kullanicilar/manage.php');
+$router->get('superadmin-kullanicilar',     fn() => require 'pages/panel/kullanicilar/list.php');
+
 $router->get('temsilci-paneli',             fn() => require 'pages/panel/representative_dashboard.php');
 
 $router->get('ana-sayfa', function () {
