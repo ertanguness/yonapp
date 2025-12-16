@@ -1,6 +1,7 @@
 let url = "/pages/finans-yonetimi/gelir-gider/api.php"
 $(document).on('click', '#gelirGiderKaydet', function () {
     var form = $('#gelirGiderForm');
+    let $this = $(this);
 
     // "tutar" alanındaki ' TL' simgesini temizleyerek kontrol et
     form.validate({
@@ -40,6 +41,11 @@ $(document).on('click', '#gelirGiderKaydet', function () {
     formData.append("kategori", $('#gelir_gider_grubu option:selected').text());
     formData.append("alt_tur", $('#gelir_gider_kalemi option:selected').text());
 
+    /**Butonu disabled yap */
+    $this.prop('disabled', true);
+    $this.html('<i class="fa fa-spinner fa-spin"></i> İşlem yapılıyor...');
+
+
     $.ajax({
         url: url,
         type: 'POST',
@@ -67,6 +73,10 @@ $(document).on('click', '#gelirGiderKaydet', function () {
             swal.fire("Hata!", "İşlem sırasında bir hata oluştu.", "error");
         }
     });
+    
+    
+    $this.prop('disabled', false);
+    $this.html('Kaydet');
 
 
 });

@@ -29,6 +29,9 @@ if ($_POST['action'] == 'gelir-gider-kaydet') {
     if ($islem_tipi == 'Gider' || $islem_tipi == 'gider') {
         $tutar = -abs(Helper::formattedMoneyToNumber($_POST['tutar']));
     }
+    else {
+        $tutar = abs(Helper::formattedMoneyToNumber($_POST['tutar']));
+    }
 
     $lastInsertId = 0;
 
