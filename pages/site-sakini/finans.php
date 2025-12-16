@@ -2,6 +2,7 @@
 
 use App\Helper\Helper;
 use App\Helper\Date;
+use App\Helper\Security;
 use Model\FinansalRaporModel;
 use Model\KisilerModel;
 
@@ -23,7 +24,7 @@ $kisiAdaylari = array_values(array_filter($tumKisiler, function ($k) use ($sessi
     return $nameMatch || $emailMatch || $phoneMatch;
 }));
 
-$selectedParam = $_GET['kisi_id'] ?? '';
+$selectedParam = Security::decrypt($_GET['kisi_id'] ?? '');
 $selectedAll = ($selectedParam === 'all');
 $selectedId = !$selectedAll ? (int)($selectedParam ?: 0) : 0;
 $defaultUserId = (int)($_SESSION['user']->kisi_id ?? ($_SESSION['user']->id ?? 0));
@@ -118,7 +119,7 @@ html.app-skin-dark .accordion .accordion-item .accordion-header .accordion-butto
             <div class="fs-12 text-muted mt-1">Son ödeme: <strong class="text-dark"><?php echo $sonOdeme ? Date::dmy($sonOdeme) : '-'; ?></strong></div>
         </div>
         <div class="hstack gap-3">
-            <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo (int)$activeKisiId; ?>&format=pdf" class="text-danger">Ekstre İndir (PDF)</a>
+            <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?php echo Security::encrypt($activeKisiId); ?>&format=pdf" class="text-danger">Ekstre İndir (PDF)</a>
             <a href="javascript:void(0);" class="btn btn-light-brand" disabled>Ödeme Yap</a>
         </div>
     </div>

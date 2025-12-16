@@ -60,7 +60,7 @@ $skipPagesForSiteCheck = [
     'kayit-ol',
     'logout',
     'forgot-password',
-    'reset-password',
+    'reset-password',   
     'superadmin',
     'superadmin-anasayfa',
     'superadmin-panel',
@@ -70,7 +70,7 @@ $skipPagesForSiteCheck = [
 ];
 
 if (!in_array($page, $skipPagesForSiteCheck, true)) {
-    // Security::ensureSiteSelected('/site-ekle');
+     Security::ensureSiteSelected('/site-ekle');
  }
 
 // Seçim bağlamını header'dan önce güncelle

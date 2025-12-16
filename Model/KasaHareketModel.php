@@ -329,14 +329,24 @@ class KasaHareketModel extends Model
                 $val = str_replace(',', '.', $val);
                 $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
                 if ($val !== '' && $op !== 'none' && $op !== 'yok') {
-                    $cmp = '=';
-                    if ($op === 'gt') $cmp = '>';
-                    elseif ($op === 'gte') $cmp = '>=';
-                    elseif ($op === 'lt') $cmp = '<';
-                    elseif ($op === 'lte') $cmp = '<=';
-                    elseif ($op === 'not_equals') $cmp = '<>';
-                    $query .= " AND kh.tutar {$cmp} :f_tutar";
-                    $bindings[':f_tutar'] = (float)$val;
+                    if ($op === 'contains') {
+                        // Numeric contains: compare formatted string representation (TR style) to allow partial match.
+                        // 1) kh.tutar -> replace '.' with ',' (decimal)
+                        // 2) remove thousands separator '.' already absent in numeric
+                        // 3) compare against user input normalized to ',' decimal
+                        $q = str_replace('.', ',', (string)$val);
+                        $query .= " AND REPLACE(CAST(kh.tutar AS CHAR), '.', ',') LIKE :f_tutar_like";
+                        $bindings[':f_tutar_like'] = '%' . $q . '%';
+                    } else {
+                        $cmp = '=';
+                        if ($op === 'gt') $cmp = '>';
+                        elseif ($op === 'gte') $cmp = '>=';
+                        elseif ($op === 'lt') $cmp = '<';
+                        elseif ($op === 'lte') $cmp = '<=';
+                        elseif ($op === 'not_equals') $cmp = '<>';
+                        $query .= " AND kh.tutar {$cmp} :f_tutar";
+                        $bindings[':f_tutar'] = (float)$val;
+                    }
                 }
             }
             if (!empty($columnFilters['yuruyen_bakiye'])) {
@@ -347,14 +357,20 @@ class KasaHareketModel extends Model
                 $valb = str_replace(',', '.', $valb);
                 $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
                 if ($valb !== '' && $op !== 'none' && $op !== 'yok') {
-                    $cmp = '=';
-                    if ($op === 'gt') $cmp = '>';
-                    elseif ($op === 'gte') $cmp = '>=';
-                    elseif ($op === 'lt') $cmp = '<';
-                    elseif ($op === 'lte') $cmp = '<=';
-                    elseif ($op === 'not_equals') $cmp = '<>';
-                    $query .= " AND kh.yuruyen_bakiye {$cmp} :f_bakiye";
-                    $bindings[':f_bakiye'] = (float)$valb;
+                    if ($op === 'contains') {
+                        $q = str_replace('.', ',', (string)$valb);
+                        $query .= " AND REPLACE(CAST(kh.yuruyen_bakiye AS CHAR), '.', ',') LIKE :f_bakiye_like";
+                        $bindings[':f_bakiye_like'] = '%' . $q . '%';
+                    } else {
+                        $cmp = '=';
+                        if ($op === 'gt') $cmp = '>';
+                        elseif ($op === 'gte') $cmp = '>=';
+                        elseif ($op === 'lt') $cmp = '<';
+                        elseif ($op === 'lte') $cmp = '<=';
+                        elseif ($op === 'not_equals') $cmp = '<>';
+                        $query .= " AND kh.yuruyen_bakiye {$cmp} :f_bakiye";
+                        $bindings[':f_bakiye'] = (float)$valb;
+                    }
                 }
             }
             if (!empty($columnFilters['kategori'])) {
@@ -534,14 +550,20 @@ class KasaHareketModel extends Model
                 $val = str_replace(',', '.', $val);
                 $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
                 if ($val !== '' && $op !== 'none' && $op !== 'yok') {
-                    $cmp = '=';
-                    if ($op === 'gt') $cmp = '>';
-                    elseif ($op === 'gte') $cmp = '>=';
-                    elseif ($op === 'lt') $cmp = '<';
-                    elseif ($op === 'lte') $cmp = '<=';
-                    elseif ($op === 'not_equals') $cmp = '<>';
-                    $query .= " AND kh.tutar {$cmp} :f_tutar";
-                    $bindings[':f_tutar'] = (float)$val;
+                    if ($op === 'contains') {
+                        $q = str_replace('.', ',', (string)$val);
+                        $query .= " AND REPLACE(CAST(kh.tutar AS CHAR), '.', ',') LIKE :f_tutar_like";
+                        $bindings[':f_tutar_like'] = '%' . $q . '%';
+                    } else {
+                        $cmp = '=';
+                        if ($op === 'gt') $cmp = '>';
+                        elseif ($op === 'gte') $cmp = '>=';
+                        elseif ($op === 'lt') $cmp = '<';
+                        elseif ($op === 'lte') $cmp = '<=';
+                        elseif ($op === 'not_equals') $cmp = '<>';
+                        $query .= " AND kh.tutar {$cmp} :f_tutar";
+                        $bindings[':f_tutar'] = (float)$val;
+                    }
                 }
             }
             if (!empty($columnFilters['yuruyen_bakiye'])) {
@@ -552,14 +574,20 @@ class KasaHareketModel extends Model
                 $valb = str_replace(',', '.', $valb);
                 $op = is_array($f) ? ($f['op'] ?? 'equals') : 'equals';
                 if ($valb !== '' && $op !== 'none' && $op !== 'yok') {
-                    $cmp = '=';
-                    if ($op === 'gt') $cmp = '>';
-                    elseif ($op === 'gte') $cmp = '>=';
-                    elseif ($op === 'lt') $cmp = '<';
-                    elseif ($op === 'lte') $cmp = '<=';
-                    elseif ($op === 'not_equals') $cmp = '<>';
-                    $query .= " AND kh.yuruyen_bakiye {$cmp} :f_bakiye";
-                    $bindings[':f_bakiye'] = (float)$valb;
+                    if ($op === 'contains') {
+                        $q = str_replace('.', ',', (string)$valb);
+                        $query .= " AND REPLACE(CAST(kh.yuruyen_bakiye AS CHAR), '.', ',') LIKE :f_bakiye_like";
+                        $bindings[':f_bakiye_like'] = '%' . $q . '%';
+                    } else {
+                        $cmp = '=';
+                        if ($op === 'gt') $cmp = '>';
+                        elseif ($op === 'gte') $cmp = '>=';
+                        elseif ($op === 'lt') $cmp = '<';
+                        elseif ($op === 'lte') $cmp = '<=';
+                        elseif ($op === 'not_equals') $cmp = '<>';
+                        $query .= " AND kh.yuruyen_bakiye {$cmp} :f_bakiye";
+                        $bindings[':f_bakiye'] = (float)$valb;
+                    }
                 }
             }
             if (!empty($columnFilters['kategori'])) {

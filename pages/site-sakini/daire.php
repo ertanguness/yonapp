@@ -52,7 +52,7 @@ $selectedApartmentId = (int)($_SESSION['selected_apartment_id'] ?? 0);
 $selectedTenantId    = (int)($_SESSION['selected_person_id'] ?? 0);
 
 if (isset($_GET['daire_id'])) {
-    $selectedApartmentId = (int)$_GET['daire_id'];
+    $selectedApartmentId = (int)Security::decrypt($_GET['daire_id']);
     $_SESSION['selected_apartment_id'] = $selectedApartmentId;
     if (!isset($_GET['kisi_id'])) {
         $selectedTenantId = 0;
@@ -61,10 +61,10 @@ if (isset($_GET['daire_id'])) {
 }
 
 if (isset($_GET['kisi_id'])) {
-    $selectedTenantId = (int)$_GET['kisi_id'];
+    $selectedTenantId = (int)Security::decrypt($_GET['kisi_id']);
     $_SESSION['selected_person_id'] = $selectedTenantId;
     if (isset($_GET['daire_id'])) {
-        $_SESSION['selected_apartment_id'] = (int)$_GET['daire_id'];
+        $_SESSION['selected_apartment_id'] = (int)Security::decrypt($_GET['daire_id']);
     }
 }
 
@@ -134,7 +134,7 @@ $emergencyList = $carOwnerId ? $AcilDurum->findWhere(['kisi_id' => $carOwnerId],
                             <div class="fw-semibold mb-2">Dairelerim</div>
                             <div class="vstack gap-2">
                                 <?php foreach ($ownerApartmentIds as $did) { $d = $Daireler->DaireBilgisi($site_id, $did); $blk = $Bloklar->BlokAdi((int)($d->blok_id ?? 0)) ?? '-'; ?>
-                                    <a href="/sakin/daire?daire_id=<?php echo (int)$did; ?>" class="d-flex align-items-center justify-content-between border rounded px-3 py-2 text-decoration-none<?php echo ($selectedApartmentId === (int)$did) ? ' bg-soft-primary border-soft-primary' : ''; ?>">
+                                    <a href="/sakin/daire?daire_id=<?php echo Security::encrypt($did); ?>" class="d-flex align-items-center justify-content-between border rounded px-3 py-2 text-decoration-none<?php echo ($selectedApartmentId === (int)$did) ? ' bg-soft-primary border-soft-primary' : ''; ?>">
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary rounded">
                                                 <i class="feather-home"></i>
@@ -158,7 +158,7 @@ $emergencyList = $carOwnerId ? $AcilDurum->findWhere(['kisi_id' => $carOwnerId],
                             <div class="fw-semibold mb-2">Kiracılarım</div>
                             <div class="vstack gap-2">
                                 <?php foreach ($tenants as $t) { $aktif = empty($t->cikis_tarihi) || $t->cikis_tarihi === '0000-00-00'; ?>
-                                    <a href="/sakin/finans?kisi_id=<?php echo (int)$t->id; ?>" class="d-flex align-items-center justify-content-between border rounded px-3 py-2 text-decoration-none<?php echo ($selectedTenantId === (int)$t->id) ? ' bg-soft-success border-soft-success' : ''; ?>">
+                                    <a href="/sakin/finans?kisi_id=<?php echo Security::encrypt($t->id); ?>" class="d-flex align-items-center justify-content-between border rounded px-3 py-2 text-decoration-none<?php echo ($selectedTenantId === (int)$t->id) ? ' bg-soft-success border-soft-success' : ''; ?>">
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-text avatar-lg bg-soft-warning text-warning border-soft-warning rounded">
                                                 <i class="feather-user"></i>

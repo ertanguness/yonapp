@@ -2,12 +2,20 @@
 
 
 use App\Helper\Security;
-
+use App\Helper\Helper;
 use Model\UserRolesModel;
+use Model\UserModel;
+
+$UserModel = new UserModel();
+
+$UserModel::isSuperAdmin();
+
 
 $UserGroups = new UserRolesModel();
 
 $usergroups = $UserGroups->getUserGroups();
+
+
 
 ?>
 

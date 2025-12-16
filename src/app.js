@@ -150,7 +150,8 @@ $("#exportExcel").on("click", function () {
 /** Datatable sütun arama özelliği */
 function attachDtColumnSearch(api, tableId) {
   window.__dtFilters = window.__dtFilters || {};
-  const isServerSide = !!(api.settings()[0]?.oInit?.serverSide || api.settings()[0]?.serverSide);
+  const dtSettings0 = api && api.settings && api.settings()[0];
+  const isServerSide = !!(dtSettings0 && (dtSettings0.oInit?.serverSide || dtSettings0.oFeatures?.bServerSide || dtSettings0.serverSide));
   const STRING_LABELS = {
     starts: "Başında",
     contains: "İçerir",
@@ -161,6 +162,7 @@ function attachDtColumnSearch(api, tableId) {
     none: "Filtre yok"
   };
   const NUMBER_LABELS = {
+    contains: "İçerir",
     gt: "Büyüktür (>)",
     gte: "Büyük eşittir (>=)",
     lt: "Küçüktür (<)",
@@ -225,6 +227,12 @@ function attachDtColumnSearch(api, tableId) {
           const cv = parseNumber(cell);
           const qv = parseNumber(f.val);
           if (qv === null || cv === null) continue;
+          if (op === 'contains') {
+            // Sayısal contains: 12,34 içinde 2,3 gibi aramalar için normalize ederek string karşılaştır
+            const cvStr = String(cv).replace(/\./g, ',');
+            const qvStr = String(qv).replace(/\./g, ',');
+            if (!(cvStr.includes(qvStr))) return false;
+          }
           if (op === 'gt' && !(cv > qv)) return false;
           if (op === 'gte' && !(cv >= qv)) return false;
           if (op === 'lt' && !(cv < qv)) return false;
@@ -402,7 +410,8 @@ function attachDtColumnSearch(api, tableId) {
     });
     api.draw();
   } else {
-    api.state.clear();
+    // Burada state clear yapmak diğer tabloların/yeniden yüklemelerin filtre bilgisini bozuyor.
+    // State yoksa sadece UI boş başlasın.
   }
 }
 

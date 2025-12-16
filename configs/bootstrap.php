@@ -20,6 +20,7 @@ use App\Services\DataBaseLogger;
 use Database\Db;
 
 
+
 // --- .env DEĞİŞKENLERİNİ YÜKLEME ---
 $dotenv = Dotenv\Dotenv::createImmutable(PROJECT_ROOT);
 $dotenv->load();
