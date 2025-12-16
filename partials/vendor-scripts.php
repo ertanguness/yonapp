@@ -62,8 +62,8 @@ if (
     $page == "sakin/duyurular" || $page == "toplu-sms" ||
     $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" ||
     $page == "gecikmis-odemeler" ||
-    $page == "superadmin-anasayfa" || $page == "superadmin-panel" || $page == "superadmin-temsilciler" || $page == "superadmin"
-    || $page == "superadmin-yetki-gruplari"
+    $page == "superadmin-anasayfa" || $page == "superadmin-panel" || $page == "superadmin-temsilciler" || $page == "superadmin" || 
+    $page == "superadmin-yetki-gruplari" || $page == "superadmin-kullanicilar"
 ) { 
     ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->

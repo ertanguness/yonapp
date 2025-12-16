@@ -19,6 +19,18 @@ class UserModel extends Model
     }
 
 
+    /** tüm kullanıcıları rol adı ve site adıyla beraber getirir */
+    public function allUser(){
+        $sql = $this->db->prepare("SELECT u.*, r.role_name, s.site_adi FROM $this->table u
+                                        LEFT JOIN user_roles r ON u.roles = r.id
+                                        LEFT JOIN kisiler k ON u.kisi_id = k.id
+                                        LEFT JOIN siteler s ON k.site_id = s.id
+                                        ORDER BY u.id DESC");
+        $sql->execute();
+        return $sql->fetchAll(PDO::FETCH_OBJ) ?? [];
+        
+    }
+
     public function getUserByEmail($email)
     {
         $sql = $this->db->prepare("SELECT * FROM $this->table WHERE LOWER(email) = LOWER(?)");
