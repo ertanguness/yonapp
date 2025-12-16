@@ -532,6 +532,7 @@ if ($action === 'rep_manage') {
         $rep = $repStmt->fetch(\PDO::FETCH_OBJ);
         if (!$rep) { echo json_encode(['status'=>'error','message'=>'Temsilci bulunamadı']); exit; }
         $Siteler = new SitelerModel();
+        $cities = new Cities();
         $allSites = $Siteler->getAllWithOwners();
         $ass = $db->prepare("SELECT a.*, s.site_adi FROM representative_site_assignments a 
                              LEFT JOIN siteler s ON s.id = a.site_id
@@ -605,8 +606,13 @@ if ($action === 'rep_manage') {
                 'email' => $rep->email ?? '',
                 'iban' => $rep->iban ?? ''
             ],
-            'all_sites' => array_map(function($s){ 
-                return ['id'=>(int)$s->id,'site_adi'=>$s->site_adi ?? '']; 
+            'all_sites' => array_map(function($s) use ($cities){ 
+                return [
+                    'id'=>(int)$s->id,
+                    'site_adi'=>$s->site_adi ?? '',
+                    'il_ad' => $cities->getCityName($s->il ?? 0),
+                    'ilce_ad' => $cities->getTownName($s->ilce ?? 0)
+                ]; 
             }, $allSites),
             'assignments' => $assignments,
             'schedule' => $schedule

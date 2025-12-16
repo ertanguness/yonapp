@@ -257,7 +257,15 @@ document.addEventListener('DOMContentLoaded', function(){
         var sites = d.all_sites || [];
         var assigns = d.assignments || [];
         var schedule = d.schedule || [];
-        var opts = sites.map(function(s){ return `<option value="${s.id}">${s.site_adi || ''}</option>`; }).join('');
+        var opts = sites.map(function(s){ 
+            var city = s.il_ad || '-';
+            var dist = s.ilce_ad || '-';
+            var loc = dist + ' / ' + city;
+            var text = (s.site_adi || '') + ' (' + loc + ')';
+            var richText = (s.site_adi || '') + ' <span class="text-muted small">(' + loc + ')</span>';
+            var safeRich = richText.replace(/"/g, '&quot;');
+            return `<option value="${s.id}" data-richtext="${safeRich}">${text}</option>`; 
+        }).join('');
         var assignRows = assigns.map(function(a){
           return `
             <tr>
@@ -461,7 +469,27 @@ document.addEventListener('DOMContentLoaded', function(){
         })();
 
         // initialize select2 for site select in modal
-        try { $('#assignSiteSel').select2({ theme: 'bootstrap-5', width: '100%', placeholder: 'Site seç' }); } catch(e){}
+        try { 
+            $('#assignSiteSel').select2({ 
+                theme: 'bootstrap-5', 
+                width: '100%', 
+                placeholder: 'Site seç',
+                templateResult: function(state) {
+                    if (!state.id) return state.text;
+                    var $opt = $(state.element);
+                    var rich = $opt.data('richtext');
+                    if (rich) { return $('<span>' + rich + '</span>'); }
+                    return state.text;
+                },
+                templateSelection: function(state) {
+                    if (!state.id) return state.text;
+                    var $opt = $(state.element);
+                    var rich = $opt.data('richtext');
+                    if (rich) { return $('<span>' + rich + '</span>'); }
+                    return state.text;
+                }
+            }); 
+        } catch(e){}
         var assignBtn = repContent.querySelector('#assignAddBtn');
         if (assignBtn) {
           assignBtn.addEventListener('click', function(){
