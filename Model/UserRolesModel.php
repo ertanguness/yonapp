@@ -1,6 +1,7 @@
-<?php 
+<?php
 namespace Model;
 
+use App\Helper\Helper;
 use Model\Model;
 use PDO;
 
@@ -17,16 +18,33 @@ class UserRolesModel extends Model
         parent::__construct($this->table);
     }
 
-
     /**
      * Veri Sahibine id'sine göre kullanıcı gruplarını listelemek için gerekli verileri getirir.
      * Kayıt esnasında oluşturulan ana kullanıcı listelenmez
-     * @param int $owner_id Verinin sahibi ID'si(Session ID'si gibi)
      * @return array
      */
     public function getUserGroups(): array
     {
-        $ownerID = $_SESSION["owner_id"];
+        // Session güvenliği ve veri doğrulama
+        $ownerID = isset($_SESSION["owner_id"]) ? (int) $_SESSION["owner_id"] : 0;
+
+        // Kullanıcı ve rol kontrolü
+        $user = $_SESSION["user"] ?? null;
+        $superAdmin = ($user && isset($user->roles) && (int) $user->roles === 10);
+
+        $params = [];
+
+        if ($superAdmin) {
+            // Süper admin ise sadece ana rolleri (main_role = 1) ve owner_id'si 0 veya NULL olanları getir
+            $whereClause = "(ur.owner_id = :owner_id OR ur.owner_id IS NULL) AND ur.main_role = :main_role";
+            $params['owner_id'] = 0;
+            $params['main_role'] = 1;
+        } else {
+            // Normal kullanıcı ise sadece kendi owner_id'sine ait ve ana rol olmayanları (main_role = 0) getir
+            $whereClause = "ur.owner_id = :owner_id AND ur.main_role = :main_role";
+            $params['owner_id'] = $ownerID;
+            $params['main_role'] = 0;
+        }
 
         $sql = $this->db->prepare("SELECT 
                                             ur.id,
@@ -52,34 +70,27 @@ class UserRolesModel extends Model
                                             FROM permissions
                                         ) p ON 1=1
 
-                                        WHERE ur.owner_id = :owner_id
-                                            -- AND ur.main_role != 1  -- Ana kullanıcı rolü hariç tutulur
+                                        WHERE {$whereClause}
                                         GROUP BY ur.id
                                         ORDER BY ur.id DESC;");
-        $sql->execute([
-            'owner_id' => $ownerID
-        ]);
+        $sql->execute($params);
 
         return $sql->fetchAll(PDO::FETCH_OBJ) ?? [];
     }
 
-    /**
-     * Kullanıcı gruplarını seçenekler olarak döndürür.
-     * @return array
-     */
     public function getGroupsOptions(): array
     {
         $groups = $this->getUserGroups();
         $options = [];
 
         // Add empty option first
-        $options[0] = (object)[
+        $options[0] = (object) [
             'id' => 0,
             'role_name' => 'Seçiniz'
         ];
 
         foreach ($groups as $group) {
-            $options[$group->id] = (object)[
+            $options[$group->id] = (object) [
                 'id' => $group->id,
                 'role_name' => $group->role_name
             ];
@@ -91,7 +102,7 @@ class UserRolesModel extends Model
     /** Bu Adla kaydedilmiş kullanıcı grubu var mı? */
     public function roleExists(string $roleName): bool
     {
-        $ownerID = $_SESSION["owner_id"];
+        $ownerID = isset($_SESSION["owner_id"]) ? (int) $_SESSION["owner_id"] : 0;
 
         $sql = $this->db->prepare("SELECT COUNT(*) FROM user_roles WHERE owner_id = :owner_id AND role_name = :role_name");
         $sql->execute([
@@ -102,5 +113,4 @@ class UserRolesModel extends Model
         return $sql->fetchColumn() > 0;
     }
 }
-
 ?>

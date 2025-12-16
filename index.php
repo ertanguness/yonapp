@@ -60,7 +60,7 @@ $skipPagesForSiteCheck = [
     'kayit-ol',
     'logout',
     'forgot-password',
-    'reset-password',
+    'reset-password',   
     'superadmin',
     'superadmin-anasayfa',
     'superadmin-panel',
@@ -68,6 +68,7 @@ $skipPagesForSiteCheck = [
     'superadmin-temsilciler',
     'temsilci-paneli'
 ];
+
 if (!in_array($page, $skipPagesForSiteCheck, true)) {
      Security::ensureSiteSelected('/site-ekle');
  }

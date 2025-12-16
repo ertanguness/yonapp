@@ -276,12 +276,13 @@ $router->get('unauthorize', fn() => require 'pages/authorize.php');
 /* ----------------------------------------------------
 |  ANA SAYFA & GENEL
 ---------------------------------------------------- */
-$router->get('superadmin', fn() => require 'pages/panel/superadmin-anasayfa.php'); // Default to new homepage
-$router->get('superadmin-anasayfa', fn() => require 'pages/panel/superadmin-anasayfa.php');
-$router->get('superadmin-panel', fn() => require 'pages/panel/superadmin-panel.php');
-$router->get('superadmin-ayarlar', fn() => require 'pages/panel/settings.php');
-$router->get('superadmin-temsilciler', fn() => require 'pages/panel/representatives.php');
-$router->get('temsilci-paneli', fn() => require 'pages/panel/representative_dashboard.php');
+$router->get('superadmin',                  fn() => require 'pages/panel/superadmin-anasayfa.php'); // Default to new homepage
+$router->get('superadmin-anasayfa',         fn() => require 'pages/panel/superadmin-anasayfa.php');
+$router->get('superadmin-panel',            fn() => require 'pages/panel/superadmin-panel.php');
+$router->get('superadmin-ayarlar',          fn() => require 'pages/panel/settings.php');
+$router->get('superadmin-yetki-gruplari',   fn() => require 'pages/kullanici-gruplari/list.php');
+$router->get('superadmin-temsilciler',      fn() => require 'pages/panel/representatives.php');
+$router->get('temsilci-paneli',             fn() => require 'pages/panel/representative_dashboard.php');
 
 $router->get('ana-sayfa', function () {
     if (Gate::isResident()) {

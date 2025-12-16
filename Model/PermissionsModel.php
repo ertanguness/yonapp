@@ -3,6 +3,7 @@
 namespace Model;
 
 use Model\Model;
+use Model\UserModel;
 use App\Helper\Helper;
 use PDO;
 
@@ -39,12 +40,12 @@ class PermissionsModel extends Model
 
         // İyileştirilmiş $iconMap
         $iconMap = [
-            'Ana Sayfa'                         => 'home',
-            'Üye Yönetimi'                      => 'users',
-            'Aidat/Tahsilat Yönetimi'           => 'git-branch',
-            'Finans Yönetimi'                   => 'credit-card',
-            'Site Yönetimi'                     => 'server',
-            'default'                           => 'settings' // Veya 'grid', 'circle' gibi genel bir ikon
+            'Ana Sayfa' => 'home',
+            'Üye Yönetimi' => 'users',
+            'Aidat/Tahsilat Yönetimi' => 'git-branch',
+            'Finans Yönetimi' => 'credit-card',
+            'Site Yönetimi' => 'server',
+            'default' => 'settings' // Veya 'grid', 'circle' gibi genel bir ikon
         ];
 
         foreach ($flatPermissions as $permission) {
@@ -54,10 +55,10 @@ class PermissionsModel extends Model
             if (!isset($groupIndexMap[$groupName])) {
                 $groupIndexMap[$groupName] = count($groupedPermissions); // Yeni grubun index'ini kaydet
                 $groupedPermissions[] = [
-                    'id'      => $nextGroupId++,
-                    'name'    => $groupName,
-                    'icon'    => $iconMap[$groupName] ?? $iconMap['default'],
-                    'group'   => $this->slugify($groupName),
+                    'id' => $nextGroupId++,
+                    'name' => $groupName,
+                    'icon' => $iconMap[$groupName] ?? $iconMap['default'],
+                    'group' => $this->slugify($groupName),
                     'permissions' => []
                 ];
             }
@@ -65,11 +66,11 @@ class PermissionsModel extends Model
             // Mevcut izni, doğru grubun 'permissions' dizisine ekle.
             $index = $groupIndexMap[$groupName];
             $groupedPermissions[$index]['permissions'][] = [
-                'id'          => (int)$permission->id,
-                'name'        => $permission->title,
+                'id' => (int) $permission->id,
+                'name' => $permission->title,
                 'description' => $permission->description ?? '',
-                'level'       => (int)($permission->permission_level ?? 1), // Veritabanından gelen değeri kullan, yoksa 1 olsun
-                'required'    => (int)($permission->is_required ?? 0)      // Veritabanından gelen değeri kullan, yoksa 0 olsun
+                'level' => (int) ($permission->permission_level ?? 1), // Veritabanından gelen değeri kullan, yoksa 1 olsun
+                'required' => (int) ($permission->is_required ?? 0)      // Veritabanından gelen değeri kullan, yoksa 0 olsun
             ];
         }
 
@@ -83,9 +84,14 @@ class PermissionsModel extends Model
      */
     private function fetchAllPermissionsFromDb(): array
     {
+
+        $UserModel = new UserModel();
+        $permission_level = $UserModel::isSuperAdmin() ? 100 : 10;
+
         $sql = "SELECT id, title, description, group_name, permission_level, is_required 
                 FROM {$this->table}
                 WHERE is_active = 1
+                AND permission_level <= $permission_level
                 ORDER BY group_name, id";
         $stmt = $this->db->query($sql);
 
@@ -123,12 +129,12 @@ class PermissionsModel extends Model
         $sql = $this->db->prepare("SELECT id FROM $this->table WHERE name = ?");
         $sql->execute([$pageName]);
         $result = $sql->fetchColumn();
-        return $result !== false ? (int)$result : null;
+        return $result !== false ? (int) $result : null;
     }
 
 
 
-    
+
     /**
      * Bir kullanıcının ID'sine göre, rolü üzerinden sahip olduğu tüm izinlerin adlarını
      * içeren düz bir dizi döndürür.

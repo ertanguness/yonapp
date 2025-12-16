@@ -278,7 +278,7 @@ $SiteModel = new SitelerModel();
                 <?php if ($SiteModel->SiteSayisi() > 1) { ?>
                     <a href="/company-list.php" class="mobile-quick-actions-item" title="Site Seçimi">
                         <i class="bi bi-diagram-3"></i>
-                        <p>Site Seçimi <?php echo $SiteModel->SiteSayisi()?></p>
+                        <p>Site Seçimi</p>
                     </a>
                 <?php } else { ?>
                      <a href="/gelir-gider-islemleri" class="mobile-quick-actions-item" title="Finansal Hareketler">

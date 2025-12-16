@@ -11,6 +11,8 @@ class UserModel extends Model
 {
     protected $table = 'users';
 
+    const SUPER_ADMIN = 10;
+
     public function __construct()
     {
         parent::__construct($this->table);
@@ -230,6 +232,36 @@ class UserModel extends Model
         return null; // Kullanıcı rolü bulunamadıysa null döner
     }
 
+   
+
+
+    /**Kullanıcı süper admin mi */
+    public static function isSuperAdmin(): bool
+    {
+
+         /**Kullanıcı modelini başlat */
+        //$UserModel::isSuperAdmin();
+
+        /**Session kontrolü */
+        if (!isset($_SESSION["user_id"])) {
+            return false;
+        }
+
+
+        /**id'yi session'dan al */
+        $userId = $_SESSION["user_id"];
+
+        $instance = new self();
+        $sql = $instance->db->prepare("SELECT roles FROM " . $instance->table . " WHERE id = ?");
+        $sql->execute([$userId]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+
+        if ($result) {
+            return (int) $result->roles === self::SUPER_ADMIN;
+        }
+
+        return false;
+    }
 
 
     //Kullanıcı girişinde bir token oluştur ve kullanıcıya kaydet

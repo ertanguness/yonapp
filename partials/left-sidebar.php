@@ -100,49 +100,6 @@ function renderMenuItems(array $items, ?array $activeMenuInfo)
                 <?php
                 // SUPERADMIN MENU HACK
                 $userRole = (int)($_SESSION['user_role'] ?? 0);
-                 if ($userRole === 10) {
-                     echo '<li class="nxl-item nxl-caption"><label>Süper Admin</label></li>';
-                     
-                     // ANASAYFA
-                     echo '<li class="nxl-item ' . ($page === 'superadmin-anasayfa' || $page === 'superadmin' ? 'active' : '') . '">';
-                     echo '<a href="/superadmin-anasayfa" class="nxl-link">';
-                      echo '  <span class="nxl-micon"><i class="feather-home"></i></span>';
-                      echo '  <span class="nxl-mtext">Anasayfa</span>';
-                     echo '</a>';
-                     echo '</li>';
-
-                     // PANEL (Eski Dashboard)
-                     echo '<li class="nxl-item ' . ($page === 'superadmin-panel' ? 'active' : '') . '">';
-                     echo '<a href="/superadmin-panel" class="nxl-link">';
-                      echo '  <span class="nxl-micon"><i class="feather-grid"></i></span>';
-                      echo '  <span class="nxl-mtext">Panel</span>';
-                     echo '</a>';
-                     echo '</li>';
-
-                     echo '<li class="nxl-item ' . ($page === 'superadmin-temsilciler' ? 'active' : '') . '">';
-                     echo '<a href="/superadmin-temsilciler" class="nxl-link">';
-                     echo '  <span class="nxl-micon"><i class="feather-users"></i></span>';
-                     echo '  <span class="nxl-mtext">Temsilciler</span>';
-                     echo '</a>';
-                     echo '</li>';
-                     echo '<li class="nxl-item ' . ($page === 'superadmin-ayarlar' ? 'active' : '') . '">';
-                     echo '<a href="/superadmin-ayarlar" class="nxl-link">';
-                      echo '  <span class="nxl-micon"><i class="feather-sliders"></i></span>';
-                      echo '  <span class="nxl-mtext">Ayarlar</span>';
-                     echo '</a>';
-                     echo '</li>';
-                 }
-                 
-                 // TEMSİLCİ MENU HACK
-                 if ($userRole === 15) {
-                     echo '<li class="nxl-item nxl-caption"><label>Temsilci Paneli</label></li>';
-                     echo '<li class="nxl-item ' . ($page === 'temsilci-paneli' ? 'active' : '') . '">';
-                     echo '<a href="/temsilci-paneli" class="nxl-link">';
-                      echo '  <span class="nxl-micon"><i class="feather-pie-chart"></i></span>';
-                      echo '  <span class="nxl-mtext">Genel Bakış</span>';
-                     echo '</a>';
-                     echo '</li>';
-                 }
 
                 if (!empty($menuTree)) {
                     foreach ($menuTree as $groupName => $items) {
