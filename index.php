@@ -62,11 +62,6 @@ $skipPagesForSiteCheck = [
     'logout',
     'forgot-password',
     'reset-password',   
-    'superadmin',
-    'superadmin-anasayfa',
-    'superadmin-panel',
-    'superadmin-ayarlar',
-    'superadmin-temsilciler',
     'temsilci-paneli'
 ];
 
