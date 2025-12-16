@@ -4,6 +4,7 @@ namespace App\Helper;
 
 use App\Services\FlashMessageService;
 use Model\SitelerModel;
+use Model\UserModel;
 
 class Security
 {
@@ -159,7 +160,14 @@ public static function ensureSiteSelected($redirectUri = '/site-ekle')
             return;
         }
 
+        $UserModel = new UserModel();
+
+        if ($UserModel::isSuperAdmin()) {
+            return;
+        }
+
         /** Süper Admin (10) ve Temsilci (15) ise site seçimi zorunlu değil */
+
         $roleId = isset($_SESSION['user']->roles) ? (int)$_SESSION['user']->roles : 0;
         if ($roleId === 10 || $roleId === 15) {
             return;
