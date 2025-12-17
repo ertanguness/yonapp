@@ -166,6 +166,7 @@ $script = ob_get_clean();
         'leads-inquiry-channel-card',
         'borc-listele',
         'requests-card',
+        'site-sakin-stats',
     ];
     $userId = $_SESSION['user']->id ?? 0;
     $layout = [];

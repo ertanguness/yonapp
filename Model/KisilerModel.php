@@ -99,6 +99,94 @@ class KisilerModel extends Model
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }
 
+
+    /**
+     * Site sakin istatistiklerini döndürür.
+     *
+     * Kırılımlar:
+     * - sakin: total / active / passive
+     * - owner (ev sahibi): total / active / passive
+     * - tenant (kiracı): total / active / passive
+     *
+     * Tanımlar:
+     * - total: sitede silinmemiş (silinme_tarihi IS NULL) tüm kayıtlar
+     * - active: (cikis_tarihi IS NULL veya '0000-00-00') olan kayıtlar
+     * - passive: total - active
+     * - owner: uyelik_tipi ev sahibi / kat maliki varyasyonları
+     * - tenant: uyelik_tipi kiracı/kiraci
+     *
+     * @param int $site_id
+     * @return array{
+     *   sakin: array{total:int,active:int,passive:int},
+     *   owner: array{total:int,active:int,passive:int},
+     *   tenant: array{total:int,active:int,passive:int}
+     * }
+     */
+    public function getSiteSakinStats(int $site_id): array
+    {
+        $ownerSet = "('ev sahibi','ev_sahibi','evsahibi','kat malik','kat maliki','kat_malik','kat_maliki')";
+        $tenantSet = "('kiracı','kiraci')";
+
+        $sql = "
+            SELECT
+                COUNT(*) AS sakin_total,
+                SUM(CASE WHEN (k.cikis_tarihi IS NULL OR k.cikis_tarihi = '0000-00-00') THEN 1 ELSE 0 END) AS sakin_active,
+
+                SUM(CASE WHEN LOWER(TRIM(k.uyelik_tipi)) IN {$ownerSet} THEN 1 ELSE 0 END) AS owner_total,
+                SUM(
+                    CASE
+                        WHEN LOWER(TRIM(k.uyelik_tipi)) IN {$ownerSet}
+                         AND (k.cikis_tarihi IS NULL OR k.cikis_tarihi = '0000-00-00')
+                        THEN 1 ELSE 0
+                    END
+                ) AS owner_active,
+
+                SUM(CASE WHEN LOWER(TRIM(k.uyelik_tipi)) IN {$tenantSet} THEN 1 ELSE 0 END) AS tenant_total,
+                SUM(
+                    CASE
+                        WHEN LOWER(TRIM(k.uyelik_tipi)) IN {$tenantSet}
+                         AND (k.cikis_tarihi IS NULL OR k.cikis_tarihi = '0000-00-00')
+                        THEN 1 ELSE 0
+                    END
+                ) AS tenant_active
+            FROM {$this->table} k
+            WHERE k.site_id = :site_id
+              AND k.silinme_tarihi IS NULL
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':site_id', $site_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        $sakinTotal = (int)($row['sakin_total'] ?? 0);
+        $sakinActive = (int)($row['sakin_active'] ?? 0);
+
+        $ownerTotal = (int)($row['owner_total'] ?? 0);
+        $ownerActive = (int)($row['owner_active'] ?? 0);
+
+        $tenantTotal = (int)($row['tenant_total'] ?? 0);
+        $tenantActive = (int)($row['tenant_active'] ?? 0);
+
+        return [
+            'sakin' => [
+                'total' => $sakinTotal,
+                'active' => $sakinActive,
+                'passive' => max(0, $sakinTotal - $sakinActive),
+            ],
+            'owner' => [
+                'total' => $ownerTotal,
+                'active' => $ownerActive,
+                'passive' => max(0, $ownerTotal - $ownerActive),
+            ],
+            'tenant' => [
+                'total' => $tenantTotal,
+                'active' => $tenantActive,
+                'passive' => max(0, $tenantTotal - $tenantActive),
+            ],
+        ];
+    }
+
        /**Siteye ait aktif tüm kişileri getirir.
      * @param int $site_id Sitenin ID'si.
      * @return array Aktif Kişileri içeren bir dizi döner.
