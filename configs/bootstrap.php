@@ -56,28 +56,27 @@ function getLogger(): LoggerInterface
     static $loggerInstance = null;
 
     if ($loggerInstance === null) {
-        
+
         // --- DEĞİŞİKLİK 2: 'database' koşulunu birincil hale getiriyoruz ---
         if ($loggerType === 'database') {
             try {
                 // Veritabanı bağlantısını merkezi fonksiyondan alıyoruz.
-                $pdo_connection = getDbConnection(); 
+                $pdo_connection = getDbConnection();
                 $loggerInstance = new DatabaseLogger($pdo_connection);
             } catch (\PDOException $e) {
                 // EĞER VERİTABANI BAĞLANTISI KURULAMAZSA KRİTİK HATA!
                 // Bu durumda, sistemin çökmesini engellemek için dosyaya loglamaya geri dön (fallback).
                 // Bu, veritabanı çöktüğünde bile "veritabanı çöktü" logunu tutabilmemizi sağlar.
                 error_log("CRITICAL: Database connection for logger failed. Falling back to FileLogger. DB Error: " . $e->getMessage());
-                
+
                 $logFile = PROJECT_ROOT . '/logs/critical_errors.log';
                 $loggerInstance = new FileLogger($logFile);
             }
-        } 
-        else { // Varsayılan veya 'file' seçiliyse
+        } else { // Varsayılan veya 'file' seçiliyse
             $logFile = PROJECT_ROOT . '/logs/' . date('Y-m-d') . '.log';
             $loggerInstance = new FileLogger($logFile);
         }
     }
-    
+
     return $loggerInstance;
 }

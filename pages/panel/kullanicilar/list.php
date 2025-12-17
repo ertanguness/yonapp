@@ -35,7 +35,7 @@ $users = [];
                 require_once 'pages/components/download.php'
                 ?>
 
-                <a href="kullanici-ekle" class="btn btn-primary route-link">
+                <a href="superadmin-kullanici-ekle" class="btn btn-primary route-link">
                     <i class="feather-plus me-2"></i>
                     <span>Yeni Kullanıcı</span>
                 </a>
@@ -89,6 +89,8 @@ $users = [];
         </div>
     </div>
 </div>
+
+
 
 <script>
     (function() {

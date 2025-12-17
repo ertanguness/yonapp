@@ -9,36 +9,36 @@ $(document).ready(function () {
       table = $gg.DataTable();
     } else {
       table = $gg.DataTable({
-      //stateSave: true,
-      destroy: true,
-      responsive: true,
-      searching: true,
-      info: true,
-      paging: true,
-      autoWidth: false,
-      dom: 't<"row g-0 mt-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
-      language: {
-        //url: "/assets/js/tr.json",
-      },
-      drawCallback: function (settings) {
-        // Sadece tablonun içindeki tooltip'leri yenile (daha performanslı)
-        $('#gelirGiderTable [data-bs-toggle="tooltip"]').each(function () {
-          // Eski tooltip instance'ı varsa dispose et
-          var existingTooltip = bootstrap.Tooltip.getInstance(this);
-          if (existingTooltip) {
-            existingTooltip.dispose();
-          }
-          // Yeni tooltip oluştur
-          new bootstrap.Tooltip(this);
-        });
-      },
-
-      serverSide: true,
-      processing: true,
-      deferRender: true,
+        //stateSave: true,
+        destroy: true,
+        responsive: true,
+        searching: true,
+        info: true,
+        paging: true,
+        autoWidth: false,
+        dom: 't<"row g-0 mt-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
         language: {
-        decimal: "",
-        emptyTable: `
+          //url: "/assets/js/tr.json",
+        },
+        drawCallback: function (settings) {
+          // Sadece tablonun içindeki tooltip'leri yenile (daha performanslı)
+          $('#gelirGiderTable [data-bs-toggle="tooltip"]').each(function () {
+            // Eski tooltip instance'ı varsa dispose et
+            var existingTooltip = bootstrap.Tooltip.getInstance(this);
+            if (existingTooltip) {
+              existingTooltip.dispose();
+            }
+            // Yeni tooltip oluştur
+            new bootstrap.Tooltip(this);
+          });
+        },
+
+        serverSide: true,
+        processing: true,
+        deferRender: true,
+        language: {
+          decimal: "",
+          emptyTable: `
         <div class="dt-empty-modern">
            <svg data-id="3" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-gray-500 dark:text-gray-400"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
 
@@ -46,66 +46,74 @@ $(document).ready(function () {
             <p>Yeni bir kayıt oluşturabilirsiniz.</p>
         </div>
     `,
-        info: "_TOTAL_ kayıttan _START_ - _END_ gösteriliyor",
-        infoEmpty: "Kayıt bulunamadı",
-        infoFiltered: "(toplam _MAX_ kayıttan filtrelendi)",
-        infoPostFix: "",
-        thousands: ",",
-        lengthMenu: "_MENU_ kayıt göster",
-        loadingRecords: "Yükleniyor...",
-        processing: " İşleniyor...",
-        search: "Arama:",
-        zeroRecords: "Eşleşen kayıt bulunamadı",
-        paginate: {
-          first: "İlk",
-          last: "Son",
-          next: "Sonraki",
-          previous: "Önceki"
+          info: "_TOTAL_ kayıttan _START_ - _END_ gösteriliyor",
+          infoEmpty: "Kayıt bulunamadı",
+          infoFiltered: "(toplam _MAX_ kayıttan filtrelendi)",
+          infoPostFix: "",
+          thousands: ",",
+          lengthMenu: "_MENU_ kayıt göster",
+          loadingRecords: "Yükleniyor...",
+          processing: " İşleniyor...",
+          search: "Arama:",
+          zeroRecords: "Eşleşen kayıt bulunamadı",
+          paginate: {
+            first: "İlk",
+            last: "Son",
+            next: "Sonraki",
+            previous: "Önceki",
+          },
+          aria: {
+            sortAscending: ": artan sütuna sırala",
+            sortDescending: ": azalan sütuna sırala",
+          },
         },
-        aria: {
-          sortAscending: ": artan sütuna sırala",
-          sortDescending: ": azalan sütuna sırala"
-        }
-      },
-      ajax: function (d, callback, settings) {
-        var urls = [
-          "/pages/finans-yonetimi/gelir-gider/server_side_api.php"
-          
-        ];
-        var payload = $.extend(true, {}, d, { action: "datatable-list" });
-        var i = 0;
-        function next() {
-          if (i >= urls.length) {
-            callback({ draw: d.draw || 1, recordsTotal: 0, recordsFiltered: 0, data: [] });
-            return;
+        ajax: function (d, callback, settings) {
+          var urls = ["/pages/finans-yonetimi/gelir-gider/server_side_api.php"];
+          var payload = $.extend(true, {}, d, { action: "datatable-list" });
+          var i = 0;
+          function next() {
+            if (i >= urls.length) {
+              callback({
+                draw: d.draw || 1,
+                recordsTotal: 0,
+                recordsFiltered: 0,
+                data: [],
+              });
+              return;
+            }
+            $.ajax({
+              url: urls[i++],
+              type: "POST",
+              data: payload,
+              dataType: "json",
+              success: function (json) {
+                callback(json);
+              },
+              error: function () {
+                next();
+              },
+            });
           }
-          $.ajax({
-            url: urls[i++],
-            type: "POST",
-            data: payload,
-            dataType: "json",
-            success: function (json) { callback(json); },
-            error: function () { next(); }
-          });
-        }
-        next();
-      },
-      ordering: false,
+          next();
+        },
+        ordering: false,
 
-      initComplete: function (settings, json) {
-        var api = this.api();
-        var tableId = settings.sTableId;
-        attachDtColumnSearch(api, tableId);
-        api.columns.adjust().responsive.recalc();
-      }
-    });
+        initComplete: function (settings, json) {
+          var api = this.api();
+          var tableId = settings.sTableId;
+          attachDtColumnSearch(api, tableId);
+          api.columns.adjust().responsive.recalc();
+        },
+      });
     }
 
-    $(window).off("resize.gg").on("resize.gg", function () {
-      try {
-        table.columns.adjust().responsive.recalc();
-      } catch (e) {}
-    });
+    $(window)
+      .off("resize.gg")
+      .on("resize.gg", function () {
+        try {
+          table.columns.adjust().responsive.recalc();
+        } catch (e) {}
+      });
   }
 
   // bazı tabloları kendi sayfasında başlatmak istediğim için burada başlatma
@@ -115,11 +123,10 @@ $(document).ready(function () {
     "tahsilatTable",
     "gecikmisTable",
     "notificationsList",
-    "smsResidentsTable"
+    "smsResidentsTable",
   ];
-  const $others = $(".datatables, .datatable").not(
-    "#" + exitstsTables.join(", #")
-  );
+
+  const $others = $(".datatables").not("#" + exitstsTables.join(", #"));
 
   if ($others.length > 0) {
     // console.log($others);
@@ -132,7 +139,7 @@ $(document).ready(function () {
         var tableId = settings.sTableId;
         attachDtColumnSearch(api, tableId);
         api.columns.adjust().responsive.recalc();
-      }
+      },
     });
 
     $(window).on("resize.dt", function () {
@@ -151,7 +158,12 @@ $("#exportExcel").on("click", function () {
 function attachDtColumnSearch(api, tableId) {
   window.__dtFilters = window.__dtFilters || {};
   const dtSettings0 = api && api.settings && api.settings()[0];
-  const isServerSide = !!(dtSettings0 && (dtSettings0.oInit?.serverSide || dtSettings0.oFeatures?.bServerSide || dtSettings0.serverSide));
+  const isServerSide = !!(
+    dtSettings0 &&
+    (dtSettings0.oInit?.serverSide ||
+      dtSettings0.oFeatures?.bServerSide ||
+      dtSettings0.serverSide)
+  );
   const STRING_LABELS = {
     starts: "Başında",
     contains: "İçerir",
@@ -159,7 +171,7 @@ function attachDtColumnSearch(api, tableId) {
     ends: "Sonunda",
     equals: "Eşittir",
     not_equals: "Eşit değil",
-    none: "Filtre yok"
+    none: "Filtre yok",
   };
   const NUMBER_LABELS = {
     contains: "İçerir",
@@ -169,18 +181,22 @@ function attachDtColumnSearch(api, tableId) {
     lte: "Küçük eşittir (<=)",
     equals: "Eşittir (=)",
     not_equals: "Eşit değil (≠)",
-    none: "Filtre yok"
+    none: "Filtre yok",
   };
   const DATE_LABELS = {
     after: "Sonra",
     before: "Önce",
     on: "Aynı gün",
     not_on: "Değil",
-    none: "Filtre yok"
+    none: "Filtre yok",
   };
 
   function encodeSearch(op, val, type) {
-    return JSON.stringify({ op: op || "contains", val: val || "", type: (type || "string") });
+    return JSON.stringify({
+      op: op || "contains",
+      val: val || "",
+      type: type || "string",
+    });
   }
 
   function decodeSearch(s) {
@@ -194,68 +210,75 @@ function attachDtColumnSearch(api, tableId) {
   }
 
   function normalizeText(s) {
-    return (String(s || "").toLowerCase()).normalize('NFD').replace(/\p{Diacritic}/gu, '');
+    return String(s || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "");
   }
   function parseNumber(s) {
     let t = String(s || "");
-    t = t.replace(/[^\d,.-]/g, '');
-    t = t.replace(/\./g, '');
-    t = t.replace(/,/g, '.');
+    t = t.replace(/[^\d,.-]/g, "");
+    t = t.replace(/\./g, "");
+    t = t.replace(/,/g, ".");
     const n = parseFloat(t);
     return isNaN(n) ? null : n;
   }
   function parseDateDMY(s) {
-    const m = String(s || '').match(/(\d{2})\.(\d{2})\.(\d{4})/);
+    const m = String(s || "").match(/(\d{2})\.(\d{2})\.(\d{4})/);
     if (!m) return null;
-    const d = new Date(parseInt(m[3],10), parseInt(m[2],10)-1, parseInt(m[1],10));
+    const d = new Date(
+      parseInt(m[3], 10),
+      parseInt(m[2], 10) - 1,
+      parseInt(m[1], 10)
+    );
     return isNaN(d.getTime()) ? null : d.getTime();
   }
 
   if (!window.__dtExtSearchAdded) {
-    $.fn.dataTable.ext.search.push(function(settings, data){
+    $.fn.dataTable.ext.search.push(function (settings, data) {
       if (settings?.oInit?.serverSide) return true;
       const tid = settings.sTableId;
       const filters = window.__dtFilters[tid];
       if (!filters) return true;
       for (const idx in filters) {
         const f = filters[idx];
-        if (!f || !f.val || String(f.val).trim() === '') continue;
-        const type = f.type || 'string';
-        const op = f.op || 'contains';
+        if (!f || !f.val || String(f.val).trim() === "") continue;
+        const type = f.type || "string";
+        const op = f.op || "contains";
         const cell = data[idx];
-        if (type === 'number') {
+        if (type === "number") {
           const cv = parseNumber(cell);
           const qv = parseNumber(f.val);
           if (qv === null || cv === null) continue;
-          if (op === 'contains') {
+          if (op === "contains") {
             // Sayısal contains: 12,34 içinde 2,3 gibi aramalar için normalize ederek string karşılaştır
-            const cvStr = String(cv).replace(/\./g, ',');
-            const qvStr = String(qv).replace(/\./g, ',');
-            if (!(cvStr.includes(qvStr))) return false;
+            const cvStr = String(cv).replace(/\./g, ",");
+            const qvStr = String(qv).replace(/\./g, ",");
+            if (!cvStr.includes(qvStr)) return false;
           }
-          if (op === 'gt' && !(cv > qv)) return false;
-          if (op === 'gte' && !(cv >= qv)) return false;
-          if (op === 'lt' && !(cv < qv)) return false;
-          if (op === 'lte' && !(cv <= qv)) return false;
-          if (op === 'equals' && !(cv == qv)) return false;
-          if (op === 'not_equals' && !(cv != qv)) return false;
-        } else if (type === 'date') {
+          if (op === "gt" && !(cv > qv)) return false;
+          if (op === "gte" && !(cv >= qv)) return false;
+          if (op === "lt" && !(cv < qv)) return false;
+          if (op === "lte" && !(cv <= qv)) return false;
+          if (op === "equals" && !(cv == qv)) return false;
+          if (op === "not_equals" && !(cv != qv)) return false;
+        } else if (type === "date") {
           const cv = parseDateDMY(cell);
           const qv = parseDateDMY(f.val);
           if (qv === null || cv === null) continue;
-          if (op === 'after' && !(cv > qv)) return false;
-          if (op === 'before' && !(cv < qv)) return false;
-          if (op === 'on' && !(cv === qv)) return false;
-          if (op === 'not_on' && !(cv !== qv)) return false;
+          if (op === "after" && !(cv > qv)) return false;
+          if (op === "before" && !(cv < qv)) return false;
+          if (op === "on" && !(cv === qv)) return false;
+          if (op === "not_on" && !(cv !== qv)) return false;
         } else {
           const t = normalizeText(cell);
           const q = normalizeText(f.val);
-          if (op === 'starts' && !(t.startsWith(q))) return false;
-          if (op === 'contains' && !(t.includes(q))) return false;
-          if (op === 'not_contains' && (t.includes(q))) return false;
-          if (op === 'ends' && !(t.endsWith(q))) return false;
-          if (op === 'equals' && !(t === q)) return false;
-          if (op === 'not_equals' && !(t !== q)) return false;
+          if (op === "starts" && !t.startsWith(q)) return false;
+          if (op === "contains" && !t.includes(q)) return false;
+          if (op === "not_contains" && t.includes(q)) return false;
+          if (op === "ends" && !t.endsWith(q)) return false;
+          if (op === "equals" && !(t === q)) return false;
+          if (op === "not_equals" && !(t !== q)) return false;
         }
       }
       return true;
@@ -264,12 +287,16 @@ function attachDtColumnSearch(api, tableId) {
   }
 
   var $thead = $("#" + tableId + " thead");
-  $thead.find('.search-input-row').remove();
+  $thead.find(".search-input-row").remove();
   $thead.append('<tr class="search-input-row"></tr>');
   api.columns().every(function () {
     const column = this;
     const $header = $(column.header());
-    const title = $header.text().trim() || $header.attr("data-title") || $header.attr("aria-label") || "";
+    const title =
+      $header.text().trim() ||
+      $header.attr("data-title") ||
+      $header.attr("aria-label") ||
+      "";
     const filterType = ($header.attr("data-filter") || "").toLowerCase();
     if (
       title != "İşlem" &&
@@ -287,36 +314,58 @@ function attachDtColumnSearch(api, tableId) {
       input.classList.add("form-control", "form-control-sm");
       input.setAttribute("autocomplete", "off");
 
-      const hasTypedFilter = (filterType === "string" || filterType === "number" || filterType === "date");
+      const hasTypedFilter =
+        filterType === "string" ||
+        filterType === "number" ||
+        filterType === "date";
       function setActiveOp($menu, op) {
         if (!$menu || $menu.length === 0) return;
-        $menu.find('.dropdown-item').removeClass('active').removeAttr('aria-selected');
-        if (!op) return; 
+        $menu
+          .find(".dropdown-item")
+          .removeClass("active")
+          .removeAttr("aria-selected");
+        if (!op) return;
         const $item = $menu.find(`.dropdown-item[data-op="${op}"]`);
-        $item.addClass('active').attr('aria-selected', 'true');
+        $item.addClass("active").attr("aria-selected", "true");
       }
       function setButtonIcon($btn, active) {
         if (!$btn || $btn.length === 0) return;
-        const $i = $btn.find('i');
+        const $i = $btn.find("i");
         if (!$i.length) return;
         if (active) {
-          $i.removeClass().addClass('bi bi-funnel-fill');
+          $i.removeClass().addClass("bi bi-funnel-fill");
         } else {
-          $i.removeClass().addClass('bi bi-funnel');
+          $i.removeClass().addClass("bi bi-funnel");
         }
       }
       let btn, menu;
       if (hasTypedFilter) {
-        btn = $('<button type="button" class="btn btn-icon btn-light-brand btn-sm p-2 me-2" aria-label="Filtre" data-bs-toggle="dropdown"><i class="bi bi-funnel"></i></i></button>');
-        const labels = filterType === "number" ? NUMBER_LABELS : (filterType === "date" ? DATE_LABELS : STRING_LABELS);
+        btn = $(
+          '<button type="button" class="btn btn-icon btn-light-brand btn-sm p-2 me-2" aria-label="Filtre" data-bs-toggle="dropdown"><i class="bi bi-funnel"></i></i></button>'
+        );
+        const labels =
+          filterType === "number"
+            ? NUMBER_LABELS
+            : filterType === "date"
+            ? DATE_LABELS
+            : STRING_LABELS;
         menu = $('<div class="dropdown-menu"></div>');
         Object.entries(labels).forEach(([key, label]) => {
-          if (key === 'none') menu.append('<div class="dropdown-divider m-0"></div>');
-          menu.append(`<a class="dropdown-item m-0" data-op="${key}" href="javascript:void(0)">${label}</a>`);
+          if (key === "none")
+            menu.append('<div class="dropdown-divider m-0"></div>');
+          menu.append(
+            `<a class="dropdown-item m-0" data-op="${key}" href="javascript:void(0)">${label}</a>`
+          );
         });
       }
 
-      let currentOp = hasTypedFilter ? (filterType === "number" ? "equals" : (filterType === "date" ? "on" : "contains")) : "contains";
+      let currentOp = hasTypedFilter
+        ? filterType === "number"
+          ? "equals"
+          : filterType === "date"
+          ? "on"
+          : "contains"
+        : "contains";
       if (btn) btn.data("op", currentOp);
       if (menu) setActiveOp(menu, null);
 
@@ -326,15 +375,19 @@ function attachDtColumnSearch(api, tableId) {
         const typeNow = hasTypedFilter ? filterType : "string";
         const hasVal = !!(val && String(val).trim() !== "");
         if (menu) setActiveOp(menu, hasVal ? opNow : null);
-        if (btn) setButtonIcon(btn, hasVal && opNow !== 'none');
+        if (btn) setButtonIcon(btn, hasVal && opNow !== "none");
         if (isServerSide) {
           const payload = encodeSearch(opNow, val, typeNow);
           if (column.search() !== payload) column.search(payload).draw();
         } else {
-          const idx = $(this).closest('th').index();
+          const idx = $(this).closest("th").index();
           window.__dtFilters[tableId] = window.__dtFilters[tableId] || {};
-          if (hasVal && opNow !== 'none') {
-            window.__dtFilters[tableId][idx] = { op: opNow, val: val, type: typeNow };
+          if (hasVal && opNow !== "none") {
+            window.__dtFilters[tableId][idx] = {
+              op: opNow,
+              val: val,
+              type: typeNow,
+            };
           } else {
             delete window.__dtFilters[tableId][idx];
           }
@@ -347,18 +400,25 @@ function attachDtColumnSearch(api, tableId) {
           currentOp = $(this).data("op");
           btn.data("op", currentOp);
           let val = input.value || "";
-          if (currentOp === 'none') { input.value = ''; val = ''; }
+          if (currentOp === "none") {
+            input.value = "";
+            val = "";
+          }
           const hasVal = !!(val && String(val).trim() !== "");
           setActiveOp(menu, hasVal ? currentOp : null);
-          setButtonIcon(btn, hasVal && currentOp !== 'none');
+          setButtonIcon(btn, hasVal && currentOp !== "none");
           if (isServerSide) {
             const payload = encodeSearch(currentOp, val, filterType);
             column.search(payload).draw();
           } else {
-            const idx = $(input).closest('th').index();
+            const idx = $(input).closest("th").index();
             window.__dtFilters[tableId] = window.__dtFilters[tableId] || {};
-            if (hasVal && currentOp !== 'none') {
-              window.__dtFilters[tableId][idx] = { op: currentOp, val: val, type: filterType };
+            if (hasVal && currentOp !== "none") {
+              window.__dtFilters[tableId][idx] = {
+                op: currentOp,
+                val: val,
+                type: filterType,
+              };
             } else {
               delete window.__dtFilters[tableId][idx];
             }
@@ -368,14 +428,17 @@ function attachDtColumnSearch(api, tableId) {
       }
 
       if (btn && menu) {
-        wrap.append(input).append($('<div class="dropdown"></div>').append(btn).append(menu));
+        wrap
+          .append(input)
+          .append($('<div class="dropdown"></div>').append(btn).append(menu));
       } else {
         wrap.append(input);
       }
       th.append(wrap);
       $("#" + tableId + " thead .search-input-row").append(th);
 
-      const isColumnVisible = column.visible() && !$header.hasClass("dtr-hidden");
+      const isColumnVisible =
+        column.visible() && !$header.hasClass("dtr-hidden");
       if (!isColumnVisible) th.hide();
     } else {
       $("#" + tableId + " thead .search-input-row").append("<th></th>");
@@ -384,7 +447,8 @@ function attachDtColumnSearch(api, tableId) {
 
   api.on("responsive-resize", function (e, datatable, columns) {
     $("#" + tableId + " thead .search-input-row th").each(function (index) {
-      if (columns[index]) $(this).show(); else $(this).hide();
+      if (columns[index]) $(this).show();
+      else $(this).hide();
     });
   });
 
@@ -399,14 +463,44 @@ function attachDtColumnSearch(api, tableId) {
         $(this).val(parsed.val);
       }
       const th = $(this).closest("th");
-      const btn = th.find("button[data-bs-toggle=\"dropdown\"]");
+      const btn = th.find('button[data-bs-toggle="dropdown"]');
       const menu = th.find(".dropdown-menu");
       const typeForColumn = parsed.type || "string";
-      const hasValue = (parsed.val && String(parsed.val).trim() !== "");
-      if (btn.length) btn.data("op", hasValue ? (parsed.op || (typeForColumn === "number" ? "equals" : (typeForColumn === "date" ? "on" : "contains"))) : (typeForColumn === "number" ? "equals" : (typeForColumn === "date" ? "on" : "contains")));
-      if (menu.length) setActiveOp(menu, hasValue ? (parsed.op || (typeForColumn === "number" ? "equals" : (typeForColumn === "date" ? "on" : "contains"))) : null);
-      if (btn.length) setButtonIcon(btn, hasValue && (parsed.op || 'contains') !== 'none');
-      if (hasValue) api.column(columnIndex).search(encodeSearch(parsed.op, parsed.val, typeForColumn));
+      const hasValue = parsed.val && String(parsed.val).trim() !== "";
+      if (btn.length)
+        btn.data(
+          "op",
+          hasValue
+            ? parsed.op ||
+                (typeForColumn === "number"
+                  ? "equals"
+                  : typeForColumn === "date"
+                  ? "on"
+                  : "contains")
+            : typeForColumn === "number"
+            ? "equals"
+            : typeForColumn === "date"
+            ? "on"
+            : "contains"
+        );
+      if (menu.length)
+        setActiveOp(
+          menu,
+          hasValue
+            ? parsed.op ||
+                (typeForColumn === "number"
+                  ? "equals"
+                  : typeForColumn === "date"
+                  ? "on"
+                  : "contains")
+            : null
+        );
+      if (btn.length)
+        setButtonIcon(btn, hasValue && (parsed.op || "contains") !== "none");
+      if (hasValue)
+        api
+          .column(columnIndex)
+          .search(encodeSearch(parsed.op, parsed.val, typeForColumn));
     });
     api.draw();
   } else {
@@ -424,8 +518,7 @@ function getDtDefaults() {
     autoWidth: true,
     language: {
       decimal: "",
-      emptyTable:
-        `
+      emptyTable: `
         <div class="dt-empty-modern">
            <svg data-id="3" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-gray-500 dark:text-gray-400"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
 
@@ -440,22 +533,22 @@ function getDtDefaults() {
       thousands: ",",
       lengthMenu: "_MENU_ kayıt göster",
       loadingRecords: "Yükleniyor...",
-      processing: '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Yükleniyor...',
+      processing:
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Yükleniyor...',
       search: "Arama:",
       zeroRecords: "Eşleşen kayıt bulunamadı",
       paginate: {
         first: "İlk",
         last: "Son",
         next: "Sonraki",
-        previous: "Önceki"
+        previous: "Önceki",
       },
       aria: {
         sortAscending: ": artan sütuna sırala",
-        sortDescending: ": azalan sütuna sırala"
-      }
+        sortDescending: ": azalan sütuna sırala",
+      },
     },
-    dom:
-      't<"row m-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
+    dom: 't<"row m-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
     initComplete: function (settings, json) {
       var api = this.api();
       var tableId = settings.sTableId;
@@ -463,7 +556,7 @@ function getDtDefaults() {
         attachDtColumnSearch(api, tableId);
       }
       api.columns.adjust().responsive.recalc();
-    }
+    },
   };
 }
 
@@ -508,15 +601,15 @@ $(document).ready(function () {
         "Arial",
         "Arial Black",
         "Comic Sans MS",
-        "Courier New"
+        "Courier New",
       ],
       addDefaultFonts: "inter",
       callbacks: {
         onInit: function () {
           $(".summernote").summernote("height", summernoteHeight);
           $(".summernote").summernote("fontName", "inter");
-        }
-      }
+        },
+      },
     });
   }
 });
@@ -524,7 +617,7 @@ $(document).ready(function () {
 if ($(".flatpickr:not(.time-input)").length > 0) {
   $(".flatpickr:not(.time-input)").flatpickr({
     dateFormat: "d.m.Y",
-    locale: "tr" // locale for this instance only
+    locale: "tr", // locale for this instance only
   });
 }
 
@@ -545,7 +638,7 @@ $(document).on("click", ".route-link", function () {
 });
 if ($(".select2").length > 0) {
   $(".select2.islem").select2({
-    tags: true
+    tags: true,
   });
 }
 
@@ -581,7 +674,7 @@ function deleteRecord(
   AlertConfirm(confirmMessage).then((result) => {
     fetch(url, {
       method: "POST",
-      body: formData
+      body: formData,
     })
       //Gelen yanıtı json'a çevir
       .then((response) => response.json())
@@ -600,7 +693,7 @@ function deleteRecord(
         Swal.fire({
           title: title,
           html: data.message,
-          icon: icon
+          icon: icon,
         }).then((result) => {
           if (result.isConfirmed) {
             if (data.status == "success") tableRow.remove().draw(false);
@@ -644,7 +737,7 @@ async function deleteRecordByReturn(
     try {
       const response = await fetch(url, {
         method: "POST",
-        body: formData
+        body: formData,
       });
       const data = await response.json();
 
@@ -660,7 +753,7 @@ async function deleteRecordByReturn(
       await Swal.fire({
         title: title,
         text: data.message,
-        icon: icon
+        icon: icon,
       });
 
       if (data.status == "success") {
@@ -675,6 +768,70 @@ async function deleteRecordByReturn(
   }
 }
 
+/**
+ * Form verilerini asenkron olarak kaydeder.
+ * @param {string} formId - Form elementinin ID'si (örn: "userForm")
+ * @param {string} url - İstek yapılacak URL
+ * @param {function} successCallback - Başarılı işlem sonrası çalışacak fonksiyon (opsiyonel)
+ * @param {string} confirmMessage - Onay mesajı (opsiyonel, boş ise onay sormaz)
+ */
+async function saveRecord(
+  formId,
+  url,
+  successCallback = null,
+  confirmMessage = null
+) {
+  const form = document.getElementById(formId);
+  if (!form) {
+    console.error("Form not found: " + formId);
+    return;
+  }
+
+  // Eğer confirmMessage varsa onay iste
+  if (confirmMessage) {
+    const confirmed = await AlertConfirm(confirmMessage);
+    if (!confirmed) return;
+  }
+
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    // JSON yanıtını al
+    const data = await response.json();
+
+    if (data.status === "success") {
+      Swal.fire({
+        title: "Başarılı!",
+        text: data.message || "İşlem başarıyla gerçekleşti.",
+        icon: "success",
+        confirmButtonText: "Tamam",
+      }).then(() => {
+        if (successCallback) successCallback(data);
+      });
+    } else {
+      Swal.fire({
+        title: "Hata!",
+        text: data.message || "Bir hata oluştu.",
+        icon: "error",
+        confirmButtonText: "Tamam",
+      });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    Swal.fire({
+      title: "Hata!",
+      text: "Bir bağlantı hatası oluştu: " + error,
+      icon: "error",
+      confirmButtonText: "Tamam",
+    });
+  }
+}
+
 function AlertConfirm(confirmMessage = "Emin misiniz?") {
   return new Promise((resolve, reject) => {
     Swal.fire({
@@ -684,7 +841,7 @@ function AlertConfirm(confirmMessage = "Emin misiniz?") {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Evet, Sil!"
+      confirmButtonText: "Evet, Sil!",
     }).then((result) => {
       if (result.isConfirmed) {
         resolve(true); // Kullanıcı onayladı, işlemi devam ettir
@@ -714,7 +871,7 @@ function getTowns(cityId, targetElement) {
   console.log("Fetching towns for city ID:", cityId);
   fetch("api/il-ilce.php", {
     method: "POST",
-    body: formData
+    body: formData,
   })
     .then((response) => response.json())
     .then((data) => {
@@ -732,7 +889,7 @@ function checkPersonId(id) {
     swal.fire({
       title: "Hata",
       icon: "warning",
-      text: "Öncelikle personeli kaydetmeniz gerekir!"
+      text: "Öncelikle personeli kaydetmeniz gerekir!",
     });
     return false;
   }
@@ -744,7 +901,7 @@ function checkId(id, item) {
     swal.fire({
       title: "Hata",
       icon: "warning",
-      text: "Öncelikle " + item + " kaydetmeniz gerekir!"
+      text: "Öncelikle " + item + " kaydetmeniz gerekir!",
     });
     return false;
   }
@@ -776,7 +933,7 @@ if ($(".money").length > 0) {
       digits: 2,
       autoGroup: true,
       rightAlign: false,
-      removeMaskOnSubmit: true
+      removeMaskOnSubmit: true,
     });
   });
 
@@ -784,7 +941,7 @@ if ($(".money").length > 0) {
   $(document).on("focus", ".flatpickr:not(.time-input)", function () {
     $(this).inputmask("99.99.9999", {
       placeholder: "gg.aa.yyyy",
-      clearIncomplete: true
+      clearIncomplete: true,
     });
   });
 }
@@ -815,7 +972,7 @@ $.validator.setDefaults({
     } else {
       error.insertAfter(element);
     }
-  }
+  },
 });
 
 //Jquery validate ile yapılan doğrulamalarda para birimi formatı için
