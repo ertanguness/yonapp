@@ -10,8 +10,8 @@ use App\Helper\Security;
 class UserModel extends Model
 {
     protected $table = 'users';
-
     const SUPER_ADMIN = 10;
+
 
     public function __construct()
     {
@@ -20,7 +20,8 @@ class UserModel extends Model
 
 
     /** tüm kullanıcıları rol adı ve site adıyla beraber getirir */
-    public function allUser(){
+    public function allUser()
+    {
         $sql = $this->db->prepare("SELECT u.*, r.role_name, s.site_adi FROM $this->table u
                                         LEFT JOIN user_roles r ON u.roles = r.id
                                         LEFT JOIN kisiler k ON u.kisi_id = k.id
@@ -28,7 +29,7 @@ class UserModel extends Model
                                         ORDER BY u.id DESC");
         $sql->execute();
         return $sql->fetchAll(PDO::FETCH_OBJ) ?? [];
-        
+
     }
 
     public function getUserByEmail($email)
@@ -244,36 +245,8 @@ class UserModel extends Model
         return null; // Kullanıcı rolü bulunamadıysa null döner
     }
 
-   
 
 
-    /**Kullanıcı süper admin mi */
-    public static function isSuperAdmin(): bool
-    {
-
-         /**Kullanıcı modelini başlat */
-        //$UserModel::isSuperAdmin();
-
-        /**Session kontrolü */
-        if (!isset($_SESSION["user_id"])) {
-            return false;
-        }
-
-
-        /**id'yi session'dan al */
-        $userId = $_SESSION["user_id"];
-
-        $instance = new self();
-        $sql = $instance->db->prepare("SELECT roles FROM " . $instance->table . " WHERE id = ?");
-        $sql->execute([$userId]);
-        $result = $sql->fetch(PDO::FETCH_OBJ);
-
-        if ($result) {
-            return (int) $result->roles === self::SUPER_ADMIN;
-        }
-
-        return false;
-    }
 
 
     //Kullanıcı girişinde bir token oluştur ve kullanıcıya kaydet
@@ -443,4 +416,47 @@ class UserModel extends Model
         $sql->execute(array($id));
         return $sql->fetch(PDO::FETCH_OBJ);
     }
+
+
+
+
+    /**Kullanıcı süper admin mi */
+    public static function isSuperAdmin(): bool
+    {
+
+        /**Kullanıcı modelini başlat */
+        //$UserModel::isSuperAdmin();
+
+        /**Session kontrolü */
+        if (!isset($_SESSION["user_id"])) {
+            return false;
+        }
+
+
+        /**id'yi session'dan al */
+        $userId = $_SESSION["user_id"];
+
+        $instance = new self();
+        $sql = $instance->db->prepare("SELECT roles FROM " . $instance->table . " WHERE id = ?");
+        $sql->execute([$userId]);
+        $result = $sql->fetch(PDO::FETCH_OBJ);
+
+        if ($result) {
+            return (int) $result->roles === self::SUPER_ADMIN;
+        }
+
+        return false;
+    }
+
+    /** Email adresi ve rolü aynı olan kullanıcıy kontrol eder */
+   public function isUserExists($email, $role): bool
+{
+    $sql = $this->db->prepare("SELECT 1 FROM $this->table WHERE email = ? AND roles = ? LIMIT 1");
+    $sql->execute([$email, $role]);
+    return (bool) $sql->fetchColumn();
+}
+
+
+
+
 }

@@ -13,6 +13,8 @@ class UserRolesModel extends Model
 {
     protected $table = 'user_roles';
 
+
+
     public function __construct()
     {
         parent::__construct($this->table);
@@ -112,5 +114,8 @@ class UserRolesModel extends Model
 
         return $sql->fetchColumn() > 0;
     }
+
+
+
 }
 ?>

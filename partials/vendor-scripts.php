@@ -63,7 +63,7 @@ if (
     $page == "sakin/anket-listesi"  || $page == "program-giris-bilgileri" ||
     $page == "gecikmis-odemeler" ||
     $page == "superadmin-anasayfa" || $page == "superadmin-panel" || $page == "superadmin-temsilciler" || $page == "superadmin" || 
-    $page == "superadmin-yetki-gruplari" || $page == "superadmin-kullanicilar"
+    $page == "superadmin-yetki-gruplari" || $page == "superadmin-kullanicilar" || $page == "superadmin-kullanici-duzenle"
 ) { 
     ?>
     <!-- echo '<script src="./dist/libs/datatable/datatables.min.js"></script>'; -->
@@ -73,7 +73,8 @@ if (
     <script src="/assets/vendors/js/dataTables.bs5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
-    <script>
+
+        <script>
         (function(){
             function initDtIn(root){
                 if (!root || !window.jQuery) return;
@@ -128,6 +129,8 @@ if (
             }
         })();
     </script>
+
+
 <?php  }
 
 //*************USERS********************************* */
@@ -152,6 +155,10 @@ if ($page == 'kullanici-grubu-duzenle' || $page == 'kullanici-grubu-ekle' || $pa
 
 if ($page == 'yetki-yonetimi') {
     echo '<script src="/pages/kullanici-gruplari/js/yetkiler.js"></script>';
+}
+
+if($page == "superadmin-kullanici-ekle" || $page == "superadmin-kullanici-duzenle" || $page == "superadmin-kullanicilar"  ) {
+    echo '<script src="/pages/panel/kullanicilar/js/kullanici.js?v='. filemtime("pages/panel/kullanicilar/js/kullanici.js").'"></script>';
 }
 
 

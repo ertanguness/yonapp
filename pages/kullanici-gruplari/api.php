@@ -147,6 +147,12 @@ if ($_POST['action'] == 'saveRole') {
             'main_role' => 0
         ];
 
+        /**Eğer süper admin tarafından kayıt yapılıyorsa */
+        if($User::isSuperAdmin()){
+            $data['main_role'] = 1;
+            $data['owner_id'] = 0;
+        }
+
         $lastInsertId = $UserRoles->saveWithAttr($data);
 
         $status = 'success';

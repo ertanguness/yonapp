@@ -15,7 +15,7 @@ $UserHelper = new UserHelper();
 Gate::authorizeOrDie("kullanici_ekle_guncelle_sil");
 
 
-$id =  Security::decrypt($id) ?? 0;
+$id =  Security::decrypt($id ?? 0);
 $new_id = $id;
 
 //Eğer url'den id yazılmışsa veya id boş ise projeler sayfasına gider
@@ -47,7 +47,7 @@ $site_ids = $user ? json_decode($user->siteler_ids ?? '[]', true) : [];
             <div class="d-flex d-md-none">
                 <a href="javascript:void(0)" class="page-header-right-close-toggle">
                     <i class="feather-arrow-left me-2"></i>
-                    <span>Back</span>
+                    <span>Geri</span>
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
@@ -83,7 +83,7 @@ $site_ids = $user ? json_decode($user->siteler_ids ?? '[]', true) : [];
             <div class="d-flex d-md-none">
                 <a href="javascript:void(0)" class="page-content-left-close-toggle">
                     <i class="feather-arrow-left me-2"></i>
-                    <span>Back</span>
+                    <span>Geri</span>
                 </a>
             </div>
             <ul class="nav nav-tabs nav-tabs-custom-style" id="myTab" role="tablist">
@@ -125,7 +125,7 @@ $site_ids = $user ? json_decode($user->siteler_ids ?? '[]', true) : [];
         <div class="tab-pane fade active show" id="proposalTab">
             <?php
 
-            $title = 'Yeni Kullanıcı Ekleme/Super Admin';
+            $title = 'Super Admin/Yeni Kullanıcı Ekleme';
             $text = "Gerekli bilgileri girerek yeni kullanıcı ekleyebilir ve yetkilendirebilirsiniz.";
 
             require_once 'pages/components/alert.php'

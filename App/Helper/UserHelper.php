@@ -1,11 +1,12 @@
 <?php
 namespace App\Helper;
+use Model\UserModel;
 use PDO;
 
-class UserHelper 
+class UserHelper
 {
 
-     /**
+    /**
      * Aktif PDO veritabanı bağlantısını tutar.
      * @var PDO
      */
@@ -58,16 +59,16 @@ class UserHelper
     }
 
 
-//Get user info
-   
+    //Get user info
 
-    
+
+
 
     //user id'leri aralarında virgül olan bir string alır ve bu id'lerin karşılık geldiği kullanıcıların isimlerini döndürür    
     public function getUsersName($user_ids)
     {
         $user_ids = explode(',', $user_ids);
-              $users = [];
+        $users = [];
         foreach ($user_ids as $id) {
             $query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
             $query->execute(['id' => $id]);
@@ -94,7 +95,7 @@ class UserHelper
         foreach ($results as $row) { // $results üzerinde döngü
             // Kullanıcıdan gelen $selectedId ile karşılaştırma yapılıyor.
             $selected = $selectedId == $row->id ? ' selected' : ''; // Eğer id varsa seçili yap
-            $select .= '<option value="' . $row->id . '"'  . $selected . '>' . $row->full_name . " - " . $row->job . '</option>';
+            $select .= '<option value="' . $row->id . '"' . $selected . '>' . $row->full_name . " - " . $row->job . '</option>';
         }
         $select .= '</select>';
         return $select;
@@ -102,21 +103,47 @@ class UserHelper
 
     public function userRoles($name = "user_roles", $id = null)
     {
-        $ownerID = $_SESSION["owner_id"];
-        $query = $this->db->prepare("SELECT * FROM user_roles where owner_id = ? "); // Tüm sütunları seç
-        $query->execute([$ownerID]);
+
+
+        /**süper admin tarafı ve kullanıcı tarafı için ayrı roller getirilir */
+        /**Kullanıcı super admin ise main rolleri getir */
+        $whereClause = "";
+        $params = [];
+        $UserModel = new UserModel();
+        if ($UserModel::isSuperAdmin()) {
+            $whereClause = " WHERE main_role = ?";
+            $params = [1];
+        } else {
+            $whereClause = " WHERE owner_id = ?";
+            $params = [$_SESSION["owner_id"]];
+        }
+
+
+
+
+
+        $query = $this->db->prepare("SELECT * FROM user_roles {$whereClause}"); // Tüm sütunları seç
+        $query->execute($params);
         $results = $query->fetchAll(PDO::FETCH_OBJ); // Tüm sonuçları al
 
         // Benzersiz bir ID oluşturmak için uniqid() kullanılıyor.
         $selectId = $name . "_" . uniqid();
         $select = '<select name="' . $name . '" class="form-select select2 w-100" id="' . $selectId . '" >';
-        $select .= '<option value="">Rol Seçiniz</option>';
+        $select .= '<option value="" disabled>Rol Seçiniz</option>';
         foreach ($results as $row) { // $results üzerinde döngü
             // Kullanıcıdan gelen $selectedId ile karşılaştırma yapılıyor.
             $selected = $id == $row->id ? ' selected' : ''; // Eğer id varsa seçili yap
-            $select .= '<option value="' . Security::encrypt($row->id) . '"'  . $selected . '>' . $row->role_name . '</option>';
+            $select .= '<option value="' . Security::encrypt($row->id) . '"' . $selected . '>' . $row->role_name . '</option>';
         }
         $select .= '</select>';
         return $select;
     }
+
+
+
+
+
+
+
+
 }

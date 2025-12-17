@@ -19,7 +19,11 @@ header('Content-Type: application/json; charset=utf-8');
 $db = Db::getInstance()->connect();
 
 if (!$db) {
-    if (function_exists('ob_get_level')) { while (ob_get_level()) { ob_end_clean(); } }
+    if (function_exists('ob_get_level')) {
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+    }
     http_response_code(500);
     echo json_encode(['error' => 'db_not_ready'], JSON_UNESCAPED_UNICODE);
     exit;
@@ -27,7 +31,11 @@ if (!$db) {
 
 // Yetki: sadece superadmin
 if (!UserModel::isSuperAdmin()) {
-    if (function_exists('ob_get_level')) { while (ob_get_level()) { ob_end_clean(); } }
+    if (function_exists('ob_get_level')) {
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+    }
     http_response_code(403);
     echo json_encode(['error' => 'forbidden'], JSON_UNESCAPED_UNICODE);
     exit;
@@ -39,12 +47,16 @@ $User = new UserModel();
 $draw = intval($_POST['draw'] ?? 1);
 $start = max(0, intval($_POST['start'] ?? 0));
 $length = intval($_POST['length'] ?? 12);
-if ($length <= 0) { $length = 12; }
-$searchValue = isset($_POST['search']['value']) ? trim((string)$_POST['search']['value']) : '';
+if ($length <= 0) {
+    $length = 12;
+}
+$searchValue = isset($_POST['search']['value']) ? trim((string) $_POST['search']['value']) : '';
 
 $orderColIndex = intval($_POST['order'][0]['column'] ?? 0);
 $orderDir = strtolower($_POST['order'][0]['dir'] ?? 'desc');
-if (!in_array($orderDir, ['asc', 'desc'], true)) { $orderDir = 'desc'; }
+if (!in_array($orderDir, ['asc', 'desc'], true)) {
+    $orderDir = 'desc';
+}
 
 // Liste sayfasındaki kolon sırasına göre güvenli kolon haritası
 $map = [
@@ -79,7 +91,7 @@ if (isset($_POST['columns']) && is_array($_POST['columns'])) {
         if (!isset($colMap[$idx])) {
             continue;
         }
-        $raw = isset($col['search']['value']) ? trim((string)$col['search']['value']) : '';
+        $raw = isset($col['search']['value']) ? trim((string) $col['search']['value']) : '';
         if ($raw === '') {
             continue;
         }
@@ -91,13 +103,13 @@ if (isset($_POST['columns']) && is_array($_POST['columns'])) {
         if (strlen($raw) > 1 && $raw[0] === '{') {
             $j = json_decode($raw, true);
             if (is_array($j)) {
-                $op = isset($j['op']) ? (string)$j['op'] : $op;
-                $val = isset($j['val']) ? (string)$j['val'] : '';
-                $type = isset($j['type']) ? (string)$j['type'] : $type;
+                $op = isset($j['op']) ? (string) $j['op'] : $op;
+                $val = isset($j['val']) ? (string) $j['val'] : '';
+                $type = isset($j['type']) ? (string) $j['type'] : $type;
             }
         }
 
-        $val = trim((string)$val);
+        $val = trim((string) $val);
         if ($val === '' || $op === 'none') {
             continue;
         }
@@ -117,7 +129,8 @@ $totalStmt = $db->prepare(
      FROM users u
      LEFT JOIN user_roles r ON u.roles = r.id
      LEFT JOIN kisiler k ON u.kisi_id = k.id
-     LEFT JOIN siteler s ON k.site_id = s.id"
+     LEFT JOIN siteler s ON k.site_id = s.id
+     WHERE u.silinme_tarihi IS NULL"
 );
 $totalStmt->execute();
 $total = (int) (($totalStmt->fetch(PDO::FETCH_OBJ)->c) ?? 0);
@@ -149,31 +162,73 @@ foreach ($columnFilters as $i => $f) {
     if ($type === 'number') {
         $num = str_replace(['.', ' '], '', $val);
         $num = str_replace(',', '.', $num);
-        $numVal = is_numeric($num) ? (float)$num : null;
+        $numVal = is_numeric($num) ? (float) $num : null;
         if ($numVal === null) {
             continue;
         }
-        if ($op === 'gt') { $whereParts[] = "$col > :$p"; $params[$p] = $numVal; continue; }
-        if ($op === 'gte') { $whereParts[] = "$col >= :$p"; $params[$p] = $numVal; continue; }
-        if ($op === 'lt') { $whereParts[] = "$col < :$p"; $params[$p] = $numVal; continue; }
-        if ($op === 'lte') { $whereParts[] = "$col <= :$p"; $params[$p] = $numVal; continue; }
-        if ($op === 'not_equals') { $whereParts[] = "$col <> :$p"; $params[$p] = $numVal; continue; }
+        if ($op === 'gt') {
+            $whereParts[] = "$col > :$p";
+            $params[$p] = $numVal;
+            continue;
+        }
+        if ($op === 'gte') {
+            $whereParts[] = "$col >= :$p";
+            $params[$p] = $numVal;
+            continue;
+        }
+        if ($op === 'lt') {
+            $whereParts[] = "$col < :$p";
+            $params[$p] = $numVal;
+            continue;
+        }
+        if ($op === 'lte') {
+            $whereParts[] = "$col <= :$p";
+            $params[$p] = $numVal;
+            continue;
+        }
+        if ($op === 'not_equals') {
+            $whereParts[] = "$col <> :$p";
+            $params[$p] = $numVal;
+            continue;
+        }
         // equals / contains fallback
         if ($op === 'contains') {
-            $whereParts[] = "$col LIKE :$p"; $params[$p] = '%' . $numVal . '%';
+            $whereParts[] = "$col LIKE :$p";
+            $params[$p] = '%' . $numVal . '%';
         } else {
-            $whereParts[] = "$col = :$p"; $params[$p] = $numVal;
+            $whereParts[] = "$col = :$p";
+            $params[$p] = $numVal;
         }
         continue;
     }
 
     // string (default)
     $needle = $val;
-    if ($op === 'starts') { $whereParts[] = "$col LIKE :$p"; $params[$p] = $needle . '%'; continue; }
-    if ($op === 'ends') { $whereParts[] = "$col LIKE :$p"; $params[$p] = '%' . $needle; continue; }
-    if ($op === 'equals') { $whereParts[] = "$col = :$p"; $params[$p] = $needle; continue; }
-    if ($op === 'not_equals') { $whereParts[] = "$col <> :$p"; $params[$p] = $needle; continue; }
-    if ($op === 'not_contains') { $whereParts[] = "$col NOT LIKE :$p"; $params[$p] = '%' . $needle . '%'; continue; }
+    if ($op === 'starts') {
+        $whereParts[] = "$col LIKE :$p";
+        $params[$p] = $needle . '%';
+        continue;
+    }
+    if ($op === 'ends') {
+        $whereParts[] = "$col LIKE :$p";
+        $params[$p] = '%' . $needle;
+        continue;
+    }
+    if ($op === 'equals') {
+        $whereParts[] = "$col = :$p";
+        $params[$p] = $needle;
+        continue;
+    }
+    if ($op === 'not_equals') {
+        $whereParts[] = "$col <> :$p";
+        $params[$p] = $needle;
+        continue;
+    }
+    if ($op === 'not_contains') {
+        $whereParts[] = "$col NOT LIKE :$p";
+        $params[$p] = '%' . $needle . '%';
+        continue;
+    }
     // contains
     $whereParts[] = "$col LIKE :$p";
     $params[$p] = '%' . $needle . '%';
@@ -181,7 +236,9 @@ foreach ($columnFilters as $i => $f) {
 
 $where = '';
 if (!empty($whereParts)) {
-    $where = ' WHERE ' . implode(' AND ', $whereParts);
+    $where = ' WHERE u.silinme_tarihi IS NULL AND ' . implode(' AND ', $whereParts);
+}else{
+    $where = ' WHERE u.silinme_tarihi IS NULL ';
 }
 
 // Count filtered
@@ -220,25 +277,25 @@ $data = [];
 $seq = $start + 1;
 foreach ($items as $user) {
     $encId = Security::encrypt($user->id);
-    $durumBadge = ((int)($user->status ?? 0) === 1) ? 'success' : 'danger';
+    $durumBadge = ((int) ($user->status ?? 0) === 1) ? 'success' : 'danger';
 
-    $isMainHtml = ((int)($user->is_main_user ?? 0) === 1)
+    $isMainHtml = ((int) ($user->is_main_user ?? 0) === 1)
         ? "<i class='ti ti-check text-success fs-24'></i>"
         : '';
 
-    $statusHtml = "<span class=\"badge text-$durumBadge border border-dashed border-gray-500\">" .
-        (((int)($user->status ?? 0) === 1) ? 'Aktif' : 'Pasif') .
+    $statusHtml = "<span data-id=\"{$encId}\" data-status=\"{$user->status}\" class=\"badge text-$durumBadge border border-dashed border-gray-500 cursor-pointer durum-degistir\">" .
+        (((int) ($user->status ?? 0) === 1) ? 'Aktif' : 'Pasif') .
         "</span>";
 
     // list.php içindeki onclick aynı kalsın diye raw id/status yolluyoruz
-    $statusCell = "<div class=\"text-center cursor-pointer\" onclick=\"changeUserStatus({$user->id}, {$user->status})\">$statusHtml</div>";
+    $statusCell = "<div class=\"text-center cursor-pointer\" {$user->status})\">$statusHtml</div>";
 
     $editUrl = 'superadmin-kullanici-duzenle/' . $encId;
 
     $actions = '<div class="hstack gap-2">'
         . '<a href="' . $editUrl . '" class="avatar-text avatar-md"><i class="feather-edit"></i></a>';
 
-    if ((int)($user->is_main_user ?? 0) !== 1) {
+    if ((int) ($user->is_main_user ?? 0) !== 1) {
         $actions .= '<a href="javascript:void(0);" class="avatar-text avatar-md kullanici-sil" data-id="' . htmlspecialchars($encId, ENT_QUOTES, 'UTF-8') . '">'
             . '<i class="feather-trash-2"></i></a>';
     }
@@ -246,7 +303,7 @@ foreach ($items as $user) {
     $actions .= '</div>';
 
     $data[] = [
-        (string)$seq,
+        (string) $seq,
         htmlspecialchars($user->role_name ?? '', ENT_QUOTES, 'UTF-8'),
         htmlspecialchars($user->site_adi ?? '', ENT_QUOTES, 'UTF-8'),
         htmlspecialchars($user->full_name ?? '', ENT_QUOTES, 'UTF-8'),
@@ -260,7 +317,11 @@ foreach ($items as $user) {
     $seq++;
 }
 
-if (function_exists('ob_get_level')) { while (ob_get_level()) { ob_end_clean(); } }
+if (function_exists('ob_get_level')) {
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+}
 echo json_encode([
     'draw' => $draw,
     'recordsTotal' => $total,
