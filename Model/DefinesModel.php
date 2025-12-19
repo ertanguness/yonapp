@@ -132,10 +132,13 @@ class DefinesModel extends Model
     }
 
 
-/** Gelir-gider kalemlerini gelen type ve define_name'e göre için getirir */
-    public function getGelirGiderKalemleri($type, $define_name)
+    /**
+     * Gelir-gider kalemlerini (alt_tur) gelen siteId + type + define_name’e göre getirir.
+     *
+     * Not: Session’dan varsayılan site seçmek yerine siteId parametresi zorunlu tutulur.
+     */
+    public function getGelirGiderKalemleri(int $siteId, int $type, string $define_name): array
     {
-        $site_id = $_SESSION['site_id'] ?? 1; // aktif site ID’sini alıyoruz
         $sql = $this->db->prepare("SELECT d.*
                                           FROM $this->table d
                                           WHERE site_id = :site_id 
@@ -146,7 +149,7 @@ class DefinesModel extends Model
                                           GROUP BY define_name, alt_tur
                                           ORDER BY alt_tur ASC");
         $sql->execute([
-            ':site_id' => $site_id,
+            ':site_id' => $siteId,
             ':type' => $type,
             ':define_name' => $define_name
         ]);
@@ -194,6 +197,124 @@ class DefinesModel extends Model
         $stmt->bindParam(':type', $type, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+
+    /**
+     * Site+type+kategori için ana kategori define kaydı var mı?
+     * Not: Aynı isimli birden fazla kayıt olabildiği için en küçük id'yi döndürür.
+     */
+    public function findGelirGiderKategoriId(int $siteId, int $type, string $kategoriAdi): ?int
+    {
+        $kategoriAdi = trim($kategoriAdi);
+        if ($kategoriAdi === '') {
+            return null;
+        }
+
+        $sql = $this->db->prepare("SELECT MIN(id) AS id
+            FROM {$this->table}
+            WHERE site_id = :site_id
+              AND type = :type
+              AND define_name = :define_name
+              AND silinme_tarihi IS NULL
+              AND (alt_tur IS NULL OR alt_tur = '')");
+        $sql->execute([
+            ':site_id' => $siteId,
+            ':type' => $type,
+            ':define_name' => $kategoriAdi,
+        ]);
+        $row = $sql->fetch(PDO::FETCH_OBJ);
+        return !empty($row?->id) ? (int)$row->id : null;
+    }
+
+    /**
+     * Site+type+kategori+alt_tur için alt kalem kaydı var mı?
+     * Not: Aynı alt_tur tekrar ediyorsa en küçük id'yi döndürür.
+     */
+    public function findGelirGiderAltTurId(int $siteId, int $type, string $kategoriAdi, string $altTur): ?int
+    {
+        $kategoriAdi = trim($kategoriAdi);
+        $altTur = trim($altTur);
+        if ($kategoriAdi === '' || $altTur === '') {
+            return null;
+        }
+
+        $sql = $this->db->prepare("SELECT MIN(id) AS id
+            FROM {$this->table}
+            WHERE site_id = :site_id
+              AND type = :type
+              AND define_name = :define_name
+              AND alt_tur = :alt_tur
+              AND silinme_tarihi IS NULL");
+        $sql->execute([
+            ':site_id' => $siteId,
+            ':type' => $type,
+            ':define_name' => $kategoriAdi,
+            ':alt_tur' => $altTur,
+        ]);
+        $row = $sql->fetch(PDO::FETCH_OBJ);
+        return !empty($row?->id) ? (int)$row->id : null;
+    }
+
+    /**
+     * Gelir/Gider için kategori + alt_tur tanımlarını (yoksa) oluşturur.
+     * - Kategori satırı: alt_tur NULL/''
+     * - Alt tur satırı: alt_tur dolu
+     */
+    public function ensureGelirGiderDefines(int $siteId, int $type, string $kategoriAdi, ?string $altTur = null): array
+    {
+        $kategoriAdi = trim($kategoriAdi);
+        $altTur = $altTur !== null ? trim($altTur) : null;
+
+        if (!in_array($type, [self::TYPE_GELIR_TIPI, self::TYPE_GIDER_TIPI], true)) {
+            throw new \InvalidArgumentException('Geçersiz gelir/gider type');
+        }
+        if ($siteId <= 0) {
+            throw new \InvalidArgumentException('Geçersiz site_id');
+        }
+        if ($kategoriAdi === '') {
+            throw new \InvalidArgumentException('Kategori boş olamaz');
+        }
+
+        $createdKategori = false;
+        $createdAltTur = false;
+
+        $kategoriId = $this->findGelirGiderKategoriId($siteId, $type, $kategoriAdi);
+        if (!$kategoriId) {
+            $stmt = $this->db->prepare("INSERT INTO {$this->table} (site_id, type, define_name, alt_tur, created_at)
+                VALUES (:site_id, :type, :define_name, NULL, NOW())");
+            $stmt->execute([
+                ':site_id' => $siteId,
+                ':type' => $type,
+                ':define_name' => $kategoriAdi,
+            ]);
+            $createdKategori = true;
+            $kategoriId = (int)$this->db->lastInsertId();
+        }
+
+        $altTurId = null;
+        if ($altTur !== null && $altTur !== '') {
+            $altTurId = $this->findGelirGiderAltTurId($siteId, $type, $kategoriAdi, $altTur);
+            if (!$altTurId) {
+                $stmt = $this->db->prepare("INSERT INTO {$this->table} (site_id, type, define_name, alt_tur, created_at)
+                    VALUES (:site_id, :type, :define_name, :alt_tur, NOW())");
+                $stmt->execute([
+                    ':site_id' => $siteId,
+                    ':type' => $type,
+                    ':define_name' => $kategoriAdi,
+                    ':alt_tur' => $altTur,
+                ]);
+                $createdAltTur = true;
+                $altTurId = (int)$this->db->lastInsertId();
+            }
+        }
+
+        return [
+            'kategori_id' => $kategoriId,
+            'alt_tur_id' => $altTurId,
+            'created_kategori' => $createdKategori,
+            'created_alt_tur' => $createdAltTur,
+        ];
     }
 
 

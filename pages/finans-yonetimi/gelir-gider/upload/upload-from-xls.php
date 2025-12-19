@@ -1,20 +1,9 @@
 <?php
-
-use App\Helper\Site;
-use App\Helper\BlokHelper;
-use App\Helper\Security;
 use App\Services\Gate;
-
-
-$siteHelper = new Site();
-$blokHelper = new BlokHelper();
-
 
 //Gate::authorizeOrDie('excelden_gelir_gider_yukle','', true);
 
 
-$site = $siteHelper->getCurrentSite();
-$site_adi = $site ? $site->site_adi : null;
 ?>
 
 <div class="page-header">
@@ -25,7 +14,7 @@ $site_adi = $site ? $site->site_adi : null;
         <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="ana-sayfa">Ana Sayfa</a></li>
             <li class="breadcrumb-item"><a href="site-sakinleri">Finans Yönetimi</a></li>
-            <li class="breadcrumb-item">Excelden Gewlir-Gider Yükle</li>
+            <li class="breadcrumb-item">Excelden Gelir-Gider Yükle</li>
         </ul>
     </div>
     <div class="page-header-right ms-auto">
@@ -50,8 +39,8 @@ $site_adi = $site ? $site->site_adi : null;
     $title = "Gelir-Gider Yükleme";
     $text = "*Bu sayfada Excel dosyasından toplu olarak gelir-gider bilgilerini yükleyebilirsiniz.";
     $text .= "<br>*Lütfen aşağıdaki örnek şablona uygun bir dosya kullanınız.";
-    $text .= "<br>*Dosyada olması gereken alanlar: Tarih*, Açıklama*, Tutar*, Tür (Gelir/Gider)*, Kategori, Ödeme Şekli, Not";
-    $text .= "<br><a href='pages/finans-yonetimi/gelir-gider/upload/gelir_gider_yukleme_sablonu.xlsx'>
+    $text .= "<br>*Dosyada olması gereken alanlar: Tarih*, Açıklama*, Tutar*, Gelir/Gider*, Kategori, Alt Kategori, Açıklama, Referans Kodu";
+    $text .= "<br><a href='pages/finans-yonetimi/gelir-gider/upload/download-template.php'>
                         <i class='feather-download me-2'></i>Örnek Excel Dosyası İndir</a>";
     require_once 'pages/components/alert.php';
     ?>
@@ -88,6 +77,14 @@ $site_adi = $site ? $site->site_adi : null;
                                     <label for="payment_file" class="form-label">Excel Dosyası</label>
                                     <input type="file" class="form-control" id="payment_file" name="payment_file"
                                         accept=".xls,.xlsx" required>
+                                </div>
+
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="1" id="create_missing_defines" name="create_missing_defines">
+                                    <label class="form-check-label" for="create_missing_defines">
+                                        Tanım yoksa otomatik oluştur (Kategori / Alt Kategori)
+                                    </label>
+                                    <div class="form-text">İşaretlersen, Excel'deki kategori/alt kategori tanımları <code>Tanımlamalar</code> tablosunda yoksa yeni kayıt olarak eklenecek.</div>
                                 </div>
                                 <div class="d-flex justify-content-start">
                                     <!-- Temizle Butonu -->

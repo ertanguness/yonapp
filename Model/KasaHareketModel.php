@@ -691,7 +691,7 @@ class KasaHareketModel extends Model
      * @param int $siteId İşlem yapılan sitenin ID'si.
      * @return array Başarılı ve hatalı işlemler hakkında bilgi içeren bir sonuç dizisi.
      */
-    public function excelUpload(string $tmpFilePath, int $siteId): array
+    public function excelUpload(string $tmpFilePath, int $siteId, int $kasaId = 0, bool $createMissingDefines = false): array
     {
         // Loglama servisini ve diğer modelleri hazırla
         $logger = \getLogger();
@@ -709,7 +709,14 @@ class KasaHareketModel extends Model
 
         //   id;site_id;kasa_id;islem_tarihi;islem_tipi;tahsilat_id;kisi_id;tutar;para_birimi;kategori;aciklama;silinme_tarihi;silen_kullanici;kaynak_tablo;kaynak_id;kayit_yapan;created_at;guncellenebilir;updated_at
 
-        $kasa_id = $KasaModel->varsayilanKasa()->id ?? 0;
+    // Kasa id öncelikle parametre ile alınır, yoksa varsayılan kasa kullanılır
+    $kasa_id = $kasaId ?: ($KasaModel->varsayilanKasa()->id ?? 0);
+
+    // Eğer defines ekleme isteniyorsa model kullanımı için örnekle
+    $definesModel = new DefinesModel();
+
+    $createdKategoriCount = 0;
+    $createdAltTurCount = 0;
 
 
         try {
@@ -760,61 +767,139 @@ class KasaHareketModel extends Model
                     continue;
                 }
 
-                // Tarih*	Tutar*	Kategori(Gelir/Gider)*	DaireKodu	Adı Soyadı	Açıklama
+                // Yeni şablon kolonları:
+                // Tarih*, Tutar*, Gelir/Gider*, Kategori, Alt Kategori, Açıklama, Referans Kod
 
-                // Verileri al ve temizle
-                //Tarih içindeki /- karakterlerini - ile değiştir
-                $rowData['Tarih*'] = str_replace(['/'], '.', $rowData['Tarih*']);
-                $rowData['Tarih*'] = str_replace(['-'], ' ', $rowData['Tarih*']);
-                $tarih            = trim(Date::convertExcelDate($rowData['Tarih*'], 'Y-m-d H:i:s'));
-                $tutar            = trim($rowData['Tutar*'] ?? '');
-                $kategori         = trim($rowData['Kategori(Gelir/Gider)*'] ?? '');
-                $daireKodu        = trim($rowData['DaireKodu'] ?? '');
-                $hesapAdi         = trim($rowData['Adı Soyadı'] ?? '');
-                $aciklama         = trim($rowData['Açıklama'] ?? '');
+                $tarihRaw = $rowData['Tarih*'] ?? null;
+                if (is_string($tarihRaw)) {
+                    // Tarih içindeki / karakterlerini . yap (parse için)
+                    $tarihRaw = str_replace(['/'], '.', $tarihRaw);
+                }
+                $tarih          = trim((string)Date::convertExcelDate($tarihRaw, 'Y-m-d H:i:s'));
 
-                // ... diğer sütunlar ...
-                $logger->info("Satır Verileri", [$tarih, $tutar, $kategori, $daireKodu, $hesapAdi, $aciklama]);
+                $tutarRaw       = $rowData['Tutar*'] ?? '';
+                $islemTipiRaw   = trim((string)($rowData['Gelir/Gider*'] ?? ''));
+                $kategoriAdi    = trim((string)($rowData['Kategori'] ?? ''));
+                $altTur         = trim((string)($rowData['Alt Kategori'] ?? ''));
+                $aciklama       = trim((string)($rowData['Açıklama'] ?? ''));
+                $refKod         = trim((string)($rowData['Referans Kod'] ?? ''));
 
-                // Eğer zorunlu alanlar boşsa, hatayı kaydet ve sonraki satıra geç
-                if (empty($tarih) || empty($tutar) || empty($kategori)) {
+                $logger->info("Satır Verileri", [$tarih, $tutarRaw, $islemTipiRaw, $kategoriAdi, $altTur, $aciklama, $refKod]);
+
+                // Zorunlular: Tarih*, Tutar*, Gelir/Gider*
+                if (empty($tarih) || trim((string)$tutarRaw) === '' || empty($islemTipiRaw)) {
                     $errorRows[] = [
                         'row_index' => $row->getRowIndex(),
-                        'error_message' =>  "Satır {$row->getRowIndex()}: 'Tarih', 'Tutar' ve 'Kategori' zorunludur.",
-                        'data' => $rowData // SATIRIN TÜM VERİSİNİ EKLE
+                        'error_message' =>  "Satır {$row->getRowIndex()}: 'Tarih', 'Tutar' ve 'Gelir/Gider' zorunludur.",
+                        'data' => $rowData
                     ];
-
-                    $rows->next(); // Bir sonraki satıra geç
+                    $rows->next();
                     continue;
                 }
 
-                //Daire kodu ve hesap Adından kişi id'yi bul
-
-                if (empty($daireKodu) && empty($hesapAdi)) {
-                    $kisi_id = $KisiModel->findKisiIdByDaireKoduAndAdiSoyadi($daireKodu, $hesapAdi);
+                // İşlem tipini normalize et
+                $tipLower = mb_strtolower($islemTipiRaw, 'UTF-8');
+                if ($tipLower === 'gelir') {
+                    $islemTipi = 'Gelir';
+                } elseif ($tipLower === 'gider') {
+                    $islemTipi = 'Gider';
+                } else {
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' =>  "Satır {$row->getRowIndex()}: 'Gelir/Gider*' alanı Gelir veya Gider olmalıdır.",
+                        'data' => $rowData
+                    ];
+                    $rows->next();
+                    continue;
                 }
-                // Veritabanına eklenecek veriyi hazırla
-                $data = [
+
+                // Tutarı sayıya çevir
+                if (is_numeric($tutarRaw)) {
+                    $tutar = (float)$tutarRaw;
+                } else {
+                    $tutar = (float)Helper::formattedMoneyToNumber((string)$tutarRaw);
+                }
+
+                if (!is_numeric($tutar) || (float)$tutar == 0.0) {
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' =>  "Satır {$row->getRowIndex()}: 'Tutar*' geçersiz.",
+                        'data' => $rowData
+                    ];
+                    $rows->next();
+                    continue;
+                }
+
+                // Gider ise negatife çek
+                if ($islemTipi === 'Gider') {
+                    $tutar = -abs((float)$tutar);
+                } else {
+                    $tutar = abs((float)$tutar);
+                }
+
+
+                // Yeni şablonda kişi/daire yok.
+                $kisi_id = 0;
+
+                // Eğer createMissingDefines flag aktif ise defines tablosunu güncelle
+                if ($createMissingDefines && $kategoriAdi !== '') {
+                    $defineType = ($islemTipi === 'Gelir') ? DefinesModel::TYPE_GELIR_TIPI : DefinesModel::TYPE_GIDER_TIPI;
+                    $res = $definesModel->ensureGelirGiderDefines($siteId, $defineType, $kategoriAdi, $altTur !== '' ? $altTur : null);
+                    if (!empty($res['created_kategori'])) $createdKategoriCount++;
+                    if (!empty($res['created_alt_tur'])) $createdAltTurCount++;
+                }
+
+                // Referans kodu ile dupe kontrolü: aynı site+kasa içinde varsa eklemiyoruz
+                if ($refKod !== '') {
+                    $stmtDupe = $this->db->prepare("SELECT 1 FROM kasa_hareketleri 
+                                                           WHERE site_id = :site_id 
+                                                           AND kasa_id = :kasa_id 
+                                                           AND ref_kod = :ref_kodu 
+                                                           AND tutar = :tutar
+                                                           AND silinme_tarihi IS NULL LIMIT 1");
+                    $stmtDupe->execute([
+                        ':site_id' => $siteId,
+                        ':kasa_id' => $kasa_id,
+                        ':ref_kodu' => $refKod,
+                        ':tutar' => $tutar,
+                    ]);
+                    if ($stmtDupe->fetchColumn()) {
+                        $skippedCount++;
+                        $errorRows[] = [
+                            'row_index' => $row->getRowIndex(),
+                            'error_message' => "Satır {$row->getRowIndex()}: Referans Kod '{$refKod}' zaten kayıtlı olduğu için eklenmedi",
+                            'data' => $rowData,
+                        ];
+                        $rows->next();
+                        continue;
+                    }
+                }
+
+                $payload = [
                     'id' => 0,
                     'site_id' => $siteId,
                     'kasa_id' => $kasa_id,
                     'islem_tarihi' => $tarih,
-                    'tutar' => floatval($tutar),
-                    'islem_tipi' => $kategori,
-                    'kisi_id' => $kisi_id ?? 0,
+                    'islem_tipi' => $islemTipi,
+                    'kategori' => $kategoriAdi,
+                    'alt_tur' => $altTur,
+                    'ref_kod' => $refKod,
+                    'tutar' => (float)$tutar,
+                    'kisi_id' => $kisi_id,
                     'aciklama' => $aciklama,
+                    'guncellenebilir' => 1,
                 ];
 
-                $this->saveWithAttr($data);
-
-
-                // Kişi id mevcutsa, ve gelen tutar pozitif ise Tahsilat ve Kredi kaydı oluştur
-                if (!empty($kisi_id) && floatval($tutar) > 0) {
-                    $logger->info("Kişi ID {$kisi_id} için tahsilat ve kredi kaydı oluşturuluyor.", ['tutar' => $tutar]);
+                try {
+                    $this->saveWithAttr($payload);
+                    $processedCount++;
+                } catch (\Exception $e) {
+                    $errorRows[] = [
+                        'row_index' => $row->getRowIndex(),
+                        'error_message' => "Satır {$row->getRowIndex()}: Kayıt hatası - " . $e->getMessage(),
+                        'data' => $rowData,
+                    ];
                 }
-
-
-                $processedCount++;
 
                 // Döngünün sonunda bir sonraki satıra MANUEL olarak geç.
                 $rows->next();

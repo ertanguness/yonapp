@@ -59,7 +59,7 @@ document
     }
   });
 
-/*Excelden Ödeme Yüklememek için*/
+/*Excelden Ödeme Yüklemek için*/
 $(document).on("click", "#upload_payment_file", function (e) {
   e.preventDefault();
   const fileInput = document.getElementById("payment_file");

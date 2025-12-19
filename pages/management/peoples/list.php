@@ -98,6 +98,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                             <th data-filter="date">Giriş Tarihi</thd>
                                             <th>Çıkış Tarihi</th>
                                             <th>Durumu</th>
+                                            <th>Güncel Bakiye</th>
                                             <th class="all">İşlem</th>
                                         </tr>
                                     </thead>
@@ -135,6 +136,15 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                             $plaka = !empty($row->plaka_listesi)
                                                 ? nl2br(htmlspecialchars_decode($row->plaka_listesi))
                                                 : '-';
+
+                                                    /**Bakiye - ise kırmızı, artı ise yeşil */
+                                            if (isset($row->bakiye)) {
+                                                if ($row->bakiye < 0) {
+                                                    $bakiye = '<span class="text-danger">' . Helper::formattedMoney($row->bakiye) . '</span>';
+                                                } elseif ($row->bakiye >= 0) {
+                                                    $bakiye = '<span class="text-success">' . Helper::formattedMoney($row->bakiye) . '</span>';
+                                                }
+                                            }
                                         ?>
                                             <tr class="text-center">
                                                 <td><?php echo $i; ?></td>
@@ -147,6 +157,7 @@ $kisi = $Kisiler->SiteKisileriJoin($_SESSION['site_id'] ?? null);
                                                 <td><?php echo $giris_tarihi; ?></td>
                                                 <td><?php echo $cikis_tarihi; ?></td>
                                                 <td><?php echo $durum; ?></td>
+                                                <td><?php echo $bakiye ?? '-' ?></td>
                                                 
                                                 <td style="width: 7%;">
                                                     <div class="hstack gap-1">
