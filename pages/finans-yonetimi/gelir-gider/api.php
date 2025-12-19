@@ -232,11 +232,11 @@ if ($_POST['action'] == 'kategori-getir') {
 /** Gelir Gider Kalemleri */
 if ($action == 'get-gelir-gider-kalemleri') {
 
-
+    $siteId = $_SESSION['site_id'];
     $type = isset($post['type']) ? (int)$post['type'] : 0;
     $kategori = isset($post['kategori']) ? trim($post['kategori']) : '';
 
-    $kalemler = $Tanımlamalar->getGelirGiderKalemleri($type, $kategori);
+    $kalemler = $Tanımlamalar->getGelirGiderKalemleri($siteId, $type, $kategori);
     $res = [
         "status" => "success",
         "message" => "Kayıt bulundu.",

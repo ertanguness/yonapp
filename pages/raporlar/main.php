@@ -397,6 +397,8 @@ $site_adi = $site->site_adi ?? 'Site';
                                             </select>
                                         </div>
 
+                                    
+
                                         <div class="col-12">
                                             <div class="btn-group gap-2" role="group">
                                                 <button type="button" class="btn btn-sm btn-outline-primary hizli-tarih-kategori"
@@ -1047,13 +1049,14 @@ $site_adi = $site->site_adi ?? 'Site';
                     const gelirBaslangicKategori = document.getElementById('gelir_kategori_baslangic').value;
                     const gelirBitisKategori = document.getElementById('gelir_kategori_bitis').value;
                     const gelirFormatKategori = document.getElementById('gelir_kategori_format').value;
+                    const gelirKategoriTableView = document.getElementById('gelir_kategori_table_view')?.checked ? 'table' : '';
 
                     if (!validateDates(gelirBaslangicKategori, gelirBitisKategori)) return;
 
                     const gelirStartKategoriISO = toIsoFromDMY(gelirBaslangicKategori);
                     const gelirEndKategoriISO = toIsoFromDMY(gelirBitisKategori);
 
-                    url = `pages/raporlar/export/kategori-bazli-gelir-gider-raporu.php?start=${encodeURIComponent(gelirStartKategoriISO)}&end=${encodeURIComponent(gelirEndKategoriISO)}&format=${gelirFormatKategori}`;
+                    url = `pages/raporlar/export/kategori-bazli-gelir-gider-raporu.php?start=${encodeURIComponent(gelirStartKategoriISO)}&end=${encodeURIComponent(gelirEndKategoriISO)}&format=${gelirFormatKategori}${gelirKategoriTableView ? `&view=${gelirKategoriTableView}` : ''}`;
                     break;
 
 
@@ -1151,11 +1154,12 @@ $site_adi = $site->site_adi ?? 'Site';
                 case 'gelir-gider-kategori':
                     const gelirBaslangicKategori = document.getElementById('gelir_kategori_baslangic').value;
                     const gelirBitisKategori = document.getElementById('gelir_kategori_bitis').value;
+                    const gelirKategoriTableView2 = document.getElementById('gelir_kategori_table_view')?.checked ? 'table' : '';
                     if (!validateDates(gelirBaslangicKategori, gelirBitisKategori)) return;
 
                     const gelirStartKategoriISO = toIsoFromDMY(gelirBaslangicKategori);
                     const gelirEndKategoriISO = toIsoFromDMY(gelirBitisKategori);
-                    url = `pages/raporlar/export/kategori-bazli-gelir-gider-raporu.php?start=${encodeURIComponent(gelirStartKategoriISO)}&end=${encodeURIComponent(gelirEndKategoriISO)}&format=html`;
+                    url = `pages/raporlar/export/kategori-bazli-gelir-gider-raporu.php?start=${encodeURIComponent(gelirStartKategoriISO)}&end=${encodeURIComponent(gelirEndKategoriISO)}&format=html${gelirKategoriTableView2 ? `&view=${gelirKategoriTableView2}` : ''}`;
                     break;
 
                 case 'gelir-gider':
