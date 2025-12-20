@@ -133,6 +133,20 @@ class FinansalRaporModel extends Model
     }
 
 
+
+    /** Gelen id'ye göre seçili borçları döndürür */
+    public function getKisiBorclarByIds($ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        $placeholders = rtrim(str_repeat('?, ', count($ids)), ', ');
+        $sql = $this->db->prepare("SELECT * FROM $this->table WHERE id IN ($placeholders) ORDER BY bitis_tarihi ASC");
+        $sql->execute($ids);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
     /** Gelen tutardan büyük ve eşit tutarda borcu olanları getirir.
      * @param float $minAmount
      * @return array

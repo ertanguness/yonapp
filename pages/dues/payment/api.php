@@ -520,8 +520,9 @@ if ($action === 'tahsilat-kaydet') {
 
 
         // Kredi kullanımı mantığı
-        $kullanilmakIstenenTutar = $_POST['kullanilacak_kredi'] ?? 0;
-        //$kullanilmakIstenenTutar = Helper::formattedMoneyToNumber($kullanilmakIstenenTutar);
+    $kullanilmakIstenenTutar = $_POST['kullanilacak_kredi'] ?? 0;
+    // Kullanıcıdan "46,99" veya "46,99 TL" gibi gelebilir; matematikte warning olmaması için sayıya çevir.
+    $kullanilmakIstenenTutar = Helper::formattedMoneyToNumber($kullanilmakIstenenTutar);
 
         if ($kullanilmakIstenenTutar > 0) {
             // Kredi tutarını kalan ödenecek tutara ekle
@@ -1298,12 +1299,13 @@ if ($action === 'borc_ekle') {
 /** Gelir/Gider Kalemi Seçimi */
 if($action === 'gelir_gider_kalemi_getir'){
     header('Content-Type: application/json');
+
     $kategori_id = $_GET['kategori_id'] ?? null;
     $kategori_tipi = $_GET['kategori_tipi'] ?? null;
     $kategori_adi = $_GET['kategori_adi'] ?? null;
 
    
-    $kalemler = $Defines->getGelirGiderKalemleri($kategori_tipi, $kategori_adi);
+    $kalemler = $Defines->getGelirGiderKalemleri($kategori_tipi, 6,$kategori_adi);
     $options = '<option value="">Lütfen Seçiniz</option>';
     foreach($kalemler as $kalem){
         $text = htmlspecialchars($kalem->alt_tur ?? '');
