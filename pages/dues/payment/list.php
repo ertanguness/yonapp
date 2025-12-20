@@ -224,7 +224,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
             </div>
             <div class="modal-footer d-flex">
                 <a class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</a>
-                <a href="javascript:void(0);" class="btn btn-outline-primary" id="tahsilatKaydet">
+                <a href="javascript:void(0);" class="btn btn-outline-primary" id="tahsilatKaydetold">
                     <i class="feather-save me-2"></i>Kaydet
                 </a>
             </div>

@@ -367,7 +367,7 @@ if ($page == 'onay-bekleyen-tahsilatlar') {
     echo '<script src="pages/dues/payment/js/tahsilat-onay.js" defer></script>';
 }
 
-if ($page == 'yonetici-aidat-odeme') {
+if ($page == 'yonetici-aidat-odeme' || $page == "borc-odeme") {
     echo '<script src="pages/dues/payment/js/tahsilat-gir.js" defer></script>';
     echo '<script src="pages/dues/payment/js/tahsilat-detay.js" defer></script>';
 }

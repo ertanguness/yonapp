@@ -2,7 +2,7 @@
 
 use App\Helper\Security;
 require_once dirname(__DIR__, 4) . '/configs/bootstrap.php';
-header('Content-Type: application/json; charset=utf-8');
+//header('Content-Type: application/json; charset=utf-8');
 
 use App\Services\Gate;
 use Model\DuyuruModel;
