@@ -50,6 +50,7 @@ $logger = \getLogger();
 
 
 $site_id = $_SESSION['site_id'];
+$atlananDaireler = [];
 
 
 /**Borçlandirma sayfasından tanımlı borç tiplerinden borçlandırılır */
@@ -339,7 +340,9 @@ if ($_POST["action"] == "tanimli_borc_ekle") {
         $message = "Tanımlı borçlandırma işlemi başarılı.";
         $atlananDaireler = json_encode($atlananDaireler);
         /** Atlanan daire varsa mesaj ile birleştir */
-        $message .= "<br> Ev Sahibi olmadığı için atlanan daireler numaraları : " . $atlananDaireler;
+        if (!empty($atlananDaireler)) {
+            $message .= "<br> Ev Sahibi olmadığı için atlanan daireler numaraları : " . $atlananDaireler;
+        }
 
     } catch (Exception $e) {
         $db->rollBack();

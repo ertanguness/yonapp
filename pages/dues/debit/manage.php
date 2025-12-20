@@ -555,6 +555,7 @@ switch ($hedef_tipi) {
 
         $('.flatpickr.time-input').flatpickr({
             dateFormat: "d.m.Y H:i",
+            locale: "tr",
             enableTime: true,
             time_24hr: true,
             minuteIncrement: 1
@@ -731,6 +732,8 @@ switch ($hedef_tipi) {
                 ];
                 var monthName = monthNames[parseInt(ay) - 1];
                 $('#modal_aciklama').val(monthName + ' ' + yil + ' ' + 'AİDAT');
+
+                $('#borclandirma_tarihi').val($('#modal_baslangic_tarihi').val() + ' 01:00');
             }
         });
     });

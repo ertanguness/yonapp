@@ -126,7 +126,7 @@ class FinansalRaporModel extends Model
     {
         $sql = $this->db->prepare("SELECT * 
                                           FROM $this->table 
-                                          WHERE kisi_id = ? 
+                                          WHERE kisi_id = ? and borc_adi IS NOT NULL
                                           ORDER BY bitis_tarihi DESC");
         $sql->execute([$kisi_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
