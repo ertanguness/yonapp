@@ -1012,23 +1012,23 @@
 
     // Global init (common-init) .file-download click'inde preventDefault yapıyor.
     // Bu sayfada PDF/XLSX indirmeyi engellememesi için capture-phase ile override.
-    try {
-      document.addEventListener('click', function (ev) {
-        var a = ev.target && ev.target.closest ? ev.target.closest('a.file-download') : null;
-        if (!a) return;
-        var href = a.getAttribute('href');
-        if (!href || href === '#') return;
+    // try {
+    //   document.addEventListener('click', function (ev) {
+    //     var a = ev.target && ev.target.closest ? ev.target.closest('a.file-download') : null;
+    //     if (!a) return;
+    //     var href = a.getAttribute('href');
+    //     if (!href || href === '#') return;
 
-        // Önce diğer handler'ların iptal etmesini engelle
-        ev.stopImmediatePropagation();
-        // Bazı durumlarda preventDefault yapılmış olsa bile biz yönlendirelim
-        ev.preventDefault();
+    //     // Önce diğer handler'ların iptal etmesini engelle
+    //     ev.stopImmediatePropagation();
+    //     // Bazı durumlarda preventDefault yapılmış olsa bile biz yönlendirelim
+    //     ev.preventDefault();
 
-        // Dosya indirme için aynı sekmede git
-        window.location.href = href;
-      }, true);
-    } catch (e10) {
-      // ignore
-    }
+    //     // Dosya indirme için aynı sekmede git
+    //     window.location.href = href;
+    //   }, true);
+    // } catch (e10) {
+    //   // ignore
+    // }
   });
 })(window.jQuery);

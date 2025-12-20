@@ -572,22 +572,19 @@ $fmt = function ($v) {
                                         </div>
                                     </a>
 
-                                    <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?= (int)($selectedKisiId ?? 0) ?>&format=html" target="_blank" class="d-flex me-1 printBTN" id="ydPrintHtml">
+                                    <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?= (int)($selectedKisiId ?? 0) ?>&format=html" target="_blank" class="d-flex me-1" id="ydPrintHtml">
                                         <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-original-title="Yazdır">
                                             <i class="feather feather-printer"></i>
                                         </div>
                                     </a>
                                 
+                                    <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?= (int)($selectedKisiId ?? 0) ?>" class="d-flex me-1">
+                                        <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-original-title="PDF İndir">
+                                            <i class="fa-solid fa-file-pdf"></i>
+                                        </div>
+                                    </a>
 
-                                        
-                                        <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?= (int)($selectedKisiId ?? 0) ?>" class="d-flex me-1 file-download">
-                                            <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-original-title="PDF İndir">
-                                                <i class="fa-solid fa-file-pdf"></i>
-                                            </div>
-                                        </a>
-                             
-
-                                    <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?= (int)($selectedKisiId ?? 0) ?>&format=xlsx" class="d-flex me-1 file-download">
+                                    <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?= (int)($selectedKisiId ?? 0) ?>&format=xlsx" class="d-flex me-1 printBTN">
                                         <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-original-title="Excel İndir">
                                             <i class="fa-regular fa-file-excel"></i>
                                         </div>
