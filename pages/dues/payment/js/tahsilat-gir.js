@@ -24,6 +24,27 @@
     return u ? (u.searchParams.get('kisi') || '') : '';
   }
 
+  function getSelectedKisiEncFallback() {
+    try {
+      // Son yüklenen kişinin enc'i (dashboard API zaten bunu dönüyor)
+      if (ydLastPersonData && ydLastPersonData.person && ydLastPersonData.person.kisi_enc) {
+        return String(ydLastPersonData.person.kisi_enc || '');
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // DOM'dan aktif seçili kişiyi bul
+    var $active = $('#ydPersonnelList').find('a.yd-item.is-active[data-yd-kisi]').first();
+    if ($active.length) return String($active.data('yd-kisi') || '');
+
+    // Son çare: ilk görünen kişi
+    var $first = $('#ydPersonnelList').find('a.yd-item[data-yd-kisi]').first();
+    if ($first.length) return String($first.data('yd-kisi') || '');
+
+    return '';
+  }
+
   function setUrlParamSafe(u, key, value) {
     if (!u || !key) return;
     var v = (value == null ? '' : String(value)).trim();
@@ -510,6 +531,7 @@
 
   function openEditDebtModal(borcDetayEnc) {
     var kisiEnc = getKisiFromUrl();
+    if (!kisiEnc) kisiEnc = getSelectedKisiEncFallback();
     if (!kisiEnc) return $.Deferred().reject(new Error('kisi param yok')).promise();
 
     var $modal = ensureModal('borcEkle');
@@ -522,10 +544,42 @@
       data: { borc_detay_id: borcDetayEnc, kisi_id: kisiEnc }
     }).then(function (html) {
       $modal.find('.modal-content').html(html);
+
+      // Modal içeriği ajax ile geldiği için select2 otomatik bağlanmıyor.
+      // Ayrıca select2 dropdown'ı modal altında kalmasın diye dropdownParent veriyoruz.
+      try {
+        if (typeof $.fn.select2 === 'function') {
+          var $scope = $modal;
+          var $sels = $scope.find('select.select2, .select2');
+          $sels.each(function () {
+            var $el = $(this);
+            // önce varsa eski instance'ı sök
+            try {
+              if ($el.hasClass('select2-hidden-accessible')) $el.select2('destroy');
+            } catch (e0) {
+              // ignore
+            }
+            // tekrar init
+            try {
+              $el.select2({ dropdownParent: $modal });
+            } catch (e1) {
+              // ignore
+            }
+          });
+        }
+      } catch (eSel2) {
+        // ignore
+      }
+
       try {
         bootstrap.Modal.getOrCreateInstance($modal[0]).show();
       } catch (e) {
-        // ignore
+        // Bootstrap global'i yoksa / çakıştıysa jQuery modal fallback
+        try {
+          if (typeof $modal.modal === 'function') $modal.modal('show');
+        } catch (e2) {
+          // ignore
+        }
       }
     });
   }
@@ -715,6 +769,8 @@
 
   // Tahsilat modalı: kredi kullanımı değişince ödenecek/tutar güncelle
   function bindTahsilatKrediChange() {
+    var suppressTahsilatSync = false;
+
     function parseMoney(val) {
       if (val == null) return 0;
       var s = String(val).trim();
@@ -727,14 +783,16 @@
       return Number.isFinite(n) ? n : 0;
     }
 
-    function setMoneyInput($el, amount) {
+    function setMoneyInput($el, amount, triggerEvents) {
       if (!$el || !$el.length) return;
       var n = Math.max(0, Number(amount) || 0);
       // basit TR gösterim
       var txt = n.toFixed(2).replace('.', ',');
       $el.val(txt);
       // money plugin varsa tetikle
-      $el.trigger('input').trigger('change');
+      if (triggerEvents !== false) {
+        $el.trigger('input').trigger('change');
+      }
     }
 
     function readSelectedTotal() {
@@ -754,20 +812,55 @@
       // modal yoksa çık
       if (!$('#tahsilatForm').length) return;
 
+      if (suppressTahsilatSync) return;
+
       var toplam = readSelectedTotal();
       var kredi = parseMoney($('#kullanilacak_kredi').val());
       if (kredi < 0) kredi = 0;
       if (kredi > toplam) kredi = toplam;
 
       var net = Math.max(0, toplam - kredi);
+  var kalan = Math.max(0, toplam - net - kredi);
       // istenen: kredi değişince tahsil edilecek tutar değişsin
-      setMoneyInput($('#tutar'), net);
+  suppressTahsilatSync = true;
+  setMoneyInput($('#tutar'), net, false);
+  suppressTahsilatSync = false;
 
       // sağ üst mini özet label'larını güncelle
       try {
         $('#ydTahsilatKrediKullan').text(kredi.toFixed(2).replace('.', ','));
         $('#ydTahsilatNet').text(net.toFixed(2).replace('.', ','));
-        $('#ydTahsilatKalan').text(net.toFixed(2).replace('.', ','));
+        $('#ydTahsilatKalan').text(kalan.toFixed(2).replace('.', ','));
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    function updateTahsilatSummaryFromTutar() {
+      // modal yoksa çık
+      if (!$('#tahsilatForm').length) return;
+
+      if (suppressTahsilatSync) return;
+
+      var toplam = readSelectedTotal();
+      var net = parseMoney($('#tutar').val());
+      if (net < 0) net = 0;
+      if (net > toplam) net = toplam;
+
+  // Kullanıcı tutarı elle giriyorsa, kredi alanını otomatik değiştirmeyelim.
+  // Kredi yalnızca kullanıcı tarafından girilsin ya da 'Hepsini Kullan' ile set edilsin.
+  var kredi = parseMoney($('#kullanilacak_kredi').val());
+  if (kredi < 0) kredi = 0;
+  if (kredi > toplam) kredi = toplam;
+
+  // Borçtan kalan = toplam - (tahsil edilen net + kullanılan kredi)
+  var kalan = Math.max(0, toplam - net - kredi);
+
+      // Özet alanları güncelle
+      try {
+        $('#ydTahsilatKrediKullan').text(kredi.toFixed(2).replace('.', ','));
+        $('#ydTahsilatNet').text(net.toFixed(2).replace('.', ','));
+        $('#ydTahsilatKalan').text(kalan.toFixed(2).replace('.', ','));
       } catch (e) {
         // ignore
       }
@@ -776,6 +869,11 @@
     // change + input: elle yazarken de anlık güncellensin
     $(document).on('input change', '#kullanilacak_kredi', function () {
       updateTahsilatAmounts();
+    });
+
+    // Kullanıcı doğrudan tahsilat tutarını değiştirirse özetleri güncelle
+    $(document).on('input change', '#tutar', function () {
+      updateTahsilatSummaryFromTutar();
     });
 
     // Hepsini kullan butonu varsa
@@ -789,7 +887,8 @@
 
     // modal ilk açıldığında da bir kez hesapla
     $(document).on('shown.bs.modal', '#ydTahsilatModal', function () {
-      updateTahsilatAmounts();
+      // İlk açılışta kullanıcıya kredi dayatmayalım; mevcut input değerlerine göre özet bas.
+      updateTahsilatSummaryFromTutar();
     });
   }
 
@@ -797,6 +896,53 @@
   $(function () {
     var $list = $('#ydPersonnelList');
     if (!$list.length) return;
+
+    // Mesaj Gönder (SMS) - list.php'deki legacy akışla uyumlu
+    $(document).on('click', '.mesaj-gonder', function (e) {
+      try { e.preventDefault(); e.stopPropagation(); } catch (e0) {}
+
+      var $btn = $(this);
+      var id = $btn.data('id');
+      var kisiId = $btn.data('kisi-id');
+      var phone = ($btn.data('phone') || '').toString();
+      var daire = ($btn.data('daire') || $btn.data('daire-kodu') || '').toString();
+      var makbuz_bildirim = $btn.data('makbuz-bildirim') || 'false';
+
+      $.get('/pages/email-sms/sms_gonder_modal.php', {
+        id: id,
+        kisi_id: kisiId,
+        includeFile: 'kisiye-mesaj-gonder.php',
+        makbuz_bildirim: makbuz_bildirim
+      }, function (data) {
+        try {
+          $('.modal-content.sms-gonder-modal').html(data);
+        } catch (e1) {
+          $('.sms-gonder-modal').html(data);
+        }
+
+        try {
+          $('#SendMessage').modal('show');
+        } catch (e2) {
+          try {
+            var el = document.getElementById('SendMessage');
+            if (el && window.bootstrap && bootstrap.Modal) bootstrap.Modal.getOrCreateInstance(el).show();
+          } catch (e3) {}
+        }
+
+        // Modal içeriği basıldıktan sonra init
+        setTimeout(function () {
+          if (phone) {
+            try { window.kisiTelefonNumarasi = ''; } catch (e4) {}
+          }
+          if (typeof window.initSmsModal === 'function') {
+            window.initSmsModal();
+          }
+          if (typeof window.addPhoneToSMS === 'function' && phone) {
+            window.addPhoneToSMS({ phone: phone, id: id, daire: daire });
+          }
+        }, 100);
+      });
+    });
 
     function scrollLeftListToSelected(opts) {
       opts = opts || {};
@@ -913,9 +1059,13 @@
 
     // borç edit/sil
     $(document).on('click', '.yd-borc-edit', function (e) {
-      e.preventDefault();
+      // Anchor click'i sayfayı başka bir yere yönlendirmesin.
+      // Özellikle bazı global handler'lar (#, file-download vb.) bu click'i etkileyebiliyor.
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+
       openEditDebtModal($(this).data('id')).catch(function () {
-        alert('Borç düzenleme ekranı açılırken hata oluştu.');
+        $(".select2").select2()
       });
     });
     $(document).on('click', '.yd-borc-delete', function (e) {

@@ -401,6 +401,19 @@ $fmt = function ($v) {
         background: transparent;
         padding-top: 0;
     }
+
+
+    /**mobilde */
+    @media (max-width: 768px) {
+        .yd-wrap {
+            padding-bottom: 20px;
+        }
+        .ydTabsCard{
+            margin-bottom: 30px;
+        }
+
+    
+    }
 </style>
 <div class="main-content">
 
