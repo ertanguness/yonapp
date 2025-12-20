@@ -546,6 +546,14 @@
         }
         var kisiEnc = getKisiFromUrl();
         if (kisiEnc) loadPerson(kisiEnc);
+        Toastify({
+          text: "Borç başarıyla silindi.",
+          duration: 3000,
+          close: true,
+          gravity: "top",
+          position: "right",
+          backgroundColor: "#4caf50",
+        }).showToast();
       })
       .catch(function () { alert('Borç silinirken hata oluştu.'); });
   }
