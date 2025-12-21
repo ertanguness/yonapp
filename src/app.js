@@ -924,27 +924,25 @@ function previewImage(event) {
   reader.readAsDataURL(event.target.files[0]);
 }
 
-//para birimi mask
-if ($(".money").length > 0) {
-  $(document).on("focus", ".money", function () {
-    $(this).inputmask("decimal", {
-      radixPoint: ",",
-      groupSeparator: ".",
-      digits: 2,
-      autoGroup: true,
-      rightAlign: false,
-      removeMaskOnSubmit: true,
-    });
+// para birimi mask (dinamik eklenen alanlar için event delegation)
+$(document).on("focus", ".money", function () {
+  $(this).inputmask("decimal", {
+    radixPoint: ",",
+    groupSeparator: ".",
+    digits: 2,
+    autoGroup: true,
+    rightAlign: false,
+    removeMaskOnSubmit: true,
   });
+});
 
-  //Tarih formatı için inputmask kullan
-  $(document).on("focus", ".flatpickr:not(.time-input)", function () {
-    $(this).inputmask("99.99.9999", {
-      placeholder: "gg.aa.yyyy",
-      clearIncomplete: true,
-    });
+// Tarih formatı için inputmask kullan (dinamik alanlar dahil)
+$(document).on("focus", ".flatpickr:not(.time-input)", function () {
+  $(this).inputmask("99.99.9999", {
+    placeholder: "gg.aa.yyyy",
+    clearIncomplete: true,
   });
-}
+});
 
 $.validator.setDefaults({
   highlight: function (element) {

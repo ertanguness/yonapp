@@ -33,6 +33,38 @@ $(document).on('click', '.borc-sil', function () {
                         $(".borc-etiket").text('-' + data.finansalDurum.toplam_borc);
                         $(".tahsilat-etiket").text(data.finansalDurum.toplam_odeme);
                         $(".bakiye-etiket").text(data.finansalDurum.bakiye);
+
+                        // Yeni tahsilat gir ekranı varsa kişi özetini yenile
+                        try {
+                            var kisiEnc = String((new URLSearchParams(window.location.search)).get('kisi') || '');
+                            if (!kisiEnc) {
+                                // legacy modal aksiyonunda data-kisi-id olabilir
+                                kisiEnc = String($(document).find('[data-kisi-id]').first().attr('data-kisi-id') || '');
+                            }
+                            if (kisiEnc && typeof window.loadPerson === 'function') {
+                                window.loadPerson(kisiEnc).then(function (personData) {
+                                    try {
+                                        if (typeof window.updateLeftListAfterRefresh === 'function') {
+                                            window.updateLeftListAfterRefresh(kisiEnc, (window.ydLastPersonData || personData));
+                                        }
+                                    } catch (e2) { /* ignore */ }
+                                }).catch(function () { /* ignore */ });
+                            }
+                        } catch (e1) {
+                            // ignore
+                        }
+
+                        // Legacy KisiBorcDetay içeriklerini de yeniden yükle (satırlar/etiketler tutarlı kalsın)
+                        try {
+                            var kisiId = String($('input[name="kisi_id"]').val() || $(document).find('[data-kisi-id]').first().data('kisi-id') || '');
+                            if (kisiId) {
+                                $.get('pages/dues/payment/tahsilat-detay.php', { kisi_id: kisiId }, function (html) {
+                                    $('.borc-detay').html(html);
+                                });
+                            }
+                        } catch (e3) {
+                            // ignore
+                        }
                     }
 
                     let title = data.status == 'success' ? 'Başarılı!' : 'Hata!';

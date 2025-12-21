@@ -54,9 +54,13 @@ class Router
     public function resolve($url)
     {
         foreach ($this->routes as $route) {
+
+                
             // Deseni regex'e çevir: 'kasa-hareketleri/{id}' -> '@^kasa-hareketleri/([^/]+)$@'
             $pattern = "@^" . preg_replace('/\{([^\/]+)\}/', '([^/]+)', $route['pattern']) . "$@";
             // echo "Checking pattern: " . $pattern . "\n";
+
+
 
             if (preg_match($pattern, $url, $matches)) {
                 // EŞLEŞME BULUNDU! Orijinal deseni saklayalım.

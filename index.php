@@ -15,6 +15,8 @@ use App\Controllers\AuthController;
 use App\Helper\Security;
 use Random\Engine\Secure;
 use Model\UserModel;
+use App\Helper\Helper;
+
 
 $authController = new AuthController();
 
@@ -53,6 +55,9 @@ $resolvedRoute = $router->resolve($url);
 // 3. SAYFA ADINI AL (SİHİR BURADA GERÇEKLEŞİYOR)
 // Router artık hangi desenin eşleştiğini biliyor ve bize temiz halini veriyor.
 $page = $router->getPageName() ?? '';
+
+
+//Helper::dd([$page, 'Sayfa Adı']);
 $skipPagesForSiteCheck = [
     'site-ekle',
     'siteler',
@@ -74,6 +79,8 @@ if (!in_array($page, $skipPagesForSiteCheck, true)) {
     }
  }
 
+
+
 // Seçim bağlamını header'dan önce güncelle
 if (isset($_GET['clear_context'])) {
     unset($_SESSION['selected_apartment_id'], $_SESSION['selected_person_id']);
@@ -90,6 +97,8 @@ if (isset($_GET['kisi_id'])) {
         $_SESSION['selected_apartment_id'] = (int)$_GET['daire_id'];
     }
 }
+
+
 
 // PDF benzeri özel sayfalar: layout'u basmadan doğrudan çıktıyı üret
 if (preg_match('/-pdf$/', $page)) {
@@ -123,6 +132,7 @@ if (preg_match('/-pdf$/', $page)) {
         echo "<!-- Yüklenen sayfa: " . ($page) . " -->"; // Debug için
             // 4. Adım: İÇERİK OLUŞTURMA
             // Rota tespitinde bulduğumuz callback'i parametreleriyle birlikte çalıştır.
+
             call_user_func_array($resolvedRoute['callback'], $resolvedRoute['params']);
             ?>
             
