@@ -171,9 +171,9 @@ try {
                 'daire_kodu' => (string)($person->daire_kodu ?? ''),
                 'telefon' => (string)($person->telefon ?? ''),
                 'kredi_tutari' => (float)($person->kredi_tutari ?? 0),
-                'kredi_tutari_fmt' => $fmt($person->kredi_tutari ?? 0),
+                'kredi_tutari_fmt' => ($person->kredi_tutari ?? 0),
                 'net' => $net,
-                'status' => $net < 0 ? 'Borçlu' : 'Temiz',
+                'status' => ($net < 0) ? 'Borçlu' : (($net == 0) ? 'Temiz' : 'Alacaklı'),
             ],
             'kpi' => [
                 'toplam_borc' => (float)($ozet->toplam_borc ?? 0),
@@ -181,7 +181,7 @@ try {
                 'kalan_borc' => (float)($ozet->kalan_borc ?? max(0, -$net)),
                 'toplam_borc_fmt' => $fmt($ozet->toplam_borc ?? 0),
                 'toplam_tahsilat_fmt' => $fmt($ozet->toplam_tahsilat ?? 0),
-                'kalan_borc_fmt' => $fmt($ozet->kalan_borc ?? max(0, -$net)),
+                'kalan_borc_fmt' => $fmt($ozet->bakiye ?? 0),
             ],
             // UI tarafı bu alanı okuyor; burada artık "tüm borçlar" dönüyoruz.
             'borclandirma_detaylari' => array_map(function($d) use ($fmt){

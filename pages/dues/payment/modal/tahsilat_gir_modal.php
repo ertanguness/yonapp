@@ -108,8 +108,8 @@ $dnone = $kredi <= 0 ? 'd-none' : '';
     <div class="row g-3">
         <div class="col-12 col-md-6">
             <label class="form-label fw-semibold">İşlem Tarihi</label>
-            <input type="text" class="form-control flatpickr" name="islem_tarihi" id="islem_tarihi"
-                                            value="<?php echo date("d.m.Y H:i") ?>">
+            <input type="text" class="form-control flatpickr time-input" name="islem_tarihi" id="islem_tarihi"
+             autocomplete="off" value="<?php echo date("d.m.Y H:i") ?>">
         </div>
         <div class="col-12 col-md-6">
             <label class="form-label fw-semibold">Açıklama</label>

@@ -61,6 +61,41 @@
       .replace(/'/g, '&#39;');
   }
 
+  // ---- select2 helper (modal/ajax içerikleri için güvenli init) ----
+  function initSelect2InScope(scopeEl, dropdownParentEl) {
+    try {
+      if (typeof $.fn.select2 !== 'function') return;
+
+      // scope: element / jquery / selector string
+      var $scope = scopeEl ? (scopeEl.jquery ? scopeEl : $(scopeEl)) : $(document);
+      if (!$scope || !$scope.length) $scope = $(document);
+
+      var $parent = dropdownParentEl ? (dropdownParentEl.jquery ? dropdownParentEl : $(dropdownParentEl)) : $scope;
+      if (!$parent || !$parent.length) $parent = $scope;
+
+      var $sels = $scope.find('select.select2, .select2');
+      $sels.each(function () {
+        var $el = $(this);
+
+        // önce varsa eski instance'ı sök
+        try {
+          if ($el.hasClass('select2-hidden-accessible')) $el.select2('destroy');
+        } catch (e0) {
+          // ignore
+        }
+
+        // tekrar init
+        try {
+          $el.select2({ dropdownParent: $parent });
+        } catch (e1) {
+          // ignore
+        }
+      });
+    } catch (eSel2) {
+      // ignore
+    }
+  }
+
   // ---- Sol panel arama + chip filtre ----
   function initLeftSearchAndFilter() {
     var $search = $('#ydSearch');
@@ -131,6 +166,9 @@
   // ---- Dashboard sağ panel: ajax+render ----
   var ydLastPersonData = null;
   var ydDebtMetaByIdEnc = {};
+  // Sol listede en son seçilen kişi (satır) state'i
+  var ydSelectedKisiEnc = '';
+  var ydSelectedLeftRow = null;
 
   function setActiveLeftItem($list, $el) {
     $list.find('.yd-item').removeClass('is-active');
@@ -475,17 +513,95 @@
   }
 
   function updateLeftListAfterRefresh(personEnc, data) {
-    var $row = $('#ydPersonnelList').find('a.yd-item[data-yd-kisi="' + personEnc + '"]');
+    // Bu fonksiyonun görevi: sol listede ilgili satırı, zaten elimizde olan
+    // dashboard verisine göre güncellemek. Buradan tekrar loadPerson çağırmak
+    // hem gereksiz istek hem de döngü/çakışma yaratabiliyor.
+    if (!data || !data.kpi || !data.person) return;
+
+    // Bazı çağrılar yanlışlıkla numeric kisi_id gönderebiliyor.
+    // Sol liste ise data-yd-kisi içinde encrypted kisi_enc tutuyor.
+    var encFromData = (data.person && data.person.kisi_enc) ? String(data.person.kisi_enc) : '';
+    var normalizedEnc = encFromData || (personEnc == null ? '' : String(personEnc));
+    if (!normalizedEnc) return;
+
+    // 1) Önce state'ten git (en güvenlisi)
+    var $list = $('#ydPersonnelList');
+    var $row = null;
+    try {
+      if (ydSelectedLeftRow && ydSelectedLeftRow.length) {
+        var rowEnc = String(ydSelectedLeftRow.data('yd-kisi') || '');
+        if (rowEnc === normalizedEnc) $row = ydSelectedLeftRow;
+      }
+    } catch (eState) {
+      $row = null;
+    }
+
+    // Selector güvenliği (enc içinde : . [ ] gibi karakterler olabiliyor)
+    var selEnc;
+    try {
+      if (window.CSS && typeof window.CSS.escape === 'function') selEnc = window.CSS.escape(normalizedEnc);
+      else selEnc = normalizedEnc.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+    } catch (eSel) {
+      selEnc = normalizedEnc;
+    }
+
+    // 2) State yoksa/uyuşmadıysa selector ile bul
+    if (!$row || !$row.length) {
+      $row = $list.find('a.yd-item[data-yd-kisi="' + selEnc + '"]');
+    }
+
+    // Fallback: data() üzerinden tek tek kontrol et
+    if (!$row.length) {
+      $row = $list.find('a.yd-item[data-yd-kisi]').filter(function () {
+        return String($(this).data('yd-kisi') || '') === normalizedEnc;
+      }).first();
+    }
+
+    // Son çare: aktif seçili satırı güncelle (sağ panelde işlem yaparken bu kişi seçili oluyor)
+    if (!$row.length) {
+      $row = $list.find('a.yd-item.is-active[data-yd-kisi]').first();
+      // aktif satır varsa ve farklı bir kişiye aitse state'i yine de buna çekmeyelim.
+      // (Burada amaç: hiç satır bulunamıyorsa en azından ekranda seçili görünen satırı güncellemek.)
+    }
+
     if (!$row.length) return;
-    var kalanFmt = (data && data.kpi && data.kpi.kalan_borc_fmt) ? data.kpi.kalan_borc_fmt : '';
-    var status = (data && data.person && data.person.status) ? data.person.status : '';
+
+    // Bulduysak state'i de güncelleyelim
+    try {
+      ydSelectedKisiEnc = normalizedEnc;
+      ydSelectedLeftRow = $row;
+    } catch (eState2) {
+      // ignore
+    }
+
+
+    // Kalan borç (listede sağdaki tutar)
+    var kalanFmt = (data.kpi && data.kpi.kalan_borc_fmt) ? String(data.kpi.kalan_borc_fmt) : '';
     var $amount = $row.find('.yd-amount');
-    if ($amount.length) $amount.text(kalanFmt);
+    if ($amount.length && kalanFmt) $amount.text(kalanFmt);
+
+    // Status chip (Borçlu / Borcu Yok)
+    var status = (data.person && data.person.status) ? String(data.person.status) : '';
     var $badge = $row.find('.yd-chip').first();
-    if ($badge.length) {
+    if ($badge.length && status) {
       $badge.text(status);
       $badge.toggleClass('yd-chip-danger', status === 'Borçlu');
       $badge.toggleClass('yd-chip-success', status !== 'Borçlu');
+    }
+
+    // Filtrelerin doğru çalışması için net değeri de güncelle.
+    // Not: list-new.php net = kredi - kalan; bizim KPI'da kalan_borc var.
+    // Kredi bilgisi dashboard response'da varsa onu kullan, yoksa net'i sadece -kalan olarak set et.
+    try {
+      var kalanNum = Number(data.kpi.kalan_borc || 0);
+      kalanNum = isFinite(kalanNum) ? kalanNum : 0;
+      var krediNum = Number((data.person && (data.person.kredi_tutari || data.person.kredi)) || 0);
+      krediNum = isFinite(krediNum) ? krediNum : 0;
+      var net = krediNum - kalanNum;
+      $row.attr('data-yd-net', String(net));
+      $row.data('yd-net', net);
+    } catch (e) {
+      // ignore
     }
   }
 
@@ -505,6 +621,8 @@
     }).then(function (json) {
       if (!json || !json.success) throw new Error((json && json.message) || 'Veri alınamadı');
       ydLastPersonData = json.data;
+      // diğer modüller güncelleme sonrası KPI/sol liste refresh için kullanabilsin
+      try { window.ydLastPersonData = ydLastPersonData; } catch (e0) { /* ignore */ }
       setHeader(json.data);
       renderDebts(json.data.borclandirma_detaylari);
       renderTahsilatlar(json.data.tahsilatlar_type, json.data.tahsilatlar);
@@ -537,39 +655,21 @@
     var $modal = ensureModal('borcEkle');
     $modal.find('.modal-content').html('<div class="p-4">Yükleniyor...</div>');
 
+    var reqData = { kisi_id: kisiEnc };
+    // yeni borç: borc_detay_id göndermeyelim
+    if (borcDetayEnc) reqData.borc_detay_id = borcDetayEnc;
+
     return $.ajax({
       url: urls.borcModal,
       method: 'GET',
       dataType: 'html',
-      data: { borc_detay_id: borcDetayEnc, kisi_id: kisiEnc }
+      data: reqData
     }).then(function (html) {
       $modal.find('.modal-content').html(html);
 
       // Modal içeriği ajax ile geldiği için select2 otomatik bağlanmıyor.
-      // Ayrıca select2 dropdown'ı modal altında kalmasın diye dropdownParent veriyoruz.
-      try {
-        if (typeof $.fn.select2 === 'function') {
-          var $scope = $modal;
-          var $sels = $scope.find('select.select2, .select2');
-          $sels.each(function () {
-            var $el = $(this);
-            // önce varsa eski instance'ı sök
-            try {
-              if ($el.hasClass('select2-hidden-accessible')) $el.select2('destroy');
-            } catch (e0) {
-              // ignore
-            }
-            // tekrar init
-            try {
-              $el.select2({ dropdownParent: $modal });
-            } catch (e1) {
-              // ignore
-            }
-          });
-        }
-      } catch (eSel2) {
-        // ignore
-      }
+      // Dropdown'ın modal altında kalmaması için dropdownParent modal olur.
+      initSelect2InScope($modal, $modal);
 
       try {
         bootstrap.Modal.getOrCreateInstance($modal[0]).show();
@@ -584,30 +684,93 @@
     });
   }
 
+  // Yeni borç ekleme (borc_detay_id olmadan)
+  function openAddDebtModal() {
+    return openEditDebtModal('');
+  }
+
   function deleteDebt(borcDetayEnc) {
-    if (!confirm('Bu borçlandırmayı silmek istediğinize emin misiniz?')) return;
+    // Swal varsa onu kullan, yoksa confirm() fallback
+    function doRequest() {
+      var fd = new FormData();
+      fd.append('action', 'borc_sil');
+      fd.append('id', borcDetayEnc);
 
-    var fd = new FormData();
-    fd.append('action', 'borc_sil');
-    fd.append('id', borcDetayEnc);
+      return fetch(urls.actionApi, { method: 'POST', body: fd, credentials: 'same-origin' })
+        .then(function (r) { return r.text(); })
+        .then(function (txt) {
+          var json;
+          try { json = JSON.parse(txt); } catch (e0) { throw new Error('Sunucu yanıtı JSON değil: ' + txt); }
+          if (!json || json.status !== 'success') throw new Error((json && json.message) ? json.message : 'Silme işlemi başarısız.');
+          return json;
+        });
+    }
 
-    fetch(urls.actionApi, { method: 'POST', body: fd, credentials: 'same-origin' })
-      .then(function (r) { return r.json(); })
-      .then(function (json) {
-        if (!json || json.status !== 'success') {
-          alert((json && json.message) ? json.message : 'Silme işlemi başarısız.');
-          return;
+    if (window.Swal) {
+      Swal.fire({
+        title: 'Emin misiniz?',
+        text: 'Bu işlem geri alınamaz!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, Sil',
+        cancelButtonText: 'İptal',
+        confirmButtonColor: '#d33',
+        showLoaderOnConfirm: true,
+        allowOutsideClick: function () { return !Swal.isLoading(); },
+        preConfirm: function () {
+          return doRequest().catch(function (err) {
+            // SweetAlert preConfirm içinde hata gösterimi
+            var msg = (err && err.message) ? err.message : String(err);
+            Swal.showValidationMessage(msg);
+            throw err;
+          });
         }
+      }).then(function (r) {
+        if (!r || !r.isConfirmed) return;
+
+        // Silme başarılı -> kişi ekranını yenile
         var kisiEnc = getKisiFromUrl();
+        if (!kisiEnc) kisiEnc = getSelectedKisiEncFallback();
+        if (!kisiEnc) {
+          return Swal.fire({
+            icon: 'success',
+            title: 'Silindi',
+            text: 'Borç başarıyla silindi.',
+            timer: 1400,
+            showConfirmButton: false
+          });
+        }
+
+        return loadPerson(kisiEnc)
+          .then(function () {
+            try {
+              if (ydLastPersonData) updateLeftListAfterRefresh(kisiEnc, ydLastPersonData);
+            } catch (e1) { /* ignore */ }
+          })
+          .then(function () {
+            return Swal.fire({
+              icon: 'success',
+              title: 'Silindi',
+              text: 'Borç başarıyla silindi.',
+              timer: 1400,
+              showConfirmButton: false
+            });
+          })
+          .catch(function (err2) {
+            var msg2 = 'Borç silindi ama ekran yenilenemedi: ' + (err2 && err2.message ? err2.message : err2);
+            return Swal.fire({ icon: 'warning', title: 'Silindi', text: msg2 });
+          });
+      });
+
+      return;
+    }
+
+    if (!confirm('Bu borçlandırmayı silmek istediğinize emin misiniz?')) return;
+    doRequest()
+      .then(function () {
+        var kisiEnc = getKisiFromUrl();
+        if (!kisiEnc) kisiEnc = getSelectedKisiEncFallback();
         if (kisiEnc) loadPerson(kisiEnc);
-        Toastify({
-          text: "Borç başarıyla silindi.",
-          duration: 3000,
-          close: true,
-          gravity: "top",
-          position: "right",
-          backgroundColor: "#4caf50",
-        }).showToast();
       })
       .catch(function () { alert('Borç silinirken hata oluştu.'); });
   }
@@ -629,14 +792,20 @@
       }
 
       // select2 varsa init
-      try {
-        if ($('.select2').length) {
-          $('.select2').select2({ placeholder: 'Kasa Seçiniz', dropdownParent: $('#tahsilatGir') });
-          $('#tahsilat_turu').select2({ tags: true, dropdownParent: $('#tahsilatGir') });
-        }
-      } catch (e2) {
-        // ignore
-      }
+      initSelect2InScope(modalEl, modalEl);
+
+
+      //Flatpickr varsa init
+      $(".flatpickr").flatpickr({
+        dateFormat: "d.m.Y H:i",
+        locale: "tr",
+        enableTime: true,
+        time_24hr: true,
+        minuteIncrement: 1
+      });
+
+
+      //initFlatpickrInScope(modalEl, modalEl);
     });
   }
 
@@ -894,6 +1063,47 @@
 
   // ---- Event wiring ----
   $(function () {
+    // // URL ile direkt gelen sayfalarda (örn: ?kisi=...&yd_q=...)
+    // // bazı template'lerde sidebar "open" state'i önceki sayfadan kalmış gibi görünebiliyor.
+    // // Bu sayfada, yükleme anında tüm açık submenu'ları kapatıp sadece server-side aktif işareti
+    // // (li.active / li.nxl-trigger) üzerinden gerekli olanları açık bırakıyoruz.
+    function normalizeSidebarOpenState() {
+      try {
+        var u = safeUrl();
+        if (!u) return;
+
+        // Sadece URL parametreli direct-entry senaryosunda agresif davran.
+        var hasParams = false;
+        try { hasParams = u.search && String(u.search).length > 1; } catch (e0) { hasParams = false; }
+        if (!hasParams) return;
+
+        var $side = $('#side-menu');
+        if (!$side.length) return;
+
+        // 1) Önce tüm trigger/active state'i sıfırla
+        $side.find('li.nxl-item.nxl-trigger').removeClass('nxl-trigger');
+        $side.find('ul.nxl-submenu').hide();
+
+        // 2) Ardından server'ın işaretlediği active path'i tekrar aç
+        // Not: left-sidebar.php aktif path için li.active set ediyor.
+        var $activeItems = $side.find('li.nxl-item.active');
+        $activeItems.each(function () {
+          var $li = $(this);
+          // Parent chain'i aç
+          $li.parents('li.nxl-item').addClass('nxl-trigger');
+          $li.parents('ul.nxl-submenu').show();
+          // Kendi submenu'su varsa onu da aç
+          $li.children('ul.nxl-submenu').show();
+        });
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // DOM yüklendiğinde ve kısa bir gecikmeyle tekrar uygula (CSS/templating geç oturabiliyor)
+    normalizeSidebarOpenState();
+    setTimeout(normalizeSidebarOpenState, 50);
+
     var $list = $('#ydPersonnelList');
     if (!$list.length) return;
 
@@ -997,10 +1207,15 @@
 
     // Kişi seçimi
     $list.on('click', 'a.yd-item', function (e) {
-      e.preventDefault();
+    //  e.preventDefault();
       var $a = $(this);
       var enc = String($a.data('yd-kisi') || '');
       if (!enc) return;
+
+  // Seçili satırı state olarak sakla (sol listeyi güncellemek için)
+  ydSelectedKisiEnc = enc;
+  ydSelectedLeftRow = $a;
+
       setActiveLeftItem($list, $a);
 
       // seçileni her zaman görünür tut
@@ -1053,6 +1268,7 @@
     // seçilenleri tahsil et
     $(document).on('click', '#ydCollectSelectedDebts', function () {
       var kisiEnc = getKisiFromUrl();
+      if (!kisiEnc) kisiEnc = getSelectedKisiEncFallback();
       var ids = $('.yd-debt-check:checked').map(function () { return $(this).data('yd-borc-id'); }).get().filter(Boolean);
       openTahsilatModalForSelected(kisiEnc, ids);
     });
@@ -1061,16 +1277,25 @@
     $(document).on('click', '.yd-borc-edit', function (e) {
       // Anchor click'i sayfayı başka bir yere yönlendirmesin.
       // Özellikle bazı global handler'lar (#, file-download vb.) bu click'i etkileyebiliyor.
-      if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+      // if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      // if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
 
       openEditDebtModal($(this).data('id')).catch(function () {
-        $(".select2").select2()
+        // fallback: modal içeriği geldi ama init kaçtıysa
+        initSelect2InScope(document, document.body);
       });
     });
     $(document).on('click', '.yd-borc-delete', function (e) {
       e.preventDefault();
       deleteDebt($(this).data('id'));
+    });
+
+    // borç ekle (başlıktaki + ikon)
+    $(document).on('click', '.yd-borc-add', function (e) {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      openAddDebtModal().catch(function () {
+        // modal açıldıktan sonra select2 gibi initler openEditDebtModal içinde yapılıyor
+      });
     });
 
     // tahsilat detay toggle
@@ -1154,6 +1379,12 @@
     // ilk yükleme
     var $active = $list.find('a.yd-item.is-active').first();
     if ($active.length) {
+      try {
+        ydSelectedLeftRow = $active;
+        ydSelectedKisiEnc = String($active.data('yd-kisi') || '');
+      } catch (eSeed) {
+        // ignore
+      }
       loadPerson(String($active.data('yd-kisi') || '')).catch(function () { /* ignore */ });
     }
 

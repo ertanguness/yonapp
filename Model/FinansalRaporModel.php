@@ -22,6 +22,37 @@ class FinansalRaporModel extends Model
 
 
     /**
+     * Sitedeki tüm kişileri finansal durumlarıyla birlikte getirir.
+     * @param int $site_id
+     * @return array
+     */
+
+    public function getSiteBorclular($site_id)
+    {
+        $sql = $this->db->prepare("SELECT vb.kisi_id,vb.daire_kodu,k.adi_soyadi,k.uyelik_tipi,k.telefon,k.giris_tarihi,daire_tipi,
+                                                CASE WHEN k.cikis_tarihi IS NULL OR k.cikis_tarihi = '0000-00-00' THEN ''
+                                                        ELSE DATE_FORMAT(k.cikis_tarihi, '%d.%m.%Y') END AS cikis_tarihi,
+                                                toplam_borc,
+                                                toplam_tahsilat,
+                                                bakiye,
+                                                 k.cikis_tarihi,
+                                            -- oturan veya kiracının durumunu alıyoruz
+                                            CASE 
+                                                WHEN k.cikis_tarihi IS NULL OR k.cikis_tarihi = 0000-00-00 THEN 'Aktif'
+                                                ELSE 'Pasif' END AS durum
+                                          FROM $this->table vb
+                                          LEFT JOIN kisiler k ON k.id = vb.kisi_id
+                                          LEFT JOIN view_kisiler_hesap_ozet ho ON ho.kisi_id = vb.kisi_id
+                                          WHERE vb.site_id = ? 
+                                          GROUP BY vb.kisi_id, daire_kodu, adi_soyadi, uyelik_tipi");
+        $sql->execute([$site_id]);
+        return $sql->fetchAll(PDO::FETCH_OBJ);
+    }
+
+
+
+
+    /**
      * Kişilerin Ödenmemiş güncel borçlarını getirir.
      * @param int $site_id
      * @return array
@@ -42,7 +73,7 @@ class FinansalRaporModel extends Model
 
     public function getGuncelBorclarGruplu($site_id)
     {
-        $sql = $this->db->prepare("SELECT kisi_id,daire_kodu,k.adi_soyadi,k.uyelik_tipi,k.telefon,k.giris_tarihi,daire_tipi,
+        $sql = $this->db->prepare("SELECT vb.kisi_id,vb.daire_kodu,k.adi_soyadi,k.uyelik_tipi,k.telefon,k.giris_tarihi,daire_tipi,
                                                 CASE WHEN k.cikis_tarihi IS NULL OR k.cikis_tarihi = '0000-00-00' THEN ''
                                                         ELSE DATE_FORMAT(k.cikis_tarihi, '%d.%m.%Y') END AS cikis_tarihi,
                                                 Round(kalan_kredi, 2) as kredi_tutari,
@@ -56,8 +87,9 @@ class FinansalRaporModel extends Model
                                                 ELSE 'Pasif' END AS durum
                                           FROM $this->table vb
                                           LEFT JOIN kisiler k ON k.id = vb.kisi_id
+                                          LEFT JOIN view_kisiler_hesap_ozet ho ON ho.kisi_id = vb.kisi_id
                                           WHERE vb.site_id = ? 
-                                          GROUP BY kisi_id, daire_kodu, adi_soyadi, uyelik_tipi");
+                                          GROUP BY vb.kisi_id, vb.daire_kodu, adi_soyadi, uyelik_tipi");
         $sql->execute([$site_id]);
         return $sql->fetchAll(PDO::FETCH_OBJ);
     }

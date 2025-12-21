@@ -1,4 +1,4 @@
-import { getBorclandirmaInfo,getBorclandirmaDetayInfo } from "/assets/js/utils/debit.js";
+import { getBorclandirmaInfo } from "/assets/js/utils/debit.js";
 let url = "/pages/dues/payment/api.php";
 $(document).ready(function () {
     //console.log("Borç Ekle JS yüklendi ve çalışıyor.");
@@ -80,12 +80,34 @@ $(document).on('click', '#borcEkleBtn', function () {
                    
                     // Modalı kapat
                     $('#borcEkleModal').modal('hide');
-                    //KisiBorcDetay modalını güncelle
+
+                    // KisiBorcDetay modalını güncelle (tablo/etiketler)
                     $.get("pages/dues/payment/tahsilat-detay.php", {
                         kisi_id: kisiId
                     }, function (data) {
-                        // Verileri tabloya ekle
                         $('.borc-detay').html(data);
+
+                        // Tahsilat gir sayfasındaki kişi özetini de güncelle
+                        // loadPerson Promise döndürüyor; bittikten sonra sol listeleri de yenile.
+                        try {
+                            if (typeof window.loadPerson === 'function') {
+                                window.loadPerson(kisiId).then(function (personData) {
+                                    try {
+                                        // loadPerson içerde ydLastPersonData'yı set ediyor; varsa onu kullan.
+                                        if (typeof window.updateLeftListAfterRefresh === 'function') {
+                                            var pd = (window.ydLastPersonData || personData);
+                                            var kisiEnc = (pd && pd.person && pd.person.kisi_enc) ? String(pd.person.kisi_enc) : String(kisiId);
+                                            window.updateLeftListAfterRefresh(kisiEnc, pd);
+                                        }
+                                    } catch (e2) {
+                                        // ignore
+                                    }
+                                }).catch(function () { /* ignore */ });
+                            }
+                        } catch (e1) {
+                            // ignore
+                        }
+
                         // Modal'ı göster
                         $('#kisiBorcDetay').modal('show');
                     });
@@ -108,4 +130,5 @@ $(document).on('click', '#borcEkleBtn', function () {
         }
     });
 });
+
 

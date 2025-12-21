@@ -198,7 +198,8 @@ class TahsilatDetayModel extends Model
         $sql = $this->db->prepare("SELECT td.*, bd.borc_adi,bd.aciklama as borc_aciklama 
                                    FROM $this->table td
                                    LEFT JOIN borclandirma_detayi bd ON bd.id = td.borc_detay_id
-                                   WHERE td.tahsilat_id = ?");
+                                   WHERE td.tahsilat_id = ?
+                                   ");
         $sql->execute([$tahsilat_id]);
         return $sql->fetchAll(\PDO::FETCH_OBJ);
     }

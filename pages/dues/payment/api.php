@@ -523,12 +523,12 @@ if ($action === 'tahsilat-kaydet') {
     $kullanilmakIstenenTutar = $_POST['kullanilacak_kredi'] ?? 0;
     // Kullanıcıdan "46,99" veya "46,99 TL" gibi gelebilir; matematikte warning olmaması için sayıya çevir.
     $kullanilmakIstenenTutar = Helper::formattedMoneyToNumber($kullanilmakIstenenTutar);
-
-        if ($kullanilmakIstenenTutar > 0) {
-            // Kredi tutarını kalan ödenecek tutara ekle
-            $kalanOdenecekTutar += $kullanilmakIstenenTutar; // Kredi tutarını ekle
-
-
+    if ($kullanilmakIstenenTutar > 0) {
+        // Kredi tutarını kalan ödenecek tutara ekle
+        $kalanOdenecekTutar += $kullanilmakIstenenTutar; // Kredi tutarını ekle
+        
+        
+            $logger->info("Kişi ID {$kisi_id} için kredi kullanımı talebi: " . $kullanilmakIstenenTutar . " TL");
 
             // ---> DÜZELTME 1: Kredileri en eskiden yeniye doğru sırala (FIFO mantığı) <---
             // Bu, kredilerin her zaman tutarlı bir sırada kullanılmasını sağlar.

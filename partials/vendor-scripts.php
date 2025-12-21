@@ -370,7 +370,7 @@ if ($page == 'onay-bekleyen-tahsilatlar') {
 if ($page == 'yonetici-aidat-odeme' || $page == "borc-odeme") {
     echo '<script src="pages/dues/payment/js/tahsilat-gir.js" defer></script>';
     echo '<script src="pages/dues/payment/js/tahsilat-detay.js" defer></script>';
-    // echo '<script src="pages/dues/payment/js/borc-ekle.js" defer></script>';
+    echo '<script type="module" src="pages/dues/payment/js/borc-ekle.js" defer></script>';
 
 }
 

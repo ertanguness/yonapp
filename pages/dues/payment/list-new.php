@@ -19,7 +19,7 @@ if ($siteId <= 0) {
 $FinansalRapor = new FinansalRaporModel();
 $Tahsilat = new TahsilatModel();
 
-$borclular = $FinansalRapor->getGuncelBorclarGruplu($siteId);
+$borclular = $FinansalRapor->getSiteBorclular($siteId);
 
 /** Kişileri Daire Koduna göre sırala A1D1, A1D2 */
 usort($borclular, function ($a, $b) {
@@ -346,6 +346,24 @@ $fmt = function ($v) {
         font-weight: 600;
     }
 
+    .yd-sort-btn {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, .35);
+        background: #f8fafc;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .yd-sort-btn:hover {
+        background: #f1f5f9;
+    }
+
     #ydDebtsTbody tr:hover td {
         background: #f8fafc;
         cursor: pointer;
@@ -442,7 +460,37 @@ $fmt = function ($v) {
                 <div class="p-4" style="border-bottom:1px solid rgba(148,163,184,.15);">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="fw-bold" style="font-size:18px;">Borçlular</div>
-                        <span class="yd-chip" title="Toplam kişi"><?= count($borclular) ?> kişi</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="dropdown">
+                                <button class="yd-sort-btn" type="button" id="ydSortBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Sırala">
+                                    <i class="feather-filter"></i>
+                                    <span id="ydSortLabel">Sırala</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="ydSortBtn">
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-yd-sort="amount_asc">Artan (Tutar)</button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-yd-sort="amount_desc">Azalan (Tutar)</button>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-yd-sort="unit_asc">A'dan Z'ye (Daire)</button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-yd-sort="unit_desc">Z'den A'ya (Daire)</button>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-yd-sort="name_asc">A'dan Z'ye (Ad)</button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-yd-sort="name_desc">Z'den A'ya (Ad)</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <span class="yd-chip" title="Toplam kişi"><?= count($borclular) ?> kişi</span>
+                        </div>
                     </div>
                     <div class="position-relative">
                         <i class="feather-search position-absolute" style="left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;"></i>
@@ -472,12 +520,11 @@ $fmt = function ($v) {
                             $uyelikTipi = trim((string)($row->uyelik_tipi ?? ''));
                             $daireTipi = trim((string)($row->daire_tipi ?? ''));
 
-                            $kalan = (float)($row->toplam_kalan_borc ?? 0);
-                            $kredi = (float)($row->kredi_tutari ?? 0);
-                            $net = $kredi - $kalan; // eski sayfadaki net hesap ile uyumlu
+                            $kalan = (float)($row->bakiye ?? 0);
+                            $net = $kalan;
 
-                            $status = $net < 0 ? 'Borçlu' : 'Borcu Yok';
-                            $statusClass = $net < 0 ? 'yd-chip yd-chip-danger' : 'yd-chip yd-chip-success';
+                            $status = $net < 0 ? 'Borçlu' : ($net == 0 ? 'Borcu Yok' : 'Alacaklı');
+                            $statusClass = $net < 0 ? 'yd-chip yd-chip-danger' : ($net == 0 ? 'yd-chip yd-chip-info' : 'yd-chip yd-chip-success');
 
                           
                             $initials = Helper::getInitials($adi);
@@ -493,7 +540,7 @@ $fmt = function ($v) {
                             if (mb_stripos($uyelikBadgeText, 'kirac') !== false) $uyelikBadgeClass .= ' yd-lbadge--kiraci';
                             else $uyelikBadgeClass .= ' yd-lbadge--katmaliki';
                         ?>
-                            <a class="yd-item <?= $isActive ? 'is-active' : '' ?>" href="/yonetici-aidat-odeme-yeni?kisi=<?= urlencode($enc) ?>"
+                            <a href="javascript:void(0);" class="yd-item <?= $isActive ? 'is-active' : '' ?>" href="/borc-odeme?kisi=<?= urlencode($enc) ?>"
                                 data-yd-kisi="<?= htmlspecialchars((string)$enc) ?>"
                                 data-yd-name="<?= htmlspecialchars($adi) ?>"
                                 data-yd-unit="<?= htmlspecialchars($daire) ?>"
@@ -521,7 +568,7 @@ $fmt = function ($v) {
                                             <span class="badge text-warning border border-dashed border-gray-500"><?= htmlspecialchars($daireTipi) ?></span>
                                         </div>
 
-                                        <div class="fw-bold yd-amount"><?= $fmt(max(0, -$net)) ?></div>
+                                        <div class="fw-bold yd-amount"><?= Helper::formattedMoney($net) ?></div>
                                     </div>
 
                                 
@@ -543,9 +590,8 @@ $fmt = function ($v) {
                         $daire = (string)($selectedPerson->daire_kodu ?? '');
                         $tel = (string)($selectedPerson->telefon ?? '');
 
-                        $kalan = (float)($selectedPerson->toplam_kalan_borc ?? 0);
-                        $kredi = (float)($selectedPerson->kredi_tutari ?? 0);
-                        $net = $kredi - $kalan;
+                        $kalan = (float)($selectedPerson->bakiye ?? 0);
+                        $net =  $kalan;
                         $status = $net < 0 ? 'Durum: Borçlu' : 'Durum: Borcu Yok';
                         $statusClass = $net < 0 ? 'yd-chip yd-chip-danger' : 'yd-chip yd-chip-success';
 
@@ -653,7 +699,12 @@ $fmt = function ($v) {
                                 <!-- Tab: Borçlandırma Detayları -->
                                 <div class="yd-tab-panel" data-yd-panel="debts">
                                     <div class="d-flex align-items-center justify-content-between px-4 py-3" style="border-bottom:1px solid rgba(148,163,184,.25)">
-                                        <div class="fw-bold">Borçlandırmalar</div>
+                                        <div class="fw-bold d-flex align-items-center gap-2">
+                                            <span>Borçlandırmalar</span>
+                                            <a href="javascript:void(0);" class="avatar-text avatar-md   yd-borc-add" title="Yeni Borç" aria-label="Yeni Borç">
+                                                <i class="feather-plus"></i>
+                                            </a>
+                                        </div>
                                         <div class="d-flex gap-2 align-items-center">
                                             <div class="form-check form-switch me-2" style="margin-bottom:0;">
                                                 <input class="form-check-input" type="checkbox" id="ydOnlyDebtsToggle">
@@ -737,3 +788,159 @@ $fmt = function ($v) {
         </div>
     </div>
 </div>
+
+
+
+<script>
+    (function() {
+        const listEl = document.getElementById('ydPersonnelList');
+        if (!listEl) return;
+
+        const sortLabel = document.getElementById('ydSortLabel');
+        const searchEl = document.getElementById('ydSearch');
+        const sortButtons = document.querySelectorAll('[data-yd-sort]');
+        const filterButtons = document.querySelectorAll('[data-yd-filter]');
+
+        // Default: daire koduna göre (A1D2 < A1D10 gibi natural)
+        let currentSort = 'unit_asc';
+        let currentFilter = 'all';
+
+        const labels = {
+            amount_asc: 'Artan',
+            amount_desc: 'Azalan',
+            unit_asc: 'Daire A→Z',
+            unit_desc: 'Daire Z→A',
+            name_asc: "A→Z",
+            name_desc: "Z→A",
+        };
+
+        const getItems = () => Array.from(listEl.querySelectorAll('.yd-item'));
+
+        const normalizeText = (s) => (s || '').toString().toLocaleLowerCase('tr-TR').trim();
+
+        const parseNet = (el) => {
+            const raw = (el.getAttribute('data-yd-net') || '').toString();
+            const n = Number(raw);
+            return Number.isFinite(n) ? n : 0;
+        };
+
+        const naturalCompare = (a, b) => {
+            // 1) Prefer Intl.Collator numeric sort when available
+            try {
+                if (typeof Intl !== 'undefined' && Intl.Collator) {
+                    const collator = new Intl.Collator('tr-TR', {
+                        numeric: true,
+                        sensitivity: 'base'
+                    });
+                    return collator.compare(a, b);
+                }
+            } catch (e) {
+                // ignore and fall back
+            }
+            // 2) Fallback: basic chunked numeric compare
+            const ax = (a || '').toString().toLocaleLowerCase('tr-TR').match(/(\d+|\D+)/g) || [];
+            const bx = (b || '').toString().toLocaleLowerCase('tr-TR').match(/(\d+|\D+)/g) || [];
+            const len = Math.min(ax.length, bx.length);
+            for (let i = 0; i < len; i++) {
+                const ac = ax[i];
+                const bc = bx[i];
+                if (ac === bc) continue;
+                const an = Number(ac);
+                const bn = Number(bc);
+                const aIsNum = Number.isFinite(an) && /^\d+$/.test(ac);
+                const bIsNum = Number.isFinite(bn) && /^\d+$/.test(bc);
+                if (aIsNum && bIsNum) return an - bn;
+                return ac.localeCompare(bc, 'tr-TR', { sensitivity: 'base' });
+            }
+            return ax.length - bx.length;
+        };
+
+        const matchesSearch = (el, q) => {
+            if (!q) return true;
+            const name = normalizeText(el.getAttribute('data-yd-name'));
+            const unit = normalizeText(el.getAttribute('data-yd-unit'));
+            const phone = normalizeText(el.getAttribute('data-yd-phone'));
+            return name.includes(q) || unit.includes(q) || phone.includes(q);
+        };
+
+        const matchesFilter = (el, filter) => {
+            if (!filter || filter === 'all') return true;
+            const net = parseNet(el);
+            if (filter === 'has_debt') return net < 0;
+            if (filter === 'paid') return net >= 0;
+            return true;
+        };
+
+        const compareItems = (a, b) => {
+            if (currentSort === 'amount_asc') return parseNet(a) - parseNet(b);
+            if (currentSort === 'amount_desc') return parseNet(b) - parseNet(a);
+            if (currentSort === 'unit_asc') {
+                return naturalCompare(a.getAttribute('data-yd-unit'), b.getAttribute('data-yd-unit'));
+            }
+            if (currentSort === 'unit_desc') {
+                return naturalCompare(b.getAttribute('data-yd-unit'), a.getAttribute('data-yd-unit'));
+            }
+            if (currentSort === 'name_asc') {
+                return normalizeText(a.getAttribute('data-yd-name')).localeCompare(
+                    normalizeText(b.getAttribute('data-yd-name')),
+                    'tr-TR',
+                    { sensitivity: 'base' }
+                );
+            }
+            if (currentSort === 'name_desc') {
+                return normalizeText(b.getAttribute('data-yd-name')).localeCompare(
+                    normalizeText(a.getAttribute('data-yd-name')),
+                    'tr-TR',
+                    { sensitivity: 'base' }
+                );
+            }
+            return 0;
+        };
+
+        const apply = () => {
+            const q = normalizeText(searchEl ? searchEl.value : '');
+
+            const items = getItems();
+            for (const el of items) {
+                const visible = matchesSearch(el, q) && matchesFilter(el, currentFilter);
+                el.style.display = visible ? '' : 'none';
+            }
+
+            const visibleItems = items.filter((el) => el.style.display !== 'none');
+            visibleItems.sort(compareItems);
+            for (const el of visibleItems) listEl.appendChild(el);
+
+            if (sortLabel) sortLabel.textContent = labels[currentSort] || 'Sırala';
+        };
+
+        // Default label
+        if (sortLabel) sortLabel.textContent = labels[currentSort] || 'Sırala';
+
+        // Sort controls
+        sortButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                currentSort = btn.getAttribute('data-yd-sort') || currentSort;
+                apply();
+            });
+        });
+
+        // Filter chips: keep existing styles but make them act like toggles
+        filterButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                currentFilter = btn.getAttribute('data-yd-filter') || 'all';
+                // active visual
+                filterButtons.forEach((b) => b.classList.remove('is-active'));
+                btn.classList.add('is-active');
+                apply();
+            });
+        });
+
+        // Search input
+        if (searchEl) {
+            searchEl.addEventListener('input', apply);
+        }
+
+        // Initial apply
+        apply();
+    })();
+</script>
