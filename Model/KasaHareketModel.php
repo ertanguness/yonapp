@@ -777,6 +777,9 @@ class KasaHareketModel extends Model
                 }
                 $tarih          = trim((string)Date::convertExcelDate($tarihRaw, 'Y-m-d H:i:s'));
 
+                $logger->info("Parsed Tarih: ", [$tarih]);
+
+                
                 $tutarRaw       = $rowData['Tutar*'] ?? '';
                 $islemTipiRaw   = trim((string)($rowData['Gelir/Gider*'] ?? ''));
                 $kategoriAdi    = trim((string)($rowData['Kategori'] ?? ''));
@@ -843,12 +846,14 @@ class KasaHareketModel extends Model
 
                 // Eğer createMissingDefines flag aktif ise defines tablosunu güncelle
                 if ($createMissingDefines && $kategoriAdi !== '') {
+                    $logger->info("Eksik tanım kontrolü yapılıyor: {$createMissingDefines} - {$islemTipi} - {$kategoriAdi} / {$altTur}");
                     $defineType = ($islemTipi === 'Gelir') ? DefinesModel::TYPE_GELIR_TIPI : DefinesModel::TYPE_GIDER_TIPI;
-                    $res = $definesModel->ensureGelirGiderDefines($siteId, $defineType, $kategoriAdi, $altTur !== '' ? $altTur : null);
+                    $res = $definesModel->ensureGelirGiderDefines($siteId, $defineType, $kategoriAdi, $altTur );
                     if (!empty($res['created_kategori'])) $createdKategoriCount++;
                     if (!empty($res['created_alt_tur'])) $createdAltTurCount++;
                 }
 
+           
                 // Referans kodu ile dupe kontrolü: aynı site+kasa içinde varsa eklemiyoruz
                 if ($refKod !== '') {
                     $stmtDupe = $this->db->prepare("SELECT 1 FROM kasa_hareketleri 
@@ -914,10 +919,21 @@ class KasaHareketModel extends Model
                 'hatalı kayıt sayısı' => count($errorRows)
             ]);
 
-            $message = "İşlem tamamlandı: {$processedCount} yeni kayıt eklendi.";
+            $message = "İşlem tamamlandı: <br>{$processedCount} yeni kayıt eklendi.";
             if (!empty($errorRows)) {
                 $message .= " " . count($errorRows) . " satırda hata oluştu.";
             }
+
+            /** Kategori eklendiyse mesaja ekle */
+            if ($createdKategoriCount > 0) {
+                $message .= "<br> {$createdKategoriCount} yeni kategori eklendi.";
+            }
+
+            /** Alt tür eklendiyse mesaja ekle */
+            if ($createdAltTurCount > 0) {
+                $message .= "<br> {$createdAltTurCount} yeni alt tür eklendi.";
+            }
+
 
             return [
                 'status' => 'success',

@@ -598,6 +598,7 @@ $fmt = function ($v) {
                         $kpiToplamBorc = (float)($selectedBorcOzet->toplam_borc ?? 0);
                         $kpiTahsilEdilen = (float)($selectedBorcOzet->toplam_tahsilat ?? 0);
                         $kpiKalan = (float)($selectedBorcOzet->kalan_borc ?? max(0, -$net));
+                        $kpiDurum = $kpiKalan > 0 ? 'Kalan Borç' : 'Alacak';
                         ?>
                         <div class="d-flex align-items-start justify-content-between">
                             <div>
@@ -651,7 +652,7 @@ $fmt = function ($v) {
                                 </div>
                             </div>
                             <div class="text-end">
-                                <div class="yd-muted" style="font-size:12px;">Kalan Borç</div>
+                                <div class="yd-muted" style="font-size:12px;"><?= $kpiDurum ?></div>
                                 <div class="fw-bold" style="font-size:28px;" id="ydKalanBorcHeader"><?= $fmt($kpiKalan) ?></div>
 
                             </div>

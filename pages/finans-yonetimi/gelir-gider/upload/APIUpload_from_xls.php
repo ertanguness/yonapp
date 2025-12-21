@@ -15,6 +15,9 @@ if ($_POST["action"] == "excel_upload_transactions") {
     $file = $_FILES['excelFile'];
     $fileType = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
     $site_id = $_SESSION['site_id'];
+    $islemTipiYoksaEkle = isset($_POST['create_missing_defines']) && $_POST['create_missing_defines'] == '1' ? true : false;
+
+    $logger = getLogger();
 
     if ($fileType !== 'xlsx' && $fileType !== 'xls') {
         echo json_encode([
@@ -24,7 +27,12 @@ if ($_POST["action"] == "excel_upload_transactions") {
         exit;
     }
 
-    $result = $KasaHareketModel->excelUpload($file['tmp_name'], $site_id);
+    $result = $KasaHareketModel->excelUpload(
+                                    $file['tmp_name'], 
+                                    $site_id, 
+                                    0, 
+                                    $islemTipiYoksaEkle 
+                                );
   
 
     $errorFileUrl = null;
