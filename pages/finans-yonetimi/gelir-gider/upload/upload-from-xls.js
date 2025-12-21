@@ -64,6 +64,8 @@ $(document).on("click", "#upload_payment_file", function (e) {
   e.preventDefault();
   const fileInput = document.getElementById("payment_file");
   const loadingOverlay = document.getElementById("loading-overlay");
+  const islemTipiYoksaEkle = $("#create_missing_defines").is(":checked");
+
   if (!fileInput.files.length) {
     swal.fire({
       title: "Hata",
@@ -78,6 +80,8 @@ $(document).on("click", "#upload_payment_file", function (e) {
   const formData = new FormData();
   formData.append("action", "excel_upload_transactions");
   formData.append("excelFile", fileInput.files[0]);
+  formData.append("create_missing_defines", islemTipiYoksaEkle ? '1' : '0');
+
 
   Pace.restart(); // Pace yükleme çubuğunu başlat
   fetch(url, {

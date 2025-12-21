@@ -149,9 +149,13 @@ public static function dmY($date = null, $format = 'd.m.Y')
         $raw = trim((string)$input);
 
         // Tarih-saat arası tire kullanılmışsa (11/02/2025-12:39:03) boşluk yapalım ki formatlar kolay eşleşsin
-        $norm = str_replace(['T'], ' ', $raw);
-        $norm = preg_replace('/([\/.])(\d{4})-/', '$1$2 ', $norm); // 11/02/2025-12:39:03 → 11/02/2025 12:39:03
-        $norm = str_replace('-', ' ', $norm); // bazı d-m-Y H:i durumları için
+    $norm = str_replace(['T'], ' ', $raw);
+    // 11/02/2025-12:39:03 → 11/02/2025 12:39:03 (sadece tarih-saat ayracını düzelt)
+    $norm = preg_replace('/(\b\d{2}[\/.\-]\d{2}[\/.\-]\d{4})-(\d{2}:\d{2}(?::\d{2})?\b)/', '$1 $2', $norm);
+    // 2025-12-19-13:40:20 → 2025-12-19 13:40:20 (ISO tarih + saat arasında tek tire gelirse)
+    $norm = preg_replace('/(\b\d{4}-\d{2}-\d{2})-(\d{2}:\d{2}(?::\d{2})?\b)/', '$1 $2', $norm);
+    // Eski regex'in yaptığı şeyi daha güvenli şekilde yapalım: 04/12/2025-16:13:53 → 04/12/2025 16:13:53
+    $norm = preg_replace('/([\/.])(\d{4})-/', '$1$2 ', $norm);
 
         // Denenecek formatlar (öncelik: Türkiye d/m/Y)
         $formats = [
@@ -410,33 +414,54 @@ public static function convertExcelDate($dateValue, $format = 'Y-m-d'): string|i
             return null;
         }
     }
-
     // 2. Metin ise (örn: "18.02.2025 10:41:41")
     if (is_string($dateValue)) {
-        try {
-            // Önce standart DateTime ile dene
-            $dt = new \DateTime(trim($dateValue));
-            
-            if ($format === 'timestamp') {
-                return (int)$dt->format('U');
-            }
-            
-            return $dt->format($format);
 
-        } catch (\Exception $e) {
-            // Türkçe formatlar için (d.m.Y H:i:s)
-            $dt = \DateTime::createFromFormat('d.m.Y H:i:s', trim($dateValue));
-            if (!$dt) {
-                $dt = \DateTime::createFromFormat('d.m.Y H:i', trim($dateValue));
+        $raw = trim($dateValue);
+        if ($raw === '') {
+            return null;
+        }
+
+        // 2.a) Bazı kaynaklar tarih-saat arası '-' gönderiyor: 19/12/2025-13:40:20
+        // Bunu güvenle boşluğa çevir (tarih içindeki '-' karakterlerine dokunma)
+        $norm = preg_replace('/(\b\d{2}\/\d{2}\/\d{4})-(\d{2}:\d{2}(?::\d{2})?\b)/', '$1 $2', $raw);
+        $norm = preg_replace('/(\b\d{2}\.\d{2}\.\d{4})-(\d{2}:\d{2}(?::\d{2})?\b)/', '$1 $2', $norm);
+        $norm = preg_replace('/(\b\d{2}-\d{2}-\d{4})-(\d{2}:\d{2}(?::\d{2})?\b)/', '$1 $2', $norm);
+
+        // 2.b) Önce en net formatları dene
+        $knownFormats = [
+            'd/m/Y H:i:s',
+            'd/m/Y H:i',
+            'd.m.Y H:i:s',
+            'd.m.Y H:i',
+            'd-m-Y H:i:s',
+            'd-m-Y H:i',
+            'Y-m-d H:i:s',
+            'Y-m-d H:i',
+            'Y/m/d H:i:s',
+            'Y/m/d H:i',
+            'd/m/Y',
+            'd.m.Y',
+            'd-m-Y',
+            'Y-m-d',
+            'Y/m/d',
+        ];
+
+        foreach ($knownFormats as $fmt) {
+            $dt = \DateTime::createFromFormat($fmt, $norm);
+            if ($dt instanceof \DateTimeInterface) {
+                $errors = \DateTime::getLastErrors();
+                if (empty($errors['warning_count']) && empty($errors['error_count'])) {
+                    return ($format === 'timestamp') ? (int)$dt->format('U') : $dt->format($format);
+                }
             }
-            if (!$dt) {
-                $dt = \DateTime::createFromFormat('d.m.Y', trim($dateValue));
-            }
-            
-            if ($dt) {
-                return ($format === 'timestamp') ? (int)$dt->format('U') : $dt->format($format);
-            }
-            
+        }
+
+        // 2.c) Son çare: PHP'nin DateTime parser'ı
+        try {
+            $dt = new \DateTime($norm);
+            return ($format === 'timestamp') ? (int)$dt->format('U') : $dt->format($format);
+        } catch (\Throwable $e) {
             return null;
         }
     }
