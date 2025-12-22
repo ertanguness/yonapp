@@ -3,6 +3,7 @@
 require_once __DIR__ . '/configs/bootstrap.php';
 
 use App\Services\Gate;
+use App\Helper\Helper;
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -11,8 +12,9 @@ header("Expires: 0");
 
 
 
+
+
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
-    $returnUrl = urlencode($_SERVER["REQUEST_URI"]);
     if (!isset($_GET["p"])) {
         $returnUrl = urlencode("ana-sayfa");
     }

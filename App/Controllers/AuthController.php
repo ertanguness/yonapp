@@ -1,11 +1,12 @@
 <?php
 namespace App\Controllers;
 
+use App\Helper\Date;
+use Model\UserModel;
+use App\Helper\Helper;
+use Model\SettingsModel;
 use App\InterFaces\LoggerInterface;
 use App\Services\FlashMessageService; 
-use Model\UserModel;
-use Model\SettingsModel;
-use App\Helper\Date;
 
 /**
  * AuthController
@@ -144,7 +145,11 @@ class AuthController
             
             $this->logger->info("Redirecting to role select (multiple match)", ['count' => count($eligible)]);
             
-            header("Location: sign-in.php?chooseRole=1");
+            $qs = 'chooseRole=1';
+            if (!empty($returnUrl)) {
+                $qs .= '&returnUrl=' . urlencode($returnUrl);
+            }
+            header("Location: sign-in.php?" . $qs);
             exit();
         }
         
@@ -482,17 +487,17 @@ class AuthController
          if ((int)$user->roles === 15 || stripos($roleName, 'Temsilci') !== false) {
              header("Location: /temsilci-paneli");
              exit();
-         }
-
+            }
+            
+            $returnUrl = !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'company-list.php';
         //eğer site_id oturumda yoksa, siteyi seçmesi için company-list.php sayfasına yönlendir
         if (!isset($_SESSION['site_id'])) {
             // Site seçimi için company-list.php sayfasına yönlendir
-            header("Location: company-list.php");
+            header("Location: company-list.php?returnUrl=" . urlencode($returnUrl));
             exit();
        
         }
 
-        $returnUrl = !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'company-list.php';
         header("Location: " . $returnUrl);
         exit();
     }
