@@ -61,6 +61,10 @@ $kisi_finans = $BorcDetay->KisiFinansalDurum(Security::decrypt($kisi_id));
 
 $dnone = $kredi <= 0 ? 'd-none' : '';
 
+// Mesaj gönder butonu için (legacy akış tahsilat-gir.js içinde .mesaj-gonder click handler'ı kullanıyor)
+$kisiPhoneDigits = preg_replace('/[^0-9]/', '', (string)($kisi->telefon ?? ''));
+$daireKodu = (string)$Daire->DaireKodu($kisi->daire_id);
+
 ?>
 
 <style>
@@ -197,6 +201,16 @@ $dnone = $kredi <= 0 ? 'd-none' : '';
 
                                                 <a href="javascript:void(0);" class="tahsilat-islem-btn"
                                                     data-action="ekle">Ekle</a>
+
+                                                <a href="javascript:void(0);" class="mesaj-gonder"
+                                                    data-alert-target="SendMessage"
+                                                    data-id="<?= (int)($id ?? 0) ?>"
+                                                    data-kisi-id="<?= htmlspecialchars((string)$kisi_id) ?>"
+                                                    data-phone="<?= htmlspecialchars((string)$kisiPhoneDigits) ?>"
+                                                    data-daire="<?= htmlspecialchars((string)$daireKodu) ?>"
+                                                    title="Mesaj Gönder">
+                                                    Mesaj
+                                                </a>
 
                                             </div>
                                         </td>

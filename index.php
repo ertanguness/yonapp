@@ -129,7 +129,7 @@ if (preg_match('/-pdf$/', $page)) {
     <main class="nxl-container">
         <div class="nxl-content">
         <?php 
-        echo "<!-- Yüklenen sayfa: " . ($page) . " -->"; // Debug için
+        //echo "Yüklenen sayfa: " . ($page) ; // Debug için
             // 4. Adım: İÇERİK OLUŞTURMA
             // Rota tespitinde bulduğumuz callback'i parametreleriyle birlikte çalıştır.
 

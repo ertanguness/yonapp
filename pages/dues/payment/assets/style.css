@@ -1,0 +1,413 @@
+
+    .yd-wrap {
+        background: #f6f6f8;
+        border: 1px solid rgba(148, 163, 184, .35);
+        border-radius: 10px;
+        overflow: hidden;
+        width: 100%;
+        margin-bottom: 60px;
+
+
+    }
+
+    .yd-surface {
+        background: #ffffff;
+    }
+
+    .yd-muted {
+        color: #64748b;
+    }
+
+    .yd-chip {
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, .35);
+        background: #f1f5f9;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .yd-chip.yd-chip-danger {
+        background: #fef2f2;
+        border-color: #fee2e2;
+        color: #dc2626;
+    }
+
+    .yd-chip.yd-chip-success {
+        background: #ecfdf5;
+        border-color: #d1fae5;
+        color: #059669;
+    }
+
+    .yd-card {
+        background: #fff;
+        border: 1px solid rgba(148, 163, 184, .35);
+        border-radius: 10px;
+        padding: 6px;
+    }
+
+    .yd-kpi {
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .yd-list {
+        max-height: calc(100vh - 270px);
+        overflow: auto;
+    }
+
+    .yd-debts-scroll {
+        max-height: calc(100vh - 470px);
+        overflow: auto;
+    }
+
+    /* Tahsilatlar tabı: borç tablosu ile aynı yükseklik ve yatay kaydırma olmasın */
+    .yd-collections-scroll {
+        max-height: calc(100vh - 470px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    /* Açıklama hücresi satıra sığmazsa aşağı kaysın */
+    #ydTahsilatTable td.yd-desc,
+    #ydTahsilatTable th.yd-desc {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    /* Table responsive wrapper bazen x-scroll oluşturabiliyor; bunu kapat */
+    .yd-collections-scroll.table-responsive {
+        overflow-x: hidden;
+    }
+
+    /* Tahsilat detay satırı (dağılım) */
+    .yd-tahsilat-detail-row {
+        background: #f8fafc;
+    }
+
+    .yd-tahsilat-detail-box {
+        border: 1px solid rgba(148, 163, 184, .25);
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff;
+    }
+
+    .yd-tahsilat-detail-title {
+        font-weight: 800;
+        font-size: 12px;
+        color: #334155;
+        letter-spacing: .02em;
+        margin-bottom: 8px;
+    }
+
+    .yd-tahsilat-detail-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px dashed rgba(148, 163, 184, .35);
+    }
+
+    .yd-tahsilat-detail-item:last-child {
+        border-bottom: 0;
+    }
+
+    .yd-tahsilat-detail-item .name {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .yd-tahsilat-detail-item .desc {
+        font-size: 12px;
+        color: #64748b;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .yd-tahsilat-detail-item .amt {
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .yd-item {
+        border: 1px solid transparent;
+        border-radius: 14px;
+        padding: 12px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 4px;
+
+    }
+
+    .yd-item:hover {
+        background: #f8fafc;
+        border-color: rgba(148, 163, 184, .25);
+        cursor: pointer;
+
+
+    }
+
+    .yd-item.is-active {
+        background: rgba(68, 93, 143, 0.09);
+        border-color: rgba(147, 161, 184, 0.25);
+        position: relative;
+    }
+
+    .yd-item.is-active:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 32px;
+        background: #135bec;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .yd-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #334155;
+        flex: 0 0 auto;
+    }
+
+    .yd-item.is-active .yd-avatar {
+        background: rgba(19, 91, 236, .1);
+        color: #135bec;
+    }
+
+
+
+    .yd-pill-warn {
+        background: #fff7ed;
+        border-color: #fed7aa;
+        color: #ea580c;
+    }
+
+    .yd-table thead {
+        background: #f8fafc;
+    }
+
+    /* Borç tablosu: satırlar kart gibi (radius) */
+    #ydDebtsTable {
+        border-collapse: separate;
+        border-spacing: 0 4px;
+        /* satırlar arası boşluk */
+    }
+
+    #ydDebtsTable thead th {
+        border-bottom: 0;
+    }
+
+    #ydDebtsTable tbody td {
+        background: #fff;
+        border-top: 1px solid rgba(148, 163, 184, .25);
+        border-bottom: 1px solid rgba(148, 163, 184, .25);
+    }
+
+    #ydDebtsTable tbody td:first-child {
+        border-left: 1px solid rgba(148, 163, 184, .25);
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+
+    #ydDebtsTable tbody td:last-child {
+        border-right: 1px solid rgba(148, 163, 184, .25);
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .yd-link {
+        color: #135bec;
+        text-decoration: none;
+    }
+
+    .yd-link:hover {
+        text-decoration: underline;
+    }
+
+    .yd-tab-btn {
+        background: transparent;
+        border: 0;
+        padding: 10px 0;
+        font-weight: 600;
+        color: #64748b;
+    }
+
+    .yd-tab-btn.is-active {
+        color: #135bec;
+        border-bottom: 2px solid #135bec;
+    }
+
+    .yd-tabbar {
+        display: flex;
+        gap: 22px;
+        border-bottom: 1px solid rgba(148, 163, 184, .15);
+    }
+
+    .yd-moneyline {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        align-items: flex-end;
+    }
+
+    .yd-moneyline .sub {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .yd-sort-btn {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, .35);
+        background: #f8fafc;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .yd-sort-btn:hover {
+        background: #f1f5f9;
+    }
+
+    /* Sol liste filtre chip aktif görünümü */
+    .yd-chip.is-active {
+        background: rgba(19, 91, 236, .10);
+        border-color: rgba(19, 91, 236, .55);
+        color: #135bec;
+    }
+
+    /* Özel renkli chip'lerde de aktif olunca belirginleştir */
+    .yd-chip.yd-chip-danger.is-active {
+        background: rgba(220, 38, 38, .10);
+        border-color: rgba(220, 38, 38, .55);
+        color: #dc2626;
+    }
+
+    .yd-chip.yd-chip-success.is-active {
+        background: rgba(5, 150, 105, .10);
+        border-color: rgba(5, 150, 105, .55);
+        color: #059669;
+    }
+
+    /* Arama input temizleme butonu (X) */
+    .yd-search-clear {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: #64748b;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .yd-search-clear:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    .yd-search-clear.is-visible {
+        display: inline-flex;
+    }
+
+    /*
+      Eğer input doluysa (autofill / geri gelme), JS'e ihtiyaç duymadan da buton görünsün.
+      Not: placeholder-shown, placeholder varsa çalışır (bizde var).
+    */
+    .position-relative > input#ydSearch:not(:placeholder-shown) + #ydSearchClear {
+        display: inline-flex;
+    }
+
+    #ydDebtsTbody tr:hover td {
+        background: #f8fafc;
+        cursor: pointer;
+    }
+
+    /* Borç satırı seçili görünümü (kişilerdeki active hissi) */
+    #ydDebtsTbody tr.yd-debt-row.yd-is-active td {
+        background: rgba(68, 93, 143, 0.09);
+    }
+
+    /* Sol tarafta mavi şerit (kişilerdeki gibi) */
+    #ydDebtsTbody tr.yd-debt-row.yd-is-active td:first-child {
+        box-shadow: inset 2px 0 0 #135bec;
+    }
+
+    /* Tahsilat tablosu: satırlar kart gibi (radius) */
+    #ydTahsilatTable {
+        border-collapse: separate;
+        border-spacing: 0 4px;
+    }
+
+    #ydTahsilatTable thead th {
+        border-bottom: 0;
+    }
+
+    /* Normal tahsilat satırları kart görünümü */
+    #ydTahsilatTable tbody tr.yd-tahsilat-row td {
+        background: #fff;
+        border-top: 1px solid rgba(148, 163, 184, .25);
+        border-bottom: 1px solid rgba(148, 163, 184, .25);
+    }
+
+    #ydTahsilatTable tbody tr.yd-tahsilat-row td:first-child {
+        border-left: 1px solid rgba(148, 163, 184, .25);
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+
+    #ydTahsilatTable tbody tr.yd-tahsilat-row td:last-child {
+        border-right: 1px solid rgba(148, 163, 184, .25);
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    /* Hover: sadece normal satırlar */
+    #ydTahsilatTable tbody tr.yd-tahsilat-row:hover td {
+        background: #f8fafc;
+    }
+
+    /* Detay satırı kart görünümünü bozmasın */
+    #ydTahsilatTable tbody tr.yd-tahsilat-detail-row td {
+        border: 0;
+        background: transparent;
+        padding-top: 0;
+    }
+
+
+    /**mobilde */
+    @media (max-width: 768px) {
+        .yd-wrap {
+            padding-bottom: 20px;
+        }
+        .ydTabsCard{
+            margin-bottom: 30px;
+        }
+
+    
+    }

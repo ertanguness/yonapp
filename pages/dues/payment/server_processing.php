@@ -201,16 +201,16 @@ foreach ($records as $borc) {
     $netBorc = $krediTutari - $toplamKalan;
     $netColor = $netBorc < 0 ? 'danger' : 'success';
 
-    $islemHtml = '<div class="hstack gap-2 ">'
-        .'<a href="javascript:void(0);" data-id="'.$encId.'" class="avatar-text avatar-md kisi-borc-detay">'
-        .'<i class="feather-eye"></i>'
-        .'</a>';
-    if (Gate::allows('tahsilat_ekle_sil')) {
-        $islemHtml .= '<a href="javascript:void(0);" title="Tahsilat Gir" data-kisi-id="'.$encId.'" class="avatar-text avatar-md tahsilat-gir">'
-            .'<i class="bi bi-credit-card-2-front"></i>'
-            .'</a>';
-    }
-    $islemHtml .= '</div>';
+    // $islemHtml = '<div class="hstack gap-2 "></div>'
+    //     .'<a href="javascript:void(0);" data-id="'.$encId.'" class="avatar-text avatar-md kisi-borc-detay">'
+    //     .'<i class="feather-eye"></i>'
+    //     .'</a>';
+    // if (Gate::allows('tahsilat_ekle_sil')) {
+    //     $islemHtml .= '<a href="javascript:void(0);" title="Tahsilat Gir" data-kisi-id="'.$encId.'" class="avatar-text avatar-md tahsilat-gir">'
+    //         .'<i class="bi bi-credit-card-2-front"></i>'
+    //         .'</a>';
+    // }
+    // $islemHtml .= '</div>';
 
     $rows[] = [
         'daire_kodu' => htmlspecialchars($borc->daire_kodu ?? ''),
@@ -222,7 +222,7 @@ foreach ($records as $borc) {
         'toplam_kalan_borc_formatted' => Helper::formattedMoney($toplamKalan),
         'kredi_tutari_formatted' => Helper::formattedMoney($krediTutari),
         'net_borc_formatted' => '<span class="text-'.$netColor.'">'.Helper::formattedMoney($netBorc).'</span>',
-        'islem_html' => $islemHtml,
+        // 'islem_html' => $islemHtml,
         // Sıralama için ham değerler
         '_kalan_anapara' => $kalanAnapara,
         '_gecikme_zammi' => $gecikmeZammi,

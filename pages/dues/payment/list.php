@@ -156,7 +156,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                         <div class="card-body custom-card-action p-0">
 
                             <div class="table-responsive m-3">
-                                <table class="table table-hover datatables" id="tahsilatTable">
+                                <table class="table table-hover datatables p-1" id="tahsilatTable">
                                     <thead>
                                         <tr>
                                             <th class="all wd-20 no-sorting" style="width: 30px;">
@@ -175,7 +175,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                                             <th class="text-end" style="width:11%" data-filter="number">Kredi Tutarı</th>
                                             <th class="all text-end" style="width:11%" data-filter="number">Kalan Borç</th>
 
-                                            <th class="all">İşlem</th>
+                                            <!-- <th class="all">İşlem</th> -->
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -335,7 +335,7 @@ $guncel_borclar = $FinansalRapor->getGuncelBorclarGruplu($_SESSION['site_id']);
                 { data: 'toplam_kalan_borc_formatted', className: 'text-end' },
                 { data: 'kredi_tutari_formatted', className: 'text-end' },
                 { data: 'net_borc_formatted', className: 'text-end' },
-                { data: 'islem_html', orderable: false }
+                // { data: 'islem_html', orderable: false }
             ],
             order: [[1, 'asc']],
             // initComplete ortak fonksiyonda geliyor (attachDtColumnSearch)
