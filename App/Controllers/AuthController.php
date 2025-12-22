@@ -6,7 +6,8 @@ use Model\UserModel;
 use App\Helper\Helper;
 use Model\SettingsModel;
 use App\InterFaces\LoggerInterface;
-use App\Services\FlashMessageService; 
+use App\Services\FlashMessageService;
+use Dompdf\Helpers;
 
 /**
  * AuthController
@@ -489,7 +490,9 @@ class AuthController
              exit();
             }
             
-            $returnUrl = !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'company-list.php';
+            $returnUrl = !empty($_GET['returnUrl']) ? $_GET['returnUrl'] : 'ana-sayfa';
+
+            //Helper::dd($returnUrl);
         //eğer site_id oturumda yoksa, siteyi seçmesi için company-list.php sayfasına yönlendir
         if (!isset($_SESSION['site_id'])) {
             // Site seçimi için company-list.php sayfasına yönlendir

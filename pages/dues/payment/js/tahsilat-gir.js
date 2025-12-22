@@ -537,19 +537,21 @@ $(function () {
         var $print = $('#ydPrintHtml');
         if ($print.length) {
           var printHref = String($print.attr('href') || '/pages/dues/payment/export/kisi_borc_tahsilat.php?format=html');
-          printHref = setOrReplaceQueryParam(printHref, 'kisi_id', kisiIdNum);
+          printHref = setOrReplaceQueryParam(printHref, 'kisi_id', kisiEnc);
           printHref = setOrReplaceQueryParam(printHref, 'format', 'html');
           $print.attr('href', printHref);
         }
 
-        var $downloads = $('a.file-download');
+        var $downloads = $('a.download');
         if ($downloads.length) {
           $downloads.each(function () {
             var $a = $(this);
             var href = String($a.attr('href') || '');
             if (!href) return;
 
-            href = setOrReplaceQueryParam(href, 'kisi_id', kisiIdNum);
+            //console.log('Before export link update:', href);
+
+            href = setOrReplaceQueryParam(href, 'kisi_id', kisiEnc);
 
             // PDF linkinde format parametresi yoksa default pdf olduğu için gerek yok ama
             // bazı durumlarda click handler/route format ister: güvenli olsun diye ekle.
