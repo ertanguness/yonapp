@@ -65,7 +65,7 @@ use App\Services\Gate;
             <a href="/yonetici-aidat-odeme"
                 class="flex-fill py-3 px-4 me-4 rounded-1 cursor-pointer border border-dashed border-gray-5">
                 <i class="bi bi-person-workspace"></i>
-                <p class="fs-12 text-muted mb-0">Yönetici Aidat Ödeme</p>
+                <p class="fs-12 text-muted mb-0">Borç Listesi</p>
             </a>
             <?php endif; ?>
             <?php if(Gate::allows("email_sms_gonder")): ?>

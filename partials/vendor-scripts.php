@@ -74,7 +74,7 @@ if (
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
 
-        <script>
+        <!-- <script>
         (function(){
             function initDtIn(root){
                 if (!root || !window.jQuery) return;
@@ -128,7 +128,7 @@ if (
                 onReady();
             }
         })();
-    </script>
+    </script> -->
 
 
 <?php  }

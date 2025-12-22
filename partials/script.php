@@ -70,6 +70,9 @@
 	
 	<script src="assets/js/widgets-statistics-init.min.js"></script>
     <!--! END: Apps Init !-->
+    <!-- Sidebar submenu collapse fix (clears inline styles that can block collapse) -->
+    <script src="assets/js/sidebar-fix.js"></script>
+
     <!--! BEGIN: Theme Customizer  !-->
     <script src="assets/js/theme-customizer-init.min.js"></script>
 

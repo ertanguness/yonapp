@@ -1,7 +1,7 @@
 /* global bootstrap, Pace, Swal, Toastify, setButtonLoading */
 
 // Tahsilat dashboard (list-new.php) tüm JS burada.
-$(function () {
+(function ($) {
   'use strict';
 
   var urls = {
@@ -11,46 +11,17 @@ $(function () {
     tahsilatModal: 'pages/dues/payment/modal/tahsilat_gir_modal.php'
   };
 
-  function parseQuery() {
-    // jQuery-only friendly fallback for reading querystring
-    var out = {};
+  function safeUrl() {
     try {
-      var qs = String(window.location.search || '').replace(/^\?/, '');
-      if (!qs) return out;
-      $.each(qs.split('&'), function (_, part) {
-        if (!part) return;
-        var kv = part.split('=');
-        var k = decodeURIComponent(kv[0] || '');
-        var v = decodeURIComponent((kv.slice(1).join('=') || '').replace(/\+/g, ' '));
-        if (k) out[k] = v;
-      });
+      return new URL(window.location.href);
     } catch (e) {
-      // ignore
+      return null;
     }
-    return out;
   }
 
   function getKisiFromUrl() {
-    var q = parseQuery();
-    return q && q.kisi ? String(q.kisi) : '';
-  }
-
-  function updateQueryParams(params) {
-    // params: { key: value|null|'' } ; remove when falsy
-    try {
-      var base = String(window.location.pathname || '/');
-      var q = parseQuery();
-      $.each(params || {}, function (k, v) {
-        var val = (v == null ? '' : String(v)).trim();
-        if (!val) delete q[k];
-        else q[k] = val;
-      });
-      var qs = $.param(q);
-      var url = base + (qs ? ('?' + qs) : '');
-      window.history.replaceState({}, '', url);
-    } catch (e) {
-      // ignore
-    }
+    var u = safeUrl();
+    return u ? (u.searchParams.get('kisi') || '') : '';
   }
 
   function getSelectedKisiEncFallback() {
@@ -74,12 +45,11 @@ $(function () {
     return '';
   }
 
-  // keep signature but adapt to our query helper
-  function setUrlParamSafe(_unused, key, value) {
-    if (!key) return;
+  function setUrlParamSafe(u, key, value) {
+    if (!u || !key) return;
     var v = (value == null ? '' : String(value)).trim();
-    if (!v || (key === 'yd_filter' && v === 'all')) updateQueryParams((function () { var o = {}; o[key] = ''; return o; })());
-    else updateQueryParams((function () { var o2 = {}; o2[key] = v; return o2; })());
+    if (!v || (key === 'yd_filter' && v === 'all')) u.searchParams.delete(key);
+    else u.searchParams.set(key, v);
   }
 
   function esc(s) {
@@ -136,9 +106,10 @@ $(function () {
     var currentFilter = 'all';
 
     function restore() {
-      var qobj = parseQuery();
-      var q = (qobj.yd_q || '');
-      var f = (qobj.yd_filter || 'all');
+      var u = safeUrl();
+      if (!u) return;
+      var q = u.searchParams.get('yd_q') || '';
+      var f = u.searchParams.get('yd_filter') || 'all';
       if ($.inArray(f, ['all', 'has_debt', 'paid']) === -1) f = 'all';
       if (q) $search.val(q);
       currentFilter = f;
@@ -149,8 +120,15 @@ $(function () {
     }
 
     function persist() {
-      setUrlParamSafe(null, 'yd_q', $search.val());
-      setUrlParamSafe(null, 'yd_filter', currentFilter);
+      var u = safeUrl();
+      if (!u) return;
+      setUrlParamSafe(u, 'yd_q', $search.val());
+      setUrlParamSafe(u, 'yd_filter', currentFilter);
+      try {
+        history.replaceState({}, '', u.toString());
+      } catch (e) {
+        // ignore
+      }
     }
 
     function apply() {
@@ -313,30 +291,6 @@ $(function () {
     var $tb = $('#ydTahsilatTbody');
     if (!$tb.length) return;
 
-    // Mesaj butonu için seçili kişi bilgilerini header'dan oku (list-new.php ile uyumlu)
-    // Not: .mesaj-gonder click handler'ı bu dosyanın alt tarafında zaten var.
-    var kisiIdEnc = '';
-    try {
-      var href = ($('#ydSelectedName').attr('href') || '').toString();
-      // /site-sakini-duzenle/{enc}
-      var parts = href.split('/');
-      kisiIdEnc = parts.length ? parts[parts.length - 1] : '';
-      kisiIdEnc = decodeURIComponent((kisiIdEnc || '').toString().trim());
-    } catch (e0) { kisiIdEnc = ''; }
-
-    var kisiIdPlain = '';
-    try {
-      // list-new.php: üstte mesaj butonunda data-id plain kisi id var.
-      // Burada yoksa boş bırakıyoruz; sms modal çoğunlukla kisi_id enc ile de çalışıyor.
-      kisiIdPlain = (window && window.ydSelectedKisiId) ? String(window.ydSelectedKisiId) : '';
-    } catch (e1) { kisiIdPlain = ''; }
-
-    var phoneRaw = ($('#ydSelectedPhone').text() || '').toString();
-    var phoneDigits = phoneRaw.replace(/\D/g, '');
-    var unitTxt = ($('#ydSelectedUnit').text() || '').toString();
-    // "Daire X" -> "X"
-    var daire = unitTxt.replace(/^\s*Daire\s*/i, '').trim();
-
     var isArr = $.isArray(data);
     var isObj = (!isArr && data && typeof data === 'object');
     if (!data || (isArr && data.length === 0) || (isObj && Object.keys(data).length === 0)) {
@@ -371,23 +325,9 @@ $(function () {
             '<button type="button" class="avatar-text avatar-md tahsilat-detay-goster" data-id="' + esc(tIdEnc) + '" title="Detay"><i class="feather-chevron-down"></i></button>' :
             '<span class="yd-muted" style="font-size:12px;">-</span>';
 
-          var msgPart = '';
-          if (kisiIdEnc) {
-            msgPart =
-              '<a href="javascript:void(0)" class="avatar-text avatar-md mesaj-gonder" title="Mesaj Gönder" ' +
-              'data-alert-target="SendMessage" ' +
-              (kisiIdPlain ? ('data-id="' + esc(kisiIdPlain) + '" ') : '') +
-              'data-kisi-id="' + esc(kisiIdEnc) + '" ' +
-              (phoneDigits ? ('data-phone="' + esc(phoneDigits) + '" ') : '') +
-              (daire ? ('data-daire="' + esc(daire) + '" ') : '') +
-              'data-makbuz-bildirim="true"' +
-              '><i class="feather feather-send"></i></a>';
-          }
-
           actionHtml =
             '<div class="text-center d-flex justify-content-center align-items-center gap-1">' +
             detailPart +
-            msgPart +
             '<a href="#" id="delete-tahsilat" data-id="' + esc(tIdEnc) + '" class="avatar-text avatar-md" title="Sil"><i class="feather-trash-2"></i></a>' +
             '</div>';
         }
@@ -421,7 +361,7 @@ $(function () {
           '  <td class="px-4">' + esc(t.islem_tarihi || t.tarih || '') + '</td>' +
           '  <td class="yd-desc">' + esc(t.aciklama || '') + '</td>' +
           '  <td class="text-end">' + tutarCell + '</td>' +
-          '  <td class="text-end">' + actionHtml + '</td>' +
+          '  <td class="text-end" colspan="2">' + actionHtml + '</td>' +
           '</tr>';
 
         if (hasDetay) {
@@ -502,14 +442,18 @@ $(function () {
     $('#ydKpiTahsilEdilen').text(tahsilFmt);
 
     function setOrReplaceQueryParam(url, key, value) {
-      // jQuery-friendly query param helper (no URL() usage)
-      var out = String(url || '');
-      if (!out) return out;
-
-      var encoded = encodeURIComponent(String(value));
-      var re = new RegExp('([?&])' + key + '=([^&#]*)', 'i');
-      if (re.test(out)) return out.replace(re, '$1' + key + '=' + encoded);
-      return out + (out.indexOf('?') === -1 ? '?' : '&') + key + '=' + encoded;
+      try {
+        var u = new URL(url, window.location.origin);
+        u.searchParams.set(key, value);
+        return u.pathname + '?' + u.searchParams.toString();
+      } catch (e) {
+        // fallback: basit replace
+        var out = String(url || '');
+        if (!out) return out;
+        var re = new RegExp('([?&])' + key + '=([^&#]*)', 'i');
+        if (re.test(out)) return out.replace(re, '$1' + key + '=' + encodeURIComponent(value));
+        return out + (out.indexOf('?') === -1 ? '?' : '&') + key + '=' + encodeURIComponent(value);
+      }
     }
 
     // Header aksiyonları (mesaj/whatsapp/yazdır/pdf/excel) seçili kişiye göre güncelle
@@ -592,11 +536,18 @@ $(function () {
       $row = null;
     }
 
-    // 2) State yoksa/uyuşmadıysa data() üzerinden filtreleyerek bul (CSS.escape kullanmadan güvenli)
+    // Selector güvenliği (enc içinde : . [ ] gibi karakterler olabiliyor)
+    var selEnc;
+    try {
+      if (window.CSS && typeof window.CSS.escape === 'function') selEnc = window.CSS.escape(normalizedEnc);
+      else selEnc = normalizedEnc.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+    } catch (eSel) {
+      selEnc = normalizedEnc;
+    }
+
+    // 2) State yoksa/uyuşmadıysa selector ile bul
     if (!$row || !$row.length) {
-      $row = $list.find('a.yd-item[data-yd-kisi]').filter(function () {
-        return String($(this).data('yd-kisi') || '') === normalizedEnc;
-      }).first();
+      $row = $list.find('a.yd-item[data-yd-kisi="' + selEnc + '"]');
     }
 
     // Fallback: data() üzerinden tek tek kontrol et
@@ -741,18 +692,18 @@ $(function () {
   function deleteDebt(borcDetayEnc) {
     // Swal varsa onu kullan, yoksa confirm() fallback
     function doRequest() {
-      return $.ajax({
-        url: urls.actionApi,
-        method: 'POST',
-        dataType: 'json',
-        data: { action: 'borc_sil', id: borcDetayEnc }
-      }).then(function (json) {
-        if (!json || json.status !== 'success') throw new Error((json && json.message) ? json.message : 'Silme işlemi başarısız.');
-        return json;
-      }, function (xhr) {
-        var txt = (xhr && typeof xhr.responseText !== 'undefined') ? xhr.responseText : '';
-        throw new Error(txt ? ('Sunucu hatası: ' + txt) : 'Sunucu hatası');
-      });
+      var fd = new FormData();
+      fd.append('action', 'borc_sil');
+      fd.append('id', borcDetayEnc);
+
+      return fetch(urls.actionApi, { method: 'POST', body: fd, credentials: 'same-origin' })
+        .then(function (r) { return r.text(); })
+        .then(function (txt) {
+          var json;
+          try { json = JSON.parse(txt); } catch (e0) { throw new Error('Sunucu yanıtı JSON değil: ' + txt); }
+          if (!json || json.status !== 'success') throw new Error((json && json.message) ? json.message : 'Silme işlemi başarısız.');
+          return json;
+        });
     }
 
     if (window.Swal) {
@@ -832,16 +783,16 @@ $(function () {
 
     $.get(urls.tahsilatModal, { kisi_id: kisiEnc, borc_idler: selectedDebtEncIds.join(',') }, function (data) {
       $('.tahsilat-modal-body').html(data);
-      var $modal = $('#ydTahsilatModal');
-      if (!$modal.length) return;
+      var modalEl = document.getElementById('ydTahsilatModal');
+      if (!modalEl) return;
       try {
-        bootstrap.Modal.getOrCreateInstance($modal[0]).show();
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
       } catch (e) {
         // ignore
       }
 
       // select2 varsa init
-  initSelect2InScope($modal, $modal);
+      initSelect2InScope(modalEl, modalEl);
 
 
       //Flatpickr varsa init
@@ -875,18 +826,19 @@ $(function () {
         tahsilatTuru = '';
       }
 
-      // jQuery serialize + ekstra alanlar
-      var postData = $form.serializeArray();
-      postData.push({ name: 'action', value: 'tahsilat-kaydet' });
-      postData.push({ name: 'tahsilat_turu', value: tahsilatTuru });
-      postData.push({ name: 'tahsilat_aciklama', value: aciklama });
+      // FormData + ekstra alanlar
+      var formData = new FormData($form[0]);
+      formData.append('action', 'tahsilat-kaydet');
+      formData.append('tahsilat_turu', tahsilatTuru);
+      formData.append('tahsilat_aciklama', aciklama);
 
       // legacy: seçilen borçlar global'de tutuluyor
       try {
         if (typeof window.secilenBorcIdleri !== 'undefined') {
+          // array ise joinle, string ise olduğu gibi
           var v = window.secilenBorcIdleri;
           if ($.isArray(v)) v = v.join(',');
-          postData.push({ name: 'borc_detay_ids', value: v });
+          formData.append('borc_detay_ids', v);
         }
       } catch (e2) {
         // ignore
@@ -907,12 +859,17 @@ $(function () {
         // ignore
       }
 
-      $.ajax({
-        url: urls.actionApi,
-        method: 'POST',
-        dataType: 'json',
-        data: postData
-      })
+      fetch(urls.actionApi, { method: 'POST', body: formData, credentials: 'same-origin' })
+        .then(function (r) {
+          
+          return r.text().then(function (txt) {
+            try {
+              return JSON.parse(txt);
+            } catch (e4) {
+              throw new Error('Sunucu yanıtı JSON değil: ' + txt);
+            }
+          });
+        })
         .then(function (data) {
           try {
             if (typeof setButtonLoading === 'function') setButtonLoading('#tahsilatKaydet', false);
@@ -930,8 +887,8 @@ $(function () {
 
           // modalı kapat
           try {
-            var $m = $('#ydTahsilatModal');
-            if ($m.length) bootstrap.Modal.getOrCreateInstance($m[0]).hide();
+            var m = document.getElementById('ydTahsilatModal');
+            if (m) bootstrap.Modal.getOrCreateInstance(m).hide();
           } catch (e6) {
             // ignore
           }
@@ -965,14 +922,14 @@ $(function () {
               // ignore
             });
           }
-        }, function (xhr) {
+        })
+        .catch(function (err) {
           try {
             if (typeof setButtonLoading === 'function') setButtonLoading('#tahsilatKaydet', false);
           } catch (e9) {
             // ignore
           }
-          var txt = (xhr && typeof xhr.responseText !== 'undefined') ? xhr.responseText : '';
-          var msg = txt ? ('Sunucu yanıtı: ' + txt) : 'Tahsilat kaydedilirken hata oluştu.';
+          var msg = (err && err.message) ? err.message : String(err);
           if (window.Swal) Swal.fire({ icon: 'error', title: 'Hata', text: msg });
           else alert(msg);
         });
@@ -992,7 +949,7 @@ $(function () {
       // currency/space temizle
       s = s.replace(/[^0-9.\-]/g, '');
       var n = Number(s);
-      return isFinite(n) ? n : 0;
+      return Number.isFinite(n) ? n : 0;
     }
 
     function setMoneyInput($el, amount, triggerEvents) {
@@ -1177,8 +1134,8 @@ $(function () {
           $('#SendMessage').modal('show');
         } catch (e2) {
           try {
-            var $el = $('#SendMessage');
-            if ($el.length && window.bootstrap && bootstrap.Modal) bootstrap.Modal.getOrCreateInstance($el[0]).show();
+            var el = document.getElementById('SendMessage');
+            if (el && window.bootstrap && bootstrap.Modal) bootstrap.Modal.getOrCreateInstance(el).show();
           } catch (e3) {}
         }
 
@@ -1264,7 +1221,11 @@ $(function () {
       // seçileni her zaman görünür tut
       scrollLeftListToSelected({ center: true });
 
-      updateQueryParams({ kisi: enc });
+      var u = safeUrl();
+      if (u) {
+        u.searchParams.set('kisi', enc);
+        try { history.replaceState({}, '', u.toString()); } catch (e2) { /* ignore */ }
+      }
 
       loadPerson(enc).catch(function () {
         alert('Kişi bilgileri alınırken hata oluştu.');
@@ -1348,9 +1309,7 @@ $(function () {
         var $tr = $(this);
         if (String($tr.data('detail-key') || '') !== key) $tr.hide();
       });
-      $('#ydTahsilatTbody tr.yd-tahsilat-detail-row').filter(function(){
-        return String($(this).data('detail-key') || '') === key;
-      }).toggle();
+      $('#ydTahsilatTbody tr.yd-tahsilat-detail-row[data-detail-key="' + key.replace(/"/g, '\\"') + '"]').toggle();
     });
 
     // tahsilat sil
@@ -1362,14 +1321,17 @@ $(function () {
 
       function doDelete() {
         var kisiEnc = getKisiFromUrl();
-        $.ajax({
-          url: urls.actionApi,
-          method: 'POST',
-          dataType: 'json',
-          data: { action: 'tahsilat-sil', id: idEnc }
-        })
-          .then(function (json) {
+        var fd = new FormData();
+        fd.append('action', 'tahsilat-sil');
+        fd.append('id', idEnc);
+
+        fetch(urls.actionApi, { method: 'POST', body: fd, credentials: 'same-origin' })
+          .then(function (r) { return r.text(); })
+          .then(function (txt) {
+            var json;
+            try { json = JSON.parse(txt); } catch (e2) { throw new Error('Sunucu yanıtı JSON değil: ' + txt); }
             if (!json || json.status !== 'success') throw new Error((json && json.message) ? json.message : 'Silme işlemi başarısız');
+
             if (window.Swal) {
               return Swal.fire({
                 icon: 'success',
@@ -1458,4 +1420,4 @@ $(function () {
     //   // ignore
     // }
   });
-});
+})(window.jQuery);

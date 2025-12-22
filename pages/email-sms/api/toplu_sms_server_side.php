@@ -8,6 +8,11 @@ $siteId = $_SESSION['site_id'] ?? null;
 
 $request = $_GET;
 
+// DataTables sometimes sends requests without our custom action; keep endpoint tolerant.
+$action = (string)($request['action'] ?? '');
+
+
+
 $rows = [];
 if ($siteId) {
     $kisiModel = new KisilerModel();
@@ -81,35 +86,59 @@ if (!empty($request['search']['value'])) {
         return (
             mb_strpos($normalize($r['_adi_soyadi']), $q) !== false ||
             mb_strpos($normalize($r['daire_kodu']), $q) !== false ||
-            mb_strpos($normalize($r['telefon']), $q) !== false
+            mb_strpos($normalize($r['telefon_clean'] ?? ''), $q) !== false ||
+            mb_strpos($normalize($r['_uyelik_tipi'] ?? ''), $q) !== false ||
+            mb_strpos($normalize($r['_durum'] ?? ''), $q) !== false
         );
     }));
 }
 
 if (!empty($request['columns']) && is_array($request['columns'])) {
     foreach ($request['columns'] as $idx => $reqCol) {
-        $val = trim($reqCol['search']['value'] ?? '');
+        $valRaw = (string)($reqCol['search']['value'] ?? '');
+        $val = trim($valRaw);
+
+        // Some table helpers send column search values as JSON, e.g.
+        // {"op":"contains","val":"","type":"string"}
+        // When val is empty we must NOT filter, otherwise everything is filtered out.
+        if ($val !== '' && ($val[0] === '{' || $val[0] === '[')) {
+            $decoded = json_decode($val, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $decodedVal = $decoded['val'] ?? '';
+                $val = trim((string)$decodedVal);
+            }
+        }
+
         if ($val === '') continue;
+
+        // DataTables sends both numeric ordering and a "data" field name; rely on the name
+        // to avoid index mismatches caused by custom search-row / initDataTable behavior.
+        $colName = (string)($reqCol['data'] ?? '');
         $q = $normalize($val);
-        if ($idx === 2) {
+
+        if ($colName === 'adi_soyadi') {
             $rows = array_values(array_filter($rows, function($r) use ($q, $normalize){
                 return mb_strpos($normalize($r['_adi_soyadi']), $q) !== false;
             }));
-        } else if ($idx === 3) {
+        } else if ($colName === 'uyelik_tipi') {
             $rows = array_values(array_filter($rows, function($r) use ($q, $normalize){
                 return mb_strpos($normalize($r['_uyelik_tipi']), $q) !== false;
             }));
-        } else if ($idx === 4) {
+        } else if ($colName === 'durum') {
             $rows = array_values(array_filter($rows, function($r) use ($q, $normalize){
                 return mb_strpos($normalize($r['_durum']), $q) !== false;
             }));
-        } else if ($idx === 5) {
+        } else if ($colName === 'cikis_tarihi') {
             $rows = array_values(array_filter($rows, function($r) use ($q, $normalize){
                 return mb_strpos($normalize($r['cikis_tarihi']), $q) !== false;
             }));
-        } else if ($idx === 6) {
+        } else if ($colName === 'telefon') {
             $rows = array_values(array_filter($rows, function($r) use ($q, $normalize){
                 return mb_strpos($normalize($r['telefon']), $q) !== false;
+            }));
+        } else if ($colName === 'daire_kodu') {
+            $rows = array_values(array_filter($rows, function($r) use ($q, $normalize){
+                return mb_strpos($normalize($r['daire_kodu']), $q) !== false;
             }));
         }
     }
@@ -133,7 +162,8 @@ if (!empty($_GET['fetch']) && $_GET['fetch'] === 'all_ids') {
     exit;
 }
 
-if (!empty($request['order'][0]['column'])) {
+// IMPORTANT: column index can be 0; empty(0) is true in PHP, so use isset().
+if (isset($request['order'][0]['column'])) {
     $col = (int)$request['order'][0]['column'];
     $dir = ($request['order'][0]['dir'] ?? 'asc') === 'desc' ? -1 : 1;
     $splitTokens = function(string $s){
