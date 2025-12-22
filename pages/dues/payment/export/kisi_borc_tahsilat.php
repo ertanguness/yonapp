@@ -6,6 +6,7 @@ require_once dirname(__DIR__, 4) . '/configs/bootstrap.php';
 use Dompdf\Options;
 use App\Helper\Date;
 use App\Helper\Helper;
+use App\Helper\Security;
 
 use App\Services\Gate;
 use Model\KisilerModel;
@@ -34,8 +35,10 @@ $KisiModel = new KisilerModel();
 $FinansalRaporModel = new FinansalRaporModel();
 
 $format = $_GET['format'] ?? 'pdf'; // Varsayılan format pdf
-$kisi_id = $_GET['kisi_id'] ?? 0;
+$kisi_id = Security::decrypt($_GET['kisi_id'] ?? 0);
 
+
+//Helper::dd($kisi_id);
 
 //Kişi bilgilerini getir
 $kisi = $KisiModel->getKisiByDaireId($kisi_id);
