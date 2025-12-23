@@ -248,7 +248,8 @@ $fmt = function ($v) {
                         $kpiToplamBorc = (float)($selectedBorcOzet->toplam_borc ?? 0);
                         $kpiTahsilEdilen = (float)($selectedBorcOzet->toplam_tahsilat ?? 0);
                         $kpiKalan = (float)($selectedBorcOzet->kalan_borc ?? max(0, -$net));
-                        $kpiDurum = $kpiKalan > 0 ? 'Kalan Borç' : 'Alacak';
+                        $kpiDurum = $kpiKalan < 0 ? 'Kalan Borç' : 'Alacak';
+                        $kpiColor = $kpiKalan < 0 ? '#CD5656' : '#56b38fff';
                         ?>
                         <div class="d-flex align-items-start justify-content-between">
                             <div>
@@ -303,7 +304,7 @@ $fmt = function ($v) {
                             </div>
                             <div class="text-end">
                                 <div class="yd-muted" style="font-size:12px;"><?= $kpiDurum ?></div>
-                                <div class="fw-bold" style="font-size:28px;" id="ydKalanBorcHeader"><?= $fmt($kpiKalan) ?></div>
+                                <div class="fw-bold" style="font-size:28px;color: <?= $kpiColor ?>;" id="ydKalanBorcHeader"><?= $fmt($kpiKalan) ?></div>
 
                             </div>
                         </div>
@@ -331,7 +332,7 @@ $fmt = function ($v) {
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="yd-card p-3" style="position:relative;overflow:hidden;">
-                                    <div style="position:absolute;right:0;top:0;height:100%;width:4px;background:#CD5656;"></div>
+                                    <div style="position:absolute;right:0;top:0;height:100%;width:4px;background:<?= ($kpiColor) ?>;" id="ydKalanBorcIndicator"></div>
                                     <div class="yd-muted" style="font-size:12px;">Kalan</div>
                                     <div class="yd-kpi" id="ydKpiKalan"><?= $fmt($kpiKalan) ?></div>
                                 </div>
