@@ -1,4 +1,4 @@
-/* global bootstrap, Pace, Swal, Toastify, setButtonLoading */
+﻿/* global bootstrap, Pace, Swal, Toastify, setButtonLoading */
 
 // Tahsilat dashboard (list-new.php) tüm JS burada.
 $(function () {
@@ -127,63 +127,202 @@ $(function () {
   }
 
   // ---- Sol panel arama + chip filtre ----
-  function initLeftSearchAndFilter() {
-    var $search = $('#ydSearch');
-    var $list = $('#ydPersonnelList');
-    var $filterBtns = $('[data-yd-filter]');
-    if (!$search.length || !$list.length) return;
+// ---- Sol panel arama + chip filtre + sıralama ----
+function initLeftSearchAndFilter() {
+  var $search = $("#ydSearch");
+  var $list = $("#ydPersonnelList");
+  var $filterBtns = $("[data-yd-filter]");
+  var $sortBtns = $("[data-yd-sort]");
+  var $sortLabel = $("#ydSortLabel");
+  var $clearBtn = $("#ydSearchClear");
 
-    var currentFilter = 'all';
+  if (!$search.length || !$list.length) return;
 
-    function restore() {
-      var qobj = parseQuery();
-      var q = (qobj.yd_q || '');
-      var f = (qobj.yd_filter || 'all');
-      if ($.inArray(f, ['all', 'has_debt', 'paid']) === -1) f = 'all';
-      if (q) $search.val(q);
-      currentFilter = f;
-      $filterBtns.each(function () {
-        var $b = $(this);
-        $b.toggleClass('is-active', ($b.attr('data-yd-filter') || 'all') === currentFilter);
-      });
+  var currentFilter = "all";
+  var currentSort = "unit_asc"; // Default sort
+
+  var sortLabels = {
+    amount_asc: "Artan",
+    amount_desc: "Azalan",
+    unit_asc: "Daire A→Z",
+    unit_desc: "Daire Z→A",
+    name_asc: "A→Z",
+    name_desc: "Z→A",
+  };
+
+  function parseNet($el) {
+    var raw = String($el.attr("data-yd-net") || "");
+    var n = Number(raw);
+    return isFinite(n) ? n : 0;
+  }
+
+  function naturalCompare(a, b) {
+    // 1) Prefer Intl.Collator numeric sort when available
+    try {
+      if (typeof Intl !== "undefined" && Intl.Collator) {
+        var collator = new Intl.Collator("tr-TR", {
+          numeric: true,
+          sensitivity: "base",
+        });
+        return collator.compare(a, b);
+      }
+    } catch (e) {}
+
+    // 2) Fallback
+    var ax =
+      String(a || "")
+        .toLowerCase()
+        .match(/(\d+|\D+)/g) || [];
+    var bx =
+      String(b || "")
+        .toLowerCase()
+        .match(/(\d+|\D+)/g) || [];
+    var len = Math.min(ax.length, bx.length);
+    for (var i = 0; i < len; i++) {
+      var ac = ax[i];
+      var bc = bx[i];
+      if (ac === bc) continue;
+      var an = Number(ac);
+      var bn = Number(bc);
+      var aIsNum = isFinite(an) && /^\d+$/.test(ac);
+      var bIsNum = isFinite(bn) && /^\d+$/.test(bc);
+      if (aIsNum && bIsNum) return an - bn;
+      return ac.localeCompare(bc, "tr-TR", { sensitivity: "base" });
     }
+    return ax.length - bx.length;
+  }
 
-    function persist() {
-      setUrlParamSafe(null, 'yd_q', $search.val());
-      setUrlParamSafe(null, 'yd_filter', currentFilter);
-    }
+  function compareItems(a, b) {
+    var $a = $(a);
+    var $b = $(b);
 
-    function apply() {
-      var term = ($search.val() || '').toString().toLowerCase().trim();
-      $list.find('.yd-item').each(function () {
-        var $item = $(this);
-        var txt = ($item.text() || '').toLowerCase();
-        var net = Number($item.data('yd-net') || 0);
-        net = isFinite(net) ? net : 0;
-        var hasDebt = net < 0;
+    if (currentSort === "amount_asc") return parseNet($a) - parseNet($b);
+    if (currentSort === "amount_desc") return parseNet($b) - parseNet($a);
 
-        var matchChip = true;
-        if (currentFilter === 'has_debt') matchChip = hasDebt;
-        if (currentFilter === 'paid') matchChip = !hasDebt;
-        var matchSearch = (!term || txt.indexOf(term) !== -1);
+    if (currentSort === "unit_asc")
+      return naturalCompare($a.attr("data-yd-unit"), $b.attr("data-yd-unit"));
+    if (currentSort === "unit_desc")
+      return naturalCompare($b.attr("data-yd-unit"), $a.attr("data-yd-unit"));
 
-        $item.toggle(matchChip && matchSearch);
-      });
-      persist();
-    }
+    if (currentSort === "name_asc")
+      return String($a.attr("data-yd-name") || "").localeCompare(
+        String($b.attr("data-yd-name") || ""),
+        "tr-TR",
+        { sensitivity: "base" }
+      );
+    if (currentSort === "name_desc")
+      return String($b.attr("data-yd-name") || "").localeCompare(
+        String($a.attr("data-yd-name") || ""),
+        "tr-TR",
+        { sensitivity: "base" }
+      );
 
-    $search.on('input', apply);
-    $filterBtns.on('click', function () {
-      var $btn = $(this);
-      currentFilter = $btn.attr('data-yd-filter') || 'all';
-      $filterBtns.removeClass('is-active');
-      $btn.addClass('is-active');
-      apply();
+    return 0;
+  }
+
+  function restore() {
+    var qobj = parseQuery();
+    var q = qobj.yd_q || "";
+    var f = qobj.yd_filter || "all";
+    if ($.inArray(f, ["all", "has_debt", "paid"]) === -1) f = "all";
+    if (q) $search.val(q);
+    currentFilter = f;
+    $filterBtns.each(function () {
+      var $b = $(this);
+      $b.toggleClass(
+        "is-active",
+        ($b.attr("data-yd-filter") || "all") === currentFilter
+      );
     });
 
-    restore();
-    apply();
+    // Sort restore logic could be added here if we want to persist sort in URL
   }
+
+  function persist() {
+    setUrlParamSafe(null, "yd_q", $search.val());
+    setUrlParamSafe(null, "yd_filter", currentFilter);
+  }
+
+  function apply(shouldSort) {
+    var term = ($search.val() || "").toString().toLowerCase().trim();
+
+    // Clear button visibility
+    if ($clearBtn.length) {
+      $clearBtn.toggleClass("is-visible", term.length > 0);
+    }
+
+    var $items = $list.find(".yd-item");
+    $items.each(function () {
+      var $item = $(this);
+      var txt = ($item.text() || "").toLowerCase();
+      var net = Number($item.data("yd-net") || 0);
+      net = isFinite(net) ? net : 0;
+      var hasDebt = net < 0;
+
+      var matchChip = true;
+      if (currentFilter === "has_debt") matchChip = hasDebt;
+      if (currentFilter === "paid") matchChip = !hasDebt;
+
+      // Search match (name, unit, phone) - data attributes are safer than text()
+      var name = String($item.attr("data-yd-name") || "").toLowerCase();
+      var unit = String($item.attr("data-yd-unit") || "").toLowerCase();
+      var phone = String($item.attr("data-yd-phone") || "").toLowerCase();
+
+      var matchSearch =
+        !term ||
+        name.indexOf(term) !== -1 ||
+        unit.indexOf(term) !== -1 ||
+        phone.indexOf(term) !== -1;
+
+      $item.toggle(matchChip && matchSearch);
+    });
+
+    if (shouldSort) {
+      var visibleItems = $items.filter(":visible").get();
+      visibleItems.sort(compareItems);
+      // Detach and append only if order changed? For simplicity, just append.
+      // But to avoid double-click issues, we should try NOT to touch DOM if not needed.
+      // However, standard sort requires re-appending.
+      // The issue in script.js was likely doing this on EVERY input event.
+      // Here we only do it if 'shouldSort' is true.
+      $.each(visibleItems, function (i, el) {
+        $list.append(el);
+      });
+    }
+
+    persist();
+  }
+
+  $search.on("input", function () {
+    apply(false); // Do NOT sort on every keystroke, just filter
+  });
+
+  $filterBtns.on("click", function () {
+    var $btn = $(this);
+    currentFilter = $btn.attr("data-yd-filter") || "all";
+    $filterBtns.removeClass("is-active");
+    $btn.addClass("is-active");
+    apply(false); // Filter change doesn't necessarily need re-sort unless we want to
+  });
+
+  $sortBtns.on("click", function () {
+    var $btn = $(this);
+    currentSort = $btn.attr("data-yd-sort") || "unit_asc";
+    if ($sortLabel.length) $sortLabel.text(sortLabels[currentSort] || "Sırala");
+    apply(true); // Explicit sort request
+  });
+
+  if ($clearBtn.length) {
+    $clearBtn.on("click", function () {
+      $search.val("").trigger("input").focus();
+    });
+  }
+
+  restore();
+  // Initial sort
+  if ($sortLabel.length) $sortLabel.text(sortLabels[currentSort] || "Sırala");
+  apply(true); // Initial sort
+}
 
   // ---- Dashboard sağ panel: ajax+render ----
   var ydLastPersonData = null;
@@ -852,9 +991,14 @@ $(function () {
         locale: "tr",
         enableTime: true,
         time_24hr: true,
-        minuteIncrement: 1
+        minuteIncrement: 1,
+        static: true,
+        appendTo: $modal[0],
+        position: "below",
+        allowInput: true
       });
 
+   
 
       //initFlatpickrInScope(modalEl, modalEl);
     });

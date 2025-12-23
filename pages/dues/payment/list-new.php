@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
 
 use App\Helper\Helper;
@@ -435,7 +435,3 @@ $fmt = function ($v) {
     </div>
 </div>
 
-<!-- /** Sıralama ve arama temizleme için js kodları */ -->
- <script src="/pages/dues/payment/assets/script.js?v=
-        <?= filemtime('pages/dues/payment/assets/script.js') ?>">
-</script>

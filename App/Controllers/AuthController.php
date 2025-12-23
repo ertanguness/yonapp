@@ -7,6 +7,7 @@ use App\Helper\Helper;
 use Model\SettingsModel;
 use App\InterFaces\LoggerInterface;
 use App\Services\FlashMessageService;
+use App\Services\MailGonderService;
 use Dompdf\Helpers;
 
 /**
@@ -547,14 +548,69 @@ class AuthController
     private static function sendLoginNotificationEmail(object $user): void
     {
         $settingsModel = new SettingsModel();
-        $sendEmailSetting = $settingsModel->getSettingIdByUserAndAction($user->id, "loginde_mail_gonder");
-        
+        $sendEmailSetting = $settingsModel->getSettingIdByUserAndAction($user->id, "login_notification");
+        $logger = \getLogger();
+
+        $logger->info("Giriş bildirimi ayarı kontrol ediliyor.", ['user_id' => $user->id, 'email' => $user->email]);
+
         if (isset($sendEmailSetting) && $sendEmailSetting->set_value == 1) {
             try {
+
+                $ip = $_SERVER['REMOTE_ADDR'] ?? 'Bilinmiyor';
+                $userInfo = ($user->full_name ?? '') !== '' ? ($user->full_name . ' (' . ($user->email ?? '') . ')') : ($user->email ?? 'Bilinmiyor');
+
+                $loginTime = date('d.m.Y H:i:s');
+                $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+                // HTML Mail (MailGonderService isHTML(true) kullandığı için Body HTML olabilir)
+                $safeUserInfo = htmlspecialchars((string)$userInfo, ENT_QUOTES, 'UTF-8');
+                $safeIp = htmlspecialchars((string)$ip, ENT_QUOTES, 'UTF-8');
+                $safeTime = htmlspecialchars((string)$loginTime, ENT_QUOTES, 'UTF-8');
+                $safeUa = htmlspecialchars((string)$userAgent, ENT_QUOTES, 'UTF-8');
+
+                $uaRowHtml = $userAgent !== ''
+                    ? "<tr><td style=\"padding:10px 12px;color:#64748b;border-top:1px solid #e5e7eb;width:160px;\"><strong>Tarayıcı / Cihaz</strong></td><td style=\"padding:10px 12px;border-top:1px solid #e5e7eb;color:#0f172a;\">{$safeUa}</td></tr>"
+                    : '';
+
+                $icerik = '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+                    . '<title>Yeni Giriş Bildirimi</title></head>'
+                    . '<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">'
+                    . '<div style="max-width:640px;margin:0 auto;padding:24px;">'
+                    . '<div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;">'
+                    . '<div style="padding:18px 20px;background:linear-gradient(90deg,#0f172a,#1e293b);color:#ffffff;">'
+                    . '<div style="font-size:14px;opacity:.9;">YonApp | Site Yönetim</div>'
+                    . '<div style="font-size:20px;font-weight:700;margin-top:4px;">Yeni Giriş Bildirimi</div>'
+                    . '</div>'
+                    . '<div style="padding:20px;">'
+                    . '<p style="margin:0 0 10px 0;font-size:15px;color:#0f172a;">Merhaba,</p>'
+                    . '<p style="margin:0 0 16px 0;font-size:15px;color:#334155;">Hesabınıza yeni bir giriş algıladık. Aşağıdaki bilgileri kontrol edebilirsiniz:</p>'
+                    . '<div style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">'
+                    . '<div style="padding:10px 12px;background:#f8fafc;color:#0f172a;font-weight:700;">Giriş Bilgileri</div>'
+                    . '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">'
+                    . '<tr><td style="padding:10px 12px;color:#64748b;border-top:1px solid #e5e7eb;width:160px;"><strong>Kullanıcı</strong></td><td style="padding:10px 12px;border-top:1px solid #e5e7eb;color:#0f172a;">' . $safeUserInfo . '</td></tr>'
+                    . '<tr><td style="padding:10px 12px;color:#64748b;border-top:1px solid #e5e7eb;width:160px;"><strong>Giriş Saati</strong></td><td style="padding:10px 12px;border-top:1px solid #e5e7eb;color:#0f172a;">' . $safeTime . '</td></tr>'
+                    . '<tr><td style="padding:10px 12px;color:#64748b;border-top:1px solid #e5e7eb;width:160px;"><strong>IP Adresi</strong></td><td style="padding:10px 12px;border-top:1px solid #e5e7eb;color:#0f172a;">' . $safeIp . '</td></tr>'
+                    . $uaRowHtml
+                    . '</table>'
+                    . '</div>'
+                    . '<div style="margin-top:16px;padding:14px 14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;color:#9a3412;">'
+                    . '<strong>Bu siz değilseniz:</strong> Lütfen bizimle hemen iletişime geçin ve şifrenizi değiştirin.'
+                    . '</div>'
+                    . '<p style="margin:16px 0 0 0;font-size:12px;color:#64748b;">Not: Bu e-posta otomatik olarak gönderilmiştir.</p>'
+                    . '</div>'
+                    . '</div>'
+                    . '<div style="text-align:center;margin-top:14px;font-size:12px;color:#94a3b8;">© ' . date('Y') . ' YonApp</div>'
+                    . '</div>'
+                    . '</body></html>';
                 // ... e-posta gönderme kodunuz ...
+                if(MailGonderService::gonder([$user->email], "Yeni Giriş Bildirimi", $icerik)) {
+                    $logger->info("Giriş bildirimi e-postası gönderildi.", ['user_id' => $user->id, 'email' => $user->email]);
+                } else {
+                    $logger->error("Giriş bildirimi e-postası gönderilemedi.", ['user_id' => $user->id, 'email' => $user->email]);
+                }
             } catch (\Exception $e) {
                 // Hata loglama
-                \getLogger()->error("Giriş bildirimi e-postası gönderilemedi.", ['error' => $e->getMessage()]);
+                $logger->error("Giriş bildirimi e-postası gönderilemedi.", ['error' => $e->getMessage()]);
             }
         }
     }

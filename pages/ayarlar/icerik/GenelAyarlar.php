@@ -1,6 +1,8 @@
 <!-- Site Bilgileri -->
+<form id="generalSettingsForm">
 <div class="card-body personal-info mb-4">
     <h6 class="mb-3"><i class="fas fa-info-circle"></i> Site Bilgileri</h6>
+    
     <div class="row mb-3 align-items-center">
         <div class="col-lg-2">
             <label for="siteAdi" class="fw-semibold">Site Adı:</label>
@@ -112,3 +114,4 @@
         </div>
     </div>
 </div>
+</form>

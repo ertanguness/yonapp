@@ -9,6 +9,7 @@ use Model\DefinesModel;
 use Model\DuyuruModel;
 use App\Helper\Date;
 use App\Helper\Helper;
+use Model\SettingsModel;
 
 // use App\Services\SmsGonderService;
 
@@ -20,16 +21,12 @@ use App\Helper\Helper;
 $KisiModel = new KisilerModel();
 $DefinesModel = new DefinesModel();
 $DuyuruModel = new DuyuruModel();
+$SettingsModel = new SettingsModel();
 
-$tarihRaw = '19/12/2025-13:40:20';
 
-$testtarih = (string)Date::convertExcelDate($tarihRaw, 'Y-m-d H:i:s');
-
+$settings = $SettingsModel->getAllSettingsAsKeyValue(1, 147);
 
 //$duyuru = $DuyuruModel->sakinDuyurulari(171);
 
 //$gelirGiderTipiSelect = $DefinesModel->getGelirGiderTipiSelect("gelir_gider_grubu", 6, "");
-Helper::dd([
-    'tarih' => $testtarih,
- 
-]);
+Helper::dd($settings);

@@ -5,6 +5,7 @@ namespace Model;
 //Model klasoru altında bulunan BaseModel sınıfını dahil ediyoruz
 use PDO;
 use Model\Model;
+use App\Helper\Helper;
 use App\Services\Gate;
 
 class SitelerModel extends Model
@@ -48,13 +49,13 @@ class SitelerModel extends Model
                     $siteIds = $user->siteler_ids;
                 }
             }
-
             // Eğer alt kullanıcının atanmış site listesi varsa, sadece o siteleri getir
             if (!empty($siteIds)) {
                 // Sadece sayısal ID'leri filtrele
                 $siteIds = array_values(array_filter($siteIds, static function ($v) {
                     return $v !== null && $v !== '' && is_numeric($v);
                 }));
+                    //Helper::dd($siteIds);
 
                 if (!empty($siteIds)) {
                     $placeholders = implode(',', array_fill(0, count($siteIds), '?'));
@@ -68,11 +69,13 @@ class SitelerModel extends Model
                                                 WHERE s.user_id = ?
                                                   AND s.silinme_tarihi IS NULL
                                                   AND s.id IN ($placeholders)
+                                                  GROUP BY s.id
                                                 ORDER BY s.favori_mi DESC, s.click_count DESC, s.aktif_mi DESC, s.site_adi ASC");
 
                     $params = array_merge([$ownerId], $siteIds);
                     $sql->execute($params);
-                    return $sql->fetchAll(PDO::FETCH_OBJ);
+                    $result = $sql->fetchAll(PDO::FETCH_OBJ);
+                    return $result;
                 }
             }
         }

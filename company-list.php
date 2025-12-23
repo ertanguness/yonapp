@@ -67,6 +67,8 @@ $favoriteSites = $Site->getFavorites();
 // Aktif ve pasif site sayılarını hesapla
 $activeSitesCount = 0;
 $inactiveSitesCount = 0;
+
+
 foreach ($mySites as $site) {
     if ($site->aktif_mi == 1) {
         $activeSitesCount++;
