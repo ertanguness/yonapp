@@ -185,6 +185,20 @@
             defaultFilterBtn.classList.add('is-active');
         }
 
+        // Export excel (use current view state)
+        const exportBtn = document.getElementById('ydExportExcel');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                const params = new URLSearchParams();
+                params.set('mode', 'view');
+                params.set('filter', currentFilter || 'all');
+                params.set('sort', currentSort || 'unit_asc');
+                params.set('q', (searchEl && searchEl.value ? searchEl.value : '').toString().trim());
+                // Download
+                window.location.href = '/pages/dues/payment/export/borclular_listesi_excel.php?' + params.toString();
+            });
+        }
+
         // Initial apply
         apply();
 

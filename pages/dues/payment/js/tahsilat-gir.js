@@ -613,8 +613,8 @@ function initLeftSearchAndFilter() {
 
     // KPI
     $('#ydKalanBorcHeader').text((data.kpi && data.kpi.kalan_borc_fmt) ? data.kpi.kalan_borc_fmt : '');
-    
-    
+
+    $("#ydKpiDurum").text((data.kpi && data.kpi.bakiye) < 0 ? "Kalan Borç" : ((data.kpi && data.kpi.bakiye) == 0 ? "Borcu Yok" : "Alacak")); 
     $('#ydKpiKalan').text((data.kpi && data.kpi.kalan_borc_fmt) ? data.kpi.kalan_borc_fmt : '');
 
 
