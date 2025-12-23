@@ -394,8 +394,8 @@ $fmt = function ($v) {
                                     <div class="d-flex align-items-center justify-content-between px-4 py-3" style="border-bottom:1px solid rgba(148,163,184,.25)">
                                         <div class="fw-bold">İşlem Geçmişi</div>
                                         <div class="d-flex gap-2">
-                                            <a class="btn btn-outline-secondary btn-sm" href="/onay-bekleyen-tahsilatlar" title="Onay bekleyenler">
-                                                <i class="feather-check-square me-1"></i>Onaylar
+                                            <a class="btn btn-primary btn-sm tahsilat-ekle" href="#" title="Tahsilat Ekle">
+                                                <i class="feather-check-square me-1"></i>Tahsilat Ekle
                                             </a>
                                         </div>
                                     </div>

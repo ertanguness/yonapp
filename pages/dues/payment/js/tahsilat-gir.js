@@ -965,11 +965,19 @@ function initLeftSearchAndFilter() {
       .catch(function () { alert('Borç silinirken hata oluştu.'); });
   }
 
+$(document).on('click', '.tahsilat-ekle', function() {
+  var kisiEnc = getKisiFromUrl();
+  openTahsilatModalForSelected(kisiEnc, null);
+});
+
   function openTahsilatModalForSelected(kisiEnc, selectedDebtEncIds) {
-    if (!kisiEnc || !selectedDebtEncIds || !selectedDebtEncIds.length) return;
+    if (!kisiEnc) return;
+
+    // borç seçilmeden de (genel tahsilat) açılabilsin
+    if (!Array.isArray(selectedDebtEncIds)) selectedDebtEncIds = [];
 
     // legacy akış uyumu
-    window.secilenBorcIdleri = selectedDebtEncIds.slice();
+  window.secilenBorcIdleri = selectedDebtEncIds.slice();
 
     $.get(urls.tahsilatModal, { kisi_id: kisiEnc, borc_idler: selectedDebtEncIds.join(',') }, function (data) {
       $('.tahsilat-modal-body').html(data);
@@ -1038,6 +1046,20 @@ function initLeftSearchAndFilter() {
         // ignore
       }
 
+      // borç seçilmediyse backend'e açıkça boş gönderelim (genel tahsilat)
+      try {
+        var hasBorc = false;
+        if (typeof window.secilenBorcIdleri !== 'undefined') {
+          if ($.isArray(window.secilenBorcIdleri) && window.secilenBorcIdleri.length) hasBorc = true;
+          if (!$.isArray(window.secilenBorcIdleri) && String(window.secilenBorcIdleri || '').trim() !== '') hasBorc = true;
+        }
+        if (!hasBorc) {
+          postData.push({ name: 'borc_detay_ids', value: '' });
+        }
+      } catch (e2b) {
+        // ignore
+      }
+
       // Basit doğrulama (validate plugin yoksa)
       var tutar = String($('#tutar').val() || '').trim();
       var tarih = String($('#islem_tarihi').val() || '').trim();
@@ -1084,8 +1106,16 @@ function initLeftSearchAndFilter() {
 
           try {
             if (window.Toastify) {
+              var hasBorc2 = false;
+              try {
+                if (typeof window.secilenBorcIdleri !== 'undefined') {
+                  if ($.isArray(window.secilenBorcIdleri) && window.secilenBorcIdleri.length) hasBorc2 = true;
+                  if (!$.isArray(window.secilenBorcIdleri) && String(window.secilenBorcIdleri || '').trim() !== '') hasBorc2 = true;
+                }
+              } catch (e7a) {}
+
               Toastify({
-                text: 'Tahsilat kaydedildi ve borçlara dağıtıldı.',
+                text: hasBorc2 ? 'Tahsilat kaydedildi ve borçlara dağıtıldı.' : 'Tahsilat kaydedildi (genel tahsilat).',
                 duration: 3000,
                 close: true,
                 gravity: 'top',
