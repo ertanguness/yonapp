@@ -54,7 +54,6 @@ foreach ($borclular as $b) {
         $selectedPerson = $b;
         break;
     }
-   
 }
 
 $selectedEnc = $selectedKisiId ? Security::encrypt((int)$selectedKisiId) : '';
@@ -80,6 +79,7 @@ $fmt = function ($v) {
 
 ?>
 <link rel="stylesheet" href="/pages/dues/payment/assets/style.css">
+<script src="/pages/dues/payment/assets/script.js" defer></script>
 <div class="main-content">
 
 
@@ -120,14 +120,18 @@ $fmt = function ($v) {
                                     <li>
                                         <button class="dropdown-item" type="button" data-yd-sort="amount_desc">Azalan (Tutar)</button>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <li>
                                         <button class="dropdown-item" type="button" data-yd-sort="unit_asc">A'dan Z'ye (Daire)</button>
                                     </li>
                                     <li>
                                         <button class="dropdown-item" type="button" data-yd-sort="unit_desc">Z'den A'ya (Daire)</button>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <li>
                                         <button class="dropdown-item" type="button" data-yd-sort="name_asc">A'dan Z'ye (Ad)</button>
                                     </li>
@@ -141,7 +145,7 @@ $fmt = function ($v) {
                     </div>
                     <div class="position-relative">
                         <i class="feather-search position-absolute" style="left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;"></i>
-                        <input id="ydSearch"  type="text" class="form-control" style="padding-left:36px;padding-right:44px;border-radius:12px;" placeholder="Ad, daire, telefon..." />
+                        <input id="ydSearch" type="text" class="form-control" style="padding-left:36px;padding-right:44px;border-radius:12px;" placeholder="Ad, daire, telefon..." />
                         <button type="button" id="ydSearchClear" class="yd-search-clear" aria-label="Aramayı temizle" title="Temizle">
                             <i class="feather-x"></i>
                         </button>
@@ -150,7 +154,11 @@ $fmt = function ($v) {
                         <button type="button" class="yd-chip" data-yd-filter="all">Tümü</button>
                         <button type="button" class="yd-chip yd-chip-danger" data-yd-filter="has_debt">Borçlu</button>
                         <button type="button" class="yd-chip yd-chip-success" data-yd-filter="paid">Ödedi</button>
+                        <button type="button" class="yd-chip ms-auto" id="ydExportExcel">
+                            <i class="feather-file-text"></i>
+                            Excele Aktar</button>
                     </div>
+
                 </div>
 
                 <div class="p-3 yd-list" id="ydPersonnelList">
@@ -176,7 +184,7 @@ $fmt = function ($v) {
                             $status = $net < 0 ? 'Borçlu' : ($net == 0 ? 'Borcu Yok' : 'Alacaklı');
                             $statusClass = $net < 0 ? 'yd-chip yd-chip-danger' : ($net == 0 ? 'yd-chip yd-chip-info' : 'yd-chip yd-chip-success');
 
-                          
+
                             $initials = Helper::getInitials($adi);
 
                             $isActive = ((int)$kisiId === (int)$selectedKisiId);
@@ -201,14 +209,14 @@ $fmt = function ($v) {
                                 <div class="flex-grow-1" style="min-width:0;">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="fw-bold text-truncate"><?= htmlspecialchars($adi) ?>
-                                    
+
+                                        </div>
+                                        <span class="<?= $statusClass ?>"><?= htmlspecialchars($status) ?></span>
+
+
                                     </div>
-                                    <span class="<?= $statusClass ?>"><?= htmlspecialchars($status) ?></span>
-                                    
-                                    
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between mt-1">
-                                    <div class="yd-muted text-truncate" style="font-size:12px;">
+                                    <div class="d-flex align-items-center justify-content-between mt-1">
+                                        <div class="yd-muted text-truncate" style="font-size:12px;">
                                             <span class="badge bg-gray-200 text-dark text-bold"><?= htmlspecialchars($daire) ?></span>
                                             <span class="badge <?= $uyelikBadgeClass ?> border border-dashed border-gray-500"><?= htmlspecialchars($uyelikBadgeText) ?></span>
                                             <span class="badge <?= $kisiDurumClass ?> border border-dashed border-gray-500"
@@ -221,7 +229,7 @@ $fmt = function ($v) {
                                         <div class="fw-bold yd-amount"><?= Helper::formattedMoney($net) ?></div>
                                     </div>
 
-                                
+
                                 </div>
                             </a>
                         <?php } ?>
@@ -288,7 +296,7 @@ $fmt = function ($v) {
                                             <i class="feather feather-printer"></i>
                                         </div>
                                     </a>
-                                
+
                                     <a href="/pages/dues/payment/export/kisi_borc_tahsilat.php?kisi_id=<?= (int)($selectedKisiId ?? 0) ?>" class="d-flex me-1 download">
                                         <div class="avatar-text avatar-md" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-original-title="PDF İndir">
                                             <i class="fa-solid fa-file-pdf"></i>
@@ -303,7 +311,7 @@ $fmt = function ($v) {
                                 </div>
                             </div>
                             <div class="text-end">
-                                <div class="yd-muted" style="font-size:12px;"><?= $kpiDurum ?></div>
+                                <div class="yd-muted" style="font-size:12px;" id="ydKpiDurum"><?= $kpiDurum ?></div>
                                 <div class="fw-bold" style="font-size:28px;color: <?= $kpiColor ?>;" id="ydKalanBorcHeader"><?= $fmt($kpiKalan) ?></div>
 
                             </div>
@@ -440,4 +448,3 @@ $fmt = function ($v) {
         </div>
     </div>
 </div>
-

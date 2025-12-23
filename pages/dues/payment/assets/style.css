@@ -399,6 +399,13 @@
         padding-top: 0;
     }
 
+    #ydExportExcel:hover {
+        background: #e0e7ff;
+        border-color: #c7d2fe;
+        color: #3730a3;
+        transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+
+    }
 
     /**mobilde */
     @media (max-width: 768px) {
