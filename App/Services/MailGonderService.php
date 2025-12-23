@@ -48,7 +48,7 @@ class MailGonderService
             $mail->Encoding = 'base64'; // İçeriği base64 ile kodlamak uyumluluğu artırır
 
             // Gönderen ve Alıcı Bilgileri
-            $mail->setFrom('bilgi@yonapp.com.tr', 'YonApp'); // Gönderen e-posta ve isim
+            $mail->setFrom('noreply@yonapp.com.tr', 'YonApp | Site Yönetim'); // Gönderen e-posta ve isim
 
             // ÖNEMLİ DEĞİŞİKLİK: BCC kullan (alıcılar birbirini görmez)
             // TO alanına bir dummy adres koy (zorunlu)

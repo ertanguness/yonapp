@@ -74,6 +74,26 @@ $dnone = $kredi <= 0 ? 'd-none' : '';
 
 ?>
 
+<style>
+    /* Flatpickr modal içinde dropdown'ın arkada kalmasını engelle */
+    #ydTahsilatModal .flatpickr-calendar,
+    .modal .flatpickr-calendar {
+        z-index: 1065; /* bootstrap modal: 1055 backdrop, 1060 modal */
+    }
+
+    /* Flatpickr input wrapper'ı bazı temalarda genişliği daraltabiliyor */
+    #ydTahsilatModal .flatpickr-wrapper,
+    .modal .flatpickr-wrapper {
+        display: block;
+        width: 100%;
+    }
+
+    #ydTahsilatModal .flatpickr-wrapper .form-control,
+    .modal .flatpickr-wrapper .form-control {
+        width: 100%;
+    }
+</style>
+
 
 <div class="modal-header" style="background:linear-gradient(135deg, rgba(19,91,236,.12), rgba(16,185,129,.10));">
     <div>
@@ -107,7 +127,7 @@ $dnone = $kredi <= 0 ? 'd-none' : '';
 
     <div class="row g-3">
         <div class="col-12 col-md-6">
-            <label class="form-label fw-semibold">İşlem Tarihi</label>
+            <label class="form-label fw-semibold" for="islem_tarihi">İşlem Tarihi</label>
             <input type="text" class="form-control flatpickr time-input" name="islem_tarihi" id="islem_tarihi"
              autocomplete="off" value="<?php echo date("d.m.Y H:i") ?>">
         </div>
@@ -121,6 +141,7 @@ $dnone = $kredi <= 0 ? 'd-none' : '';
             <div class="form-text">Tahsilatın işleneceği kasayı seçin.</div>
 
         </div>
+        
         <div class="col-12 col-md-6">
             <label class="form-label fw-semibold">Tahsil Edilen Tutar</label>
             <div class="input-group">
