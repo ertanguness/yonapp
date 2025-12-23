@@ -218,7 +218,7 @@ class SSPModel {
 				if ( $requestColumn['searchable'] == 'true' ) {
 					if(!empty($column['db'])){
 						$binding = self::bind( $bindings, '%'.$str.'%', PDO::PARAM_STR );
-						$globalSearch[] = "`".$column['db']."` LIKE ".$binding;
+						$globalSearch[] = self::ident($column['db'])." LIKE ".$binding;
 					}
 				}
 			}
@@ -237,7 +237,7 @@ class SSPModel {
 				 $str != '' && is_string(($str)) ) {
 					if(!empty($column['db'])){
 						$binding = self::bind( $bindings, '%'.$str.'%', PDO::PARAM_STR );
-						$columnSearch[] = "`".$column['db']."` LIKE ".$binding;
+						$columnSearch[] = self::ident($column['db'])." LIKE ".$binding;
 					}
 				}
 			}

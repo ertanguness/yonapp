@@ -454,6 +454,9 @@ if ($action === 'tahsilat-kaydet') {
     $aciklama = $_POST['tahsilat_aciklama'] ?? '';
     $borcDetayIdsString = $_POST['borc_detay_ids'] ?? '';
 
+    // borç seçilmeden tahsilat: borc_detay_ids boş olabilir
+    $isGenelTahsilat = trim((string)$borcDetayIdsString) === '';
+
     $kalanOdenecekTutar = $odenen_toplam_tutar;
     $borcDetayIds = !empty($borcDetayIdsString) ? array_map([App\Helper\Security::class, 'decrypt'], explode(',', $borcDetayIdsString)) : [];
 
@@ -512,8 +515,9 @@ if ($action === 'tahsilat-kaydet') {
         }
 
         // 3. Borçları VIEW ÜZERİNDEN Getir ve Sırala
+        // borç seçilmediyse (genel tahsilat) dağıtım yapılmayacak
         $secilenBorclar = [];
-        if (!empty($borcDetayIds)) {
+        if (!$isGenelTahsilat && !empty($borcDetayIds)) {
             // DİKKAT: Borçları ana tablodan değil, her zaman doğru bakiyeyi veren VIEW'den çekiyoruz.
             $secilenBorclar = $FinansalRapor->findWhereIn('id', $borcDetayIds, 'bitis_tarihi ASC, id ASC');
         }
@@ -590,8 +594,10 @@ if ($action === 'tahsilat-kaydet') {
         }
 
         // 4. Ödemeyi Doğru Mantıkla Dağıt
-        foreach ($secilenBorclar as $borc) {
-            if ($kalanOdenecekTutar <= 0) break;
+        // borç seçilmediyse (genel tahsilat) dağıtım yapılmaz
+        if (!$isGenelTahsilat) {
+            foreach ($secilenBorclar as $borc) {
+                if ($kalanOdenecekTutar <= 0) break;
 
 
             // Öncelik 1: NET Gecikme Zammı Borcunu Kapat
@@ -628,17 +634,18 @@ if ($action === 'tahsilat-kaydet') {
                 ]);
                 $kalanOdenecekTutar -= $odenecekAnaParaTutari;
             }
-        }
+            }
 
-        // 5. Borçlar Kapandıktan Sonra Para Arttıysa Kredi Olarak Kaydet
-        if ($kalanOdenecekTutar > 0.009) { // Kuruş farkları için küçük bir tolerans
-            $KisiKredi->saveWithAttr([
-                'id' => 0,
-                'kisi_id' => $kisi_id,
-                'tahsilat_id' => Security::decrypt($tahsilatId),
-                'tutar' => $kalanOdenecekTutar,
-                'aciklama' => 'Tahsilat fazlası alacak kaydı',
-            ]);
+            // 5. Borçlar Kapandıktan Sonra Para Arttıysa Kredi Olarak Kaydet
+            if ($kalanOdenecekTutar > 0.009) { // Kuruş farkları için küçük bir tolerans
+                $KisiKredi->saveWithAttr([
+                    'id' => 0,
+                    'kisi_id' => $kisi_id,
+                    'tahsilat_id' => Security::decrypt($tahsilatId),
+                    'tutar' => $kalanOdenecekTutar,
+                    'aciklama' => 'Tahsilat fazlası alacak kaydı',
+                ]);
+            }
         }
 
         //Tahsilatı kasa hareketi olarak kaydet
@@ -651,17 +658,19 @@ if ($action === 'tahsilat-kaydet') {
             'tutar' => $odenen_toplam_tutar,
             'islem_tarihi' => $islem_tarihi,
             'islem_tipi' => $odenen_toplam_tutar > 0 ? 'gelir' : 'gider', // Tahsilat geliri
-            'kategori' => 'AİDAT', // Kategori aidat
+            'kategori' => $isGenelTahsilat ? 'GENEL TAHSİLAT' : 'AİDAT',
             'kaynak_tablo' => 'tahsilat', // Tahsilat kaynağı
             'kaynak_id' => Security::decrypt($tahsilatId), // Tahsilat ID'si
             'kayit_yapan' => $_SESSION['user']->id, // Kayıt yapan kullanıcı ID'si
-            'aciklama' => $aciklama ?: 'Tahsilat kaydı',
+            'aciklama' => $aciklama ?: ($isGenelTahsilat ? 'Genel tahsilat' : 'Tahsilat kaydı'),
         ];
         $KasaHareket->saveWithAttr($data);
 
         $db->commit();
         $status = 'success';
-        $message = 'Tahsilat başarıyla kaydedildi ve borçlara dağıtıldı.';
+        $message = $isGenelTahsilat
+            ? 'Tahsilat başarıyla kaydedildi (genel tahsilat).'
+            : 'Tahsilat başarıyla kaydedildi ve borçlara dağıtıldı.';
     } catch (Exception $ex) {
         $db->rollBack();
         $status = 'error';

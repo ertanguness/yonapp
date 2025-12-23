@@ -32,6 +32,10 @@ usort($borclular, function ($a, $b) {
 // Varsayılan seçim: GET ile geldiysa onu seç, yoksa ilk kişi.
 $selectedKisiEnc = trim($_GET['kisi'] ?? '');
 $selectedKisiId = null;
+
+$selectedDaire = trim($_GET['q'] ?? '');
+
+
 try {
     if ($selectedKisiEnc !== '') {
         $selectedKisiId = (int)Security::decrypt($selectedKisiEnc);
@@ -50,6 +54,7 @@ foreach ($borclular as $b) {
         $selectedPerson = $b;
         break;
     }
+   
 }
 
 $selectedEnc = $selectedKisiId ? Security::encrypt((int)$selectedKisiId) : '';
@@ -136,7 +141,7 @@ $fmt = function ($v) {
                     </div>
                     <div class="position-relative">
                         <i class="feather-search position-absolute" style="left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;"></i>
-                        <input id="ydSearch" type="text" class="form-control" style="padding-left:36px;padding-right:44px;border-radius:12px;" placeholder="Ad, daire, telefon..." />
+                        <input id="ydSearch"  type="text" class="form-control" style="padding-left:36px;padding-right:44px;border-radius:12px;" placeholder="Ad, daire, telefon..." />
                         <button type="button" id="ydSearchClear" class="yd-search-clear" aria-label="Aramayı temizle" title="Temizle">
                             <i class="feather-x"></i>
                         </button>
@@ -389,8 +394,8 @@ $fmt = function ($v) {
                                     <div class="d-flex align-items-center justify-content-between px-4 py-3" style="border-bottom:1px solid rgba(148,163,184,.25)">
                                         <div class="fw-bold">İşlem Geçmişi</div>
                                         <div class="d-flex gap-2">
-                                            <a class="btn btn-outline-secondary btn-sm" href="/onay-bekleyen-tahsilatlar" title="Onay bekleyenler">
-                                                <i class="feather-check-square me-1"></i>Onaylar
+                                            <a class="btn btn-primary btn-sm tahsilat-ekle" href="#" title="Tahsilat Ekle">
+                                                <i class="feather-check-square me-1"></i>Tahsilat Ekle
                                             </a>
                                         </div>
                                     </div>

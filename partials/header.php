@@ -286,7 +286,7 @@ try {
                                         var uyelikLower = uyelik.toLowerCase();
                                         var roleTone = (uyelikLower.indexOf('kiracı') !== -1) ? 'warning' : (uyelikLower.indexOf('kat mal') !== -1 ? 'teal' : 'teal');
                                         var uyelikClass = (roleTone === 'warning') ? 'text-warning' : 'text-teal';
-                                        html += '<a href="javascript:void(0)" class="d-block px-3 py-3 text-decoration-none" data-daire-kodu="' + $('<div>').text(code).html() + '" style="border-top:1px solid #f1f5f9;">' +
+                                        html += '<a href="javascript:void(0)" class="d-block px-3 py-3 text-decoration-none" data-name="' + $('<div>').text(name).html() + '" data-daire-kodu="' + $('<div>').text(code).html() + '" style="border-top:1px solid #f1f5f9;">' +
                                             '<div class="d-flex align-items-start">' +
                                             '<div class="avatar-text avatar bg-soft-' + roleTone + ' text-' + roleTone + ' border-soft-' + roleTone + ' rounded me-3">' + $('<div>').text(code).html() + '</div>' +
                                             '<div class="flex-grow-1">' +
@@ -384,14 +384,15 @@ try {
                                 });
                                 $list.on('click', 'a', function() {
                                     var code = $(this).data('daire-kodu') || '';
-                                    var url = '/index?p=yonetici-aidat-odeme&q=' + encodeURIComponent(code);
+                                    var name = $(this).data('name') || '';
+                                    var url = '/borc-odeme?yd_q=' + encodeURIComponent(name);
                                     window.location.href = url;
                                 });
                                 $input.on('keydown', function(e) {
                                     if (e.key === 'Enter') {
                                         var term = ($input.val() || '').trim();
                                         if (term) {
-                                            window.location.href = '/index?p=yonetici-aidat-odeme&q=' + encodeURIComponent(term);
+                                            window.location.href = '/borc-odeme?yd_q=' + encodeURIComponent(term);
                                         }
                                     }
                                 });
