@@ -72,14 +72,14 @@ $dueCache = [];
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>
-                                            <th>Başlık</th>
-                                            <th>Tutar</th>
-                                            <th style="width:10%">Başlangıç Tarihi</th>
-                                            <th style="width:10%">Son Ödeme</th>
-                                            <th>Kime</th>
-                                            <th>Toplam Borç Miktarı</th>
-                                            <th>Ödenen Tutar</th>
-                                            <th>Açıklama</th>
+                                            <th data-filter="string">Başlık</th>
+                                            <th data-filter="number">Tutar</th>
+                                            <th style="width:10%" data-filter="date">Başlangıç Tarihi</th>
+                                            <th style="width:10%" data-filter="date">Son Ödeme</th>
+                                            <th data-filter="string">Kime</th>
+                                            <th data-filter="number">Toplam Borç Miktarı</th>
+                                            <th data-filter="number">Ödenen Tutar</th>
+                                            <th data-filter="string">Açıklama</th>
                                             <th>İşlem</th>
                                         </tr>
                                     </thead>

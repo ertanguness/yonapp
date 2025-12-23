@@ -613,7 +613,13 @@ function initLeftSearchAndFilter() {
 
     // KPI
     $('#ydKalanBorcHeader').text((data.kpi && data.kpi.kalan_borc_fmt) ? data.kpi.kalan_borc_fmt : '');
+    
+    
     $('#ydKpiKalan').text((data.kpi && data.kpi.kalan_borc_fmt) ? data.kpi.kalan_borc_fmt : '');
+
+
+    $('#ydKalanBorcHeader').css('color', (data.kpi && data.kpi.bakiye < 0) ? '#CD5656' : '#56b38fff');
+    $("#ydKalanBorcIndicator").css('background', (data.kpi && data.kpi.bakiye < 0) ? '#CD5656' : '#56b38fff');
 
     var toplamBorcFmt = (data.kpi && data.kpi.toplam_borc_fmt) ? data.kpi.toplam_borc_fmt : '';
     var toplamBorcVal = (data.kpi && typeof data.kpi.toplam_borc !== 'undefined') ? Number(data.kpi.toplam_borc || 0) : 0;

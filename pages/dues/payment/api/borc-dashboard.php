@@ -182,6 +182,7 @@ try {
                 'toplam_borc_fmt' => $fmt($ozet->toplam_borc ?? 0),
                 'toplam_tahsilat_fmt' => $fmt($ozet->toplam_tahsilat ?? 0),
                 'kalan_borc_fmt' => $fmt($ozet->bakiye ?? 0),
+                'bakiye' => (float)($ozet->bakiye ?? 0),
             ],
             // UI tarafı bu alanı okuyor; burada artık "tüm borçlar" dönüyoruz.
             'borclandirma_detaylari' => array_map(function($d) use ($fmt){
