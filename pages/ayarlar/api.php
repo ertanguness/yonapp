@@ -4,13 +4,61 @@ header('Content-Type: application/json; charset=utf-8');
 
 use Model\SettingsModel;
 use App\Helper\Security;
+use Database\Db;
 
 $Settings = new SettingsModel();
+$db = Db::getInstance();
+
 
 $site_id = $_SESSION["site_id"] ?? 0;
 $user_id = (isset($_SESSION['user']) && isset($_SESSION['user']->id)) ? (int)$_SESSION['user']->id : 0;
 
-if (($_POST["action"] ?? '') === "ayarlar_kaydet") {
+$post = $_POST;
+$action = $post['action'] ?? '';
+
+function res ($status, $message){
+    echo json_encode([
+        'status' => $status,
+        'message' => $message,
+    ]);
+    exit;
+}
+
+
+if($action == "bildirim_ayarlari_kaydet"){
+
+
+    try {
+        $db->beginTransaction();
+        /**Girişte bildirim gönder */
+        $loginNotification = $post['formSwitchLoginNotification'] ?? '0';
+
+        /**Personele Görev atandığında bildirim gönder */
+        $personnelNotification = $post['formSwitchPersonnelNotification'] ?? '0';
+
+        $data = [
+            'login_notification' => [
+                'value'=> $loginNotification,
+                'aciklama'=>"Girişte bildirim gönder"],
+            
+            'personnel_notification' => [
+                'value'=> $personnelNotification,
+                'aciklama'=>"Personele Görev atandığında bildirim gönder"],
+        ];
+
+        $Settings->upsertPairs((int)$site_id, $user_id, $data);
+        
+        $db->commit();
+        res('success', 'Bildirim ayarları başarıyla kaydedildi.');
+    } catch (\Throwable $th) {
+        $db->rollBack();
+        res('error', 'Bildirim ayarları kaydedilirken hata oluştu.');
+    }
+}
+
+
+
+if ($action === "genel_ayarlar_kaydet") {
     try {
         $kv = $Settings->getAllSettingsAsKeyValue() ?? [];
         $smtpDurum = array_key_exists('emailDurum', $_POST) ? (trim($_POST['emailDurum']) === '1' ? '1' : '0') : (string)($kv['smtp_durum'] ?? '0');
@@ -23,7 +71,39 @@ if (($_POST["action"] ?? '') === "ayarlar_kaydet") {
             'telefon'            => ['value' => trim($_POST['telefon'] ?? ''), 'aciklama' => 'Genel: Telefon'],
             'acil_iletisim'      => ['value' => trim($_POST['acilIletisim'] ?? ''), 'aciklama' => 'Genel: Acil iletişim'],
 
-            'smtp_server'        => ['value' => trim($_POST['smtpServer'] ?? ''), 'aciklama' => 'E-posta: SMTP sunucusu'],
+            // 'smtp_server'        => ['value' => trim($_POST['smtpServer'] ?? ''), 'aciklama' => 'E-posta: SMTP sunucusu'],
+            // 'smtp_port'          => ['value' => trim($_POST['smtpPort'] ?? ''), 'aciklama' => 'E-posta: SMTP port'],
+            // 'smtp_user'          => ['value' => trim($_POST['smtpUser'] ?? ''), 'aciklama' => 'E-posta: kullanıcı'],
+            // 'smtp_password'      => ['value' => trim($_POST['smtpPassword'] ?? ''), 'aciklama' => 'E-posta: şifre'],
+            // 'smtp_durum'         => ['value' => $smtpDurum, 'aciklama' => 'E-posta: aktif mi'],
+
+            // 'sms_provider'       => ['value' => trim($_POST['smsProvider'] ?? ''), 'aciklama' => 'SMS: servis sağlayıcı'],
+            // 'sms_username'       => ['value' => trim($_POST['smsUsername'] ?? ''), 'aciklama' => 'SMS: kullanıcı adı'],
+            // 'sms_baslik'         => ['value' => trim($_POST['smsBaslik'] ?? ''), 'aciklama' => 'SMS: başlık'],
+            // 'sms_password'       => ['value' => trim($_POST['smsPassword'] ?? ''), 'aciklama' => 'SMS: şifre'],
+            // 'sms_durum'          => ['value' => $smsDurum, 'aciklama' => 'SMS: aktif mi'],
+
+            // 'whatsapp_api_url'   => ['value' => trim($_POST['whatsappApiUrl'] ?? ''), 'aciklama' => 'WhatsApp: API URL'],
+            // 'whatsapp_token'     => ['value' => trim($_POST['whatsappToken'] ?? ''), 'aciklama' => 'WhatsApp: token'],
+            // 'whatsapp_sender'    => ['value' => trim($_POST['whatsappSender'] ?? ''), 'aciklama' => 'WhatsApp: gönderen'],
+            // 'whatsapp_durum'     => ['value' => $waDurum, 'aciklama' => 'WhatsApp: aktif mi'],
+        ];
+
+        $Settings->upsertPairs((int)$site_id, $user_id, $pairs);
+        res('success', 'Genel ayarlar başarıyla kaydedildi.');
+    } catch (\Throwable $e) {
+        res('error', 'Genel ayarlar kaydedilirken hata oluştu');
+    }
+}
+
+if ($action === "iletisim_ayarlari_kaydet") {
+    try {
+        $kv = $Settings->getAllSettingsAsKeyValue() ?? [];
+        $smtpDurum = array_key_exists('emailDurum', $_POST) ? (trim($_POST['emailDurum']) === '1' ? '1' : '0') : (string)($kv['smtp_durum'] ?? '0');
+        $smsDurum  = array_key_exists('smsDurum', $_POST) ? (trim($_POST['smsDurum']) === '1' ? '1' : '0') : (string)($kv['sms_durum'] ?? '0');
+        $waDurum   = array_key_exists('whatsappDurum', $_POST) ? (trim($_POST['whatsappDurum']) === '1' ? '1' : '0') : (string)($kv['whatsapp_durum'] ?? '0');
+            $pairs = [
+              'smtp_server'        => ['value' => trim($_POST['smtpServer'] ?? ''), 'aciklama' => 'E-posta: SMTP sunucusu'],
             'smtp_port'          => ['value' => trim($_POST['smtpPort'] ?? ''), 'aciklama' => 'E-posta: SMTP port'],
             'smtp_user'          => ['value' => trim($_POST['smtpUser'] ?? ''), 'aciklama' => 'E-posta: kullanıcı'],
             'smtp_password'      => ['value' => trim($_POST['smtpPassword'] ?? ''), 'aciklama' => 'E-posta: şifre'],
@@ -42,18 +122,39 @@ if (($_POST["action"] ?? '') === "ayarlar_kaydet") {
         ];
 
         $Settings->upsertPairs((int)$site_id, $user_id, $pairs);
-
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Site Ayarları başarıyla kaydedildi.'
-        ]);
+        res('success', 'İletişim ayarları başarıyla kaydedildi.');
     } catch (\Throwable $e) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Ayarlar kaydedilirken hata oluştu',
-        ]);
+        res('error', 'İletişim ayarları kaydedilirken hata oluştu');
     }
 }
+
+
+if (($_GET["action"] ?? '') === 'sms_headers') {
+    $items = [];
+    $rows = $Settings->getMessageSenders() ?: [];
+    foreach ($rows as $r) { $items[] = $r->set_value ?? ''; }
+    echo json_encode(['status' => 'success', 'items' => array_values(array_filter($items))]);
+    exit;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if (($_GET["action"] ?? '') === 'iletisim_list') {
     $items = [];
@@ -72,13 +173,7 @@ if (($_GET["action"] ?? '') === 'iletisim_list') {
     exit;
 }
 
-if (($_GET["action"] ?? '') === 'sms_headers') {
-    $items = [];
-    $rows = $Settings->getMessageSenders() ?: [];
-    foreach ($rows as $r) { $items[] = $r->set_value ?? ''; }
-    echo json_encode(['status' => 'success', 'items' => array_values(array_filter($items))]);
-    exit;
-}
+
 
 if (($_POST["action"] ?? '') === 'iletisim_upsert') {
     $key = strtolower(trim($_POST['key'] ?? ''));

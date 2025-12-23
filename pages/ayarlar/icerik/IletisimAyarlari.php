@@ -1,4 +1,6 @@
 <!-- Bildirim Ayarları (Çalışır ve Düzeltildi) -->
+
+<form id="contactSettingsForm">
 <div class="card-body personal-info mb-4">
     <h6 class="mb-4">Bildirim Ayarları</h6>
 
@@ -182,7 +184,7 @@
         </div>
     </div>
 </div>
-
+</form>
 <!-- Stil (projenin stiline uyuyorsa aynısını kullanabilirsin) -->
 <style>
     .icon-tab {

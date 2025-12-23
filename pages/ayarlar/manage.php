@@ -10,11 +10,12 @@ $Sites = new SitelerModel();
 $Bloklar = new BloklarModel();
 
 $site_id = $_SESSION["site_id"] ?? null;
+$user_id = $_SESSION["user"]->id ?? null;
 
 
 $SiteBilgileri = $Sites->SiteBilgileri($site_id);
 $BlokSayisi = $Bloklar->BlokSayisi($site_id);
-$AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
+$AyarlarKV = $Settings->getAllSettingsAsKeyValue($site_id, $user_id) ?? [];
 
 ?>
 <div class="page-header">
@@ -43,7 +44,6 @@ $AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <form method="Post" id='ayarlarForm' name="ayarlarForm">
                             <div class="card-body custom-card-action p-0">
                                 <div class="card-body">
                                     <div class="row mb-4 align-items-center">
@@ -56,7 +56,7 @@ $AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
                                                     Genel Ayarlar</a>
                                                 </li>
                                                 <li class="nav-item border-top" role="presentation">
-                                                    <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab" data-bs-target="#communicationsSettingsTab" role="tab">
+                                                    <a href="javascript:void(0);" class="nav-link" data-bs-toggle="tab" data-bs-target="#contactSettingsTab" role="tab">
                                                         <i class="feather-mail"></i>
                                                         İletişim Ayarları</a>
                                                 </li>
@@ -76,7 +76,7 @@ $AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
                                                 ?>
                                             </div>
                                             <!-- İletişim Ayarları Tab -->
-                                            <div class="tab-pane fade" id="communicationsSettingsTab" role="tabpanel">
+                                            <div class="tab-pane fade" id="contactSettingsTab" role="tabpanel">
                                                 <?php
                                                 require_once 'pages/ayarlar/icerik/IletisimAyarlari.php';
                                                 ?>
@@ -92,7 +92,6 @@ $AyarlarKV = $Settings->getAllSettingsAsKeyValue() ?? [];
                                     </div>
                                 </div>
                             </div>
-                        </form>
                     </div>
                 </div>
             </div>

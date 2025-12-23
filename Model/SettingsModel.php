@@ -5,6 +5,7 @@ namespace Model;
 
 use Model\Model;
 use PDO;
+use App\Helper\Helper;
 
 class SettingsModel extends Model
 {
@@ -19,20 +20,28 @@ class SettingsModel extends Model
      * Sitenin tüm ayarlarını anahtar-değer çifti olarak döner
      * @return array|null
      */
-    public function getAllSettingsAsKeyValue($site_id = null)
+    public function getAllSettingsAsKeyValue($site_id = null,$user_id = null)
     {
 
         $siteId = $site_id ?? (isset($_SESSION['site_id']) ? (int) $_SESSION['site_id'] : 0);
         if ($siteId === 0) {
             return null;
         }
+        $params = [$siteId];
+
+        if($user_id != null){
+            $userSql = "AND user_id = ?";
+            $params[] = $user_id;
+        }else{
+            $userSql = "";
+        }
 
         
         $sql = $this->db->prepare("SELECT set_name, set_value 
                                             FROM $this->table 
-                                            WHERE site_id = ?
+                                            WHERE site_id = ? $userSql
                                             ORDER BY id DESC");
-        $sql->execute([$siteId]);
+        $sql->execute($params);
         return $sql->fetchAll(PDO::FETCH_KEY_PAIR);
     }
 
@@ -136,13 +145,12 @@ class SettingsModel extends Model
         $userIdInt = $userId ?? 0;
 
         $selectSql = $this->db->prepare(
-            "SELECT id FROM {$this->table} WHERE site_id = :site_id AND set_name = :set_name ORDER BY id DESC LIMIT 1"
+            "SELECT id FROM {$this->table} WHERE site_id = :site_id AND user_id = :user_id AND set_name = :set_name ORDER BY id DESC LIMIT 1"
         );
         $updateByIdSql = $this->db->prepare(
             "UPDATE {$this->table}
              SET set_value = :set_value,
-                 aciklama  = :aciklama,
-                 user_id   = :user_id
+                 aciklama  = :aciklama
              WHERE id = :id"
         );
         $insertSql = $this->db->prepare(
@@ -154,8 +162,10 @@ class SettingsModel extends Model
             $value = $data['value'] ?? null;
             $desc  = $data['aciklama'] ?? null;
 
+
             $selectSql->execute([
                 ':site_id' => $siteId,
+                ':user_id' => $userIdInt,
                 ':set_name' => $name,
             ]);
             $existingId = $selectSql->fetchColumn();
@@ -164,7 +174,6 @@ class SettingsModel extends Model
                 $updateByIdSql->execute([
                     ':set_value' => $value,
                     ':aciklama'  => $desc,
-                    ':user_id'   => $userIdInt,
                     ':id'        => (int)$existingId,
                 ]);
                 $affected += $updateByIdSql->rowCount();
