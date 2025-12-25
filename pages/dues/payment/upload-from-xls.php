@@ -78,6 +78,15 @@ use App\Services\FlashMessageService;
                                     <input type="file" class="form-control" id="payment_file" name="payment_file"
                                         accept=".xls,.xlsx" required>
                                 </div>
+                                 <div class="form-check mb-5">
+                                    <input class="form-check-input" type="checkbox" value="" id="auto_approve"
+                                        name="auto_approve" checked>
+                                    <label class="form-check-label" for="auto_approve">
+                                        Eşleşen ödemeleri aktar
+                                    </label>
+                                    <p class="form-check-description text-muted m-0 mt-2">Bu seçenek işaretlendiğinde, sistem eşleşen ödemeleri otomatik olarak ilgili kişilerin hesaplarına aktaracaktır.</p>
+                                <p class="form-check-description text-muted">Tahsilatlar sayfasında görüntüleyebilirsiniz</p>
+                                 </div>
                                 <div class="d-flex justify-content-start">
                                     <!-- Temizle Butonu -->
                                     <button type="reset" class="btn btn-secondary" id="clear_payment_file">
@@ -87,6 +96,7 @@ use App\Services\FlashMessageService;
                                         <i class="feather-upload me-2"></i>Yükle
                                     </button>
                                 </div>
+                               
                             </form>
                         </div>
                     </div>

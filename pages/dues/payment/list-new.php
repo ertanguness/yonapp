@@ -95,9 +95,13 @@ $fmt = function ($v) {
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <a href="/yonetici-aidat-odeme" class="btn btn-outline-secondary btn-sm" title="Eski liste sayfası">
-                    <i class="feather-list me-1"></i>Eski Liste
+                <a href="/excelden-odeme-yukle" class="btn btn-outline-secondary btn-sm" title="Eski liste sayfası">
+                    <i class="feather-upload me-1"></i>Excelden Yükle
                 </a>
+                <a href="/onay-bekleyen-tahsilatlar" class="btn btn-outline-success btn-sm" title="Eski liste sayfası">
+                    <i class="feather-clock me-1"></i>Onay Bekleyenler
+                </a>
+               
             </div>
         </div>
 
