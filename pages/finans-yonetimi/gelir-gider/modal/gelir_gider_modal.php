@@ -48,6 +48,25 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
         color: var(--bs-danger);
     }
 </style>
+<style>
+    /* Flatpickr modal içinde dropdown'ın arkada kalmasını engelle */
+    .flatpickr-calendar,
+    .modal .flatpickr-calendar {
+        z-index: 1065; /* bootstrap modal: 1055 backdrop, 1060 modal */
+    }
+
+    /* Flatpickr input wrapper'ı bazı temalarda genişliği daraltabiliyor */
+    .flatpickr-wrapper,
+    .modal .flatpickr-wrapper {
+        display: block;
+        width: 100%;
+    }
+
+    .flatpickr-wrapper .form-control,
+    .modal .flatpickr-wrapper .form-control {
+        width: 100%;
+    }
+</style>    
 <div class="modal-header">
     <h5 class="modal-title" id="gelirGiderModalLabel">Gelir Gider İşlemleri</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -103,7 +122,7 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
                 <div class="col-md-6">
 
                     <label for="islem_tarihi" class="form-label">İşlem Tarihi *</label>
-                    <input type="text" class="form-control flatpickr flatpickr-time-input" name="islem_tarihi" id="islem_tarihi" required
+                    <input type="text" class="form-control flatpickr time-input" name="islem_tarihi" id="islem_tarihi" required
                         value="<?= Date::dmYHIS($kasaHareket->islem_tarihi ??  date('d.m.Y H:i:s')); ?>">
                 </div>
 
