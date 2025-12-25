@@ -62,7 +62,7 @@ $(document).on('click', '#gelirGiderKaydet', function () {
             swal.fire(title, text, data.status).then(() => {
 
                 if (data.status === "success") {
-                table.ajax.reload();
+                    table.ajax.reload();
                 }
             });
 
@@ -73,13 +73,44 @@ $(document).on('click', '#gelirGiderKaydet', function () {
             swal.fire("Hata!", "İşlem sırasında bir hata oluştu.", "error");
         }
     });
-    
-    
+
+
     $this.prop('disabled', false);
     $this.html('Kaydet');
 
 
 });
+
+let __export_in_flight = false;
+
+
+
+$("#btnGelirGiderEkle").on("click", function () {
+    $.get('/pages/finans-yonetimi/gelir-gider/modal/gelir_gider_modal.php', function (data) {
+        $modal = $('#gelirGiderModal');
+        $('.gelir-gider-modal-content').html(data);
+        $('#gelirGiderModal').modal('show');
+
+        //Modaldaki select2'leri başlat
+        $(".modal .select2").select2({
+            dropdownParent: $("#gelirGiderModal"),
+        });
+        $(".flatpickr").flatpickr({
+            dateFormat: "d.m.Y H:i",
+            locale: "tr",
+            enableTime: true,
+            time_24hr: true,
+            minuteIncrement: 1,
+            static: true,
+            appendTo: $modal[0],
+            position: "below",
+            allowInput: true
+        });
+    }).done(function () {
+        gelirGiderKalemleriGetir();
+    });
+});
+
 
 //Gelir gider güncelle
 $(document).on('click', '.gelirGiderGuncelle', function () {
@@ -87,22 +118,32 @@ $(document).on('click', '.gelirGiderGuncelle', function () {
 
     //Gelir_Gider_Modal.php dosyasını id parametresi ile birlikte yükle
     $.get('/pages/finans-yonetimi/gelir-gider/modal/gelir_gider_modal.php?id=' + encodeURIComponent(id), function (data) {
+
+        var $modal = $('#gelirGiderModal');
+
         $('.gelir-gider-modal-content').html(data);
         $('#gelirGiderModal').modal('show');
+
         //Modaldaki select2'leri başlat
         $(".modal .select2").select2({
             dropdownParent: $("#gelirGiderModal"),
         });
+        console.log("Flatpickr init ediliyor");
 
-        $("#islem_tarihi").flatpickr({
+        //Flatpickr varsa init
+        $(".flatpickr").flatpickr({
             dateFormat: "d.m.Y H:i",
             locale: "tr",
             enableTime: true,
+            time_24hr: true,
             minuteIncrement: 1,
-            allowInput: true,
+            static: true,
+            appendTo: $modal[0],
+            position: "below",
+            allowInput: true
+        });
 
-        })
-        $('.flatpickr-input').prop('readonly', false);
+
         //Gelir/Gider Kalemleri Getir
         gelirGiderKalemleriGetir();
     });
@@ -279,7 +320,7 @@ $(document).on('change', '#gelir_gider_grubu', function (e) {
 function gelirGiderKalemleriGetir() {
     var type = $("input[name='islem_tipi']:checked").val() == "gider" ? 7 : 6;
     var $selected = $('#gelir_gider_grubu').find('option:selected');
-   
+
 
 
     // Kategori seçilmediyse fonksiyondan çık

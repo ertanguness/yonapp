@@ -399,30 +399,7 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
 <script>
     $(function() {
         // Re-entrancy guard for export double-click issues
-        let __export_in_flight = false;
-
-
-
-        $("#btnGelirGiderEkle").on("click", function() {
-            $.get('/pages/finans-yonetimi/gelir-gider/modal/gelir_gider_modal.php', function(data) {
-                $('.gelir-gider-modal-content').html(data);
-                $('#gelirGiderModal').modal('show');
-
-                //Modaldaki select2'leri başlat
-                $(".modal .select2").select2({
-                    dropdownParent: $("#gelirGiderModal"),
-                });
-                $("#islem_tarihi").flatpickr({
-                    dateFormat: "d.m.Y H:i",
-                    locale: "tr",
-                    enableTime: true,
-                    minuteIncrement: 1,
-                    allowInput: true
-                })
-            }).done(function() {
-                gelirGiderKalemleriGetir();
-            });
-        });
+       
 
 
         // Modali kapatınca sayfayı yenile (sunucu tarafı render)
