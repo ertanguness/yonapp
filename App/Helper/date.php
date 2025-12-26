@@ -431,7 +431,6 @@ public static function convertExcelDate($dateValue, $format = 'Y-m-d'): string|i
         // 2.b) Locale/OS bağımsız normalize
         // - Tarihte '/' veya '-' kullanıldıysa '.' ile uyumlu hale getir (gün.ay.yıl formatı için)
         // - Birden fazla boşluğu tek boşluğa indir
-        $norm = str_replace(['/', '\\'], '.', $norm);
         $norm = preg_replace('/\s+/', ' ', $norm);
 
         // 2.c) Önce en net formatları dene
@@ -439,6 +438,8 @@ public static function convertExcelDate($dateValue, $format = 'Y-m-d'): string|i
             'd.m.Y H:i:s',
             'd.m.Y H:i',
             'Y-m-d H:i:s',
+            'd/m/Y H:i:s',      // 🔥 BUNU EKLE
+            'd/m/Y-H:i:s',      // 🔥 ASIL GELEN FORMAT
             'Y-m-d H:i',
             'd.m.Y',
             'Y-m-d',
