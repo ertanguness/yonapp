@@ -2,17 +2,6 @@
 // Gelir-Gider Raporu - Resimdeki gibi çıktı verecek şekilde düzenlendi
 require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
 
-
-
-
-
-
-
-
-
-
-
-
 use Model\SitelerModel;
 use App\Helper\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -221,8 +210,8 @@ $sheet->getStyle('G5:L7')->getFont()->setBold(true);
 $sheet->getStyle('A5:E7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
 $sheet->getStyle('G5:L7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
 // Başlık dış kenarlıkları kalın
-$sheet->getStyle('A5:E7')->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM);
-$sheet->getStyle('G5:L7')->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM);
+$sheet->getStyle('A5:E7')->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
+$sheet->getStyle('G5:L7')->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
 
 //Başlık satırlarını yinele (yalnızca tablo başlıkları 5-7)
 $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 7);
@@ -285,8 +274,8 @@ for ($i = 0; $i < $max; $i++) {
 
 
     // Blok alt çizgisi kalın
-    $sheet->getStyle('A' . $bot . ':E' . $bot)
-        ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM);
+    // $sheet->getStyle('A' . $bot . ':E' . $bot)
+    //     ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
 
     }
 
@@ -330,7 +319,7 @@ for ($i = 0; $i < $max; $i++) {
 
         // Blok sonu çizgisi kalın
         $sheet->getStyle('G' . $bot . ':L' . $bot)
-            ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM);
+            ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
 
 
         // Satırdaki verileri yatayda ortala
@@ -374,33 +363,67 @@ $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 7);
 
 // Sürekli kalın hatlar için: dış çerçeve ve orta ayırıcı çizgiler
 // Tüm tablo dış kenarlığı kalın
-$sheet->getStyle('A5:L'.$totalRow)->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM);
+//$sheet->getStyle('A5:L'.$totalRow)->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
 // Orta ayırıcı: E'nin sağ kenarı ve G'nin sol kenarı kalın
-$sheet->getStyle('E5:E'.$totalRow)->getBorders()->getRight()->setBorderStyle(Border::BORDER_MEDIUM);
-$sheet->getStyle('G5:G'.$totalRow)->getBorders()->getLeft()->setBorderStyle(Border::BORDER_MEDIUM);
+$sheet->getStyle('E5:E'.$totalRow)->getBorders()->getRight()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
+$sheet->getStyle('G5:G'.$totalRow)->getBorders()->getLeft()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
 // Toplam satır bloklarının da dış kenarlığı kalın olsun
-$sheet->getStyle('A'.$totalRow.':E'.$totalRow)->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM);
-$sheet->getStyle('G'.$totalRow.':L'.$totalRow)->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM);
+$sheet->getStyle('A'.$totalRow.':E'.$totalRow)->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
+$sheet->getStyle('G'.$totalRow.':L'.$totalRow)->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
 
 // Blok sonu çizgisi kalın
 $sheet->getStyle('A5:E7')
-    ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM);
+    ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
 
 // İnce grid (açık gri) kenarlıkları veri bölgelerine tek seferde uygula
+// Not: applyFromArray(allBorders) daha önce döngü içinde attığımız kalın alt kenarlıkları ezebilir.
+// Bu yüzden önce ince grid'i basıp ardından 3 satırlık blokların altına kalın çizgiyi tekrar uyguluyoruz.
 $dataLastRow = $r - 1;
 if ($dataLastRow >= $rowStart) {
-    $leftDataRange  = 'A' . $rowStart . ':E' . $dataLastRow;
+    // Sol taraf (Giderler) sadece gider kayıtlarının olduğu satırlara border basmalı.
+    $giderLastRow = $rowStart + (max(0, count($giderler_list)) * 3) - 1;
+    if ($giderLastRow < $rowStart) {
+        $giderLastRow = $rowStart - 1;
+    }
+
+    $leftDataRange  = $giderLastRow >= $rowStart ? ('A' . $rowStart . ':E' . $giderLastRow) : null;
     $rightDataRange = 'G' . $rowStart . ':L' . $dataLastRow;
     $thinGrid = [
         'borders' => [
             'allBorders' => [
-                'borderStyle' => Border::BORDER_THIN,
-                'color' => ['rgb' => 'CCCCCC']
+                'borderStyle' => Border::BORDER_DASHED,
+                'color' => ['rgb' => '000000']
             ]
         ]
     ];
-    $sheet->getStyle($leftDataRange)->applyFromArray($thinGrid);
+    if ($leftDataRange !== null) {
+        $sheet->getStyle($leftDataRange)->applyFromArray($thinGrid);
+    }
     $sheet->getStyle($rightDataRange)->applyFromArray($thinGrid);
+
+    // Her kayıt 3 satır sürdüğü için, 3. satırların (blok altı) alt kenarlığını kalınlaştır
+    for ($row = $rowStart + 2; $row <= $dataLastRow; $row += 3) {
+        if ($giderLastRow >= $rowStart && $row <= $giderLastRow) {
+            $sheet->getStyle('A' . $row . ':E' . $row)
+                ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
+        }
+        $sheet->getStyle('G' . $row . ':L' . $row)
+            ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
+    }
+
+    // Giderler bittiğinde sol tarafta (A:E) boş satırlarda hiç kenarlık kalmasın.
+    // Not: Bu temizlik dış çerçeveyi de etkileyebilir, bu yüzden aşağıda dış çizgiyi tekrar uyguluyoruz.
+    if ($giderLastRow < $dataLastRow) {
+        $emptyLeftStart = max($rowStart, $giderLastRow + 1);
+        $emptyLeftRange = 'A' . $emptyLeftStart . ':E' . $dataLastRow;
+        $sheet->getStyle($emptyLeftRange)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_NONE);
+
+        // Dış çerçeveyi koru (tüm tablo outline)
+        $sheet->getStyle('A5:L'.$totalRow)->getBorders()->getOutline()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
+        // Orta ayırıcı çizgileri koru
+        $sheet->getStyle('E5:E'.$totalRow)->getBorders()->getRight()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
+        $sheet->getStyle('G5:G'.$totalRow)->getBorders()->getLeft()->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF000000'));
+    }
 }
 
 // Para kolonlarına sayı biçimi uygula

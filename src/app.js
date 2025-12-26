@@ -260,9 +260,22 @@ function attachDtColumnSearch(api, tableId) {
 
       $(input).on("keyup change", function () {
         const val = this.value;
-        const opNow = (btn ? btn.data("op") : currentOp) || currentOp;
+        let opNow = (btn ? btn.data("op") : currentOp) || currentOp;
         const typeNow = hasTypedFilter ? filterType : "string";
         const hasVal = !!(val && String(val).trim() !== "");
+
+        // If operator is "none" but the user is typing, switch back to a sensible default.
+        // Otherwise server-side will keep receiving op=none and nothing will be filtered.
+        if (hasVal && opNow === "none") {
+          opNow =
+            typeNow === "number"
+              ? "equals"
+              : typeNow === "date"
+              ? "on"
+              : "contains";
+          if (btn) btn.data("op", opNow);
+        }
+
         if (menu) setActiveOp(menu, hasVal ? opNow : null);
         if (btn) setButtonIcon(btn, hasVal && opNow !== "none");
         if (isServerSide) {
@@ -282,6 +295,18 @@ function attachDtColumnSearch(api, tableId) {
           }
           api.draw();
         }
+      });
+
+      // UX: if the user focuses an input while op is "none", revert to default op.
+      $(input).on("focus", function () {
+        if (!btn) return;
+        const opNow = btn.data("op");
+        if (opNow !== "none") return;
+        const typeNow = hasTypedFilter ? filterType : "string";
+        const defaultOp =
+          typeNow === "number" ? "equals" : typeNow === "date" ? "on" : "contains";
+        btn.data("op", defaultOp);
+        // Don't set active item when empty, but ensure next typing uses default.
       });
 
       if (menu) {
@@ -356,40 +381,38 @@ function attachDtColumnSearch(api, tableId) {
       const menu = th.find(".dropdown-menu");
       const typeForColumn = parsed.type || "string";
       const hasValue = parsed.val && String(parsed.val).trim() !== "";
+
+      // If state says op=none (Filtre yok), default back to a sensible operator.
+      // This ensures that after login/return the filter dropdown isn't stuck at "Filtre yok"
+      // and the user can type and immediately get "İçerir" behavior.
+      const defaultOp =
+        typeForColumn === "number"
+          ? "equals"
+          : typeForColumn === "date"
+          ? "on"
+          : "contains";
+      const effectiveOp =
+        parsed.op && parsed.op !== "none" ? parsed.op : defaultOp;
       if (btn.length)
         btn.data(
           "op",
           hasValue
-            ? parsed.op ||
-                (typeForColumn === "number"
-                  ? "equals"
-                  : typeForColumn === "date"
-                  ? "on"
-                  : "contains")
-            : typeForColumn === "number"
-            ? "equals"
-            : typeForColumn === "date"
-            ? "on"
-            : "contains"
+            ? effectiveOp
+            : defaultOp
         );
       if (menu.length)
         setActiveOp(
           menu,
-          hasValue
-            ? parsed.op ||
-                (typeForColumn === "number"
-                  ? "equals"
-                  : typeForColumn === "date"
-                  ? "on"
-                  : "contains")
-            : null
+          hasValue ? effectiveOp : null
         );
-      if (btn.length)
-        setButtonIcon(btn, hasValue && (parsed.op || "contains") !== "none");
-      if (hasValue)
+      if (btn.length) setButtonIcon(btn, hasValue);
+
+      // Re-apply search only when there's a value. Never re-apply op=none.
+      if (hasValue) {
         api
           .column(columnIndex)
-          .search(encodeSearch(parsed.op, parsed.val, typeForColumn));
+          .search(encodeSearch(effectiveOp, parsed.val, typeForColumn));
+      }
     });
     api.draw();
   } else {

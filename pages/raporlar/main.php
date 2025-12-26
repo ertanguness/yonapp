@@ -389,7 +389,7 @@ $site_adi = $site->site_adi ?? 'Site';
                                             <label for="gelir_kategori_format" class="form-label">
                                                 <i class="feather-download me-1"></i>İndirme Formatı
                                             </label>
-                                            <select class="form-select" id="gelir_kategori_format" name="gelir_kategori_format">
+                                            <select class="form-select select2" id="gelir_kategori_format" name="gelir_kategori_format">
                                                 <option value="pdf">PDF Belgesi</option>
                                                 <option value="xlsx">Excel (XLSX)</option>
                                                 <option value="csv">CSV Dosyası</option>
@@ -478,7 +478,7 @@ $site_adi = $site->site_adi ?? 'Site';
                                             <label for="gelir_format" class="form-label">
                                                 <i class="feather-download me-1"></i>İndirme Formatı
                                             </label>
-                                            <select class="form-select" id="gelir_format" name="gelir_format">
+                                            <select class="form-select select2" id="gelir_format" name="gelir_format">
                                                 <option value="pdf">PDF Belgesi</option>
                                                 <option value="xlsx">Excel (XLSX)</option>
                                                 <option value="csv">CSV Dosyası</option>
@@ -584,7 +584,7 @@ $site_adi = $site->site_adi ?? 'Site';
                                             <label for="mizan_format" class="form-label">
                                                 <i class="feather-download me-1"></i>İndirme Formatı
                                             </label>
-                                            <select class="form-select" id="mizan_format" name="mizan_format">
+                                            <select class="form-select select2" id="mizan_format" name="mizan_format">
                                                 <option value="pdf">PDF Belgesi</option>
                                                 <option value="xlsx">Excel (XLSX)</option>
                                                 <option value="csv" disabled>CSV Dosyası</option>
@@ -640,7 +640,7 @@ $site_adi = $site->site_adi ?? 'Site';
                                             <label for="daire_format" class="form-label">
                                                 <i class="feather-download me-1"></i>İndirme Formatı
                                             </label>
-                                            <select class="form-select" id="daire_format" name="daire_format">
+                                            <select class="form-select select2" id="daire_format" name="daire_format">
                                                 <option value="pdf">PDF Belgesi</option>
                                                 <option value="xlsx">Excel (XLSX)</option>
                                                 <option value="csv">CSV Dosyası</option>
