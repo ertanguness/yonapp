@@ -33,6 +33,7 @@ if (!$site) { die('Site bulunamadı'); }
 @set_time_limit(180);
 
 $db = \Database\Db::getInstance()->connect();
+$logger = \getLogger();
 $KasaModel = new KasaModel();
 $FinansModel = new FinansalRaporModel();
 
@@ -134,15 +135,25 @@ foreach ($kasalar as $k) {
     $sqlDevir->execute();
     $devir = (float)($sqlDevir->fetchColumn() ?: 0);
 
-    $sqlGelenTop = $db->prepare("SELECT SUM(kh.tutar) AS toplam 
-                                 FROM kasa_hareketleri kh 
-                                 LEFT JOIN kasa k ON k.id = kh.kasa_id 
-                                 WHERE kh.kasa_id = :kid 
-                                   AND k.site_id = :sid 
-                                   AND kh.silinme_tarihi IS NULL 
-                                   AND (kh.islem_tipi='Gelir' OR kh.islem_tipi='gelir') 
-                                   AND kh.alt_tur    != 'Kasa Transferi'
-                                   AND kh.islem_tarihi BETWEEN :start AND :end");
+
+    $logger->info('Gelir toplamı hesaplanıyor', [
+        'site_id' => $site_id,
+        'kasa_id' => $k->id,
+        'start' => $start,
+        'end' => $end
+    ]);
+        // Not: Bazı ortamlarda islem_tipi alanı tutarlı olmayabiliyor (Gelir/gelir/Tahsilat vb.).
+        // Mizan'da "Gelen"i güvenilir şekilde bulmak için temel kriter olarak tutar > 0 kullanıyoruz.
+        // Böylece gelir hareketleri (pozitif tutarlar) kaçırılmıyor.
+        $sqlGelenTop = $db->prepare("SELECT SUM(kh.tutar) AS toplam 
+                                                                 FROM kasa_hareketleri kh 
+                                                                 LEFT JOIN kasa k ON k.id = kh.kasa_id 
+                                                                 WHERE kh.kasa_id = :kid 
+                                                                     AND k.site_id = :sid 
+                                                                     AND kh.silinme_tarihi IS NULL 
+                                                                     AND kh.tutar > 0
+                                                                     AND (LOWER(kh.islem_tipi) IN ('gelir','tahsilat') OR kh.islem_tipi IS NULL OR kh.islem_tipi = '' OR kh.islem_tipi = 'Gelir' OR kh.islem_tipi = 'gelir')
+                                                                     AND kh.islem_tarihi BETWEEN :start AND :end");
     $sqlGelenTop->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gelenTop = (float)($sqlGelenTop->fetchColumn() ?: 0);
 
@@ -153,7 +164,6 @@ foreach ($kasalar as $k) {
                                    AND k.site_id = :sid 
                                    AND kh.silinme_tarihi IS NULL 
                                    AND (kh.islem_tipi='Gider' OR kh.islem_tipi='gider') 
-                                   AND kh.alt_tur != 'Kasa Transferi'
                                    AND kh.islem_tarihi BETWEEN :start AND :end");
     $sqlGidenTop->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gidenTop = (float)($sqlGidenTop->fetchColumn() ?: 0);
@@ -180,15 +190,15 @@ foreach ($kasalar as $k) {
     $sheet->setCellValue('F' . $r, '');
     $r++;
 
-    $sqlGelirKat = $db->prepare("SELECT COALESCE(kh.alt_tur,'Diğer Gelir') AS alt_tur, SUM(kh.tutar) AS toplam 
+    $sqlGelirKat = $db->prepare("SELECT COALESCE(kh.kategori,'Diğer Gelir') AS kategori, SUM(kh.tutar) AS toplam 
                                         FROM kasa_hareketleri kh
                                         LEFT JOIN kasa k on k.id =kh.kasa_id
                                         WHERE kasa_id=:kid AND k.site_id=:sid 
                                         AND kh.silinme_tarihi IS NULL 
-                                        AND (kh.islem_tipi='Gelir' OR kh.islem_tipi = 'gelir') 
-                                        AND kh.alt_tur != 'Kasa Transferi'
+                                        AND kh.tutar > 0
+                                        AND (LOWER(kh.islem_tipi) IN ('gelir','tahsilat') OR kh.islem_tipi IS NULL OR kh.islem_tipi = '' OR kh.islem_tipi = 'Gelir' OR kh.islem_tipi = 'gelir')
                                         AND kh.islem_tarihi BETWEEN :start AND :end 
-                                        GROUP BY kh.alt_tur");
+                                        GROUP BY kh.kategori");
     $sqlGelirKat->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
     $gelirAgg = [];
     $normalize = function($s) {
@@ -198,7 +208,7 @@ foreach ($kasalar as $k) {
         return $x;
     };
     foreach ($sqlGelirKat->fetchAll(\PDO::FETCH_OBJ) as $row) {
-        $key = $normalize($row->alt_tur ?? 'Diğer Gelir');
+        $key = $normalize($row->kategori ?? 'Diğer Gelir');
         $gelirAgg[$key] = ($gelirAgg[$key] ?? 0) + (float)($row->toplam ?? 0);
     }
     foreach ($gelirAgg as $kat => $top) {
@@ -218,7 +228,6 @@ foreach ($kasalar as $k) {
                                    AND k.site_id=:sid 
                                    AND kh.silinme_tarihi IS NULL 
                                    AND (kh.islem_tipi='Gider' OR kh.islem_tipi='gider') 
-                                   AND kh.alt_tur != 'Kasa Transferi'
                                    AND kh.islem_tarihi BETWEEN :start AND :end 
                                  GROUP BY kh.alt_tur");
     $sqlGiderKat->execute([':kid'=>(int)$k->id, ':sid'=>(int)$site_id, ':start'=>$start, ':end'=>$end]);
