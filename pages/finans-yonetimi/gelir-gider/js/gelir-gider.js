@@ -132,7 +132,7 @@ $(document).on('click', '.gelirGiderGuncelle', function () {
         $(".modal .select2").select2({
             dropdownParent: $("#gelirGiderModal"),
         });
-        console.log("Flatpickr init ediliyor");
+       
 
         //Flatpickr varsa init
         $(".flatpickr").flatpickr({
