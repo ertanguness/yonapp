@@ -398,14 +398,125 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
 <!-- JavaScript için ek kod -->
 <script>
     $(function() {
-        // Re-entrancy guard for export double-click issues
+         const $gg = $("#gelirGiderTable");
+  if ($gg.length) {
+    if ($.fn.DataTable.isDataTable($gg[0])) {
+      table = $gg.DataTable();
+    } else {
+      table = $gg.DataTable({
+        //stateSave: true,
+        destroy: true,
+        responsive: true,
+        searching: true,
+        info: true,
+        paging: true,
+        autoWidth: false,
+        dom: 't<"row g-0 mt-2"<"col-md-4"i><"col-md-4 text-center"l><"col-md-4 float-end"p>>',
+        language: {
+          //url: "/assets/js/tr.json",
+        },
+        drawCallback: function (settings) {
+          // Sadece tablonun içindeki tooltip'leri yenile (daha performanslı)
+          $('#gelirGiderTable [data-bs-toggle="tooltip"]').each(function () {
+            // Eski tooltip instance'ı varsa dispose et
+            var existingTooltip = bootstrap.Tooltip.getInstance(this);
+            if (existingTooltip) {
+              existingTooltip.dispose();
+            }
+            // Yeni tooltip oluştur
+            new bootstrap.Tooltip(this);
+          });
+        },
+
+        serverSide: true,
+        processing: true,
+        deferRender: true,
+        language: {
+          decimal: "",
+          emptyTable: `
+        <div class="dt-empty-modern">
+           <svg data-id="3" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-gray-500 dark:text-gray-400"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+
+            <h4 class="mt-2">Herhangi bir kayıt yok!</h4>
+            <p>Yeni bir kayıt oluşturabilirsiniz.</p>
+        </div>
+    `,
+          info: "_TOTAL_ kayıttan _START_ - _END_ gösteriliyor",
+          infoEmpty: "Kayıt bulunamadı",
+          infoFiltered: "(toplam _MAX_ kayıttan filtrelendi)",
+          infoPostFix: "",
+          thousands: ",",
+          lengthMenu: "_MENU_ kayıt göster",
+          loadingRecords: "Yükleniyor...",
+          processing: " İşleniyor...",
+          search: "Arama:",
+          zeroRecords: "Eşleşen kayıt bulunamadı",
+          paginate: {
+            first: "İlk",
+            last: "Son",
+            next: "Sonraki",
+            previous: "Önceki",
+          },
+          aria: {
+            sortAscending: ": artan sütuna sırala",
+            sortDescending: ": azalan sütuna sırala",
+          },
+        },
+        ajax: function (d, callback, settings) {
+          var urls = ["/pages/finans-yonetimi/gelir-gider/server_side_api.php"];
+          var payload = $.extend(true, {}, d, { action: "datatable-list" });
+          var i = 0;
+          function next() {
+            if (i >= urls.length) {
+              callback({
+                draw: d.draw || 1,
+                recordsTotal: 0,
+                recordsFiltered: 0,
+                data: [],
+              });
+              return;
+            }
+            $.ajax({
+              url: urls[i++],
+              type: "POST",
+              data: payload,
+              dataType: "json",
+              success: function (json) {
+                callback(json);
+              },
+              error: function () {
+                next();
+              },
+            });
+          }
+          next();
+        },
+        ordering: false,
+
+        initComplete: function (settings, json) {
+          var api = this.api();
+          var tableId = settings.sTableId;
+          attachDtColumnSearch(api, tableId);
+          api.columns.adjust().responsive.recalc();
+        },
+      });
+    }
+
+    $(window)
+      .off("resize.gg")
+      .on("resize.gg", function () {
+        try {
+          table.columns.adjust().responsive.recalc();
+        } catch (e) {}
+      });
+  }
        
 
 
         // Modali kapatınca sayfayı yenile (sunucu tarafı render)
-        $('#gelirGiderModal').on('hidden.bs.modal', function() {
-            //window.location.reload();
-        });
+        // $('#gelirGiderModal').on('hidden.bs.modal', function() {
+        //     //window.location.reload();
+        // });
 
         //#kasalar'da değişiklik olduğunda
         $("#kasalar").on("change", function() {
@@ -540,60 +651,3 @@ if ($startYmd || $endYmd || ($incExpType && strtolower($incExpType) !== 'all')) 
         width: 100% !important;
     }
 </style>
-<script>
-    // (function(){
-    //     const nav = performance.getEntriesByType('navigation')[0];
-    //     const metrics = { LCP: 0, CLS: 0, FID: 0, TTFB: nav ? nav.responseStart : 0 };
-    //     let lcp = 0; let cls = 0; let fidSet = false;
-    //     try {
-    //         new PerformanceObserver(function(list){
-    //             const entries = list.getEntries();
-    //             for (let i=0;i<entries.length;i++) {
-    //                 const e = entries[i];
-    //                 lcp = Math.max(lcp, (e.renderTime || e.loadTime || 0));
-    //             }
-    //             metrics.LCP = lcp;
-    //         }).observe({ type:'largest-contentful-paint', buffered:true });
-    //     } catch(e) {}
-    //     try {
-    //         new PerformanceObserver(function(list){
-    //             const entries = list.getEntries();
-    //             for (let i=0;i<entries.length;i++) {
-    //                 const e = entries[i];
-    //                 if (!e.hadRecentInput) { cls += e.value; }
-    //             }
-    //             metrics.CLS = Math.round(cls*1000)/1000;
-    //         }).observe({ type:'layout-shift', buffered:true });
-    //     } catch(e) {}
-    //     try {
-    //         new PerformanceObserver(function(list){
-    //             const e = list.getEntries()[0];
-    //             if (e && !fidSet) { metrics.FID = e.processingStart - e.startTime; fidSet = true; }
-    //         }).observe({ type:'first-input', buffered:true });
-    //     } catch(e) {}
-    //     function flush(){
-    //         const data = {
-    //             page: window.location.pathname,
-    //             ts: Date.now(),
-    //             LCP: metrics.LCP,
-    //             FID: metrics.FID,
-    //             CLS: metrics.CLS,
-    //             TTFB: metrics.TTFB
-    //         };
-    //         try { localStorage.setItem('yonapp_web_vitals', JSON.stringify(data)); } catch(e) {}
-    //         console.log('WebVitals', data);
-    //     }
-    //     addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') flush(); }, { once:false });
-    //     addEventListener('load', function(){ setTimeout(flush, 0); });
-    // })();
-
-
-
-    $(document).ready(function() {
-
-let url = '/pages/finans-yonetimi/gelir-gider/api.php';
-
-       
-
-    });
-</script>

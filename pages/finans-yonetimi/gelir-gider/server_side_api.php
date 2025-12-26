@@ -117,8 +117,8 @@ foreach ($items as $hareket) {
     $gelirGiderGuncelle = ($hareket->guncellenebilir == 1) ? 'gelirGiderGuncelle' : 'GuncellemeYetkisiYok';
     $gelirGiderSil = ($hareket->guncellenebilir == 1) ? 'gelirGiderSil' : 'SilmeYetkisiYok';
     $buttons = '<div class="hstack gap-2 justify-content-center">'
-        . '<a href="#" class="avatar-text avatar-md ' . $gelirGiderGuncelle . '" data-id="' . $enc_id . '"><i class="feather-edit"></i></a>'
-        . '<a href="#" class="avatar-text avatar-md ' . $gelirGiderSil . '" data-id="' . $enc_id . '"><i class="feather-trash-2"></i></a>'
+        . '<a href="javascript:void(0)" class="avatar-text avatar-md ' . $gelirGiderGuncelle . '" data-id="' . $enc_id . '"><i class="feather-edit"></i></a>'
+        . '<a href="javascript:void(0)" class="avatar-text avatar-md ' . $gelirGiderSil . '" data-id="' . $enc_id . '"><i class="feather-trash-2"></i></a>'
         . '</div>';
 
     $data[] = [
