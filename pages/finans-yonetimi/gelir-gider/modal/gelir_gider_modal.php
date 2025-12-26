@@ -4,10 +4,16 @@ require_once dirname(__DIR__, levels: 4) . '/configs/bootstrap.php';
 use App\Helper\Helper;
 use App\Helper\Security;
 use App\Helper\Date;
+use App\Services\Gate;
 use Model\DefinesModel;
 use Model\KasaModel;
 use Model\KasaHareketModel;
 
+
+// Gate::authorizeOrDie(
+//     'yonetici_gelir_gider_islemleri',
+//      "Bu işlemi gerçekleştirmek için yetkiniz yok.",
+//         false);
 
 $Tanimlamalar = new DefinesModel();
 $KasaModel = new KasaModel();
@@ -47,8 +53,7 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
     #islem_tipi_gider.card-input-element:checked+.card::after {
         color: var(--bs-danger);
     }
-</style>
-<style>
+
     /* Flatpickr modal içinde dropdown'ın arkada kalmasını engelle */
     .flatpickr-calendar,
     .modal .flatpickr-calendar {
@@ -67,6 +72,7 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
         width: 100%;
     }
 </style>    
+
 <div class="modal-header">
     <h5 class="modal-title" id="gelirGiderModalLabel">Gelir Gider İşlemleri</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -74,6 +80,7 @@ $tutar = Helper::formattedMoney($kasaHareket->tutar ?? 0) ?? 0;
 <div class="modal-body">
     <form id="gelirGiderForm" method="post">
         <input type="hidden" class="form-control d-none mb-3" name="islem_id" id="islem_id" value="<?= $enc_id; ?>">
+        <input type="hidden" class="form-control d-none mb-3" name="gelir_gider_kalemi_input" id="gelir_gider_kalemi_input" value="<?= $kasaHareket->alt_tur ?? ''; ?>">
 
         <!-- İşlem Türü -->
         <div class="mb-3">
