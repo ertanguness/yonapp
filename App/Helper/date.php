@@ -428,23 +428,23 @@ public static function convertExcelDate($dateValue, $format = 'Y-m-d'): string|i
         $norm = preg_replace('/(\b\d{2}\.\d{2}\.\d{4})-(\d{2}:\d{2}(?::\d{2})?\b)/', '$1 $2', $norm);
         $norm = preg_replace('/(\b\d{2}-\d{2}-\d{4})-(\d{2}:\d{2}(?::\d{2})?\b)/', '$1 $2', $norm);
 
-        // 2.b) Önce en net formatları dene
+        // 2.b) Locale/OS bağımsız normalize
+        // - Tarihte '/' veya '-' kullanıldıysa '.' ile uyumlu hale getir (gün.ay.yıl formatı için)
+        // - Birden fazla boşluğu tek boşluğa indir
+        $norm = str_replace(['/', '\\'], '.', $norm);
+        $norm = preg_replace('/\s+/', ' ', $norm);
+
+        // 2.c) Önce en net formatları dene
         $knownFormats = [
-            'd/m/Y H:i:s',
-            'd/m/Y H:i',
             'd.m.Y H:i:s',
             'd.m.Y H:i',
-            'd-m-Y H:i:s',
-            'd-m-Y H:i',
             'Y-m-d H:i:s',
             'Y-m-d H:i',
-            'Y/m/d H:i:s',
-            'Y/m/d H:i',
-            'd/m/Y',
             'd.m.Y',
-            'd-m-Y',
             'Y-m-d',
-            'Y/m/d',
+            // Bazı Excel exportlarında saniye olmadan HH:MM:SS gelebilir veya sonuna nokta/virgül eklenebilir
+            'd.m.Y H:i:s.u',
+            'd.m.Y H:i.u',
         ];
 
         foreach ($knownFormats as $fmt) {
@@ -457,7 +457,8 @@ public static function convertExcelDate($dateValue, $format = 'Y-m-d'): string|i
             }
         }
 
-        // 2.c) Son çare: PHP'nin DateTime parser'ı
+        // 2.d) Son çare: PHP'nin DateTime parser'ı (sunucuda locale farklarından dolayı riskli)
+        // Buraya yalnızca ISO benzeri formatlar düştüğünde gelmesini istiyoruz.
         try {
             $dt = new \DateTime($norm);
             return ($format === 'timestamp') ? (int)$dt->format('U') : $dt->format($format);
