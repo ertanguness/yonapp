@@ -149,41 +149,10 @@ $(document).on('click', '.gelirGiderGuncelle', function () {
 
 
         //Gelir/Gider Kalemleri Getir
-        gelirGiderKalemleriGetir();
+       gelirGiderKalemleriGetir();
     });
 
-    // $.ajax({
-    //     url: url,
-    //     type: 'POST',
-    //     data: {
-    //         action: 'gelir-gider-getir',
-    //         islem_id: id
-    //     },
-    //     success: function (response) {
-    //         var data = JSON.parse(response);
-    //         if (data.status === "success") {
-    //             var islem = data.data;
-    //             console.log(islem);
-    //             $('#islem_id').val(id);
-    //             $('#islem_tarihi').val(islem.islem_tarihi);
-    //             $('#tutar').val(islem.tutar.toString().replace('.', ','));
-    //             // Select2 için özel işlem
-    //             $('#kategori').val(islem.kategori).trigger('change');
-    //             $('#aciklama').val(islem.aciklama);
-    //             $('#islem_tipi').val(islem.islem_tipi);
-    //             $('#kasa_id').val(islem.kasa_id);
-    //             $('#gelirGiderModal').modal('show');
-
-
-    //         } else {
-    //             swal.fire("Hata!", data.message, "error");
-    //         }
-    //     },
-    //     error: function (xhr, status, error) {
-    //         console.error(error);
-    //         swal.fire("Hata!", "İşlem sırasında bir hata oluştu.", "error");
-    //     }
-    // });
+   
 });
 
 //Guncellenemez işlem için 
@@ -335,10 +304,16 @@ function gelirGiderKalemleriGetir() {
 
     // define_name'i data-name attribute'undan al; yoksa text'i kullan
     var category = $selected.data('name') || $selected.text();
+    var alt_tur = $("#gelir_gider_kalemi_input").val();
     var fd = new FormData();
     fd.append('action', 'get-gelir-gider-kalemleri');
     fd.append('type', type);
     fd.append('kategori', category);
+    fd.append('alt_tur', alt_tur);
+
+    // for(var pair of fd.entries()) {
+    //     console.log(pair[0]+ ': ' + pair[1]);
+    // }
 
 
     fetch(url, {
@@ -350,7 +325,9 @@ function gelirGiderKalemleriGetir() {
             var data = response.data;
             var options = '<option value="">Seçiniz</option>';
             $.each(data, function (index, item) {
-                options += '<option value="' + item.id + '">' + item.alt_tur + '</option>';
+                // alt_tur seçili ise onu seçili yap
+                $selectedAltTur = alt_tur == item.alt_tur ? 'selected' : '';
+                options += '<option value="' + item.id + '" ' + $selectedAltTur + '>' + item.alt_tur + '</option>';
             });
             $('#gelir_gider_kalemi').html(options);
         });
