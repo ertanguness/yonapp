@@ -292,8 +292,35 @@ class KasaHareketModel extends Model
                 }
             }
             if (!empty($columnFilters['islem_tipi'])) {
-                $query .= " AND LOWER(kh.islem_tipi) = :f_islem";
-                $bindings[':f_islem'] = strtolower(is_array($columnFilters['islem_tipi']) ? ($columnFilters['islem_tipi']['val'] ?? '') : $columnFilters['islem_tipi']);
+                $f = $columnFilters['islem_tipi'];
+                $val = is_array($f) ? ($f['val'] ?? '') : $f;
+                $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
+                $valLower = strtolower((string)$val);
+
+                if ($op === 'none' || $op === 'yok') {
+                    // no filter
+                } elseif ($op === 'starts') {
+                    $query .= " AND LOWER(kh.islem_tipi) LIKE :f_islem";
+                    $bindings[':f_islem'] = $valLower . '%';
+                } elseif ($op === 'ends') {
+                    $query .= " AND LOWER(kh.islem_tipi) LIKE :f_islem";
+                    $bindings[':f_islem'] = '%' . $valLower;
+                } elseif ($op === 'equals') {
+                    $query .= " AND LOWER(kh.islem_tipi) = :f_islem";
+                    $bindings[':f_islem'] = $valLower;
+                } elseif ($op === 'not_equals') {
+                    $query .= " AND (LOWER(kh.islem_tipi) <> :f_islem OR kh.islem_tipi IS NULL OR kh.islem_tipi = '')";
+                    $bindings[':f_islem'] = $valLower;
+                } elseif ($op === 'not_contains') {
+                    $query .= " AND (LOWER(kh.islem_tipi) NOT LIKE :f_islem OR kh.islem_tipi IS NULL OR kh.islem_tipi = '')";
+                    $bindings[':f_islem'] = '%' . $valLower . '%';
+                } elseif ($op === 'empty' || $op === 'is_empty') {
+                    $query .= " AND (kh.islem_tipi IS NULL OR kh.islem_tipi = '')";
+                } else {
+                    // contains (default)
+                    $query .= " AND LOWER(kh.islem_tipi) LIKE :f_islem";
+                    $bindings[':f_islem'] = '%' . $valLower . '%';
+                }
             }
             if (!empty($columnFilters['daire_kodu'])) {
                 $f = $columnFilters['daire_kodu'];
@@ -513,8 +540,35 @@ class KasaHareketModel extends Model
                 }
             }
             if (!empty($columnFilters['islem_tipi'])) {
-                $query .= " AND LOWER(kh.islem_tipi) = :f_islem";
-                $bindings[':f_islem'] = strtolower(is_array($columnFilters['islem_tipi']) ? ($columnFilters['islem_tipi']['val'] ?? '') : $columnFilters['islem_tipi']);
+                $f = $columnFilters['islem_tipi'];
+                $val = is_array($f) ? ($f['val'] ?? '') : $f;
+                $op = is_array($f) ? ($f['op'] ?? 'contains') : 'contains';
+                $valLower = strtolower((string)$val);
+
+                if ($op === 'none' || $op === 'yok') {
+                    // no filter
+                } elseif ($op === 'starts') {
+                    $query .= " AND LOWER(kh.islem_tipi) LIKE :f_islem";
+                    $bindings[':f_islem'] = $valLower . '%';
+                } elseif ($op === 'ends') {
+                    $query .= " AND LOWER(kh.islem_tipi) LIKE :f_islem";
+                    $bindings[':f_islem'] = '%' . $valLower;
+                } elseif ($op === 'equals') {
+                    $query .= " AND LOWER(kh.islem_tipi) = :f_islem";
+                    $bindings[':f_islem'] = $valLower;
+                } elseif ($op === 'not_equals') {
+                    $query .= " AND (LOWER(kh.islem_tipi) <> :f_islem OR kh.islem_tipi IS NULL OR kh.islem_tipi = '')";
+                    $bindings[':f_islem'] = $valLower;
+                } elseif ($op === 'not_contains') {
+                    $query .= " AND (LOWER(kh.islem_tipi) NOT LIKE :f_islem OR kh.islem_tipi IS NULL OR kh.islem_tipi = '')";
+                    $bindings[':f_islem'] = '%' . $valLower . '%';
+                } elseif ($op === 'empty' || $op === 'is_empty') {
+                    $query .= " AND (kh.islem_tipi IS NULL OR kh.islem_tipi = '')";
+                } else {
+                    // contains (default)
+                    $query .= " AND LOWER(kh.islem_tipi) LIKE :f_islem";
+                    $bindings[':f_islem'] = '%' . $valLower . '%';
+                }
             }
             if (!empty($columnFilters['daire_kodu'])) {
                 $f = $columnFilters['daire_kodu'];

@@ -73,12 +73,16 @@ if (isset($_POST['columns']) && is_array($_POST['columns'])) {
     ];
     foreach ($_POST['columns'] as $idx => $col) {
         $raw = isset($col['search']['value']) ? trim((string)$col['search']['value']) : '';
-        if ($raw === '' || !isset($mapCols[$idx])) { continue; }
+        // UI tarafında filtre "yok" / JSON {op:"none"} gönderiliyorsa bunu filtre uygulanmasın olarak yorumla.
+        // (Aksi halde hem sayım hem liste sorguları 0'a düşer.)
+        if ($raw === '' || strcasecmp($raw, 'yok') === 0 || !isset($mapCols[$idx])) { continue; }
         if ($raw[0] === '{') {
             $j = json_decode($raw, true);
             if (is_array($j)) {
+                $op = isset($j['op']) ? (string)$j['op'] : 'contains';
+                if ($op === 'none') { continue; }
                 $filters[$mapCols[$idx]] = [
-                    'op' => isset($j['op']) ? (string)$j['op'] : 'contains',
+                    'op' => $op,
                     'val' => isset($j['val']) ? (string)$j['val'] : '',
                     'type' => isset($j['type']) ? (string)$j['type'] : 'string'
                 ];
@@ -111,7 +115,7 @@ foreach ($items as $hareket) {
         ? '<span class="text-success fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>'
         : '<span class="text-danger fw-bold">' . Helper::formattedMoney($hareket->yuruyen_bakiye ?? 0) . '</span>';
     $kategori = htmlspecialchars($hareket->kategori ?? '-');
-    $altTur = htmlspecialchars($hareket->alt_tur);
+    $altTur = htmlspecialchars((string)($hareket->alt_tur ?? ''));
     $makbuzNo = htmlspecialchars($hareket->makbuz_no ?? '-');
     $aciklama = htmlspecialchars($hareket->aciklama ?? '-');
     $gelirGiderGuncelle = ($hareket->guncellenebilir == 1) ? 'gelirGiderGuncelle' : 'GuncellemeYetkisiYok';
