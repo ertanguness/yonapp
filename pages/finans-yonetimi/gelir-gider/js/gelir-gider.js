@@ -41,6 +41,10 @@ $(document).on('click', '#gelirGiderKaydet', function () {
     formData.append("kategori", $('#gelir_gider_grubu option:selected').text());
     formData.append("alt_tur", $('#gelir_gider_kalemi option:selected').text());
 
+    // for(var pair of formData.entries()) {
+    //     console.log(pair[0]+ ': ' + pair[1]);
+    // }
+
     /**Butonu disabled yap */
     $this.prop('disabled', true);
     $this.html('<i class="fa fa-spinner fa-spin"></i> İşlem yapılıyor...');
