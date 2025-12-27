@@ -308,7 +308,7 @@ $SiteModel = new SitelerModel();
 
         <div class="mobile-actions-right">
             <?php if (!Gate::isResident()) { ?>
-                <a href="/yonetici-aidat-odeme" class="mobile-quick-actions-item" title="Aidat Ödeme">
+                <a href="/borc-odeme" class="mobile-quick-actions-item" title="Aidat Ödeme">
                     <i class="bi bi-credit-card"></i>
                     <p>Aidat Öde</p>
                 </a>

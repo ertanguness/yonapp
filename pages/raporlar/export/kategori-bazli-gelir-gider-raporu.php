@@ -4,6 +4,8 @@ require_once dirname(__DIR__, 3) . '/configs/bootstrap.php';
 
 use Model\SitelerModel;
 use App\Helper\Date;
+
+use App\Services\Gate;
 use App\Helper\Helper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -15,6 +17,9 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+
+
+Gate::authorizeOrDie('rapor_gosterim', 'Yetkisiz erişim',false);
 
 
 // --- Veri Çekme ve Hazırlık (Bu kısım projenize göre aynı kalabilir) ---
