@@ -720,6 +720,23 @@ if ($action === 'tahsilat-aciklama-duzenle') {
         ];
         $Tahsilat->saveWithAttr($data);
 
+        /**Kasa Hareketlerindeki açıklamayı da düzenle */
+        $kasaHareket = $KasaHareket->findWhere([
+            'tahsilat_id' => $id,
+            'kaynak_tablo' => 'tahsilat'
+        ], 
+        );
+
+        if ($kasaHareket) {
+            foreach ($kasaHareket as $hareket) {
+                $data = [
+                    'id' => $hareket->id,
+                    'aciklama' => $aciklama,
+                ];
+                $KasaHareket->saveWithAttr($data);
+            }   
+        }
+
         $status = 'success';
         $message = 'Tahsilat açıklaması başarıyla güncellendi.';
     } catch (Exception $e) {
