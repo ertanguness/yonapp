@@ -700,7 +700,38 @@ if ($action === 'tahsilat-kaydet') {
     ]);
 }
 
+/** Tahsilat açıklaması düzenle */
+if ($action === 'tahsilat-aciklama-duzenle') {
+    $id = Security::decrypt($_POST['tahsilat_id_enc']);
+    $aciklama = $_POST['aciklama'] ?? '';
 
+   
+
+    try {
+        $tahsilat = $Tahsilat->find($id);
+        if (!$tahsilat) {
+            throw new Exception('Tahsilat kaydı bulunamadı.');
+        }
+
+        // Tahsilat açıklamasını güncelle
+        $data = [
+            'id' => $id,
+            'aciklama' => $aciklama,
+        ];
+        $Tahsilat->saveWithAttr($data);
+
+        $status = 'success';
+        $message = 'Tahsilat açıklaması başarıyla güncellendi.';
+    } catch (Exception $e) {
+        $status = 'error';
+        $message = $e->getMessage();
+    }
+
+    echo json_encode([
+        'status' => $status,
+        'message' => $message,
+    ]);
+}
 
 
 //Tahsilat sil(modaldan)

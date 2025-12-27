@@ -517,7 +517,7 @@ $(function () {
         rowsHtml +=
           '<tr>' +
           '  <td class="px-4">' + esc(t.islem_tarihi || '') + '</td>' +
-          '  <td>' + esc(t.ana_aciklama || '') + '</td>' +
+          '  <td><i class="feather-edit-3"></i>' + esc(t.ana_aciklama || '') + '</td>' +
           '  <td class="text-end fw-bold">' + esc(t.toplam_tutar || '') + '</td>' +
           '  <td class="text-end"><span class="yd-muted" style="font-size:12px;">-</span></td>' +
           '  <td class="text-end"><span class="yd-muted" style="font-size:12px;">-</span></td>' +
@@ -584,7 +584,7 @@ $(function () {
         rowsHtml +=
           '<tr class="yd-tahsilat-row" data-detail-key="' + esc(detailKey) + '" data-tahsilat-id="' + esc(tIdEnc) + '">' +
           '  <td class="px-4">' + esc(t.islem_tarihi || t.tarih || '') + '</td>' +
-          '  <td class="yd-desc">' + esc(t.aciklama || '') + '</td>' +
+          '  <td class="yd-desc"><i class="feather-edit-3 yd-edit-description me-1 cursor-pointer"></i>' + esc(t.aciklama || '') + '</td>' +
           '  <td class="text-end">' + tutarCell + '</td>' +
           '  <td class="text-end">' + actionHtml + '</td>' +
           '</tr>';
@@ -599,6 +599,77 @@ $(function () {
     }
 
     $tb.html(rowsHtml || '<tr><td class="px-4" colspan="5"><span class="yd-muted">Tahsilat kaydı bulunamadı.</span></td></tr>');
+  }
+
+  $(document).on('click', '.yd-edit-description', function () {
+    var $row = $(this).closest('tr.yd-tahsilat-row');
+    var tahsilatIdEnc = $row.data('tahsilat-id');
+    var currentDesc = $row.find('.yd-desc').text().trim();
+    editDescription(tahsilatIdEnc, currentDesc, function (tahsilatIdEnc, newDesc) {
+      // Save the new description
+    });
+  });
+
+  function editDescription($tahsilatIdEnc, currentDesc, onSave) {
+    // td'ye textarea ekle, kaydet/iptal butonları ekle
+    var $row = $('tr.yd-tahsilat-row[data-tahsilat-id="' + esc($tahsilatIdEnc) + '"]');
+    var $descTd = $row.find('.yd-desc');
+    var originalHtml = $descTd.html();
+    var $wrap = $('<div class="d-flex align-items-start gap-2"></div>');
+    var $textarea = $('<textarea class="form-control" rows="2" style="resize:vertical;"></textarea>').val(currentDesc);
+    var $btnCol = $('<div class="d-flex flex-column gap-1"></div>');
+
+    // ikon butonlar (mevcut tabloda kullanılan avatar-text stiline benzer)
+    var $saveBtn = $(
+      '<button type="button" class="avatar-text avatar-md" title="Kaydet">' +
+      '  <i class="feather-save"></i>' +
+      '</button>'
+    );
+    var $cancelBtn = $(
+      '<button type="button" class="avatar-text avatar-md" title="İptal">' +
+      '  <i class="feather-x"></i>' +
+      '</button>'
+    );
+
+    $btnCol.append($saveBtn).append($cancelBtn);
+    $wrap.append($textarea).append($btnCol);
+    $descTd.html('').append($wrap);
+
+    // olaylar
+    $cancelBtn.on('click', function () {
+      $descTd.html(originalHtml);
+    });
+
+    $saveBtn.on('click', function () {
+      var newDesc = ($textarea.val() || '').toString().trim();
+      let fd = new FormData();
+      fd.append('tahsilat_id_enc', $tahsilatIdEnc);
+      fd.append('action', 'tahsilat-aciklama-duzenle');
+      fd.append('aciklama', newDesc);
+
+      fetch(urls.actionApi, {
+        method: 'POST',
+        body: fd
+      }).then(response => response.json())
+        .then(data => {
+          console.log(data);
+          if (data && data.success) {
+            // Kayıt başarılı
+          }
+        }).catch(error => {
+          // Hata
+          console.error(error);
+        });
+      // callback varsa üst katman kaydetsin; yoksa sadece UI'ı güncelle
+      try {
+        if (typeof onSave === 'function') onSave($tahsilatIdEnc, newDesc);
+      } catch (e) {
+        // ignore
+      }
+      // Şimdilik, kayıt sonrası hücreyi güncelle (servis sonrası tekrar render ediliyorsa da sorun olmaz)
+      $descTd.html('<i class="feather-edit-3 yd-edit-description me-1 cursor-pointer"></i>' + esc(newDesc));
+    });
+
   }
 
   function setHeader(data) {
